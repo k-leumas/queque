@@ -19,10 +19,18 @@ export interface ClientCommandOptions {
  * Free of Ink and React imports — Phase 4 will wire the TUI inside
  * runForegroundClient without changing this handler.
  */
+const VALID_MODES = ['cancel', 'replace-buffer-fixture'] as const;
+type ResultMode = (typeof VALID_MODES)[number];
+
+function parseResultMode(mode: string | undefined): ResultMode {
+  if (mode === undefined || mode === 'cancel') return 'cancel';
+  if (mode === 'replace-buffer-fixture') return 'replace-buffer-fixture';
+  console.error(`Warning: unknown --result-mode "${mode}", defaulting to cancel`);
+  return 'cancel';
+}
+
 export async function clientCommand(options: ClientCommandOptions): Promise<void> {
-  const mode = options.resultMode;
-  const resultMode: 'cancel' | 'replace-buffer-fixture' =
-    mode === 'replace-buffer-fixture' ? 'replace-buffer-fixture' : 'cancel';
+  const resultMode = parseResultMode(options.resultMode);
 
   await runForegroundClient({
     requestFile: options.requestFile,
