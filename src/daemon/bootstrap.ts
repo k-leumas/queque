@@ -1,6 +1,8 @@
-import * as net from 'node:net';
-import * as fs from 'node:fs';
 import { spawn } from 'node:child_process';
+import * as fs from 'node:fs';
+import * as net from 'node:net';
+import * as os from 'node:os';
+import * as path from 'node:path';
 
 const CONNECT_TIMEOUT_MS = 500;
 const POLL_INTERVAL_MS = 50;
@@ -47,6 +49,27 @@ async function waitForSocket(
 }
 
 /**
+ * Validates that `socketPath` is a safe daemon socket path.
+ *
+ * Rejects any path that does not resolve to /tmp/qq-*.sock to prevent
+ * path-traversal attacks where a caller-controlled path could cause
+ * fs.unlinkSync to delete arbitrary files or the daemon to listen on
+ * an attacker-chosen location.
+ */
+function assertSafeSocketPath(socketPath: string): void {
+  const resolved = path.resolve(socketPath);
+  const tmpDir = path.resolve(os.tmpdir());
+  const base = path.basename(resolved);
+  if (
+    !resolved.startsWith(tmpDir + path.sep) ||
+    !base.startsWith('qq-') ||
+    !base.endsWith('.sock')
+  ) {
+    throw new Error(`unsafe socket path rejected: ${socketPath}`);
+  }
+}
+
+/**
  * Ensures a qq daemon is running at `socketPath`.
  *
  * Algorithm:
@@ -56,8 +79,11 @@ async function waitForSocket(
  *   4. Poll until the new daemon starts listening, then return.
  *
  * Throws if the daemon does not start within the poll window.
+ * Throws if `socketPath` is not a safe /tmp/qq-*.sock path.
  */
 export async function ensureDaemon(socketPath: string): Promise<void> {
+  assertSafeSocketPath(socketPath);
+
   // Fast path: daemon is already running
   if (await tryConnect(socketPath)) return;
 
@@ -82,8 +108,6 @@ export async function ensureDaemon(socketPath: string): Promise<void> {
 
   const started = await waitForSocket(socketPath);
   if (!started) {
-    throw new Error(
-      `qq daemon did not start within the expected window (${socketPath})`,
-    );
+    throw new Error(`qq daemon did not start within the expected window (${socketPath})`);
   }
 }
