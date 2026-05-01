@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **UI hint**: no
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold the repo baseline with `pnpm`, TypeScript, `cac`, `tsup`, `vitest`, and shared `zod` schemas.
+- [x] 01-01-PLAN.md — Scaffold the repo baseline with `pnpm`, TypeScript, `cac`, `tsup`, `vitest`, and shared `zod` schemas.
 - [ ] 01-02-PLAN.md — Implement ZLE widget and literal `?` interception strategy plus the structured shell result contract.
 - [ ] 01-03-PLAN.md — Stand up the daemon bootstrap path and basic client invocation loop.
 
