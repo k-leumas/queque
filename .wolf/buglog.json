@@ -8,10 +8,32 @@
       "file": ".planning/phases/01-shell-bridge-and-result-contract/01-01-PLAN.md, .planning/phases/01-shell-bridge-and-result-contract/01-03-PLAN.md",
       "root_cause": "The original plans stopped at placeholder CLI seams and cancel-only client behavior while treating file-content checks as proof of install/build readiness.",
       "fix": "Revised 01-01 to require baseline MVP dependencies and executable pnpm install/build/typecheck verification, and revised 01-03 to wire src/cli/main.ts to real command handlers plus a deterministic replace-buffer acceptance seam.",
-      "tags": ["planning", "phase-1", "shell-contract", "verification", "cli-wiring"],
+      "tags": [
+        "planning",
+        "phase-1",
+        "shell-contract",
+        "verification",
+        "cli-wiring"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-01T14:37:00-07:00"
+    },
+    {
+      "id": "bug-002",
+      "timestamp": "2026-05-01T23:23:13.809Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-aa6153ab/src/cli/main.ts",
+      "root_cause": "Had './commands/daemon.js'",
+      "fix": "Changed to './commands/client.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-01T23:23:13.809Z"
     }
   ]
 }
