@@ -33,8 +33,10 @@ export interface ForegroundClientArgs {
 export async function runForegroundClient(args: ForegroundClientArgs): Promise<void> {
   const { requestFile, resultFile, resultMode } = args;
 
-  // Open /dev/tty for interactive use — the foreground client owns the TTY,
-  // not inherited stdio (which may be a pipe during testing or daemon spawning).
+  // Phase 1: open /dev/tty to verify it is accessible before proceeding.
+  // This is a pre-flight check only — no reads or writes are performed on this
+  // handle here. Phase 4 will pass this handle to the Ink TUI for interactive
+  // I/O; until then the handle is closed in the finally block below.
   const ttyHandle = await fsp.open('/dev/tty', 'r+');
 
   try {
