@@ -105,6 +105,10 @@ export async function ensureDaemon(socketPath: string): Promise<void> {
   const qqBin = process.execPath; // Node executable
   const qqScript = new URL('../../cli/main.js', import.meta.url).pathname;
 
+  if (!fs.existsSync(qqScript)) {
+    throw new Error(`qq daemon script not found at: ${qqScript}. Run 'pnpm build' first.`);
+  }
+
   const child = spawn(qqBin, [qqScript, 'daemon', '--socket', socketPath], {
     detached: true,
     stdio: 'ignore',

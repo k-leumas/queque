@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import * as net from 'node:net';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
+import * as net from 'node:net';
 import * as os from 'node:os';
+import * as path from 'node:path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn
 const { spawnFn } = vi.hoisted(() => {
@@ -19,6 +19,21 @@ vi.mock('node:child_process', async (importOriginal) => {
   return {
     ...original,
     spawn: spawnFn,
+  };
+});
+
+// Stub fs.existsSync so the qqScript existence check passes in tests.
+// The real script path does not exist in the test environment (no build required).
+vi.mock('node:fs', async (importOriginal) => {
+  const original = await importOriginal<typeof import('node:fs')>();
+  return {
+    ...original,
+    existsSync: vi.fn((p: unknown) => {
+      // Allow the qqScript path check to pass; real socket-path checks use
+      // the original implementation so mkdtempSync / writeFileSync still work.
+      if (typeof p === 'string' && p.endsWith('main.js')) return true;
+      return original.existsSync(p as string);
+    }),
   };
 });
 
