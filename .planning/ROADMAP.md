@@ -58,18 +58,19 @@ Plans:
 ### Phase 3: Claude Fast Path and Ranked Suggestions
 **Goal**: Produce ranked, explainable command suggestions quickly for requests that are clear enough to skip clarification.
 **Depends on**: Phase 2
-**Requirements**: PRV-01, PRV-02, CMD-01, CMD-02, SAFE-01
+**Requirements**: PRV-01, PRV-02, PRV-03, CMD-01, CMD-02, SAFE-01
 **Success Criteria** (what must be TRUE):
   1. Que-Que can call Claude using `ANTHROPIC_API_KEY`.
-  2. High-confidence requests return ranked command candidates instead of raw model text.
-  3. Every command candidate includes a concise explanation of what it will do.
-  4. Provider or parsing failures surface without mutating the shell buffer.
+  2. Claude is implemented through the shared LLM adapter contract rather than a special-case code path.
+  3. High-confidence requests return ranked command candidates instead of raw model text.
+  4. Every command candidate includes a concise explanation of what it will do.
+  5. Provider or parsing failures surface without mutating the shell buffer.
 **Plans**: 3 plans
 **UI hint**: no
 
 Plans:
-- [ ] 03-01: Implement Claude provider adapter and request/response schemas.
-- [ ] 03-02: Build the fast-path prompt contract, confidence extraction, and ranking model.
+- [ ] 03-01: Define the shared LLM adapter contract and implement the Claude backend against it.
+- [ ] 03-02: Build the fast-path prompt contract, confidence extraction, and ranking model on top of the adapter.
 - [ ] 03-03: Add error handling, debug surfaces, and shell-safe fallback behavior.
 
 ### Phase 4: Fuzzy TUI Selection UX

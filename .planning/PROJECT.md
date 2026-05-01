@@ -23,6 +23,7 @@ Turn natural-language intent into a shell command that feels native to the termi
 - [ ] Show a fuzzy-finder-like TUI with ranked commands and short explanations for high-confidence requests.
 - [ ] Keep low-confidence requests inside an in-TUI clarification chat until a refined command is ready.
 - [ ] Return the selected command back into the shell buffer safely and predictably.
+- [ ] Define an LLM adapter interface so each backend implements the same request/response contract.
 
 ### Out of Scope
 
@@ -58,6 +59,7 @@ The product is meant to be used during development of the product itself. Daily-
 | Use a confidence threshold of `0.8` | Supports a fast command-selection path without skipping needed clarification | — Pending |
 | Keep high-confidence selection and low-confidence chat in the same TUI | Preserves flow and avoids switching UX modes unnecessarily | — Pending |
 | Start with Anthropic/Claude only behind a provider interface | Fastest implementation path while preserving future model/provider expansion | — Pending |
+| Model backends must implement one shared LLM adapter interface | Keeps Claude, OpenAI, and local-model support from diverging in behavior or transport shape | — Pending |
 | Validate provider and IPC payloads with Zod | Shell mutation depends on trustworthy structured responses, so schemas should fail closed | — Pending |
 | Use `pnpm` + `tsup` + `vitest` + `cac` as the CLI/tooling baseline | Keeps scaffolding, packaging, testing, and command parsing simple and fast for a 2-week MVP | — Pending |
 | Start the TUI with Ink and helper input/list components, but keep a narrow UI adapter seam | Fastest route to a working fuzzy-list/chat prototype while preserving the option to swap UI internals if raw input handling proves limiting | — Pending |

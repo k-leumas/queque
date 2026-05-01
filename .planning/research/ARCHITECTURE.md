@@ -46,6 +46,7 @@ Responsibilities:
 Responsibilities:
 - Encapsulate Claude requests and response parsing
 - Support future providers without changing the daemon contract
+- Require each backend to implement the same adapter interface for direct-command requests, clarification turns, confidence/result normalization, and user-safe error handling
 
 ### 7. Command/TUI State Model
 
@@ -77,4 +78,3 @@ Responsibilities:
 - Stand up the daemon before the richer TUI; startup characteristics affect UX.
 - Keep candidate list and clarification state in one TUI model; avoid separate mini-apps.
 - Put extension registries in place before adding non-default providers or shells.
-
