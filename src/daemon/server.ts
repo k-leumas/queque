@@ -14,16 +14,24 @@ import { ipcRequestSchema } from '../contracts/ipc.js';
  */
 export function startDaemonServer(socketPath: string): Promise<net.Server> {
   return new Promise((resolve, reject) => {
+    const MAX_BUF_BYTES = 64 * 1024; // 64 KB — generous for any realistic IPC message
+
     const server = net.createServer((socket) => {
       let buf = '';
 
       socket.on('data', (chunk) => {
         buf += chunk.toString();
-        let nl: number;
 
-        while ((nl = buf.indexOf('\n')) !== -1) {
+        if (buf.length > MAX_BUF_BYTES) {
+          socket.destroy(new Error('IPC message too large'));
+          return;
+        }
+        let nl = buf.indexOf('\n');
+
+        while (nl !== -1) {
           const line = buf.slice(0, nl).trim();
           buf = buf.slice(nl + 1);
+          nl = buf.indexOf('\n');
 
           if (!line) continue;
 
@@ -49,16 +57,12 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
               break;
             }
             case 'ensure-session': {
-              socket.write(
-                JSON.stringify({ kind: 'session-ready', socketPath }) + '\n',
-              );
+              socket.write(JSON.stringify({ kind: 'session-ready', socketPath }) + '\n');
               break;
             }
             case 'run-query': {
               const requestId = Math.random().toString(36).slice(2);
-              socket.write(
-                JSON.stringify({ kind: 'query-accepted', requestId }) + '\n',
-              );
+              socket.write(JSON.stringify({ kind: 'query-accepted', requestId }) + '\n');
               break;
             }
           }
