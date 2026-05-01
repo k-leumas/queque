@@ -1,8 +1,10 @@
 import { cac } from 'cac';
+import { daemonCommand } from './commands/daemon.js';
 
 type ClientOptions = {
   requestFile?: string;
   resultFile?: string;
+  resultMode?: string;
 };
 
 type DaemonOptions = {
@@ -18,10 +20,6 @@ function requiredOption(name: string, value: string | undefined): string {
   return value;
 }
 
-function notImplemented(message: string): never {
-  throw new Error(`${message} not implemented`);
-}
-
 export async function main(argv = process.argv.slice(2)): Promise<void> {
   const cli = cac('qq');
 
@@ -29,25 +27,24 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
     .command('client')
     .option('--request-file <path>', 'Path to the serialized shell request')
     .option('--result-file <path>', 'Path to write the serialized shell result')
-    .action((options: ClientOptions) => {
+    .option(
+      '--result-mode <mode>',
+      'Deterministic result mode: cancel | replace-buffer-fixture',
+    )
+    .action(async (options: ClientOptions) => {
       const requestFile = requiredOption('--request-file', options.requestFile);
       const resultFile = requiredOption('--result-file', options.resultFile);
 
-      notImplemented(`qq client request=${requestFile} result=${resultFile}`);
+      const { clientCommand } = await import('./commands/client.js');
+      await clientCommand({ requestFile, resultFile, resultMode: options.resultMode });
     });
 
   cli
     .command('daemon')
     .option('--socket <path>', 'Unix socket path for the daemon')
     .option('--ensure', 'Ensure the daemon is running before returning')
-    .action((options: DaemonOptions) => {
-      const socket = requiredOption('--socket', options.socket);
-
-      if (options.ensure) {
-        notImplemented(`qq daemon --ensure socket=${socket}`);
-      }
-
-      notImplemented(`qq daemon socket=${socket}`);
+    .action(async (options: DaemonOptions) => {
+      await daemonCommand(options);
     });
 
   cli.help();
