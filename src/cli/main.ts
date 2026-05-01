@@ -1,4 +1,5 @@
 import { cac } from 'cac';
+import { clientCommand } from './commands/client.js';
 import { daemonCommand } from './commands/daemon.js';
 
 type ClientOptions = {
@@ -35,7 +36,6 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
       const requestFile = requiredOption('--request-file', options.requestFile);
       const resultFile = requiredOption('--result-file', options.resultFile);
 
-      const { clientCommand } = await import('./commands/client.js');
       await clientCommand({ requestFile, resultFile, resultMode: options.resultMode });
     });
 
