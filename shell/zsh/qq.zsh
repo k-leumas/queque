@@ -110,14 +110,20 @@ qq-question-widget() {
     local tty_path
     tty_path=$(tty 2>/dev/null || echo '/dev/tty')
 
+    # Escape every scalar through jq -Rs . to prevent JSON injection from
+    # paths or TTY names that contain double-quotes, backslashes, or newlines.
+    local tty_json cwd_json
+    tty_json=$(printf '%s' "$tty_path" | jq -Rs .)
+    cwd_json=$(printf '%s' "$PWD"      | jq -Rs .)
+
     cat > "$req_file" <<JSON
 {
   "version": 1,
-  "ttyPath": "$tty_path",
-  "cwd": "$PWD",
+  "ttyPath": $tty_json,
+  "cwd": $cwd_json,
   "shellPid": $$,
   "lbuffer": $(printf '%s' "$QQ_LBUFFER" | jq -Rs .),
-  "rbuffer": $(printf '%s' "$QQ_RBUFFER" | jq -Rs .)
+  "rbuffer": $(printf '%s' "$QQ_RBUFFER"  | jq -Rs .)
 }
 JSON
 
