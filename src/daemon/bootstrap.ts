@@ -87,7 +87,14 @@ export async function ensureDaemon(socketPath: string): Promise<void> {
   // Fast path: daemon is already running
   if (await tryConnect(socketPath)) return;
 
-  // Unlink stale socket file if present
+  // Unlink stale socket file if present.
+  //
+  // TOCTOU note: there is a narrow window between the failed tryConnect above
+  // and this unlink where a concurrent ensureDaemon call (e.g. from a second
+  // terminal tab) may have already started a fresh daemon and be listening on
+  // the socket. Unlinking here would destroy that live socket. This is
+  // acceptable for the MVP (single active session assumed) but will need a
+  // file-based lock (O_EXCL) before multi-window use is supported.
   try {
     fs.unlinkSync(socketPath);
   } catch {
