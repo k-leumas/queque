@@ -34,9 +34,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **UI hint**: no
 
 Plans:
-- [ ] 01-01: Scaffold the repo baseline with `pnpm`, TypeScript, `cac`, `tsup`, `vitest`, and shared `zod` schemas.
-- [ ] 01-02: Implement ZLE widget and literal `?` interception strategy plus the structured shell result contract.
-- [ ] 01-03: Stand up the daemon bootstrap path and basic client invocation loop.
+- [ ] 01-01-PLAN.md — Scaffold the repo baseline with `pnpm`, TypeScript, `cac`, `tsup`, `vitest`, and shared `zod` schemas.
+- [ ] 01-02-PLAN.md — Implement ZLE widget and literal `?` interception strategy plus the structured shell result contract.
+- [ ] 01-03-PLAN.md — Stand up the daemon bootstrap path and basic client invocation loop.
 
 ### Phase 2: Intent Router and Context Pipeline
 **Goal**: Make Que-Que general-purpose by separating base context from intent-specific context and by registering context sources behind clean interfaces.
