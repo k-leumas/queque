@@ -1,0 +1,10 @@
+pre-commit:
+  jobs:
+    - glob: '**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml}'
+      run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+    - run: pnpm test:run
+
+commit-msg:
+  jobs:
+    - run: pnpm commitlint --edit {1}

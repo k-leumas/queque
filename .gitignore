@@ -1,0 +1,10 @@
+node_modules/
+dist/
+
+.wolf/config.json
+.wolf/cron-manifest.json
+.wolf/cron-state.json
+.wolf/daemon.log
+.wolf/designqc-report.json
+.wolf/suggestions.json
+.wolf/token-ledger.json
