@@ -67,3 +67,4 @@
 | 16:56 | Session end: 15 writes across 8 files (qq.zsh, bootstrap.ts, server.ts, daemon-bootstrap.test.ts, run-foreground.ts) | 13 reads | ~11905 tok |
 | 17:07 | Created quick-task plan for repo dev restart watcher | .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/260501-qt4-PLAN.md, .wolf/anatomy.md | plan written | ~1800 tok |
 | 17:09 | Corrected quick-task plan content after stale file mismatch | .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/260501-qt4-PLAN.md | plan fixed | ~700 tok |
+| 20:26 | Created Phase 2 research document and recorded routing architecture implications | .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md, .wolf/anatomy.md, .wolf/cerebrum.md | research written | ~6500 tok |

@@ -100,6 +100,10 @@
 - `01-REVIEW.md` — Phase 01: Code Review Report (~3511 tok)
 - `01-VERIFICATION.md` — Phase 1: Shell Bridge and Result Contract Verification Report (~4027 tok)
 
+## .planning/phases/02-intent-router-and-context-pipeline/
+
+- `02-RESEARCH.md` — Phase 2 research covering deterministic intent routing, context envelopes, and registry-backed extension seams (~5200 tok)
+
 ## .planning/research/
 
 - `ARCHITECTURE.md` — Architecture Research: Que-Que (~624 tok)
