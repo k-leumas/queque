@@ -51,7 +51,7 @@ Plans:
 **UI hint**: no
 
 Plans:
-- [ ] 02-01-PLAN.md — Define request contracts (RequestIntent, NormalizedRequest, ContextEnvelope) and implement deterministic classifyIntent router.
+- [x] 02-01-PLAN.md — Define request contracts (RequestIntent, NormalizedRequest, ContextEnvelope) and implement deterministic classifyIntent router.
 - [ ] 02-02-PLAN.md — Build base context builder, git/filesystem providers, two-pass pipeline, and rewire foreground client + Claude adapter.
 - [ ] 02-03-PLAN.md — Add four internal registries (context-providers, provider-backends, shell-adapters, storage-hooks) and wire built-ins through them.
 

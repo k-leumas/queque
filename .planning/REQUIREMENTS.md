@@ -14,8 +14,8 @@
 
 ### Intent and Context
 
-- [ ] **INT-01**: Tool classifies the user request into a broad intent category before gathering extra context.
-- [ ] **INT-02**: Tool always includes base shell context such as query text, current working directory, shell, platform, and TTY metadata.
+- [x] **INT-01**: Tool classifies the user request into a broad intent category before gathering extra context.
+- [x] **INT-02**: Tool always includes base shell context such as query text, current working directory, shell, platform, and TTY metadata.
 - [ ] **INT-03**: Tool gathers extra context only when it is relevant to the inferred intent instead of assuming repo/code context for every request.
 - [ ] **INT-04**: Tool routes requests with confidence below `0.8` into a clarification flow inside the TUI.
 
@@ -82,8 +82,8 @@
 | SHL-03 | Phase 1 | Pending |
 | SHL-04 | Phase 1 | Pending |
 | RUN-01 | Phase 1 | Pending |
-| INT-01 | Phase 2 | Pending |
-| INT-02 | Phase 2 | Pending |
+| INT-01 | Phase 2 | Complete |
+| INT-02 | Phase 2 | Complete |
 | INT-03 | Phase 2 | Pending |
 | EXT-01 | Phase 2 | Pending |
 | PRV-01 | Phase 3 | Pending |
