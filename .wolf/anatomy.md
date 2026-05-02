@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-01T23:56:11.675Z
-> Files: 48 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-02T14:29:10.290Z
+> Files: 57 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -77,12 +77,8 @@
 - `config.json` (~258 tok)
 - `PROJECT.md` — Que-Que (~1287 tok)
 - `REQUIREMENTS.md` — Requirements: Que-Que (~1242 tok)
-- `ROADMAP.md` — Roadmap: Que-Que (~1916 tok)
+- `ROADMAP.md` — Roadmap: Que-Que (~2026 tok)
 - `STATE.md` — Project State (~387 tok)
-
-## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
-
-- `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
 
 ## .planning/notes/
 
@@ -102,7 +98,18 @@
 
 ## .planning/phases/02-intent-router-and-context-pipeline/
 
+- `02-01-PLAN.md` — Broad intent categories classified before any context gathering. (~8477 tok)
+- `02-02-PLAN.md` — and: classifyIntent, detectVcsContext, runForegroundClient, suggestShellResult, suggestShellResult (~13578 tok)
+- `02-03-PLAN.md` — Declares for (~8405 tok)
+- `02-CONTEXT.md` — Phase 2: Intent Router and Context Pipeline - Context (~1686 tok)
+- `02-DISCUSSION-LOG.md` — Phase 2: Intent Router and Context Pipeline - Discussion Log (~840 tok)
+- `02-PATTERNS.md` — Phase 2: Intent Router and Context Pipeline - Pattern Map (~5434 tok)
 - `02-RESEARCH.md` — Phase 2 research covering deterministic intent routing, context envelopes, and registry-backed extension seams (~5200 tok)
+- `02-REVIEWS.md` — Cross-AI Plan Review — Phase 2 (~2741 tok)
+
+## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
+
+- `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
 
 ## .planning/research/
 

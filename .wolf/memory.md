@@ -68,3 +68,54 @@
 | 17:07 | Created quick-task plan for repo dev restart watcher | .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/260501-qt4-PLAN.md, .wolf/anatomy.md | plan written | ~1800 tok |
 | 17:09 | Corrected quick-task plan content after stale file mismatch | .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/260501-qt4-PLAN.md | plan fixed | ~700 tok |
 | 20:26 | Created Phase 2 research document and recorded routing architecture implications | .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md, .wolf/anatomy.md, .wolf/cerebrum.md | research written | ~6500 tok |
+
+## Session: 2026-05-02 21:21
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-02 21:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-02 21:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-02 21:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:56 | Created .planning/phases/02-intent-router-and-context-pipeline/02-CONTEXT.md | — | ~1798 |
+| 21:57 | Created .planning/phases/02-intent-router-and-context-pipeline/02-DISCUSSION-LOG.md | — | ~896 |
+| 21:58 | Session end: 2 writes across 2 files (02-CONTEXT.md, 02-DISCUSSION-LOG.md) | 5 reads | ~2887 tok |
+
+## Session: 2026-05-02 22:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:05 | Created .planning/phases/02-intent-router-and-context-pipeline/02-PATTERNS.md | — | ~5797 |
+| 22:08 | Created .planning/phases/02-intent-router-and-context-pipeline/02-01-PLAN.md | — | ~5919 |
+| 22:10 | Created .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | — | ~9251 |
+| 22:12 | Created .planning/phases/02-intent-router-and-context-pipeline/02-03-PLAN.md | — | ~6161 |
+| 22:12 | Created .planning/ROADMAP.md | — | ~2162 |
+| 22:12 | created phase 2 plan set — 02-01 (contracts + router), 02-02 (pipeline + rewire), 02-03 (registries); updated ROADMAP | .planning/phases/02-intent-router-and-context-pipeline/02-01-PLAN.md; 02-02-PLAN.md; 02-03-PLAN.md; .planning/ROADMAP.md | complete | ~12000 |
+| 22:15 | Session end: 5 writes across 5 files (02-PATTERNS.md, 02-01-PLAN.md, 02-02-PLAN.md, 02-03-PLAN.md, ROADMAP.md) | 27 reads | ~61971 tok |
+| 22:19 | Created .planning/phases/02-intent-router-and-context-pipeline/02-REVIEWS.md | — | ~2924 |
+| 22:19 | Session end: 6 writes across 6 files (02-PATTERNS.md, 02-01-PLAN.md, 02-02-PLAN.md, 02-03-PLAN.md, ROADMAP.md) | 29 reads | ~65104 tok |
+| 07:06 | Created .planning/phases/02-intent-router-and-context-pipeline/02-01-PLAN.md | — | ~9042 |
+| 07:09 | Created .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | — | ~11608 |
+| 07:11 | Created .planning/phases/02-intent-router-and-context-pipeline/02-03-PLAN.md | — | ~8965 |
+| 07:15 | Session end: 9 writes across 6 files (02-PATTERNS.md, 02-01-PLAN.md, 02-02-PLAN.md, 02-03-PLAN.md, ROADMAP.md) | 30 reads | ~116017 tok |
+
+## Session: 2026-05-02 07:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 07:28 | Edited .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | 10→12 lines | ~103 |
+| 07:28 | Edited .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | added error handling | ~2733 |
+| 07:28 | Edited .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | 10→13 lines | ~208 |
+| 07:29 | Edited .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | modified check() | ~208 |
+| 08:00 | Session end: 4 writes across 1 files (02-02-PLAN.md) | 1 reads | ~14366 tok |

@@ -114,6 +114,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-01T23:55:22.761Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-05-02T14:28:49.503Z",
+      "error_message": "Missing error handling in buildPrompt",
+      "file": ".planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-02T14:28:49.503Z"
     }
   ]
 }
