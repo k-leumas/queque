@@ -1,9 +1,9 @@
 import * as fsp from 'node:fs/promises';
-import React from 'react';
 import { render } from 'ink';
-import { type NormalizedRequest } from '../contracts/request.js';
-import { shellRequestSchema } from '../contracts/shell.js';
+import React from 'react';
 import { gatherContext } from '../context/pipeline.js';
+import type { NormalizedRequest } from '../contracts/request.js';
+import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { classifyIntent } from '../intent/router.js';
 import { fetchCandidates } from '../providers/claude.js';

@@ -16,7 +16,7 @@ export async function writeShellResult(resultFile: string, result: ShellResult):
   // Validate the result shape — catch programming errors early
   const parsed = shellResultSchema.parse(result);
 
-  const line = JSON.stringify(parsed) + '\n';
+  const line = `${JSON.stringify(parsed)}\n`;
   const tmpFile = `${resultFile}.tmp`;
   await fsp.writeFile(tmpFile, line, { encoding: 'utf-8' });
   await fsp.rename(tmpFile, resultFile);

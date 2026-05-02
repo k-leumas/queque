@@ -57,18 +57,18 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
 
           switch (req.kind) {
             case 'ping': {
-              socket.write(JSON.stringify({ kind: 'pong' }) + '\n');
+              socket.write(`${JSON.stringify({ kind: 'pong' })}\n`);
               void appendDebugLog('daemon', 'replied pong');
               break;
             }
             case 'ensure-session': {
-              socket.write(JSON.stringify({ kind: 'session-ready', socketPath }) + '\n');
+              socket.write(`${JSON.stringify({ kind: 'session-ready', socketPath })}\n`);
               void appendDebugLog('daemon', 'replied session-ready', { socketPath });
               break;
             }
             case 'run-query': {
               const requestId = Math.random().toString(36).slice(2);
-              socket.write(JSON.stringify({ kind: 'query-accepted', requestId }) + '\n');
+              socket.write(`${JSON.stringify({ kind: 'query-accepted', requestId })}\n`);
               void appendDebugLog('daemon', 'replied query-accepted', { requestId });
               break;
             }

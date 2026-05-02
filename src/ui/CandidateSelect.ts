@@ -1,5 +1,5 @@
-import React, { type ReactElement, useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import type { CandidateList } from '../contracts/candidates.js';
 
 interface Props {
@@ -8,11 +8,7 @@ interface Props {
   onCancel: () => void;
 }
 
-export function CandidateSelect({
-  candidates,
-  onSelect,
-  onCancel,
-}: Props): ReactElement {
+export function CandidateSelect({ candidates, onSelect, onCancel }: Props): ReactElement {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useInput((_, key) => {
@@ -22,9 +18,7 @@ export function CandidateSelect({
     }
 
     if (key.upArrow) {
-      setSelectedIndex((current: number) =>
-        current === 0 ? candidates.length - 1 : current - 1,
-      );
+      setSelectedIndex((current: number) => (current === 0 ? candidates.length - 1 : current - 1));
       return;
     }
 

@@ -1,10 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { z } from 'zod';
-import { candidateListSchema, type CandidateList } from '../contracts/candidates.js';
-import { type ContextEnvelope } from '../contracts/request.js';
+import { type CandidateList, candidateListSchema } from '../contracts/candidates.js';
+import type { ContextEnvelope } from '../contracts/request.js';
+import { type ShellResult, shellResultSchema } from '../contracts/shell.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
-import { type ShellResult, shellResultSchema } from '../contracts/shell.js';
 
 const DEFAULT_MODEL = 'claude-sonnet-4-0';
 
