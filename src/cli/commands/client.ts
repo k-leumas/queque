@@ -1,4 +1,5 @@
 import { runForegroundClient } from '../../client/run-foreground.js';
+import { appendDebugLog } from '../../shared/debug-log.js';
 
 export interface ClientCommandOptions {
   requestFile: string;
@@ -19,11 +20,12 @@ export interface ClientCommandOptions {
  * Free of Ink and React imports — Phase 4 will wire the TUI inside
  * runForegroundClient without changing this handler.
  */
-const VALID_MODES = ['cancel', 'replace-buffer-fixture'] as const;
+const VALID_MODES = ['cancel', 'replace-buffer-fixture', 'llm'] as const;
 type ResultMode = (typeof VALID_MODES)[number];
 
 function parseResultMode(mode: string | undefined): ResultMode {
-  if (mode === undefined || mode === 'cancel') return 'cancel';
+  if (mode === undefined || mode === 'llm') return 'llm';
+  if (mode === 'cancel') return 'cancel';
   if (mode === 'replace-buffer-fixture') return 'replace-buffer-fixture';
   console.error(`Warning: unknown --result-mode "${mode}", defaulting to cancel`);
   return 'cancel';
@@ -31,6 +33,12 @@ function parseResultMode(mode: string | undefined): ResultMode {
 
 export async function clientCommand(options: ClientCommandOptions): Promise<void> {
   const resultMode = parseResultMode(options.resultMode);
+
+  void appendDebugLog('client', 'command start', {
+    requestFile: options.requestFile,
+    resultFile: options.resultFile,
+    resultMode,
+  });
 
   await runForegroundClient({
     requestFile: options.requestFile,

@@ -17,13 +17,12 @@
  *     - Malformed JSON leaves original buffers intact and exits nonzero.
  */
 
-import { describe, it, expect } from 'vitest';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, unlinkSync, mkdirSync } from 'node:fs';
-import { join } from 'node:path';
+import { chmodSync, mkdirSync, mkdtempSync, unlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -35,6 +34,19 @@ const widgetPath = join(__dirname, '..', 'shell', 'zsh', 'qq.zsh');
  */
 function runZsh(script: string): { stdout: string; stderr: string; status: number } {
   const result = spawnSync('zsh', ['-c', `source ${widgetPath}\n${script}`], {
+    encoding: 'utf8',
+    timeout: 5000,
+    env: { ...process.env, PATH: process.env.PATH },
+  });
+  return {
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+    status: result.status ?? 1,
+  };
+}
+
+function runInteractiveZsh(script: string): { stdout: string; stderr: string; status: number } {
+  const result = spawnSync('zsh', ['-fi', '-c', script], {
     encoding: 'utf8',
     timeout: 5000,
     env: { ...process.env, PATH: process.env.PATH },
@@ -67,23 +79,41 @@ describe('? widget: single ? inserts without delay', () => {
     });
     expect(result.status).toBe(0);
   });
+
+  it('leaves logging disabled unless QQ_DEBUG_LOG_FILE is set', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-log-test-'));
+    const logFile = join(dir, 'debug.log');
+    const script = `
+      QQ_DEBUG_LOG_FILE=""
+      _qq_log "hello"
+      [[ -e "${logFile}" ]] && echo "log-created" || :
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).not.toContain('log-created');
+  });
 });
 
 describe('?? trigger: captures pre-trigger buffers', () => {
-  it('removes the trailing ? from lbuffer to strip the trigger', () => {
-    // The _qq_capture_buffers function should set QQ_LBUFFER = lbuffer minus trailing ?
+  it('removes the trailing ? from lbuffer when the trigger fires', () => {
+    // The widget sees the previously inserted `?` in LBUFFER on the second keypress.
+    // _qq_capture_buffers should remove that trailing `?` so cancel restores the
+    // buffer before the trigger sequence began.
     const script = `
       LBUFFER="git status?"
       RBUFFER=""
       _qq_capture_buffers
       echo "lbuffer=$QQ_LBUFFER"
+      echo "orig_lbuffer=$QQ_ORIG_LBUFFER"
       echo "rbuffer=$QQ_RBUFFER"
     `;
     const { stdout, status } = runZsh(script);
+    const lines = stdout.trim().split('\n').filter(Boolean);
     expect(status).toBe(0);
-    expect(stdout).toContain('lbuffer=git status');
-    expect(stdout).not.toContain('lbuffer=git status?');
-    expect(stdout).toContain('rbuffer=');
+    expect(lines).toContain('lbuffer=git status');
+    expect(lines).toContain('orig_lbuffer=git status');
+    expect(lines).toContain('rbuffer=');
+    expect(lines).not.toContain('lbuffer=git status?');
   });
 
   it('preserves rbuffer content across trigger capture', () => {
@@ -107,9 +137,68 @@ describe('?? trigger: captures pre-trigger buffers', () => {
       echo "orig_rbuffer=$QQ_ORIG_RBUFFER"
     `;
     const { stdout, status } = runZsh(script);
+    const lines = stdout.trim().split('\n').filter(Boolean);
     expect(status).toBe(0);
-    expect(stdout).toContain('orig_lbuffer=original text?');
-    expect(stdout).toContain('orig_rbuffer=right side');
+    expect(lines).toContain('orig_lbuffer=original text');
+    expect(lines).toContain('orig_rbuffer=right side');
+  });
+});
+
+describe('?? trigger: cancel restores pre-trigger buffer', () => {
+  it('restores the buffer without leaving a trailing ? behind', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(resultFile, JSON.stringify({ kind: 'cancel' }));
+    const script = `
+      LBUFFER="git stat?"
+      RBUFFER=""
+      _qq_capture_buffers
+      _qq_apply_result "${resultFile}"
+      echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    const lines = stdout.trim().split('\n').filter(Boolean);
+    unlinkSync(resultFile);
+    expect(status).toBe(0);
+    expect(lines).toContain('lbuffer=git stat');
+    expect(lines).toContain('rbuffer=');
+    expect(lines).not.toContain('lbuffer=git stat?');
+  });
+});
+
+describe('daemon prewarm', () => {
+  it('starts a background ensure call once in interactive shells', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-prewarm-'));
+    const devRoot = join(dir, 'repo');
+    const cliDir = join(devRoot, 'dist', 'cli');
+    const binDir = join(dir, 'bin');
+    const marker = join(dir, 'node-invoked');
+    mkdirSync(cliDir, { recursive: true });
+    mkdirSync(binDir, { recursive: true });
+    writeFileSync(join(cliDir, 'main.js'), '');
+    writeFileSync(
+      join(binDir, 'node'),
+      `#!/bin/sh
+printf '%s\n' "$*" > "${marker}"
+`,
+      { encoding: 'utf8' },
+    );
+    chmodSync(join(binDir, 'node'), 0o755);
+
+    const script = `
+      QQ_DEV_ROOT="${devRoot}"
+      PATH="${binDir}:$PATH"
+      source ${widgetPath}
+      for i in {1..50}; do
+        [[ -f "${marker}" ]] && break
+        sleep 0.05
+      done
+      [[ -f "${marker}" ]] && cat "${marker}"
+    `;
+    const { stdout, status } = runInteractiveZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).toContain('daemon --ensure');
   });
 });
 

@@ -1,7 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
-import * as path from 'node:path';
 import * as os from 'node:os';
+import * as path from 'node:path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // ---------------------------------------------------------------------------
 // Mock ensureDaemon so tests don't actually launch a daemon
@@ -16,6 +19,13 @@ vi.mock('../src/daemon/bootstrap.js', () => ({
 vi.mock('../src/shared/socket-path.js', () => ({
   socketPathForUid: vi.fn().mockReturnValue('/tmp/qq-test-999.sock'),
   socketPath: vi.fn().mockReturnValue('/tmp/qq-test-999.sock'),
+}));
+
+// ---------------------------------------------------------------------------
+// Mock Claude provider so llm mode stays deterministic in tests
+// ---------------------------------------------------------------------------
+vi.mock('../src/providers/claude.js', () => ({
+  suggestShellResult: vi.fn(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -39,6 +49,10 @@ vi.mock('node:fs/promises', async (importOriginal) => {
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const widgetPath = path.join(__dirname, '..', 'shell', 'zsh', 'qq.zsh');
 
 describe('writeShellResult', () => {
   let tmpDir: string;
@@ -150,5 +164,48 @@ describe('runForegroundClient', () => {
     // /dev/tty must have been opened
     const ttyCall = openSpy.mock.calls.find((args) => args[0] === '/dev/tty');
     expect(ttyCall).toBeDefined();
+  });
+
+  it('emits a replace-buffer result in llm mode and the shell applies it', async () => {
+    const { suggestShellResult } = await import('../src/providers/claude.js');
+    const mockedSuggestShellResult = vi.mocked(suggestShellResult);
+    mockedSuggestShellResult.mockResolvedValue({
+      kind: 'replace-buffer',
+      lbuffer: 'git status',
+      rbuffer: '',
+    });
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+
+    await runForegroundClient({
+      requestFile,
+      resultFile,
+      resultMode: 'llm',
+    });
+
+    const resultContent = fs.readFileSync(resultFile, 'utf-8');
+    expect(JSON.parse(resultContent.trim())).toEqual({
+      kind: 'replace-buffer',
+      lbuffer: 'git status',
+      rbuffer: '',
+    });
+
+    const shellResult = spawnSync(
+      'zsh',
+      [
+        '-c',
+        `source ${widgetPath}
+         LBUFFER="old left"
+         RBUFFER="old right"
+         _qq_apply_result "${resultFile}"
+         echo "lbuffer=$LBUFFER"
+         echo "rbuffer=$RBUFFER"`,
+      ],
+      { encoding: 'utf8', env: { ...process.env, PATH: process.env.PATH } },
+    );
+
+    expect(shellResult.status).toBe(0);
+    expect(shellResult.stdout).toContain('lbuffer=git status');
+    expect(shellResult.stdout).toContain('rbuffer=');
   });
 });

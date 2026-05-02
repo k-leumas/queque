@@ -1,6 +1,8 @@
 import * as fsp from 'node:fs/promises';
 import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
+import { suggestShellResult } from '../providers/claude.js';
+import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { writeShellResult } from './result-writer.js';
 
@@ -15,8 +17,9 @@ export interface ForegroundClientArgs {
    *                            derived from the shell request so the zsh bridge can
    *                            round-trip an accepted selection end-to-end without
    *                            the Phase 4 TUI being built yet.
+   *   llm                    — call Claude and map its JSON response to shell output
    */
-  resultMode: 'cancel' | 'replace-buffer-fixture';
+  resultMode: 'cancel' | 'replace-buffer-fixture' | 'llm';
 }
 
 /**
@@ -32,6 +35,15 @@ export interface ForegroundClientArgs {
  */
 export async function runForegroundClient(args: ForegroundClientArgs): Promise<void> {
   const { requestFile, resultFile, resultMode } = args;
+  const uid = typeof process.getuid === 'function' ? process.getuid() : 0;
+  const socketPath = socketPathForUid(uid);
+
+  void appendDebugLog('client', 'foreground start', {
+    requestFile,
+    resultFile,
+    resultMode,
+    socketPath,
+  });
 
   // Phase 1: open /dev/tty to verify it is accessible before proceeding.
   // This is a pre-flight check only — no reads or writes are performed on this
@@ -44,9 +56,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     const raw = await fsp.readFile(requestFile, 'utf-8');
     const request = shellRequestSchema.parse(JSON.parse(raw.trim()));
 
+    void appendDebugLog('client', 'request parsed', request);
+
     // Ensure the daemon is reachable before we do anything interactive
-    const uid = typeof process.getuid === 'function' ? process.getuid() : 0;
-    await ensureDaemon(socketPathForUid(uid));
+    await ensureDaemon(socketPath);
+    void appendDebugLog('client', 'daemon ensured', { socketPath });
 
     // Deterministic result seam — Phase 4 replaces this with the Ink TUI
     if (resultMode === 'replace-buffer-fixture') {
@@ -58,8 +72,29 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         lbuffer: fixtureLbuffer,
         rbuffer: request.rbuffer,
       });
+      void appendDebugLog('client', 'wrote replace-buffer result', {
+        resultFile,
+        lbuffer: fixtureLbuffer,
+        rbuffer: request.rbuffer,
+      });
+    } else if (resultMode === 'llm') {
+      try {
+        const shellResult = await suggestShellResult(request);
+        await writeShellResult(resultFile, shellResult);
+        void appendDebugLog('client', 'wrote llm result', {
+          resultFile,
+          kind: shellResult.kind,
+        });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void appendDebugLog('client', 'llm request failed; falling back to cancel', {
+          message,
+        });
+        await writeShellResult(resultFile, { kind: 'cancel' });
+      }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });
+      void appendDebugLog('client', 'wrote cancel result', { resultFile });
     }
   } finally {
     await ttyHandle.close();

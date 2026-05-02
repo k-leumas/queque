@@ -1,8 +1,9 @@
 import { spawn } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as net from 'node:net';
-import * as os from 'node:os';
 import * as path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { appendDebugLog } from '../shared/debug-log.js';
 
 const CONNECT_TIMEOUT_MS = 500;
 const POLL_INTERVAL_MS = 50;
@@ -58,10 +59,10 @@ async function waitForSocket(
  */
 function assertSafeSocketPath(socketPath: string): void {
   const resolved = path.resolve(socketPath);
-  const tmpDir = path.resolve(os.tmpdir());
   const base = path.basename(resolved);
+  const tmpRoots = ['/tmp', '/private/tmp'];
   if (
-    !resolved.startsWith(tmpDir + path.sep) ||
+    !tmpRoots.some((root) => resolved.startsWith(root + path.sep)) ||
     !base.startsWith('qq-') ||
     !base.endsWith('.sock')
   ) {
@@ -83,9 +84,13 @@ function assertSafeSocketPath(socketPath: string): void {
  */
 export async function ensureDaemon(socketPath: string): Promise<void> {
   assertSafeSocketPath(socketPath);
+  void appendDebugLog('daemon', 'ensure start', { socketPath });
 
   // Fast path: daemon is already running
-  if (await tryConnect(socketPath)) return;
+  if (await tryConnect(socketPath)) {
+    void appendDebugLog('daemon', 'already running', { socketPath });
+    return;
+  }
 
   // Unlink stale socket file if present.
   //
@@ -101,14 +106,18 @@ export async function ensureDaemon(socketPath: string): Promise<void> {
     // File may not exist — that is fine
   }
 
-  // Resolve the qq binary: prefer the built dist, fall back to ts-node for dev
+  // Resolve the current bundled CLI entrypoint.
+  // In the built runtime, import.meta.url points at dist/cli/main.js, which is
+  // the exact script we want the detached daemon process to execute.
   const qqBin = process.execPath; // Node executable
-  const qqScript = new URL('../../cli/main.js', import.meta.url).pathname;
+  const qqScript = fileURLToPath(import.meta.url);
 
   if (!fs.existsSync(qqScript)) {
+    void appendDebugLog('daemon', 'script missing', { qqScript });
     throw new Error(`qq daemon script not found at: ${qqScript}. Run 'pnpm build' first.`);
   }
 
+  void appendDebugLog('daemon', 'spawning daemon', { qqScript, socketPath });
   const child = spawn(qqBin, [qqScript, 'daemon', '--socket', socketPath], {
     detached: true,
     stdio: 'ignore',
@@ -119,6 +128,9 @@ export async function ensureDaemon(socketPath: string): Promise<void> {
 
   const started = await waitForSocket(socketPath);
   if (!started) {
+    void appendDebugLog('daemon', 'startup timeout', { socketPath });
     throw new Error(`qq daemon did not start within the expected window (${socketPath})`);
   }
+
+  void appendDebugLog('daemon', 'daemon ready', { socketPath });
 }

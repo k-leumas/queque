@@ -1,6 +1,5 @@
 import * as fs from 'node:fs';
 import * as net from 'node:net';
-import * as os from 'node:os';
 import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -43,7 +42,7 @@ describe('daemon bootstrap', () => {
   let testServer: net.Server | null = null;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-test-'));
+    tmpDir = fs.mkdtempSync('/tmp/qq-test-');
     socketPath = path.join(tmpDir, 'qq-test.sock');
     spawnFn.mockClear();
     spawnFn.mockReturnValue({ unref: vi.fn(), on: vi.fn() });
@@ -115,7 +114,7 @@ describe('daemon server', () => {
   let testServer: net.Server | null = null;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-server-test-'));
+    tmpDir = fs.mkdtempSync('/tmp/qq-server-test-');
     socketPath = path.join(tmpDir, 'qq-server.sock');
   });
 

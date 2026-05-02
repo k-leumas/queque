@@ -28,10 +28,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
     .command('client')
     .option('--request-file <path>', 'Path to the serialized shell request')
     .option('--result-file <path>', 'Path to write the serialized shell result')
-    .option(
-      '--result-mode <mode>',
-      'Deterministic result mode: cancel | replace-buffer-fixture',
-    )
+    .option('--result-mode <mode>', 'Result mode: llm | cancel | replace-buffer-fixture')
     .action(async (options: ClientOptions) => {
       const requestFile = requiredOption('--request-file', options.requestFile);
       const resultFile = requiredOption('--result-file', options.resultFile);

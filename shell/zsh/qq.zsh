@@ -3,6 +3,42 @@
 #
 # Source this file from .zshrc to enable the ?? trigger:
 #   source /path/to/shell/zsh/qq.zsh
+
+: "${QQ_DEBUG_LOG_FILE:=}"
+
+typeset -g QQ_DAEMON_PREWARMED="${QQ_DAEMON_PREWARMED:-0}"
+
+_qq_log() {
+  if [[ -z "$QQ_DEBUG_LOG_FILE" ]]; then
+    return 0
+  fi
+  local message="$1"
+  print -r -- "$(date '+%Y-%m-%dT%H:%M:%S%z') [zsh] $message" >> "$QQ_DEBUG_LOG_FILE" 2>/dev/null
+}
+
+_qq_prewarm_daemon() {
+  if [[ "$QQ_DAEMON_PREWARMED" == 1 ]]; then
+    return 0
+  fi
+
+  if [[ -z "$QQ_DEV_ROOT" ]]; then
+    return 0
+  fi
+
+  local cli_path="$QQ_DEV_ROOT/dist/cli/main.js"
+  if [[ ! -f "$cli_path" ]]; then
+    return 0
+  fi
+
+  if ! command -v node >/dev/null 2>&1; then
+    return 0
+  fi
+
+  QQ_DAEMON_PREWARMED=1
+  (
+    command node "$cli_path" daemon --ensure >/dev/null 2>&1
+  ) >/dev/null 2>&1 &!
+}
 #
 # How it works:
 #   1. Binds `?` to a custom widget in both emacs and viins keymaps.
@@ -16,16 +52,17 @@
 # ---------------------------------------------------------------------------
 # Buffer capture helper
 # ---------------------------------------------------------------------------
-# Strips the trailing `?` (trigger) from LBUFFER and exports:
-#   QQ_ORIG_LBUFFER  — the exact LBUFFER at trigger time (including the `?`)
+# Strips the trigger `?` from the buffer state when the second keypress
+# arrives, and exports:
+#   QQ_ORIG_LBUFFER  — LBUFFER without the trigger `?`
 #   QQ_ORIG_RBUFFER  — the exact RBUFFER at trigger time
-#   QQ_LBUFFER       — LBUFFER minus the trailing `?` (pre-trigger context)
+#   QQ_LBUFFER       — LBUFFER without the trigger `?` (pre-trigger context)
 #   QQ_RBUFFER       — RBUFFER unchanged
 
 _qq_capture_buffers() {
-  QQ_ORIG_LBUFFER="$LBUFFER"
+  QQ_ORIG_LBUFFER="${LBUFFER%?}"
   QQ_ORIG_RBUFFER="$RBUFFER"
-  # Strip the trailing `?` that made up the second half of the `??` trigger
+  # Strip the trailing `?` that was inserted by the first keypress.
   QQ_LBUFFER="${LBUFFER%?}"
   QQ_RBUFFER="$RBUFFER"
 }
@@ -94,6 +131,7 @@ _qq_apply_result() {
 qq-question-widget() {
   if [[ "$LBUFFER" == *\? ]]; then
     # Second `?` detected — consume the trigger and launch Que-Que
+    _qq_log "trigger fired lbuffer=${LBUFFER} rbuffer=${RBUFFER}"
     _qq_capture_buffers
 
     # Update the visible line to strip the trigger `?` immediately
@@ -102,13 +140,17 @@ qq-question-widget() {
 
     # Create temp files for the request/result exchange
     local req_file result_file
-    req_file=$(mktemp /tmp/qq-req-XXXXXX.json)
-    result_file=$(mktemp /tmp/qq-res-XXXXXX.json)
+    req_file=$(mktemp /tmp/qq-req.XXXXXX)
+    result_file=$(mktemp /tmp/qq-res.XXXXXX)
+    _qq_log "request/result files req=${req_file} result=${result_file}"
 
     # Build the shell request JSON
     # shellPid is the current shell PID; ttyPath is the controlling TTY
     local tty_path
-    tty_path=$(tty 2>/dev/null || echo '/dev/tty')
+    tty_path="${TTY:-/dev/tty}"
+    if [[ -z "$tty_path" || "$tty_path" == "not a tty" ]]; then
+      tty_path='/dev/tty'
+    fi
 
     # Escape every scalar through jq -Rs . to prevent JSON injection from
     # paths or TTY names that contain double-quotes, backslashes, or newlines.
@@ -134,12 +176,15 @@ JSON
       </dev/tty >/dev/tty 2>&1
 
     local launch_status=$?
+    _qq_log "client exited status=${launch_status}"
 
     # Apply the result if the client wrote one; fall back to cancel on error
     if [[ -f "$result_file" ]] && [[ -s "$result_file" ]]; then
+      _qq_log "applying result file ${result_file}"
       _qq_apply_result "$result_file"
     else
       # No result file or empty — treat as cancel
+      _qq_log "missing result file; restoring original buffers"
       LBUFFER="$QQ_ORIG_LBUFFER"
       RBUFFER="$QQ_ORIG_RBUFFER"
     fi
@@ -153,6 +198,7 @@ JSON
   fi
 
   # First `?` — insert normally, no delay
+  _qq_log "first ? inserted"
   zle .self-insert
 }
 
@@ -160,3 +206,8 @@ JSON
 zle -N qq-question-widget
 bindkey -M emacs '?' qq-question-widget
 bindkey -M viins '?' qq-question-widget
+
+# Warm the daemon once per interactive shell so the first `??` pays less startup cost.
+if [[ -o interactive ]]; then
+  _qq_prewarm_daemon
+fi

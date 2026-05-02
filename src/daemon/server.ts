@@ -1,5 +1,6 @@
 import * as net from 'node:net';
 import { ipcRequestSchema } from '../contracts/ipc.js';
+import { appendDebugLog } from '../shared/debug-log.js';
 
 /**
  * Starts the daemon Unix-socket server.
@@ -18,6 +19,7 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
 
     const server = net.createServer((socket) => {
       let buf = '';
+      void appendDebugLog('daemon', 'socket connected', { socketPath });
 
       socket.on('data', (chunk) => {
         buf += chunk.toString();
@@ -46,23 +48,28 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
           const result = ipcRequestSchema.safeParse(parsed);
           if (!result.success) {
             // Unknown message kind — ignore silently
+            void appendDebugLog('daemon', 'ignored unknown request', { line });
             continue;
           }
 
           const req = result.data;
+          void appendDebugLog('daemon', 'request received', req);
 
           switch (req.kind) {
             case 'ping': {
               socket.write(JSON.stringify({ kind: 'pong' }) + '\n');
+              void appendDebugLog('daemon', 'replied pong');
               break;
             }
             case 'ensure-session': {
               socket.write(JSON.stringify({ kind: 'session-ready', socketPath }) + '\n');
+              void appendDebugLog('daemon', 'replied session-ready', { socketPath });
               break;
             }
             case 'run-query': {
               const requestId = Math.random().toString(36).slice(2);
               socket.write(JSON.stringify({ kind: 'query-accepted', requestId }) + '\n');
+              void appendDebugLog('daemon', 'replied query-accepted', { requestId });
               break;
             }
           }
@@ -76,6 +83,9 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
 
     server.on('error', reject);
 
-    server.listen(socketPath, () => resolve(server));
+    server.listen(socketPath, () => {
+      void appendDebugLog('daemon', 'listening', { socketPath });
+      resolve(server);
+    });
   });
 }
