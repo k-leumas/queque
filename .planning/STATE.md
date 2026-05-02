@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 02-intent-router-and-context-pipeline-01-PLAN.md
-last_updated: "2026-05-02T17:02:26.243Z"
-last_activity: 2026-05-02
+stopped_at: Completed 02-intent-router-and-context-pipeline-02-PLAN.md
+last_updated: "2026-05-02T17:29:00.000Z"
+last_activity: 2026-05-02 -- Completed 02-02 context pipeline and candidate selection
 progress:
   total_phases: 6
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
-  percent: 0
+  completed_plans: 5
+  percent: 83
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-04-30)
 ## Current Position
 
 Phase: 02 (intent-router-and-context-pipeline) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
-Last activity: 2026-05-02
+Last activity: 2026-05-02 -- Completed 02-02 context pipeline and candidate selection
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████████░░] 83%
 
 ## Performance Metrics
 
@@ -52,6 +52,7 @@ Progress: [░░░░░░░░░░] 0%
 - Trend: Stable
 
 | Phase 02-intent-router-and-context-pipeline P01 | 7 | 2 tasks | 3 files |
+| Phase 02-intent-router-and-context-pipeline P02 | 26 | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,8 @@ Recent decisions affecting current work:
 - [Phase 02-intent-router-and-context-pipeline]: Intent classification remains fully synchronous and local, with no I/O or provider calls.
 - [Phase 02-intent-router-and-context-pipeline]: unknown intent is reserved for empty or whitespace-only queries; all other unmatched queries fall back to general.
 - [Phase 02-intent-router-and-context-pipeline]: Filesystem-keyword prompts route before generic file-path detection so rename/find requests with filenames stay out of codebase intent.
+- [Phase 02-intent-router-and-context-pipeline]: Context providers now gather extras only for matching intents, preventing filesystem requests from inheriting git state.
+- [Phase 02-intent-router-and-context-pipeline]: Claude prompt assembly now depends on ContextEnvelope instead of direct VCS detection in the provider.
 
 ### Pending Todos
 
@@ -85,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-05-02T17:02:26.234Z
-Stopped at: Completed 02-intent-router-and-context-pipeline-01-PLAN.md
+Last session: 2026-05-02T17:29:00.000Z
+Stopped at: Completed 02-intent-router-and-context-pipeline-02-PLAN.md
 Resume file: None

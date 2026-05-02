@@ -12,7 +12,7 @@ Que-Que moves from a shell-bridge prototype to a daily-driver terminal assistant
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
+- [x] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
 - [ ] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps Que-Que general-purpose instead of repo-centric.
 - [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
 - [ ] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
@@ -52,7 +52,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — Define request contracts (RequestIntent, NormalizedRequest, ContextEnvelope) and implement deterministic classifyIntent router.
-- [ ] 02-02-PLAN.md — Build base context builder, git/filesystem providers, two-pass pipeline, and rewire foreground client + Claude adapter.
+- [x] 02-02-PLAN.md — Build base context builder, git/filesystem providers, two-pass pipeline, and rewire foreground client + Claude adapter.
 - [ ] 02-03-PLAN.md — Add four internal registries (context-providers, provider-backends, shell-adapters, storage-hooks) and wire built-ins through them.
 
 ### Phase 3: Claude Fast Path and Ranked Suggestions
@@ -130,8 +130,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Shell Bridge and Result Contract | 0/3 | Not started | - |
-| 2. Intent Router and Context Pipeline | 0/3 | Not started | - |
+| 1. Shell Bridge and Result Contract | 3/3 | Complete | 2026-05-02 |
+| 2. Intent Router and Context Pipeline | 2/3 | In progress | - |
 | 3. Claude Fast Path and Ranked Suggestions | 0/3 | Not started | - |
 | 4. Fuzzy TUI Selection UX | 0/3 | Not started | - |
 | 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |
