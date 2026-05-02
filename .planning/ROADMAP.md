@@ -51,9 +51,9 @@ Plans:
 **UI hint**: no
 
 Plans:
-- [ ] 02-01: Define request/session types, intent categories, and routing contracts.
-- [ ] 02-02: Implement base context providers plus first intent-specific providers.
-- [ ] 02-03: Add internal registries for shell, context, provider, and storage extension points.
+- [ ] 02-01-PLAN.md — Define request contracts (RequestIntent, NormalizedRequest, ContextEnvelope) and implement deterministic classifyIntent router.
+- [ ] 02-02-PLAN.md — Build base context builder, git/filesystem providers, two-pass pipeline, and rewire foreground client + Claude adapter.
+- [ ] 02-03-PLAN.md — Add four internal registries (context-providers, provider-backends, shell-adapters, storage-hooks) and wire built-ins through them.
 
 ### Phase 3: Claude Fast Path and Ranked Suggestions
 **Goal**: Produce ranked, explainable command suggestions quickly for requests that are clear enough to skip clarification.
