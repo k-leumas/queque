@@ -25,8 +25,8 @@ flowchart LR
     D[Daemon process\nsrc/daemon/*]
     CT[Contracts\nsrc/contracts/*]
     SH[Socket path helper\nsrc/shared/socket-path.ts]
-    TMP[/tmp request/result files]
-    SOCK[/tmp/qq-UID.sock]
+    TMP["/tmp request/result files"]
+    SOCK["/tmp/qq-UID.sock"]
 
     U --> Z
     Z --> TMP
