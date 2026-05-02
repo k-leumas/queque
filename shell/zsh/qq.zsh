@@ -213,4 +213,8 @@ if [[ -o interactive ]]; then
   # Warm the daemon once per interactive shell so the first `??` pays less
   # startup cost.
   _qq_prewarm_daemon
+else
+  # When sourced from noninteractive test shells, make the file load path
+  # explicitly succeed so helper tests don't inherit ZLE registration status.
+  :
 fi
