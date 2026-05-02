@@ -37,3 +37,33 @@
 | 16:23 | Edited .claude/worktrees/agent-aa6153ab/src/cli/main.ts | 7→6 lines | ~87 |
 | 16:26 | Created .claude/worktrees/agent-aa6153ab/.planning/phases/01-shell-bridge-and-result-contract/01-03-SUMMARY.md | — | ~1411 |
 | 16:26 | Edited .claude/worktrees/agent-aa6153ab/.planning/phases/01-shell-bridge-and-result-contract/01-03-SUMMARY.md | expanded (+6 lines) | ~79 |
+| 16:34 | Created .planning/phases/01-shell-bridge-and-result-contract/01-REVIEW.md | — | ~3745 |
+| 16:38 | Created .planning/phases/01-shell-bridge-and-result-contract/01-VERIFICATION.md | — | ~4296 |
+| 16:38 | Created .planning/phases/01-shell-bridge-and-result-contract/01-HUMAN-UAT.md | — | ~200 |
+| 16:39 | Session end: 28 writes across 21 files (shell-contract.test.ts, shell.ts, ipc.ts, socket-path.ts, 01-01-SUMMARY.md) | 43 reads | ~58933 tok |
+| 16:39 | Created .planning/notes/2026-05-01-shell-path-vcs-detection.md | — | ~64 |
+| 16:39 | Session end: 29 writes across 22 files (shell-contract.test.ts, shell.ts, ipc.ts, socket-path.ts, 01-01-SUMMARY.md) | 44 reads | ~59001 tok |
+| 16:46 | Session end: 29 writes across 22 files (shell-contract.test.ts, shell.ts, ipc.ts, socket-path.ts, 01-01-SUMMARY.md) | 45 reads | ~59001 tok |
+
+## Session: 2026-05-01 16:49
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:50 | Edited shell/zsh/qq.zsh | expanded (+6 lines) | ~183 |
+| 16:50 | Edited src/daemon/bootstrap.ts | added 1 import(s) | ~41 |
+| 16:51 | Edited src/daemon/bootstrap.ts | added 1 condition(s) | ~357 |
+| 16:51 | Edited src/daemon/bootstrap.ts | added 1 import(s) | ~50 |
+| 16:51 | Edited src/daemon/bootstrap.ts | modified assertSafeSocketPath() | ~104 |
+| 16:51 | Edited src/daemon/server.ts | added 1 condition(s) | ~104 |
+| 16:52 | Edited src/daemon/server.ts | modified while() | ~52 |
+| 16:52 | Edited src/daemon/bootstrap.ts | expanded (+7 lines) | ~170 |
+| 16:53 | Edited src/daemon/bootstrap.ts | added 1 condition(s) | ~119 |
+| 16:53 | Edited src/daemon/bootstrap.ts | added 1 condition(s) | ~119 |
+| 16:54 | Edited tests/daemon-bootstrap.test.ts | added 1 condition(s) | ~298 |
+| 16:54 | Edited src/client/run-foreground.ts | 3→5 lines | ~102 |
+| 16:54 | Edited src/cli/commands/client.ts | added 2 condition(s) | ~171 |
+| 16:55 | Edited src/client/result-writer.ts | atomically() → rename() | ~306 |
+| 16:56 | Created .planning/phases/01-shell-bridge-and-result-contract/01-REVIEW-FIX.md | — | ~1226 |
+| 16:56 | Session end: 15 writes across 8 files (qq.zsh, bootstrap.ts, server.ts, daemon-bootstrap.test.ts, run-foreground.ts) | 13 reads | ~11905 tok |
+| 17:07 | Created quick-task plan for repo dev restart watcher | .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/260501-qt4-PLAN.md, .wolf/anatomy.md | plan written | ~1800 tok |
+| 17:09 | Corrected quick-task plan content after stale file mismatch | .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/260501-qt4-PLAN.md | plan fixed | ~700 tok |

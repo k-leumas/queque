@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-01T23:26:28.191Z
-> Files: 36 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-01T23:56:11.675Z
+> Files: 48 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -80,13 +80,25 @@
 - `ROADMAP.md` — Roadmap: Que-Que (~1916 tok)
 - `STATE.md` — Project State (~387 tok)
 
+## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
+
+- `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
+
+## .planning/notes/
+
+- `2026-05-01-shell-path-vcs-detection.md` — Declares we (~60 tok)
+
 ## .planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-01-PLAN.md` — Phase 1 plan for repo scaffold, CLI skeleton, and shared shell/IPC contracts (~4500 tok)
 - `01-01-SUMMARY.md` — Phase 01 Plan 01: Toolchain Baseline and Shell/IPC Contracts Summary (~1631 tok)
 - `01-02-PLAN.md` — Phase 1 plan for the zsh ZLE widget, request capture, and shell-side result application (~3600 tok)
 - `01-03-PLAN.md` — Phase 1 plan for daemon bootstrap and foreground client seams (~3900 tok)
+- `01-HUMAN-UAT.md` — Current Test (~188 tok)
 - `01-RESEARCH.md` — Phase 1 implementation research for ZLE trigger, shell contract, and daemon bootstrap (~4300 tok)
+- `01-REVIEW-FIX.md` — Phase 01: Code Review Fix Report (~1149 tok)
+- `01-REVIEW.md` — Phase 01: Code Review Report (~3511 tok)
+- `01-VERIFICATION.md` — Phase 1: Shell Bridge and Result Contract Verification Report (~4027 tok)
 
 ## .planning/research/
 
@@ -95,3 +107,25 @@
 - `PITFALLS.md` — Pitfalls Research: Que-Que (~736 tok)
 - `STACK.md` — Stack Research: Que-Que (~670 tok)
 - `SUMMARY.md` — Research Summary: Que-Que (~336 tok)
+
+## shell/zsh/
+
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~1483 tok)
+
+## src/cli/commands/
+
+- `client.ts` — Real client command handler. (~394 tok)
+
+## src/client/
+
+- `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~818 tok)
+
+## src/daemon/
+
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~1134 tok)
+- `server.ts` — Starts the daemon Unix-socket server. (~699 tok)
+
+## tests/
+
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)

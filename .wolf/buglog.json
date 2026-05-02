@@ -34,6 +34,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-01T23:23:13.809Z"
+    },
+    {
+      "id": "bug-003",
+      "timestamp": "2026-05-01T23:50:07.703Z",
+      "error_message": "Significant refactor of ",
+      "file": "shell/zsh/qq.zsh",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 15→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "zsh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-01T23:50:07.703Z"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-05-01T23:54:03.903Z",
+      "error_message": "Type error",
+      "file": "tests/daemon-bootstrap.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-01T23:54:03.903Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-05-01T23:54:34.852Z",
+      "error_message": "Type error",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-01T23:54:34.852Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-05-01T23:54:59.809Z",
+      "error_message": "Missing guard clause",
+      "file": "src/cli/commands/client.ts",
+      "root_cause": "No early return/throw for edge case: mode === undefined || mode === 'cancel'",
+      "fix": "Added guard clause: if (mode === undefined || mode === 'cancel')",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-01T23:54:59.809Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-05-01T23:55:22.761Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/client/result-writer.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 21→26 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-01T23:55:22.761Z"
     }
   ]
 }
