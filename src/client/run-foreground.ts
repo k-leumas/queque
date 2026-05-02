@@ -1,9 +1,15 @@
 import * as fsp from 'node:fs/promises';
+import React from 'react';
+import { render } from 'ink';
+import { type NormalizedRequest } from '../contracts/request.js';
 import { shellRequestSchema } from '../contracts/shell.js';
+import { gatherContext } from '../context/pipeline.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
-import { suggestShellResult } from '../providers/claude.js';
+import { classifyIntent } from '../intent/router.js';
+import { fetchCandidates } from '../providers/claude.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
+import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { writeShellResult } from './result-writer.js';
 
 export interface ForegroundClientArgs {
@@ -79,12 +85,52 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       });
     } else if (resultMode === 'llm') {
       try {
-        const shellResult = await suggestShellResult(request);
-        await writeShellResult(resultFile, shellResult);
-        void appendDebugLog('client', 'wrote llm result', {
-          resultFile,
-          kind: shellResult.kind,
+        const decision = classifyIntent({ ...request, intent: 'unknown' as const });
+        void appendDebugLog('client', 'intent classified', {
+          intent: decision.intent,
+          signals: decision.signals,
         });
+
+        const normalized: NormalizedRequest = { ...request, intent: decision.intent };
+        const envelope = await gatherContext(normalized);
+        void appendDebugLog('client', 'context gathered', {
+          extraCount: envelope.extras.length,
+        });
+
+        const candidates = await fetchCandidates(envelope, request.rbuffer);
+        void appendDebugLog('client', 'candidates received', { count: candidates.length });
+
+        if (candidates.length === 1) {
+          await writeShellResult(resultFile, {
+            kind: 'replace-buffer',
+            lbuffer: candidates[0].command,
+            rbuffer: request.rbuffer,
+          });
+        } else {
+          await new Promise<void>((resolve) => {
+            const app = render(
+              React.createElement(CandidateSelect, {
+                candidates,
+                onSelect: async (command: string) => {
+                  app.unmount();
+                  await writeShellResult(resultFile, {
+                    kind: 'replace-buffer',
+                    lbuffer: command,
+                    rbuffer: request.rbuffer,
+                  });
+                  resolve();
+                },
+                onCancel: async () => {
+                  app.unmount();
+                  await writeShellResult(resultFile, { kind: 'cancel' });
+                  resolve();
+                },
+              }),
+            );
+          });
+        }
+
+        void appendDebugLog('client', 'wrote llm result', { resultFile });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         void appendDebugLog('client', 'llm request failed; falling back to cancel', {

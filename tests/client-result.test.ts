@@ -25,7 +25,7 @@ vi.mock('../src/shared/socket-path.js', () => ({
 // Mock Claude provider so llm mode stays deterministic in tests
 // ---------------------------------------------------------------------------
 vi.mock('../src/providers/claude.js', () => ({
-  suggestShellResult: vi.fn(),
+  fetchCandidates: vi.fn(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -167,13 +167,9 @@ describe('runForegroundClient', () => {
   });
 
   it('emits a replace-buffer result in llm mode and the shell applies it', async () => {
-    const { suggestShellResult } = await import('../src/providers/claude.js');
-    const mockedSuggestShellResult = vi.mocked(suggestShellResult);
-    mockedSuggestShellResult.mockResolvedValue({
-      kind: 'replace-buffer',
-      lbuffer: 'git status',
-      rbuffer: '',
-    });
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    const mockedFetchCandidates = vi.mocked(fetchCandidates);
+    mockedFetchCandidates.mockResolvedValue([{ command: 'git status', explanation: '' }]);
 
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
 

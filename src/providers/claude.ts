@@ -1,15 +1,10 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
-import { type ShellRequest, type ShellResult, shellResultSchema } from '../contracts/shell.js';
+import { candidateListSchema, type CandidateList } from '../contracts/candidates.js';
+import { type ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
-import { detectVcsContext } from '../shared/vcs-context.js';
-
-const commandSuggestionSchema = z
-  .object({
-    command: z.string().min(1),
-  })
-  .strict();
+import { type ShellResult, shellResultSchema } from '../contracts/shell.js';
 
 const DEFAULT_MODEL = 'claude-sonnet-4-0';
 
@@ -59,25 +54,33 @@ function extractText(content: Array<{ type: string; text?: string }>): string {
     .trim();
 }
 
-function buildPrompt(
-  request: ShellRequest,
-  vcsContext: Awaited<ReturnType<typeof detectVcsContext>>,
-): string {
+function parseCandidates(text: string): CandidateList {
+  try {
+    return candidateListSchema.parse(JSON.parse(text));
+  } catch {
+    const trimmed = text.trim();
+    return [{ command: trimmed || 'echo ""', explanation: '' }];
+  }
+}
+
+function buildPrompt(envelope: ContextEnvelope): string {
+  const gitChunk = envelope.extras.find((chunk) => chunk.kind === 'git');
+
   return [
-    'Return only valid JSON with this exact shape:',
-    '{"command":"shell command"}',
+    'Return ONLY a JSON array of 1-3 shell command candidates, most likely first.',
+    'Each item must have exactly these keys: "command" and "explanation".',
+    'No markdown, no prose, no code fences. Raw JSON array only.',
     '',
-    'Do not include markdown, prose, code fences, or extra keys.',
     'The command should be safe to place back into a shell buffer.',
     '',
     'Shell context:',
     JSON.stringify(
       {
-        cwd: request.cwd,
-        lbuffer: request.lbuffer,
-        rbuffer: request.rbuffer,
-        ttyPath: request.ttyPath,
-        versionControl: vcsContext,
+        cwd: envelope.base.cwd,
+        queryText: envelope.base.queryText,
+        platform: envelope.base.platform,
+        shellName: envelope.base.shellName,
+        ...(gitChunk ? { versionControl: gitChunk.payload } : {}),
       },
       null,
       2,
@@ -95,21 +98,31 @@ async function getCandidateModels(client: Anthropic): Promise<string[]> {
   return [chooseCheapestAvailableModel(availableModelIds)];
 }
 
-export async function suggestShellResult(request: ShellRequest): Promise<ShellResult> {
+/**
+ * Calls Claude with the assembled context envelope and returns ranked command candidates.
+ *
+ * `rbuffer` remains a side parameter because it is shell transport state, not context.
+ * The envelope describes the request intent and execution environment, while Phase 4's
+ * TUI remains responsible for deciding how the raw shell buffers are rewritten.
+ */
+export async function fetchCandidates(
+  envelope: ContextEnvelope,
+  rbuffer: string = '',
+): Promise<CandidateList> {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY');
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is required in the environment or .env.local');
   }
 
   const client = new Anthropic({ apiKey });
-  const vcsContext = await detectVcsContext(request.cwd);
-  const prompt = buildPrompt(request, vcsContext);
+  const prompt = buildPrompt(envelope);
   const models = await getCandidateModels(client);
 
   void appendDebugLog('provider', 'request start', {
     models,
-    cwd: request.cwd,
-    versionControl: vcsContext,
+    cwd: envelope.base.cwd,
+    rbufferLength: rbuffer.length,
+    extras: envelope.extras.map((chunk) => chunk.kind),
   });
 
   for (const model of models) {
@@ -124,19 +137,14 @@ export async function suggestShellResult(request: ShellRequest): Promise<ShellRe
       });
 
       const text = extractText(response.content);
-      const parsed = commandSuggestionSchema.parse(JSON.parse(text));
-      const shellResult = shellResultSchema.parse({
-        kind: 'replace-buffer',
-        lbuffer: parsed.command,
-        rbuffer: request.rbuffer,
-      });
+      const candidates = parseCandidates(text);
 
       void appendDebugLog('provider', 'response parsed', {
         model,
-        command: parsed.command,
+        candidateCount: candidates.length,
       });
 
-      return shellResult;
+      return candidates;
     } catch (error) {
       void appendDebugLog('provider', 'request failed', {
         model,
@@ -147,4 +155,18 @@ export async function suggestShellResult(request: ShellRequest): Promise<ShellRe
   }
 
   throw new Error('Claude request failed');
+}
+
+export async function suggestShellResult(
+  envelope: ContextEnvelope,
+  rbuffer: string = '',
+): Promise<ShellResult> {
+  const candidates = await fetchCandidates(envelope, rbuffer);
+  const command = candidates[0]?.command;
+
+  return shellResultSchema.parse({
+    kind: 'replace-buffer',
+    lbuffer: command,
+    rbuffer,
+  });
 }

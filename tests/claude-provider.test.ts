@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { type ContextEnvelope } from '../src/contracts/request.js';
 
-const { createMock, modelListMock, anthropicCtorMock, vcsMock } = vi.hoisted(() => {
+const { createMock, modelListMock, anthropicCtorMock } = vi.hoisted(() => {
   const createMock = vi.fn();
   const modelListMock = vi.fn();
   const anthropicCtorMock = vi.fn();
-  const vcsMock = vi.fn();
 
-  return { createMock, modelListMock, anthropicCtorMock, vcsMock };
+  return { createMock, modelListMock, anthropicCtorMock };
 });
 
 class AnthropicMock {
@@ -28,28 +28,31 @@ vi.mock('@anthropic-ai/sdk', () => ({
   default: AnthropicMock,
 }));
 
-vi.mock('../src/shared/vcs-context.js', () => ({
-  detectVcsContext: vcsMock,
-}));
+function buildEnvelope(extras: ContextEnvelope['extras'] = []): ContextEnvelope {
+  return {
+    base: {
+      queryText: 'status',
+      cwd: '/repo',
+      ttyPath: '/dev/tty',
+      shellPid: 1234,
+      shellName: 'zsh',
+      platform: 'darwin',
+      timestamp: '2026-05-02T00:00:00.000Z',
+    },
+    extras,
+  };
+}
 
-describe('suggestShellResult', () => {
+describe('fetchCandidates', () => {
   beforeEach(() => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
     delete process.env.QQ_MODEL;
     createMock.mockReset();
     modelListMock.mockReset();
     anthropicCtorMock.mockClear();
-    vcsMock.mockReset();
   });
 
-  it('returns replace-buffer JSON from Claude and includes VCS context in the prompt', async () => {
-    vcsMock.mockResolvedValue({
-      kind: 'git',
-      cwd: '/repo',
-      root: '/repo',
-      branch: 'main',
-      dirty: true,
-    });
+  it('returns candidate JSON from Claude and includes git context in the prompt', async () => {
     modelListMock.mockImplementation(async function* () {
       yield { id: 'claude-sonnet-4-20250514' };
       yield { id: 'claude-3-5-haiku-20241022' };
@@ -59,26 +62,29 @@ describe('suggestShellResult', () => {
       content: [
         {
           type: 'text',
-          text: '{"command":"git status"}',
+          text: '[{"command":"git status","explanation":"Show repo status"}]',
         },
       ],
     });
 
-    const { suggestShellResult } = await import('../src/providers/claude.js');
-    const result = await suggestShellResult({
-      version: 1,
-      ttyPath: '/dev/tty',
-      cwd: '/repo',
-      shellPid: 1234,
-      lbuffer: 'status',
-      rbuffer: '',
-    });
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    const result = await fetchCandidates(
+      buildEnvelope([
+        {
+          kind: 'git',
+          payload: {
+            cwd: '/repo',
+            root: '/repo',
+            branch: 'main',
+            dirty: true,
+            changedFiles: ['src/index.ts'],
+          },
+        },
+      ]),
+      '',
+    );
 
-    expect(result).toEqual({
-      kind: 'replace-buffer',
-      lbuffer: 'git status',
-      rbuffer: '',
-    });
+    expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(anthropicCtorMock).toHaveBeenCalledWith({ apiKey: 'test-key' });
     expect(modelListMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledTimes(1);
@@ -86,15 +92,11 @@ describe('suggestShellResult', () => {
     const request = createMock.mock.calls[0][0];
     expect(request.model).toBe('claude-3-haiku-20240307');
     expect(request.messages[0].content).toContain('versionControl');
-    expect(request.messages[0].content).toContain('"kind": "git"');
     expect(request.messages[0].content).toContain('"branch": "main"');
+    expect(request.messages[0].content).toContain('"changedFiles"');
   });
 
-  it('rejects malformed JSON from Claude', async () => {
-    vcsMock.mockResolvedValue({
-      kind: 'none',
-      cwd: '/repo',
-    });
+  it('falls back to a single candidate when Claude returns malformed JSON', async () => {
     modelListMock.mockImplementation(async function* () {
       yield { id: 'claude-sonnet-4-20250514' };
     });
@@ -107,40 +109,20 @@ describe('suggestShellResult', () => {
       ],
     });
 
-    const { suggestShellResult } = await import('../src/providers/claude.js');
-    await expect(
-      suggestShellResult({
-        version: 1,
-        ttyPath: '/dev/tty',
-        cwd: '/repo',
-        shellPid: 1234,
-        lbuffer: 'status',
-        rbuffer: '',
-      }),
-    ).rejects.toBeTruthy();
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await expect(fetchCandidates(buildEnvelope(), '')).resolves.toEqual([
+      { command: 'not json', explanation: '' },
+    ]);
   });
 
   it('does not retry on model errors', async () => {
-    vcsMock.mockResolvedValue({
-      kind: 'none',
-      cwd: '/repo',
-    });
     modelListMock.mockImplementation(async function* () {
       yield { id: 'claude-sonnet-4-20250514' };
     });
     createMock.mockRejectedValueOnce(new Error('404 model not found'));
 
-    const { suggestShellResult } = await import('../src/providers/claude.js');
-    await expect(
-      suggestShellResult({
-        version: 1,
-        ttyPath: '/dev/tty',
-        cwd: '/repo',
-        shellPid: 1234,
-        lbuffer: 'status',
-        rbuffer: '',
-      }),
-    ).rejects.toThrow('404 model not found');
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await expect(fetchCandidates(buildEnvelope(), '')).rejects.toThrow('404 model not found');
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock.mock.calls[0][0].model).toBe('claude-sonnet-4-20250514');
   });
