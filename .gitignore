@@ -8,3 +8,4 @@ dist/
 .wolf/designqc-report.json
 .wolf/suggestions.json
 .wolf/token-ledger.json
+.env.local
