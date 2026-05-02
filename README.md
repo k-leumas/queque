@@ -37,6 +37,12 @@ pnpm dev
 
 That keeps `dist/cli/main.js` rebuilt as you edit `src/cli/main.ts`.
 
+If you want a simple restart wrapper that logs when it reacts to file changes, run:
+
+```bash
+pnpm dev:restart
+```
+
 In another terminal, use the current checks:
 
 ```bash
@@ -66,6 +72,53 @@ source ~/.zshrc
 ```
 
 With `pnpm dev` running, every rebuild updates the code behind `qq` immediately.
+
+## Live Debug Log
+
+For shell/widget debugging, you can opt into a plain-text log by setting:
+
+```bash
+export QQ_DEBUG_LOG_FILE=/tmp/qq-debug.log
+```
+
+When enabled, the repo writes to:
+
+```bash
+/tmp/qq-debug.log
+```
+
+You can watch it live with:
+
+```bash
+tail -f /tmp/qq-debug.log
+```
+
+If you want to change the location, point `QQ_DEBUG_LOG_FILE` somewhere else before sourcing your shell config.
+
+The interactive shell hook also prewarms the daemon once per shell session, so the first `??` does not pay the full startup cost.
+
+## Claude Provider
+
+The foreground client can now ask Claude for a strict JSON command suggestion.
+
+Set these environment variables before running the client:
+
+```bash
+# read from .env.local in the repo root, or export directly
+ANTHROPIC_API_KEY="..."
+# optional
+QQ_MODEL="claude-3-haiku-20240307"
+```
+
+If `QQ_MODEL` is omitted, the provider defaults to Claude Haiku 3, which is the cheapest model in the current Anthropic pricing table.
+
+The LLM mode is selected with:
+
+```bash
+qq client --request-file /tmp/request.json --result-file /tmp/result.json --result-mode llm
+```
+
+When the current directory is inside a git repository, the prompt includes the repo root, branch, and dirty state as extra context.
 
 ## Smoke-Test The Current CLI
 

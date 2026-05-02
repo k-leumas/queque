@@ -9,6 +9,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup src/cli/main.ts --watch",
+    "dev:restart": "node scripts/restart-dev-server.mjs",
     "test": "vitest --passWithNoTests",
     "test:run": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit",
