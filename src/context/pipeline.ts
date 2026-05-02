@@ -1,13 +1,13 @@
 import type { ContextEnvelope, NormalizedRequest } from '../contracts/request.js';
 import { classifyIntent } from '../intent/router.js';
+import { bootstrapBuiltins } from '../registry/bootstrap.js';
+import { listContextProviders } from '../registry/context-providers.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { buildBaseContext } from './base-context.js';
-import { filesystemContextProvider } from './providers/filesystem-context.js';
-import { gitContextProvider } from './providers/git-context.js';
-
-const BUILTIN_PROVIDERS = [gitContextProvider, filesystemContextProvider];
 
 export async function gatherContext(request: NormalizedRequest): Promise<ContextEnvelope> {
+  bootstrapBuiltins();
+
   void appendDebugLog('context', 'pipeline start', {
     lbuffer: request.lbuffer,
     intent: request.intent,
@@ -22,8 +22,9 @@ export async function gatherContext(request: NormalizedRequest): Promise<Context
   });
 
   const extras: ContextEnvelope['extras'] = [];
+  const providers = listContextProviders();
 
-  for (const provider of BUILTIN_PROVIDERS) {
+  for (const provider of providers) {
     const supportsAllIntents = provider.intents.includes('*');
     const supportsIntent = provider.intents.includes(decision.intent);
 
