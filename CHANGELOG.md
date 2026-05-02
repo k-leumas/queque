@@ -1,3 +1,19 @@
+# [1.1.0](https://github.com/k-leumas/que-que/compare/v1.0.0...v1.1.0) (2026-05-02)
+
+
+### Bug Fixes
+
+* **build:** manually fix linting issues ([8149904](https://github.com/k-leumas/que-que/commit/814990466d6745e81d51bd9c7b7e1fabb4be1b3b))
+
+
+### Features
+
+* **02-01:** add request contracts ([9b96f9b](https://github.com/k-leumas/que-que/commit/9b96f9bbfecb5db0fe581b9cc42f6f0c4efa1ef1))
+* **02-01:** implement classifyIntent router ([3e0b195](https://github.com/k-leumas/que-que/commit/3e0b195a38d15416137e18923c7d2cfaf5fb006a))
+* **02-02:** add context pipeline and candidate selection ([3ed1520](https://github.com/k-leumas/que-que/commit/3ed1520b4377d43f9caaf89a7cf6eea3c25be508))
+* **02-03:** add registry bootstrap for built-in providers ([a8b8e02](https://github.com/k-leumas/que-que/commit/a8b8e02d6589b582dd79a3ddd62fca7651dcada1))
+* **ui:** add forced selector candidate mode ([908fa17](https://github.com/k-leumas/que-que/commit/908fa176bde48e01aa162227fb257a832432151f))
+
 # 1.0.0 (2026-05-02)
 
 
