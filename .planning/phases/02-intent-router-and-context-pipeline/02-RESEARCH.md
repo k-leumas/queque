@@ -274,3 +274,157 @@ Plan Phase 2 as three executable slices:
 1. Define normalized request/session contracts plus the deterministic intent router.
 2. Build the base-context pipeline and intent-gated built-in providers, then wire the foreground client and Claude adapter to consume it.
 3. Add internal registries for shell, context, provider, and storage seams, then convert built-ins to register through them.
+
+---
+
+## Wave 3 Supplemental Research
+
+**Supplemented:** 2026-05-02
+**Scope:** Registry and bootstrap implementation — what the planner needs to know before executing 02-03-PLAN.md
+**Confidence:** HIGH
+
+### Codebase State at Wave 3 Entry
+
+**Critical finding:** Waves 1 and 2 have not been executed yet. The `src/` tree contains only Phase 1 files. There are no `src/context/`, `src/intent/`, or `src/registry/` directories. The planned dependencies of wave 3 (`src/context/provider.ts`, `src/context/pipeline.ts`, `src/context/providers/git-context.ts`, `src/context/providers/filesystem-context.ts`) do not exist on disk. [VERIFIED: filesystem scan of /Users/samuel/dev/tui-llm/src/]
+
+Wave 3 depends on wave 2 output. The 02-03-PLAN.md `depends_on: [02-02]` is a hard dependency — wave 3 cannot execute until wave 2 has produced its files. The planner must treat this as a sequencing constraint, not an optional ordering preference.
+
+**Existing tests** in `tests/` cover Phase 1 only: `shell-contract.test.ts`, `claude-provider.test.ts`, `client-result.test.ts`, `daemon-bootstrap.test.ts`, `env-file.test.ts`, `zsh-widget.test.ts`. None of the wave 2 or wave 3 test files exist. [VERIFIED: filesystem scan of /Users/samuel/dev/tui-llm/tests/]
+
+### Registry Pattern — Key Design Decisions Already Made
+
+The plan fully specifies the four registry modules. These decisions are locked in CONTEXT.md or the plan itself — the implementer must not deviate:
+
+**Descriptor types per registry** [VERIFIED: 02-03-PLAN.md Task 1 behavior section]
+
+| Registry | Descriptor Type | Shape |
+|----------|-----------------|-------|
+| `context-providers` | `ContextProvider` | imported from `src/context/provider.ts` — fully typed with `intents`, `gather()` |
+| `provider-backends` | `ProviderBackendDescriptor` | `{ id: string; name: string; description: string }` — Phase 2 stub |
+| `shell-adapters` | `ShellAdapterDescriptor` | `{ id: string; shell: string; description: string }` — Phase 2 stub |
+| `storage-hooks` | `StorageHookDescriptor` | `{ id: string; description: string }` — Phase 2 stub |
+
+**Duplicate-ID error message format** is a locked decision from CONTEXT.md Claude's Discretion:
+```
+Context provider already registered: "git-context"
+```
+Pattern: `<EntityType> already registered: "<id>"` — the entity name is Title Case with spaces, the id is in double quotes. The error message must be exact for tests to pass. Do not use backticks, single quotes, or a different capitalization.
+
+**`clear()` is for test isolation only** — not a production API. Mark with `@internal` JSDoc and a code comment. Tests use `beforeEach(() => clearXxx())` instead of `vi.resetModules()`. This avoids module-graph churn that would break the vitest module cache during test runs. [VERIFIED: 02-03-PLAN.md, rationale in objective review comments]
+
+### Bootstrap Module — Critical Idempotency Pattern
+
+The `bootstrapBuiltins()` function uses a module-level `let bootstrapped = false` guard. This makes it safe to call on every `gatherContext()` invocation without double-registering providers.
+
+The guard creates a test isolation problem: if a test calls `bootstrapBuiltins()` and the flag remains `true`, subsequent tests in the same module cannot re-bootstrap a clean registry. The solution is `resetBootstrap()` — a companion function that resets the flag. Tests use it in `beforeEach` alongside the registry `clear()` functions.
+
+**The three-step test teardown pattern** required by bootstrap tests:
+```typescript
+beforeEach(() => {
+  clearContextProviders();    // empty the Map
+  clearShellAdapters();       // empty the Map
+  clearStorageHooks();        // empty the Map
+  resetBootstrap();           // reset the bootstrapped flag
+});
+```
+Missing any one of these steps will cause bootstrap tests to fail non-deterministically depending on test execution order. [VERIFIED: 02-03-PLAN.md Task 2 test listing]
+
+### Pipeline Rewire — The Two Lines That Must Be Removed
+
+When updating `src/context/pipeline.ts`, two specific import lines must be removed and not just dead-coded:
+
+```typescript
+// REMOVE these two lines:
+import { gitContextProvider } from './providers/git-context.js';
+import { filesystemContextProvider } from './providers/filesystem-context.js';
+
+// REMOVE this constant:
+const BUILTIN_PROVIDERS = [gitContextProvider, filesystemContextProvider];
+```
+
+If these remain alongside the registry read, providers will be duplicated in `gatherContext` or the bootstrap will throw a duplicate-ID error. The acceptance criterion in the plan explicitly checks that `BUILTIN_PROVIDERS` is gone and the direct provider imports are gone. [VERIFIED: 02-03-PLAN.md Task 2 acceptance criteria]
+
+### Stub Registry Documentation Requirement
+
+The three non-context-provider registries must include a module-level comment that passes three checks:
+1. Starts with the literal text `PHASE 2 STUB`
+2. Explains *why the seam exists now* (not just that it's a stub)
+3. Gives a one-line example of a future registration call
+
+This is not optional polish — it is a stated acceptance criterion. The rationale: without the explanation, a future maintainer may delete the stub as dead code before Phase 3 or a plugin phase lands. The comment preserves the architectural intent. [VERIFIED: 02-03-PLAN.md Task 1 acceptance criteria and behavior section]
+
+### No Self-Registration in Provider Files
+
+The provider files (`git-context.ts`, `filesystem-context.ts`) produced by wave 2 must NOT contain a `registerContextProvider(...)` call at module level. Registration is owned exclusively by `bootstrap.ts`. If wave 2 happens to add self-registration as a convenience (a common pattern in plugin architectures), wave 3 must remove it before wiring bootstrap.
+
+Wave 3 Task 2 explicitly requires reading both provider files before writing bootstrap.ts to verify this. The acceptance criteria check for the absence of `registerContextProvider(` at module level in both files. [VERIFIED: 02-03-PLAN.md Task 2 read_first and acceptance criteria]
+
+### Test Structure — What TDD Means Here
+
+Wave 3 Task 1 is typed `tdd` (RED/GREEN/REFACTOR). The RED/GREEN commit sequence is:
+
+1. **RED commit:** `tests/registry.test.ts` exists, imports from registry modules that do not exist yet — all tests fail with import errors. Commit: `test(02-03): add failing registry tests`
+2. **GREEN commit:** Four registry files created. All tests pass. Commit: `feat(02-03): implement four extension registries with clear() helpers`
+
+Task 2 is typed `auto` (no explicit RED phase). Write bootstrap, rewire pipeline, write bootstrap tests, then verify everything green together.
+
+The test file for registries uses one `describe` block per registry. Each block covers five cases:
+- register happy-path
+- get returns registered descriptor
+- list returns all registered entries
+- duplicate ID throws with id in error message
+- clear() empties the Map
+
+The bootstrap test file covers six cases: git-context registered, filesystem-context registered, total count = 2 (not more, not less), zsh adapter registered, noop storage hook registered, memory storage hook registered, idempotent (calling twice does not throw, count stays 2). [VERIFIED: 02-03-PLAN.md full test listings in both tasks]
+
+### Vitest Test Configuration — No Special Setup Needed
+
+The project vitest config (`vitest.config.ts`) uses `environment: 'node'` and `include: ['tests/**/*.test.ts']`. New test files at `tests/registry.test.ts` and `tests/registry-bootstrap.test.ts` will be auto-discovered. No vitest config changes are needed for wave 3. [VERIFIED: vitest.config.ts in project root]
+
+The verification command after wave 3 completes:
+```bash
+pnpm vitest run tests/intent-router.test.ts tests/porcelain-parser.test.ts tests/context-pipeline.test.ts tests/registry.test.ts tests/registry-bootstrap.test.ts tests/claude-provider.test.ts
+pnpm test:run
+pnpm tsc --noEmit
+```
+All three must exit 0 before wave 3 is considered done. [VERIFIED: 02-03-PLAN.md verification section]
+
+### TypeScript Import Convention
+
+All relative imports in this project use `.js` extensions even for `.ts` source files. This is the ESM TypeScript convention enforced throughout `src/`. Wave 3 files must follow this:
+
+```typescript
+// Correct
+import { type ContextProvider } from '../context/provider.js';
+import { bootstrapBuiltins } from '../registry/bootstrap.js';
+
+// Wrong — breaks ESM resolution at runtime
+import { type ContextProvider } from '../context/provider';
+```
+
+[VERIFIED: 02-PATTERNS.md shared patterns section, confirmed in existing source files]
+
+### EXT-01 Closure Conditions
+
+EXT-01 is closed when all of the following are true:
+1. Four registry modules exist with register/get/list/clear APIs
+2. Duplicate-ID throws with the id in the error message
+3. Three stub registries have `PHASE 2 STUB` documentation
+4. `bootstrap.ts` is the single explicit source of built-in registration
+5. `gatherContext` in `pipeline.ts` reads providers from the registry (not a hardcoded array)
+6. Startup assertion test verifies required built-ins after `bootstrapBuiltins()`
+7. Full test suite green, TypeScript compilation clean
+
+None of these are stretch goals — all are required by the plan's success criteria. [VERIFIED: 02-03-PLAN.md success criteria section]
+
+### What Wave 3 Does NOT Do
+
+To prevent scope creep during execution:
+- Does not add provider backend runtime behavior (the registry is a stub — Phase 3 registers Claude)
+- Does not add shell adapter runtime dispatch (the registry is a stub — zsh support is already in the ZLE widget layer from Phase 1)
+- Does not add storage hook behavior (the registry is a stub — no persistence in Phase 2)
+- Does not change the `ShellRequest` / `ShellResult` contract
+- Does not modify `src/client/run-foreground.ts` (that was wave 2's responsibility)
+- Does not modify `src/providers/claude.ts` (that was wave 2's responsibility)
+
+The only modifications in wave 3 are: create four registry files, create bootstrap.ts, update pipeline.ts to call bootstrapBuiltins() and read from registry instead of hardcoded array, create two test files. [VERIFIED: 02-03-PLAN.md files_modified frontmatter]
