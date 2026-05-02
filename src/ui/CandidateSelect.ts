@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { type ReactElement, useEffect, useState } from 'react';
 import { Box, Text, useInput } from 'ink';
 import type { CandidateList } from '../contracts/candidates.js';
 
@@ -8,7 +8,11 @@ interface Props {
   onCancel: () => void;
 }
 
-export function CandidateSelect({ candidates, onSelect, onCancel }: Props) {
+export function CandidateSelect({
+  candidates,
+  onSelect,
+  onCancel,
+}: Props): ReactElement {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   useInput((_, key) => {
@@ -18,12 +22,14 @@ export function CandidateSelect({ candidates, onSelect, onCancel }: Props) {
     }
 
     if (key.upArrow) {
-      setSelectedIndex((current) => (current === 0 ? candidates.length - 1 : current - 1));
+      setSelectedIndex((current: number) =>
+        current === 0 ? candidates.length - 1 : current - 1,
+      );
       return;
     }
 
     if (key.downArrow) {
-      setSelectedIndex((current) => (current + 1) % candidates.length);
+      setSelectedIndex((current: number) => (current + 1) % candidates.length);
       return;
     }
 
