@@ -4,11 +4,12 @@ import { relative, resolve } from 'node:path';
 
 const command = process.argv.slice(2);
 const runCommand = command.length > 0 ? command : ['pnpm', 'dev'];
+const buildCommand = ['pnpm', 'build'];
 const rootDir = process.cwd();
 const ignoreSegments = ['node_modules', '.git', '.planning', '.wolf', 'dist'];
 const scanIntervalMs = 500;
 
-let child = null;
+let activeCommand = null;
 let restartRequested = false;
 let restartTimer = null;
 let interval = null;
@@ -16,6 +17,27 @@ const knownFiles = new Map();
 
 function log(message) {
   console.log(`[watch] ${message}`);
+}
+
+function spawnCommand(commandParts, label) {
+  return new Promise((resolve, reject) => {
+    log(`${label} ${commandParts.join(' ')}`);
+    const proc = spawn(commandParts[0], commandParts.slice(1), {
+      stdio: 'inherit',
+      shell: process.platform === 'win32',
+    });
+
+    proc.on('error', reject);
+    proc.on('exit', (code, signal) => {
+      const reason = signal ? `signal ${signal}` : `code ${code ?? 0}`;
+      log(`${label} exited (${reason})`);
+      if (code === 0 || signal) {
+        resolve({ code, signal, proc });
+      } else {
+        reject(new Error(`${label} failed with exit code ${code ?? 1}`));
+      }
+    });
+  });
 }
 
 function shouldIgnore(filePath) {
@@ -77,20 +99,31 @@ function primeSnapshot() {
   }
 }
 
-function start() {
-  log(`starting ${runCommand.join(' ')}`);
-  child = spawn(runCommand[0], runCommand.slice(1), {
+async function start() {
+  try {
+    await spawnCommand(buildCommand, 'build');
+  } catch (error) {
+    log(error instanceof Error ? error.message : String(error));
+    process.exitCode = 1;
+    return;
+  }
+
+  const started = spawn(runCommand[0], runCommand.slice(1), {
     stdio: 'inherit',
     shell: process.platform === 'win32',
   });
 
-  child.on('exit', (code, signal) => {
+  activeCommand = started;
+  log(`starting ${runCommand.join(' ')}`);
+
+  started.on('exit', async (code, signal) => {
     const reason = signal ? `signal ${signal}` : `code ${code ?? 0}`;
     log(`dev server exited (${reason})`);
+    activeCommand = null;
 
     if (restartRequested) {
       restartRequested = false;
-      start();
+      await start();
       return;
     }
 
@@ -113,8 +146,8 @@ function scheduleRestart(filePath) {
 
   restartTimer = setTimeout(() => {
     restartTimer = null;
-    if (child && !child.killed) {
-      child.kill('SIGTERM');
+    if (activeCommand && !activeCommand.killed) {
+      activeCommand.kill('SIGTERM');
     }
   }, 100);
 }

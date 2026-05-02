@@ -43,6 +43,8 @@ If you want a simple restart wrapper that logs when it reacts to file changes, r
 pnpm dev:restart
 ```
 
+It rebuilds first, then starts the dev command, and logs when it sees a change and restarts.
+
 In another terminal, use the current checks:
 
 ```bash
@@ -110,7 +112,7 @@ ANTHROPIC_API_KEY="..."
 QQ_MODEL="claude-3-haiku-20240307"
 ```
 
-If `QQ_MODEL` is omitted, the provider defaults to Claude Haiku 3, which is the cheapest model in the current Anthropic pricing table.
+If `QQ_MODEL` is omitted, the provider asks Anthropic for the available models and picks the cheapest one it can see. You can still force a specific model with `QQ_MODEL` if you need to.
 
 The LLM mode is selected with:
 

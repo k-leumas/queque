@@ -145,8 +145,10 @@ Responsibilities:
 
 Current state:
 
-- The client currently supports deterministic result modes `cancel` and `replace-buffer-fixture`.
-- This is a Phase 1 seam in place of the future interactive TUI.
+- The client currently supports deterministic result modes `cancel`, `replace-buffer-fixture`, and `llm`.
+- The `llm` mode asks Claude for a strict JSON command suggestion and maps it to a `replace-buffer` shell result.
+- When the current directory is inside git, the prompt includes the repo root, branch, and dirty state as extra context.
+- This is still a Phase 1 seam in place of the future interactive TUI.
 
 Design reasons:
 
