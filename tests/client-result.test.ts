@@ -193,6 +193,7 @@ describe('runForegroundClient', () => {
     const shellResult = spawnSync(
       'zsh',
       [
+        '-f',
         '-c',
         `source ${widgetPath}
          LBUFFER="old left"

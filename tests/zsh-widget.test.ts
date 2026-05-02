@@ -33,7 +33,7 @@ const widgetPath = join(__dirname, '..', 'shell', 'zsh', 'qq.zsh');
  * Returns { stdout, stderr, status }.
  */
 function runZsh(script: string): { stdout: string; stderr: string; status: number } {
-  const result = spawnSync('zsh', ['-c', `source ${widgetPath}\n${script}`], {
+  const result = spawnSync('zsh', ['-f', '-c', `source ${widgetPath}\n${script}`], {
     encoding: 'utf8',
     timeout: 5000,
     env: { ...process.env, PATH: process.env.PATH },
