@@ -63,6 +63,31 @@ function parseCandidates(text: string): CandidateList {
   }
 }
 
+function shouldForceSelector(): boolean {
+  const configured =
+    process.env.QQ_FORCE_SELECTOR ?? readEnvValueFromDotEnvLocal('QQ_FORCE_SELECTOR');
+  return configured === '1' || configured === 'true';
+}
+
+function ensureSelectableCandidates(candidates: CandidateList): CandidateList {
+  if (!shouldForceSelector() || candidates.length >= 2) {
+    return candidates;
+  }
+
+  const [first] = candidates;
+
+  return [
+    first,
+    {
+      command: first.command,
+      explanation:
+        first.explanation.length > 0
+          ? `${first.explanation} (forced duplicate for selector testing)`
+          : 'Forced duplicate for selector testing.',
+    },
+  ];
+}
+
 function buildPrompt(envelope: ContextEnvelope): string {
   const gitChunk = envelope.extras.find((chunk) => chunk.kind === 'git');
 
@@ -137,11 +162,12 @@ export async function fetchCandidates(
       });
 
       const text = extractText(response.content);
-      const candidates = parseCandidates(text);
+      const candidates = ensureSelectableCandidates(parseCandidates(text));
 
       void appendDebugLog('provider', 'response parsed', {
         model,
         candidateCount: candidates.length,
+        forceSelector: shouldForceSelector(),
       });
 
       return candidates;

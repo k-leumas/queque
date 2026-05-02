@@ -47,6 +47,7 @@ describe('fetchCandidates', () => {
   beforeEach(() => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
     delete process.env.QQ_MODEL;
+    delete process.env.QQ_FORCE_SELECTOR;
     createMock.mockReset();
     modelListMock.mockReset();
     anthropicCtorMock.mockClear();
@@ -125,5 +126,31 @@ describe('fetchCandidates', () => {
     await expect(fetchCandidates(buildEnvelope(), '')).rejects.toThrow('404 model not found');
     expect(createMock).toHaveBeenCalledTimes(1);
     expect(createMock.mock.calls[0][0].model).toBe('claude-sonnet-4-20250514');
+  });
+
+  it('pads a single candidate to two when QQ_FORCE_SELECTOR is enabled', async () => {
+    process.env.QQ_FORCE_SELECTOR = 'true';
+    modelListMock.mockImplementation(async function* () {
+      yield { id: 'claude-sonnet-4-20250514' };
+    });
+    createMock.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '[{"command":"git status","explanation":"Show repo status"}]',
+        },
+      ],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    const result = await fetchCandidates(buildEnvelope(), '');
+
+    expect(result).toHaveLength(2);
+    expect(result[0]).toEqual({
+      command: 'git status',
+      explanation: 'Show repo status',
+    });
+    expect(result[1]?.command).toBe('git status');
+    expect(result[1]?.explanation).toContain('forced duplicate');
   });
 });

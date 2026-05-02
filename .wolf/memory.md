@@ -138,3 +138,4 @@
 | 08:33 | Created .claude/worktrees/agent-aaaee833/tests/intent-router.test.ts | — | ~2179 |
 | 08:35 | Created .claude/worktrees/agent-aaaee833/src/intent/router.ts | — | ~1140 |
 | 08:35 | Edited .claude/worktrees/agent-aaaee833/src/intent/router.ts | 5→9 lines | ~166 |
+| 10:06 | Added RED tests for context pipeline and Claude envelope seam | tests/context-pipeline.test.ts, tests/porcelain-parser.test.ts, tests/claude-provider.test.ts | failing as expected | ~5000 |
