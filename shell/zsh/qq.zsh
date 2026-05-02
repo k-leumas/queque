@@ -202,12 +202,15 @@ JSON
   zle .self-insert
 }
 
-# Register the widget and bind it in both common keymaps
-zle -N qq-question-widget
-bindkey -M emacs '?' qq-question-widget
-bindkey -M viins '?' qq-question-widget
-
-# Warm the daemon once per interactive shell so the first `??` pays less startup cost.
+# Register the widget and bind it in both common keymaps only in interactive
+# shells. Some noninteractive zsh invocations return nonzero for ZLE binding
+# commands even though the file is otherwise safe to source.
 if [[ -o interactive ]]; then
+  zle -N qq-question-widget
+  bindkey -M emacs '?' qq-question-widget
+  bindkey -M viins '?' qq-question-widget
+
+  # Warm the daemon once per interactive shell so the first `??` pays less
+  # startup cost.
   _qq_prewarm_daemon
 fi
