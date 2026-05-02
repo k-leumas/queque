@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-02T14:29:10.290Z
-> Files: 57 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-02T15:35:35.745Z
+> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -60,6 +60,18 @@
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~1435 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1285 tok)
 
+## .claude/worktrees/agent-aaaee833/src/contracts/
+
+- `request.ts` — Broad intent categories classified before any context gathering. (~1028 tok)
+
+## .claude/worktrees/agent-aaaee833/src/intent/
+
+- `router.ts` — D-03: git prefix — query (after trim) begins with 'git ' (literal). (~1212 tok)
+
+## .claude/worktrees/agent-aaaee833/tests/
+
+- `intent-router.test.ts` — Helper: build a minimal NormalizedRequest for testing (~2179 tok)
+
 ## .claude/worktrees/agent-accab398/.planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-02-SUMMARY.md` — Phase 01 Plan 02: ZSH Bridge and Result Application Summary (~1437 tok)
@@ -104,7 +116,7 @@
 - `02-CONTEXT.md` — Phase 2: Intent Router and Context Pipeline - Context (~1686 tok)
 - `02-DISCUSSION-LOG.md` — Phase 2: Intent Router and Context Pipeline - Discussion Log (~840 tok)
 - `02-PATTERNS.md` — Phase 2: Intent Router and Context Pipeline - Pattern Map (~5434 tok)
-- `02-RESEARCH.md` — Phase 2 research covering deterministic intent routing, context envelopes, and registry-backed extension seams (~5200 tok)
+- `02-RESEARCH.md` — Phase 2: Intent Router and Context Pipeline - Research (~5890 tok)
 - `02-REVIEWS.md` — Cross-AI Plan Review — Phase 2 (~2741 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/

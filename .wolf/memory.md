@@ -2,6 +2,7 @@
 
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
+| 08:25 | plan-phase 2 --wave 3: appended wave 3 supplemental research (bootstrap idempotency, pipeline import removal, stub comments) | .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md | complete | ~8000 |
 | 21:35 | researched Phase 1 shell bridge, wrote prescriptive RESEARCH.md, updated anatomy/cerebrum | .planning/phases/01-shell-bridge-and-result-contract/01-RESEARCH.md; .wolf/anatomy.md; .wolf/cerebrum.md | complete | ~9000 |
 | 14:28 | planned Phase 1 into three executable PLAN files and updated roadmap/anatomy | .planning/phases/01-shell-bridge-and-result-contract/01-01-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-02-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-03-PLAN.md; .planning/ROADMAP.md; .wolf/anatomy.md | complete | ~11000 |
 | 14:37 | revised Phase 1 plans after checker feedback, validated schemas/structure, logged planning bug | .planning/phases/01-shell-bridge-and-result-contract/01-01-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-03-PLAN.md; .wolf/cerebrum.md; .wolf/buglog.json | complete | ~5000 |
@@ -119,3 +120,21 @@
 | 07:28 | Edited .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | 10→13 lines | ~208 |
 | 07:29 | Edited .planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md | modified check() | ~208 |
 | 08:00 | Session end: 4 writes across 1 files (02-02-PLAN.md) | 1 reads | ~14366 tok |
+| 08:06 | Session end: 4 writes across 1 files (02-02-PLAN.md) | 1 reads | ~14366 tok |
+| 08:06 | Session end: 4 writes across 1 files (02-02-PLAN.md) | 2 reads | ~14366 tok |
+
+## Session: 2026-05-02 08:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 08:21 | Created .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md | — | ~6283 |
+| 08:25 | Session end: 1 writes across 1 files (02-RESEARCH.md) | 9 reads | ~29775 tok |
+
+## Session: 2026-05-02 08:28
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 08:32 | Created .claude/worktrees/agent-aaaee833/src/contracts/request.ts | — | ~1028 |
+| 08:33 | Created .claude/worktrees/agent-aaaee833/tests/intent-router.test.ts | — | ~2179 |
+| 08:35 | Created .claude/worktrees/agent-aaaee833/src/intent/router.ts | — | ~1140 |
+| 08:35 | Edited .claude/worktrees/agent-aaaee833/src/intent/router.ts | 5→9 lines | ~166 |
