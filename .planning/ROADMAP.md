@@ -13,7 +13,7 @@ Que-Que moves from a shell-bridge prototype to a daily-driver terminal assistant
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
-- [ ] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps Que-Que general-purpose instead of repo-centric.
+- [x] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps Que-Que general-purpose instead of repo-centric.
 - [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
 - [ ] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
@@ -53,7 +53,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md — Define request contracts (RequestIntent, NormalizedRequest, ContextEnvelope) and implement deterministic classifyIntent router.
 - [x] 02-02-PLAN.md — Build base context builder, git/filesystem providers, two-pass pipeline, and rewire foreground client + Claude adapter.
-- [ ] 02-03-PLAN.md — Add four internal registries (context-providers, provider-backends, shell-adapters, storage-hooks) and wire built-ins through them.
+- [x] 02-03-PLAN.md — Add four internal registries (context-providers, provider-backends, shell-adapters, storage-hooks) and wire built-ins through them.
 
 ### Phase 3: Claude Fast Path and Ranked Suggestions
 **Goal**: Produce ranked, explainable command suggestions quickly for requests that are clear enough to skip clarification.
@@ -131,7 +131,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Shell Bridge and Result Contract | 3/3 | Complete | 2026-05-02 |
-| 2. Intent Router and Context Pipeline | 2/3 | In progress | - |
+| 2. Intent Router and Context Pipeline | 3/3 | Complete | 2026-05-02 |
 | 3. Claude Fast Path and Ranked Suggestions | 0/3 | Not started | - |
 | 4. Fuzzy TUI Selection UX | 0/3 | Not started | - |
 | 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |

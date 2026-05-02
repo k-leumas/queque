@@ -85,7 +85,7 @@
 | INT-01 | Phase 2 | Complete |
 | INT-02 | Phase 2 | Complete |
 | INT-03 | Phase 2 | Complete |
-| EXT-01 | Phase 2 | Pending |
+| EXT-01 | Phase 2 | Complete |
 | PRV-01 | Phase 3 | Pending |
 | PRV-02 | Phase 3 | Pending |
 | PRV-03 | Phase 3 | Pending |
