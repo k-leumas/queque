@@ -1,4 +1,5 @@
 import * as fsp from 'node:fs/promises';
+import * as tty from 'node:tty';
 import { render } from 'ink';
 import React from 'react';
 import { gatherContext } from '../context/pipeline.js';
@@ -27,6 +28,16 @@ export interface ForegroundClientArgs {
    */
   resultMode: 'cancel' | 'replace-buffer-fixture' | 'llm';
 }
+
+/**
+ * Number of fixed chrome rows in the modal:
+ *   border-top(1) + title(1) + separator(1) + body-marginTop(1) + search(1)
+ *   + gap(search→results)(1) + gap(results→controls)(1) + controls(1) + border-bottom(1)
+ *
+ * Used to size the blank scroll zone before rendering so the modal doesn't
+ * overwrite the user's previous shell output.
+ */
+const MODAL_CHROME_LINES = 9;
 
 /**
  * Runs the foreground client loop.
@@ -97,38 +108,76 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           extraCount: envelope.extras.length,
         });
 
-        const candidates = await fetchCandidates(envelope, request.rbuffer);
-        void appendDebugLog('client', 'candidates received', { count: candidates.length });
+        // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
+        // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
+        // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
 
-        if (candidates.length === 1) {
-          await writeShellResult(resultFile, {
-            kind: 'replace-buffer',
-            lbuffer: candidates[0].command,
-            rbuffer: request.rbuffer,
-          });
-        } else {
-          await new Promise<void>((resolve) => {
-            const app = render(
-              React.createElement(CandidateSelect, {
-                candidates,
-                onSelect: async (command: string) => {
-                  app.unmount();
-                  await writeShellResult(resultFile, {
-                    kind: 'replace-buffer',
-                    lbuffer: command,
-                    rbuffer: request.rbuffer,
-                  });
-                  resolve();
-                },
-                onCancel: async () => {
-                  app.unmount();
-                  await writeShellResult(resultFile, { kind: 'cancel' });
-                  resolve();
-                },
-              }),
-            );
-          });
+        // Try to create TTY streams for Ink; fall back to process stdio if unavailable.
+        // (In test environments, ttyHandle.fd may be a synthetic fd that is not a real TTY.)
+        let ttyReadStream: tty.ReadStream | undefined;
+        let ttyWriteStream: tty.WriteStream | undefined;
+        try {
+          ttyReadStream = new tty.ReadStream(ttyHandle.fd);
+          ttyWriteStream = new tty.WriteStream(ttyHandle.fd);
+        } catch {
+          // Non-TTY environment (e.g. tests) — Ink will use process.stdin/stdout
         }
+
+        if (ttyWriteStream) {
+          // Blank out the modal viewport so the render doesn't overwrite prior output.
+          const modalHeight = MODAL_CHROME_LINES + 5;
+          ttyWriteStream.write('\n'.repeat(modalHeight));
+          ttyWriteStream.write(`\x1b[${modalHeight}A`);
+        }
+
+        await new Promise<void>((resolve) => {
+          let unmount: (() => void) | undefined;
+
+          // Build initial element with null candidates (D-06 loading state)
+          const buildCandidateElement = (
+            candidates: Parameters<typeof CandidateSelect>[0]['candidates'],
+            errorState?: boolean,
+          ) =>
+            React.createElement(CandidateSelect, {
+              candidates,
+              initialQuery: request.lbuffer,
+              error: errorState,
+              onSelect: async (command: string) => {
+                await writeShellResult(resultFile, {
+                  kind: 'replace-buffer',
+                  lbuffer: command,
+                  rbuffer: request.rbuffer,
+                });
+                unmount?.();
+              },
+              onCancel: async () => {
+                await writeShellResult(resultFile, { kind: 'cancel' });
+                unmount?.();
+              },
+            });
+
+          const renderOptions =
+            ttyReadStream && ttyWriteStream ? { stdin: ttyReadStream, stdout: ttyWriteStream } : {};
+
+          const app = render(buildCandidateElement(null), renderOptions);
+
+          unmount = () => {
+            app.unmount();
+            resolve();
+          };
+
+          // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
+          fetchCandidates(envelope, request.rbuffer)
+            .then((candidates) => {
+              void appendDebugLog('client', 'candidates received', { count: candidates.length });
+              app.rerender(buildCandidateElement(candidates));
+            })
+            .catch((err) => {
+              const message = err instanceof Error ? err.message : String(err);
+              void appendDebugLog('client', 'llm request failed', { message });
+              app.rerender(buildCandidateElement(null, true));
+            });
+        });
 
         void appendDebugLog('client', 'wrote llm result', { resultFile });
       } catch (error) {
