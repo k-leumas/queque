@@ -15,6 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
 - [x] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps Que-Que general-purpose instead of repo-centric.
 - [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
+- [ ] **Phase 3.1: Monocle-style Interface and Interactivity** - Update interface and interactivity to match the monocle terminal UI model. (INSERTED)
 - [ ] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
 - [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
@@ -73,6 +74,18 @@ Plans:
 - [ ] 03-02: Build the fast-path prompt contract, confidence extraction, and ranking model on top of the adapter.
 - [ ] 03-03: Add error handling, debug surfaces, and shell-safe fallback behavior.
 
+### Phase 03.1: Monocle-style Interface and Interactivity (INSERTED)
+
+**Goal**: Redesign CandidateSelect and Modal to match the monocle terminal UI model — 80-col modal, ┌> selection glyph, live search zone, animated loading spinner, monocle ANSI 256 palette, and modal-first async render before provider responds.
+**Requirements**: TUI-01, CMD-03, SAFE-01
+**Depends on:** Phase 3
+**Plans:** 3 plans
+
+Plans:
+- [ ] 03.1-01-PLAN.md — Wave 0: extend vitest config for .tsx tests, update client-result.test.ts, scaffold candidate-select.test.tsx
+- [ ] 03.1-02-PLAN.md — Wave 1: create SearchInput, ControlsLine, LoadingSpinner; update Modal default width to 80
+- [ ] 03.1-03-PLAN.md — Wave 2: rewrite CandidateSelect with monocle contract; refactor run-foreground to modal-first async with rerender()
+
 ### Phase 4: Fuzzy TUI Selection UX
 **Goal**: Turn high-confidence command selection into a fast, intuitive, keyboard-only flow with explanations visible inline.
 **Depends on**: Phase 3
@@ -126,13 +139,14 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Shell Bridge and Result Contract | 3/3 | Complete | 2026-05-02 |
 | 2. Intent Router and Context Pipeline | 3/3 | Complete | 2026-05-02 |
 | 3. Claude Fast Path and Ranked Suggestions | 0/3 | Not started | - |
+| 3.1. Monocle-style Interface and Interactivity | 0/3 | Not started (INSERTED) | - |
 | 4. Fuzzy TUI Selection UX | 0/3 | Not started | - |
 | 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |
 | 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | Not started | - |
