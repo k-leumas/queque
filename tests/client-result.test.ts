@@ -47,6 +47,34 @@ vi.mock('node:fs/promises', async (importOriginal) => {
 });
 
 // ---------------------------------------------------------------------------
+// Mock ink so modal renders don't hang waiting for user input.
+// After D-03 the modal always opens regardless of candidate count; the mock
+// immediately invokes onSelect with the first candidate's command so the
+// llm-mode test can complete without a real TTY interaction.
+// ---------------------------------------------------------------------------
+vi.mock('ink', () => ({
+  render: vi
+    .fn()
+    .mockImplementation(
+      (element: {
+        props: { onSelect?: (cmd: string) => void; candidates?: Array<{ command: string }> };
+      }) => {
+        const { onSelect, candidates } = element.props;
+        if (onSelect) {
+          Promise.resolve().then(() => {
+            onSelect(candidates?.[0]?.command ?? 'git status');
+          });
+        }
+        return { unmount: vi.fn(), rerender: vi.fn() };
+      },
+    ),
+  Box: ({ children }: { children?: unknown }) => children,
+  Text: ({ children }: { children?: unknown }) => children,
+  useInput: vi.fn(),
+  useApp: vi.fn().mockReturnValue({ exit: vi.fn() }),
+}));
+
+// ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
