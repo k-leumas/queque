@@ -79,12 +79,12 @@ Plans:
 **Goal**: Redesign CandidateSelect and Modal to match the monocle terminal UI model — 80-col modal, ┌> selection glyph, live search zone, animated loading spinner, monocle ANSI 256 palette, and modal-first async render before provider responds.
 **Requirements**: TUI-01, CMD-03, SAFE-01
 **Depends on:** Phase 3
-**Plans:** 2/3 plans executed
+**Plans:** 3/3 plans complete
 
 Plans:
 - [x] 03.1-01-PLAN.md — Wave 0: extend vitest config for .tsx tests, update client-result.test.ts, scaffold candidate-select.test.tsx
 - [x] 03.1-02-PLAN.md — Wave 1: create SearchInput, ControlsLine, LoadingSpinner; update Modal default width to 80
-- [ ] 03.1-03-PLAN.md — Wave 2: rewrite CandidateSelect with monocle contract; refactor run-foreground to modal-first async with rerender()
+- [x] 03.1-03-PLAN.md — Wave 2: rewrite CandidateSelect with monocle contract; refactor run-foreground to modal-first async with rerender()
 
 ### Phase 4: Fuzzy TUI Selection UX
 **Goal**: Turn high-confidence command selection into a fast, intuitive, keyboard-only flow with explanations visible inline.
