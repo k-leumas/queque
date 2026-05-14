@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T12:49:17.933Z
-> Files: 85 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T19:00:23.187Z
+> Files: 99 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -92,6 +92,33 @@
 
 - `intent-router.test.ts` — Helper: build a minimal NormalizedRequest for testing (~2179 tok)
 
+## .claude/worktrees/agent-aac6444be33ddae2f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-01-SUMMARY.md` — Phase 3.2 Plan 01: Wave 1 TDD Foundation — Test Contracts for FIFO and Zellij Integration Summary (~1811 tok)
+
+## .claude/worktrees/agent-aac6444be33ddae2f/.wolf/
+
+- `anatomy.md` — anatomy.md (~2238 tok)
+- `cerebrum.md` — Cerebrum (~772 tok)
+
+## .claude/worktrees/agent-aac6444be33ddae2f/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4186 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~3908 tok)
+
+## .claude/worktrees/agent-ab9387af30d3d2b0f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-02-SUMMARY.md` — Phase 3.2 Plan 02: Wave 2 — FIFO-Aware Write and Zellij Branch Implementation Summary (~1955 tok)
+
+## .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/
+
+- `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~550 tok)
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2282 tok)
+
+## .claude/worktrees/agent-ab9387af30d3d2b0f/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4358 tok)
+
 ## .claude/worktrees/agent-aca72d47efd9f909e/src/client/
 
 - `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2352 tok)
@@ -116,9 +143,19 @@
 
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~2156 tok)
 
+## .claude/worktrees/agent-adabf5a43d4a36218/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-03-SUMMARY.md` — Phase 03.2 Plan 03: qq-question-widget Zellij FIFO Rewrite Summary (~1486 tok)
+
+## .claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/
+
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2159 tok)
+
 ## .planning/
 
+- `.continue-here.md` — BLOCKING CONSTRAINTS — Read Before Anything Else (~1544 tok)
 - `config.json` (~258 tok)
+- `HANDOFF.json` — Declares bodies (~1014 tok)
 - `PROJECT.md` — Que-Que (~1287 tok)
 - `REQUIREMENTS.md` — Requirements: Que-Que (~1242 tok)
 - `ROADMAP.md` — Roadmap: Que-Que (~2579 tok)
@@ -184,6 +221,10 @@
 ## docs/
 
 - `SYSTEM_DESGN.md` — System Design (~3531 tok)
+
+## scripts/
+
+- `build-dashboard.mjs` — repoRoot: main, setupTerminal, teardownTerminal + 16 more (~4892 tok)
 
 ## shell/zsh/
 

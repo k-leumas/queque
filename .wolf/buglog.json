@@ -162,6 +162,278 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-13T21:35:43.085Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-05-14T15:27:47.335Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: describe('runForegroundClient: Zellij branch skips /dev/tty ; let tmpDir: string;",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T15:28:07.057Z"
+    },
+    {
+      "id": "bug-012",
+      "timestamp": "2026-05-14T15:30:36.076Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: const ttyCall = openSpy.mock.calls.find((args: unknown[]) =>",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T15:30:53.683Z"
+    },
+    {
+      "id": "bug-013",
+      "timestamp": "2026-05-14T15:30:48.098Z",
+      "error_message": "Missing import: node:fs/promises",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "Module(s) not imported: node:fs/promises",
+      "fix": "Added import(s) for node:fs/promises",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T15:32:53.680Z"
+    },
+    {
+      "id": "bug-014",
+      "timestamp": "2026-05-14T15:31:40.866Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "11 lines replaced/restructured",
+      "fix": "Rewrote 49→69 lines (11 removed) | Also: // Expose writeFile and rename as passthrough vi.f; // them within the FIFO-path describe block. The d",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T15:35:32.734Z"
+    },
+    {
+      "id": "bug-015",
+      "timestamp": "2026-05-14T15:36:53.699Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:36:53.699Z"
+    },
+    {
+      "id": "bug-016",
+      "timestamp": "2026-05-14T15:38:56.192Z",
+      "error_message": "Missing import: node:fs/promises, node:fs/promises",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "Module(s) not imported: node:fs/promises, node:fs/promises",
+      "fix": "Added import(s) for node:fs/promises, node:fs/promises",
+      "tags": [
+        "auto-detected",
+        "missing-import",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:38:56.192Z"
+    },
+    {
+      "id": "bug-017",
+      "timestamp": "2026-05-14T15:40:52.450Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 30→44 lines (3 removed) | Also: // Restore the passthrough implementations on writ; // subsequent describe blocks continue to perform ",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T15:41:01.819Z"
+    },
+    {
+      "id": "bug-018",
+      "timestamp": "2026-05-14T15:44:42.927Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/zsh-widget.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:44:42.927Z"
+    },
+    {
+      "id": "bug-019",
+      "timestamp": "2026-05-14T15:46:58.260Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-aac6444be33ddae2f/.wolf/cerebrum.md",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:46:58.260Z"
+    },
+    {
+      "id": "bug-020",
+      "timestamp": "2026-05-14T15:50:50.644Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ab9387af30d3d2b0f/src/client/result-writer.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 20→44 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T15:50:50.644Z"
+    },
+    {
+      "id": "bug-021",
+      "timestamp": "2026-05-14T15:52:57.581Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ab9387af30d3d2b0f/src/client/run-foreground.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: await ttyHandle?.close();",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T15:53:13.921Z"
+    },
+    {
+      "id": "bug-022",
+      "timestamp": "2026-05-14T16:01:19.750Z",
+      "error_message": "Wrong operator: == should be !=",
+      "file": ".claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/qq.zsh",
+      "root_cause": "Used \"==\" instead of \"!=\"",
+      "fix": "Changed operator == → !=",
+      "tags": [
+        "auto-detected",
+        "operator-fix",
+        "zsh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T16:01:19.750Z"
+    },
+    {
+      "id": "bug-023",
+      "timestamp": "2026-05-14T00:00:00.000Z",
+      "error_message": "Syntax error: stray string literal inside shutdownWatchman function body",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Accidental insertion of `\"Bash(ln *)\",` on line 567 inside the shutdownWatchman if-block — likely a copy-paste artifact from a shell command",
+      "fix": "Removed the stray string literal; the if-block now closes correctly after `debounceTimer = null;`",
+      "tags": [
+        "syntax-error",
+        "mjs",
+        "build-dashboard"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T00:00:00.000Z"
+    },
+    {
+      "id": "bug-024",
+      "timestamp": "2026-05-14T18:31:27.691Z",
+      "error_message": "Wrong return value",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Was returning: text.replace(/\\x1b\\[[0-9;]*m/g, '');",
+      "fix": "Now returns: text.replace(/\u001b\\[[0-9;]*m/g, '');",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T18:31:27.691Z"
+    },
+    {
+      "id": "bug-025",
+      "timestamp": "2026-05-14T18:46:21.639Z",
+      "error_message": "Wrong reference: serverError should be getServerError",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Used \"serverError\" instead of \"getServerError\"",
+      "fix": "Changed serverError → getServerError",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T18:46:21.639Z"
+    },
+    {
+      "id": "bug-026",
+      "timestamp": "2026-05-14T18:55:04.517Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "34 lines replaced/restructured",
+      "fix": "Rewrote 44→6 lines (34 removed) | Also: if (watchmanServer) {; watchmanServer.kill('SIGTERM');",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-14T18:55:08.683Z"
+    },
+    {
+      "id": "bug-027",
+      "timestamp": "2026-05-14T18:58:57.280Z",
+      "error_message": "Wrong reference: watchmanClient should be watchmanSocket",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Used \"watchmanClient\" instead of \"watchmanSocket\"",
+      "fix": "Changed watchmanClient → watchmanSocket",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T18:58:57.280Z"
     }
   ]
 }

@@ -2,6 +2,8 @@
 
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
+| 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
+| 00:01 | fixed EPIPE in sendWatchmanCommand — added writable guard + write error callback | scripts/build-dashboard.mjs:541 | EPIPE prevented | ~200 |
 | 08:25 | plan-phase 2 --wave 3: appended wave 3 supplemental research (bootstrap idempotency, pipeline import removal, stub comments) | .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md | complete | ~8000 |
 | 21:35 | researched Phase 1 shell bridge, wrote prescriptive RESEARCH.md, updated anatomy/cerebrum | .planning/phases/01-shell-bridge-and-result-contract/01-RESEARCH.md; .wolf/anatomy.md; .wolf/cerebrum.md | complete | ~9000 |
 | 14:28 | planned Phase 1 into three executable PLAN files and updated roadmap/anatomy | .planning/phases/01-shell-bridge-and-result-contract/01-01-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-02-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-03-PLAN.md; .planning/ROADMAP.md; .wolf/anatomy.md | complete | ~11000 |
@@ -223,3 +225,83 @@
 | 05:34 | Session end: 1 writes across 1 files (03.2-REVIEWS.md) | 8 reads | ~19390 tok |
 | 05:49 | Edited docs/SYSTEM_DESGN.md | expanded (+111 lines) | ~1080 |
 | 05:51 | Session end: 2 writes across 2 files (03.2-REVIEWS.md, SYSTEM_DESGN.md) | 9 reads | ~20547 tok |
+| 06:17 | Session end: 2 writes across 2 files (03.2-REVIEWS.md, SYSTEM_DESGN.md) | 12 reads | ~20547 tok |
+| 08:23 | Session end: 2 writes across 2 files (03.2-REVIEWS.md, SYSTEM_DESGN.md) | 13 reads | ~20547 tok |
+
+## Session: 2026-05-14 08:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 08:27 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | added 1 import(s) | ~97 |
+| 08:27 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | modified if() | ~178 |
+| 08:27 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | added error handling | ~516 |
+| 08:28 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | added error handling | ~839 |
+| 08:30 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | modified if() | ~365 |
+| 08:30 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | 6→7 lines | ~91 |
+| 08:30 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | 2→2 lines | ~36 |
+| 08:31 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | expanded (+20 lines) | ~753 |
+| 08:32 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | reduced (-13 lines) | ~593 |
+| 08:32 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | 56→56 lines | ~622 |
+| 08:35 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | modified if() | ~241 |
+| 08:36 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | modified if() | ~429 |
+| 08:38 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | 56→61 lines | ~712 |
+| 08:38 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | 61→64 lines | ~747 |
+| 08:39 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | expanded (+6 lines) | ~809 |
+| 08:40 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | modified if() | ~657 |
+| 08:41 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts | added 2 condition(s) | ~250 |
+| 08:42 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/zsh-widget.test.ts | modified runInteractiveZsh() | ~290 |
+| 08:42 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/zsh-widget.test.ts | 4→4 lines | ~59 |
+| 08:43 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/zsh-widget.test.ts | expanded (+50 lines) | ~722 |
+| 08:44 | Edited .claude/worktrees/agent-aac6444be33ddae2f/tests/zsh-widget.test.ts | 6→8 lines | ~146 |
+| 08:46 | Created .claude/worktrees/agent-aac6444be33ddae2f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/03.2-01-SUMMARY.md | — | ~1931 |
+| 08:46 | Edited .claude/worktrees/agent-aac6444be33ddae2f/.wolf/cerebrum.md | 6→10 lines | ~445 |
+| 08:47 | Edited .claude/worktrees/agent-aac6444be33ddae2f/.wolf/cerebrum.md | 5→8 lines | ~276 |
+| 08:47 | Edited .claude/worktrees/agent-aac6444be33ddae2f/.wolf/anatomy.md | 3→4 lines | ~69 |
+| 08:47 | Edited .claude/worktrees/agent-aac6444be33ddae2f/.wolf/anatomy.md | 3→5 lines | ~107 |
+| 08:50 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/result-writer.ts | added 1 condition(s) | ~516 |
+| 08:52 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/run-foreground.ts | removed 11 lines | ~1 |
+| 08:52 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/run-foreground.ts | 12→13 lines | ~126 |
+| 08:53 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/run-foreground.ts | added 1 condition(s) | ~281 |
+| 08:53 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/run-foreground.ts | 2→3 lines | ~47 |
+| 08:53 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/run-foreground.ts | added optional chaining | ~14 |
+| 08:54 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/tests/client-result.test.ts | added 1 condition(s) | ~297 |
+| 08:55 | Edited .claude/worktrees/agent-ab9387af30d3d2b0f/tests/client-result.test.ts | 22→24 lines | ~224 |
+| 08:57 | Created .claude/worktrees/agent-ab9387af30d3d2b0f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/03.2-02-SUMMARY.md | — | ~2085 |
+| 09:01 | Edited .claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/qq.zsh | modified widget() | ~969 |
+| 09:03 | Edited .claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/qq.zsh | 5→6 lines | ~68 |
+| 09:06 | Created .claude/worktrees/agent-adabf5a43d4a36218/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/03.2-03-SUMMARY.md | — | ~1585 |
+| 09:07 | Session end: 38 writes across 10 files (client-result.test.ts, zsh-widget.test.ts, 03.2-01-SUMMARY.md, cerebrum.md, anatomy.md) | 34 reads | ~93982 tok |
+
+## Session: 2026-05-14 10:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 10:37 | Edited scripts/build-dashboard.mjs | 4→3 lines | ~17 |
+| 10:39 | Edited scripts/build-dashboard.mjs | added 2 condition(s) | ~131 |
+| 10:39 | Session end: 2 writes across 1 files (build-dashboard.mjs) | 1 reads | ~5335 tok |
+| 11:07 | Edited scripts/build-dashboard.mjs | 5→10 lines | ~85 |
+| 11:07 | Edited scripts/build-dashboard.mjs | 7→2 lines | ~32 |
+| 11:07 | Session end: 4 writes across 1 files (build-dashboard.mjs) | 1 reads | ~5535 tok |
+| 11:31 | Edited scripts/build-dashboard.mjs | inline fix | ~12 |
+| 11:38 | Session end: 5 writes across 1 files (build-dashboard.mjs) | 1 reads | ~5592 tok |
+| 11:40 | Edited scripts/build-dashboard.mjs | 4→6 lines | ~37 |
+| 11:40 | Edited scripts/build-dashboard.mjs | modified stripAnsi() | ~7 |
+| 11:40 | Session end: 7 writes across 1 files (build-dashboard.mjs) | 1 reads | ~5640 tok |
+| 11:40 | Session end: 7 writes across 1 files (build-dashboard.mjs) | 1 reads | ~5640 tok |
+| 11:41 | Session end: 7 writes across 1 files (build-dashboard.mjs) | 2 reads | ~5640 tok |
+| 11:46 | Edited scripts/build-dashboard.mjs | inline fix | ~14 |
+| 11:46 | Edited scripts/build-dashboard.mjs | modified waitForSocket() | ~103 |
+| 11:46 | Edited scripts/build-dashboard.mjs | inline fix | ~22 |
+| 11:46 | Edited scripts/build-dashboard.mjs | modified catch() | ~90 |
+| 11:46 | Session end: 11 writes across 1 files (build-dashboard.mjs) | 2 reads | ~5909 tok |
+| 11:54 | Edited scripts/build-dashboard.mjs | 7→5 lines | ~41 |
+| 11:55 | Edited scripts/build-dashboard.mjs | removed 44 lines | ~45 |
+| 11:55 | Edited scripts/build-dashboard.mjs | modified shutdownWatchman() | ~66 |
+| 11:55 | Edited scripts/build-dashboard.mjs | removed 17 lines | ~1 |
+| 11:55 | Edited scripts/build-dashboard.mjs | — | ~0 |
+| 11:55 | Session end: 16 writes across 1 files (build-dashboard.mjs) | 2 reads | ~5770 tok |
+| 11:58 | Edited scripts/build-dashboard.mjs | added 1 import(s) | ~62 |
+| 11:58 | Edited scripts/build-dashboard.mjs | inline fix | ~7 |
+| 11:59 | Session end: 18 writes across 1 files (build-dashboard.mjs) | 2 reads | ~5711 tok |
+| 11:59 | Created .planning/HANDOFF.json | — | ~1014 |
+| 12:00 | Created .planning/.continue-here.md | — | ~1647 |
