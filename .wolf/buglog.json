@@ -434,6 +434,87 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-14T18:58:57.280Z"
+    },
+    {
+      "id": "bug-028",
+      "timestamp": "2026-05-14T19:03:37.539Z",
+      "error_message": "Missing error handling in function",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T19:03:37.539Z"
+    },
+    {
+      "id": "bug-029",
+      "timestamp": "2026-05-14T19:03:47.558Z",
+      "error_message": "Wrong condition in logic",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Condition was: if (watchmanClient)",
+      "fix": "Changed to: if (watchmanSocket)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T19:03:47.558Z"
+    },
+    {
+      "id": "bug-030",
+      "timestamp": "2026-05-14T19:30:00.000Z",
+      "error_message": "build-dashboard.mjs broken mid-rename: watchmanClient referenced in function bodies after variable renamed to watchmanSocket; payload = line instead of JSON.parse(line)",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Session ended mid-refactor — declaration renamed but function bodies not updated, and JSON.parse removed with incorrect comment",
+      "fix": "Rewrote startWatchmanLoop to use net.createConnection (get sockname via watchman get-sockname), updated sendWatchmanCommand and shutdownWatchman to use socket API, restored JSON.parse in onWatchmanStdout",
+      "tags": [
+        "watchman",
+        "net.Socket",
+        "incomplete-refactor",
+        "build-dashboard"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T19:30:00.000Z"
+    },
+    {
+      "id": "bug-031",
+      "timestamp": "2026-05-14T19:15:44.501Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→10 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T19:15:44.501Z"
+    },
+    {
+      "id": "bug-032",
+      "timestamp": "2026-05-14T19:16:13.662Z",
+      "error_message": "Null/undefined access in ",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T19:16:13.662Z"
     }
   ]
 }

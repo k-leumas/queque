@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T19:00:23.187Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T19:16:13.641Z
 > Files: 99 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
@@ -153,7 +153,7 @@
 
 ## .planning/
 
-- `.continue-here.md` — BLOCKING CONSTRAINTS — Read Before Anything Else (~1544 tok)
+- `.continue-here.md` — Session Checkpoint (~87 tok)
 - `config.json` (~258 tok)
 - `HANDOFF.json` — Declares bodies (~1014 tok)
 - `PROJECT.md` — Que-Que (~1287 tok)
@@ -224,7 +224,7 @@
 
 ## scripts/
 
-- `build-dashboard.mjs` — repoRoot: main, setupTerminal, teardownTerminal + 16 more (~4892 tok)
+- `build-dashboard.mjs` — repoRoot: main, setupTerminal, teardownTerminal + 14 more (~5212 tok)
 
 ## shell/zsh/
 
