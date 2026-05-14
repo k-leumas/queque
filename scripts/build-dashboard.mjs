@@ -1,7 +1,6 @@
 import { spawn } from 'node:child_process';
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
-import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
 import tty from 'node:tty';
@@ -51,13 +50,11 @@ let repoMeta = null;
 let debounceTimer = null;
 let spinnerTimer = null;
 let pendingFiles = new Set();
-let watchmanServer = null;
 let watchmanClient = null;
 let watchmanStdoutBuffer = '';
 const watchmanPendingResponses = [];
 let watchmanWatchRoot = '';
 let watchmanRelativePath = '';
-let watchmanTempDir = '';
 let pollTimer = null;
 let lastFallbackStatusSnapshot = '';
 let inputStream = null;
@@ -170,7 +167,8 @@ async function startEventLoop() {
     await shutdownWatchman();
     await startFallbackLoop();
     state.backend = 'git polling fallback';
-    state.message = `Watchman unavailable; using git polling fallback`;
+    const reason = error instanceof Error ? error.message : String(error);
+    state.message = `Watchman unavailable (${reason}); using git polling fallback`;
     state.lastUpdateAt = formatClock(new Date());
   }
 }
@@ -213,47 +211,9 @@ function createInputStream() {
 }
 
 async function startWatchmanLoop() {
-  watchmanTempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'llm-bookmark-watchman-'));
-  const sockPath = path.join(watchmanTempDir, 'watchman.sock');
-  const statefile = path.join(watchmanTempDir, 'watchman.state');
-  const logfile = path.join(watchmanTempDir, 'watchman.log');
-
-  watchmanServer = spawn(
-    'watchman',
-    [
-      '--foreground',
-      '--unix-listener-path',
-      sockPath,
-      '--statefile',
-      statefile,
-      '--logfile',
-      logfile,
-      '--no-save-state',
-      '--no-site-spawner',
-    ],
-    {
-      cwd: repoRoot,
-      env: {
-        ...process.env,
-        XDG_STATE_HOME: watchmanTempDir,
-      },
-      stdio: ['ignore', 'ignore', 'pipe'],
-    },
-  );
-
-  let serverError = '';
-  watchmanServer.stderr.on('data', (chunk) => {
-    serverError += chunk;
-  });
-
-  await waitForSocket(sockPath, serverError);
-
-  watchmanClient = spawn('watchman', ['--unix-listener-path', sockPath, '--no-spawn', '-j'], {
+  watchmanClient = spawn('watchman', ['-j'], {
     cwd: repoRoot,
-    env: {
-      ...process.env,
-      XDG_STATE_HOME: watchmanTempDir,
-    },
+    env: process.env,
     stdio: ['pipe', 'pipe', 'pipe'],
   });
 
@@ -558,22 +518,6 @@ function sendWatchmanCommand(command) {
   });
 }
 
-async function waitForSocket(sockPath, serverError) {
-  const deadline = Date.now() + 5000;
-  while (Date.now() < deadline) {
-    try {
-      await fs.access(sockPath);
-      return;
-    } catch {
-      if (watchmanServer.exitCode !== null) {
-        throw new Error(serverError || 'watchman server exited before socket became available');
-      }
-      await sleep(50);
-    }
-  }
-  throw new Error(serverError || 'timed out waiting for watchman socket');
-}
-
 async function shutdownWatchman() {
   if (debounceTimer) {
     clearTimeout(debounceTimer);
@@ -584,16 +528,6 @@ async function shutdownWatchman() {
     watchmanClient.stdin.end();
     watchmanClient.kill('SIGTERM');
     watchmanClient = null;
-  }
-
-  if (watchmanServer) {
-    watchmanServer.kill('SIGTERM');
-    watchmanServer = null;
-  }
-
-  if (watchmanTempDir) {
-    await fs.rm(watchmanTempDir, { recursive: true, force: true });
-    watchmanTempDir = '';
   }
 }
 
