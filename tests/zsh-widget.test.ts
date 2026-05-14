@@ -58,6 +58,26 @@ function runInteractiveZsh(script: string): { stdout: string; stderr: string; st
   };
 }
 
+/**
+ * Run a zsh script with the widget sourced, but with ZELLIJ removed from the
+ * environment. Used to test the Zellij detection guard (D-01) which must exit
+ * with a message when ZELLIJ is unset.
+ */
+function runZshWithoutZellij(script: string): { stdout: string; stderr: string; status: number } {
+  const env = { ...process.env, PATH: process.env.PATH };
+  delete env['ZELLIJ'];
+  const result = spawnSync('zsh', ['-f', '-c', `source ${widgetPath}\n${script}`], {
+    encoding: 'utf8',
+    timeout: 5000,
+    env,
+  });
+  return {
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+    status: result.status ?? 1,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Task 1: `?` widget and request capture path
 // ---------------------------------------------------------------------------
@@ -68,8 +88,8 @@ describe('? widget: single ? inserts without delay', () => {
     expect(result.status).toBe(0);
   });
 
-  it('widget uses /dev/tty for client subprocess stdio', () => {
-    const result = spawnSync('grep', ['-q', '/dev/tty', widgetPath], { encoding: 'utf8' });
+  it('widget launches floating pane via zellij run per D-06', () => {
+    const result = spawnSync('grep', ['-q', 'zellij run', widgetPath], { encoding: 'utf8' });
     expect(result.status).toBe(0);
   });
 
@@ -296,5 +316,57 @@ describe('result application: malformed JSON leaves buffers intact', () => {
     expect(status).not.toBe(0);
     expect(stdout).toContain('lbuffer=left');
     expect(stdout).toContain('rbuffer=right');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 3.2 Wave 1 tests: Zellij detection and static content assertions
+// These tests go RED until Plan 03 rewrites the widget (intentional TDD RED).
+// ---------------------------------------------------------------------------
+
+describe('Zellij detection: exits with message when ZELLIJ is unset', () => {
+  it('prints a message referencing Zellij when ZELLIJ env var is not set', () => {
+    // D-01: widget must exit with a message when ZELLIJ is not set.
+    // runZshWithoutZellij strips ZELLIJ from the child process environment so
+    // the detection guard fires even if the test host is inside a Zellij session.
+    const script = `
+      LBUFFER="test?"
+      qq-question-widget
+    `;
+    const { stdout, stderr, status } = runZshWithoutZellij(script);
+    // D-01: exits non-zero without showing modal
+    expect(status).not.toBe(0);
+    // The widget must print a message that mentions Zellij
+    const combined = stdout + stderr;
+    expect(combined.toLowerCase()).toContain('zellij');
+  });
+});
+
+describe('Zellij widget static content', () => {
+  it('widget sources without error and registers qq-question-widget', () => {
+    // Verify zle -N is present (widget is properly registered).
+    const result = spawnSync('grep', ['-q', 'zle -N', widgetPath], { encoding: 'utf8' });
+    expect(result.status).toBe(0);
+  });
+
+  it('widget contains mkfifo for FIFO creation per D-03', () => {
+    // RED until Plan 03 rewrites the widget to use a FIFO.
+    const result = spawnSync('grep', ['-q', 'mkfifo', widgetPath], { encoding: 'utf8' });
+    expect(result.status).toBe(0);
+  });
+
+  it('widget launches with zellij run per D-06', () => {
+    // RED until Plan 03 rewrites the widget to use zellij run.
+    const result = spawnSync('grep', ['-q', 'zellij run', widgetPath], { encoding: 'utf8' });
+    expect(result.status).toBe(0);
+  });
+
+  it('widget does not contain /dev/tty redirect per D-02 (inline TTY path removed)', () => {
+    // RED until Plan 03 removes the inline /dev/tty redirect.
+    // grep -c counts matching lines; exit 0 with output "0" means pattern absent.
+    // Using grep -c (not -qL) because macOS grep -qL has non-standard exit code behavior.
+    const result = spawnSync('grep', ['-c', '>/dev/tty', widgetPath], { encoding: 'utf8' });
+    const count = parseInt(result.stdout.trim(), 10);
+    expect(count).toBe(0);
   });
 });
