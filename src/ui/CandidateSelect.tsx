@@ -49,10 +49,16 @@ export function CandidateSelect({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [query, setQuery] = useState(initialQuery ?? '');
 
-  // Reset selectedIndex when candidates arrive (Pitfall 2 fix)
+  // Reset selectedIndex when candidates arrive (Pitfall 2 fix).
+  // Also clear initialQuery pre-filter if it produces zero matches — the lbuffer
+  // was already used as context for Claude; filtering candidates by it too is
+  // harmful when no command literally contains the lbuffer text.
   // biome-ignore lint/correctness/useExhaustiveDependencies: candidates is a prop; reset on arrival is intentional
   useEffect(() => {
     setSelectedIndex(0);
+    if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
+      setQuery('');
+    }
   }, [candidates]);
 
   // Single useInput handler with null-guards (Pitfall 3 fix)

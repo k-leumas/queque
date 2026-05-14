@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-02T15:35:35.745Z
-> Files: 60 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T12:49:17.933Z
+> Files: 85 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -14,6 +14,26 @@
 ## .claude/rules/
 
 - `openwolf.md` (~313 tok)
+
+## .claude/worktrees/agent-a19c27e461de31bc0/
+
+- `tsconfig.json` — TypeScript configuration (~163 tok)
+
+## .claude/worktrees/agent-a19c27e461de31bc0/.planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/
+
+- `03.1-02-SUMMARY.md` — Phase 03.1 Plan 02: UI Support Components (Wave 1) Summary (~987 tok)
+
+## .claude/worktrees/agent-a19c27e461de31bc0/.wolf/
+
+- `anatomy.md` — anatomy.md (~1703 tok)
+- `memory.md` — Memory (~2897 tok)
+
+## .claude/worktrees/agent-a19c27e461de31bc0/src/ui/
+
+- `ControlsLine.tsx` — ControlsLine (~235 tok)
+- `LoadingSpinner.tsx` — FRAMES (~136 tok)
+- `Modal.tsx` — Modal (~210 tok)
+- `SearchInput.tsx` — SearchInput (~112 tok)
 
 ## .claude/worktrees/agent-a4210920/.planning/phases/01-shell-bridge-and-result-contract/
 
@@ -72,6 +92,18 @@
 
 - `intent-router.test.ts` — Helper: build a minimal NormalizedRequest for testing (~2179 tok)
 
+## .claude/worktrees/agent-aca72d47efd9f909e/src/client/
+
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2352 tok)
+
+## .claude/worktrees/agent-aca72d47efd9f909e/src/ui/
+
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1190 tok)
+
+## .claude/worktrees/agent-aca72d47efd9f909e/tests/
+
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~1908 tok)
+
 ## .claude/worktrees/agent-accab398/.planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-02-SUMMARY.md` — Phase 01 Plan 02: ZSH Bridge and Result Application Summary (~1437 tok)
@@ -89,7 +121,7 @@
 - `config.json` (~258 tok)
 - `PROJECT.md` — Que-Que (~1287 tok)
 - `REQUIREMENTS.md` — Requirements: Que-Que (~1242 tok)
-- `ROADMAP.md` — Roadmap: Que-Que (~2026 tok)
+- `ROADMAP.md` — Roadmap: Que-Que (~2579 tok)
 - `STATE.md` — Project State (~387 tok)
 
 ## .planning/notes/
@@ -119,6 +151,24 @@
 - `02-RESEARCH.md` — Phase 2: Intent Router and Context Pipeline - Research (~5890 tok)
 - `02-REVIEWS.md` — Cross-AI Plan Review — Phase 2 (~2741 tok)
 
+## .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/
+
+- `03.1-03-SUMMARY.md` — Phase 03.1 Plan 03: Wave 2 Core Implementation Summary (~2166 tok)
+- `03.1-REVIEW.md` — Phase 03.1: Code Review Report (~3497 tok)
+- `03.1-VERIFICATION.md` — Phase 03.1: Monocle-style Interface and Interactivity — Verification Report (~4216 tok)
+
+## .planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-01-PLAN.md` — returning: runZsh, runZshWithoutZellij (~4521 tok)
+- `03.2-02-PLAN.md` — uses: writeShellResult (~3930 tok)
+- `03.2-03-PLAN.md` — Trust Boundaries (~3914 tok)
+- `03.2-CONTEXT.md` — Phase 3.2: Zellij floating pane integration for best UX - Context (~1961 tok)
+- `03.2-DISCUSSION-LOG.md` — Phase 3.2: Zellij floating pane integration for best UX - Discussion Log (~1080 tok)
+- `03.2-PATTERNS.md` — Phase 3.2: Zellij Floating Pane Integration - Pattern Map (~3828 tok)
+- `03.2-RESEARCH.md` — Phase 3.2: Zellij Floating Pane Integration - Research (~8713 tok)
+- `03.2-REVIEWS.md` — Cross-AI Plan Review — Phase 3.2 (~2218 tok)
+- `03.2-VALIDATION.md` — Phase 3.2 — Validation Strategy (~848 tok)
+
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
 - `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
@@ -130,6 +180,10 @@
 - `PITFALLS.md` — Pitfalls Research: Que-Que (~736 tok)
 - `STACK.md` — Stack Research: Que-Que (~670 tok)
 - `SUMMARY.md` — Research Summary: Que-Que (~336 tok)
+
+## docs/
+
+- `SYSTEM_DESGN.md` — System Design (~3531 tok)
 
 ## shell/zsh/
 
@@ -148,6 +202,10 @@
 
 - `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~1134 tok)
 - `server.ts` — Starts the daemon Unix-socket server. (~699 tok)
+
+## src/ui/
+
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1291 tok)
 
 ## tests/
 
