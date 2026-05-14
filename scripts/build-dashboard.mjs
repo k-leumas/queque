@@ -428,6 +428,7 @@ async function flushPendingBuild() {
   state.version = repoMeta.label;
   state.branch = repoMeta.branch;
   state.worktree = repoMeta.worktree;
+  state.defineVars = buildScript ? parseBuildScriptDefines(buildScript) : [];
   state.lastUpdateAt = formatClock(new Date());
   state.buildRunning = false;
 
@@ -828,6 +829,7 @@ function parseBuildScriptDefines(scriptPath) {
         display = value;
       }
 
+      if (/\btoken\b/i.test(key)) continue;
       result.push([key, display]);
     }
 
