@@ -45,6 +45,8 @@ const state = {
   stopRequested: false,
   spinnerIndex: 0,
   backend: 'watchman',
+  branch: '',
+  worktree: '',
 };
 
 let repoMeta = null;
@@ -74,6 +76,8 @@ async function main() {
   try {
     repoMeta = await captureRepoMeta();
     state.version = repoMeta.label;
+    state.branch = repoMeta.branch;
+    state.worktree = repoMeta.worktree;
     state.message = `Watching source files in ${repoName}`;
     state.lastUpdateAt = formatClock(new Date());
 
@@ -363,6 +367,8 @@ async function flushPendingBuild() {
 
   repoMeta = await captureRepoMeta();
   state.version = repoMeta.label;
+  state.branch = repoMeta.branch;
+  state.worktree = repoMeta.worktree;
   state.lastUpdateAt = formatClock(new Date());
   state.buildRunning = false;
 
@@ -462,11 +468,14 @@ function diffStatusSnapshots(previousSnapshot, currentSnapshot) {
 }
 
 async function captureRepoMeta() {
-  const [head, label] = await Promise.all([
+  const [head, label, branch, gitDir] = await Promise.all([
     runGit(['rev-parse', 'HEAD']),
     runGit(['describe', '--tags', '--always', '--dirty']),
+    runGit(['rev-parse', '--abbrev-ref', 'HEAD']),
+    runGit(['rev-parse', '--git-dir']),
   ]);
-  return { head, label };
+  const worktree = gitDir.includes('.git/worktrees/') ? path.basename(gitDir) : '';
+  return { head, label, branch, worktree };
 }
 
 function runGit(args) {
@@ -507,13 +516,16 @@ function runCommand(command, cwd) {
     });
 
     let output = '';
+    const maxOutput = 512 * 1024;
 
     child.stdout.on('data', (chunk) => {
       output += chunk;
+      if (output.length > maxOutput) output = output.slice(-maxOutput);
     });
 
     child.stderr.on('data', (chunk) => {
       output += chunk;
+      if (output.length > maxOutput) output = output.slice(-maxOutput);
     });
 
     child.on('error', reject);
@@ -599,7 +611,7 @@ function render() {
   const width = process.stdout.columns || 80;
   const height = process.stdout.rows || 24;
   const errorPaneLines = state.showErrorPane && state.lastErrorLog ? 8 : 0;
-  const historyRows = Math.max(5, height - 11 - errorPaneLines);
+  const historyRows = Math.max(5, height - 13 - errorPaneLines);
   const history = state.history.slice(-historyRows);
 
   const statusLabel =
@@ -610,6 +622,10 @@ function render() {
 
   const lines = [];
   lines.push(`${bold(repoName)}  build dashboard  ${dim(state.backend)}`);
+  lines.push(
+    `${dim('branch')} ${state.branch}${state.worktree ? `  ${dim('worktree')} ${state.worktree}` : ''}`,
+  );
+  lines.push(`${dim('root')}   ${truncate(abbreviatePath(repoRoot), width - 8)}`);
   lines.push(`${dim('command')} ${buildCommand.join(' ')}`);
   lines.push(`${dim('version')} ${state.version || 'unknown'}`);
   lines.push(`${statusColor}[${statusLabel}]\x1b[0m ${truncate(state.message, width - 12)}`);
@@ -620,7 +636,7 @@ function render() {
     lines.push(formatEntry(entry, width));
   }
 
-  while (lines.length < 6 + historyRows) {
+  while (lines.length < 8 + historyRows) {
     lines.push('');
   }
 
@@ -672,6 +688,11 @@ function trimHistory() {
   if (state.history.length > maxEntries) {
     state.history.splice(0, state.history.length - maxEntries);
   }
+}
+
+function abbreviatePath(p) {
+  const home = process.env.HOME ?? '';
+  return home && p.startsWith(home) ? `~${p.slice(home.length)}` : p;
 }
 
 function tailLines(text, count) {
