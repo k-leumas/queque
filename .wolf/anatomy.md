@@ -1,7 +1,12 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T19:16:13.641Z
-> Files: 99 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T21:35:16.130Z
+> Files: 101 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/
+
+- `feedback_no_coauthored.md` (~148 tok)
+- `MEMORY.md` — Memory Index (~33 tok)
 
 ## ./
 
@@ -153,7 +158,7 @@
 
 ## .planning/
 
-- `.continue-here.md` — Session Checkpoint (~87 tok)
+- `.continue-here.md` — Session Checkpoint (~494 tok)
 - `config.json` (~258 tok)
 - `HANDOFF.json` — Declares bodies (~1014 tok)
 - `PROJECT.md` — Que-Que (~1287 tok)
@@ -224,7 +229,7 @@
 
 ## scripts/
 
-- `build-dashboard.mjs` — repoRoot: main, setupTerminal, teardownTerminal + 14 more (~5212 tok)
+- `build-dashboard.mjs` — `, 'wholename']], (~6413 tok)
 
 ## shell/zsh/
 

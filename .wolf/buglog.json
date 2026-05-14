@@ -515,6 +515,70 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-14T19:16:13.662Z"
+    },
+    {
+      "id": "bug-033",
+      "timestamp": "2026-05-14T20:17:03.376Z",
+      "error_message": "Wrong return value",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Was returning: rootConfigFiles.has(normalized);",
+      "fix": "Now returns: false;",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T20:17:03.376Z"
+    },
+    {
+      "id": "bug-034",
+      "timestamp": "2026-05-14T20:17:11.261Z",
+      "error_message": "Incorrect value in code",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Had `${dim('",
+      "fix": "Changed to `  ${dim(`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T20:17:11.261Z"
+    },
+    {
+      "id": "bug-035",
+      "timestamp": "2026-05-14T21:09:23.870Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "15 lines replaced/restructured",
+      "fix": "Rewrote 25→25 lines (15 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T21:09:23.870Z"
+    },
+    {
+      "id": "bug-036",
+      "timestamp": "2026-05-14T21:10:04.496Z",
+      "error_message": "Missing error handling in loadDotEnv",
+      "file": "scripts/build-dashboard.mjs",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-14T21:10:04.496Z"
     }
   ]
 }
