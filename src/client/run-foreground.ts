@@ -30,16 +30,6 @@ export interface ForegroundClientArgs {
 }
 
 /**
- * Number of fixed chrome rows in the modal:
- *   border-top(1) + title(1) + separator(1) + body-marginTop(1) + search(1)
- *   + gap(search→results)(1) + gap(results→controls)(1) + controls(1) + border-bottom(1)
- *
- * Used to size the blank scroll zone before rendering so the modal doesn't
- * overwrite the user's previous shell output.
- */
-const MODAL_CHROME_LINES = 9;
-
-/**
  * Runs the foreground client loop.
  *
  * 1. Opens /dev/tty for interactive stdio (does not assume inherited stdio is a TTY).
@@ -55,18 +45,19 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
   const uid = typeof process.getuid === 'function' ? process.getuid() : 0;
   const socketPath = socketPathForUid(uid);
 
+  const inZellij = process.env['ZELLIJ'] !== undefined;
+
   void appendDebugLog('client', 'foreground start', {
     requestFile,
     resultFile,
     resultMode,
     socketPath,
+    inZellij,
   });
 
-  // Phase 1: open /dev/tty to verify it is accessible before proceeding.
-  // This is a pre-flight check only — no reads or writes are performed on this
-  // handle here. Phase 4 will pass this handle to the Ink TUI for interactive
-  // I/O; until then the handle is closed in the finally block below.
-  const ttyHandle = await fsp.open('/dev/tty', 'r+');
+  // In Zellij: process.stdin/stdout ARE the pane's PTY — no /dev/tty needed.
+  // Outside Zellij: open /dev/tty for interactive stdio (ZLE redirects stdin from /dev/null).
+  const ttyHandle = inZellij ? null : await fsp.open('/dev/tty', 'r+');
 
   try {
     // Read and validate the shell request
@@ -112,22 +103,25 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
         // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
 
-        // Try to create TTY streams for Ink; fall back to process stdio if unavailable.
+        // In Zellij: process.stdin/stdout are the pane's PTY — no tty streams needed.
+        // Outside Zellij: try to create TTY streams for Ink; fall back to process stdio if unavailable.
         // (In test environments, ttyHandle.fd may be a synthetic fd that is not a real TTY.)
         let ttyReadStream: tty.ReadStream | undefined;
         let ttyWriteStream: tty.WriteStream | undefined;
-        try {
-          ttyReadStream = new tty.ReadStream(ttyHandle.fd);
-          ttyWriteStream = new tty.WriteStream(ttyHandle.fd);
-        } catch {
-          // Non-TTY environment (e.g. tests) — Ink will use process.stdin/stdout
-        }
+        if (!inZellij) {
+          try {
+            ttyReadStream = new tty.ReadStream(ttyHandle!.fd);
+            ttyWriteStream = new tty.WriteStream(ttyHandle!.fd);
+          } catch {
+            // Non-TTY environment (e.g. tests) — Ink will use process.stdin/stdout
+          }
 
-        if (ttyWriteStream) {
-          // Blank out the modal viewport so the render doesn't overwrite prior output.
-          const modalHeight = MODAL_CHROME_LINES + 5;
-          ttyWriteStream.write('\n'.repeat(modalHeight));
-          ttyWriteStream.write(`\x1b[${modalHeight}A`);
+          if (ttyWriteStream) {
+            // Blank out the modal viewport so the render doesn't overwrite prior output.
+            const modalHeight = 14;
+            ttyWriteStream.write('\n'.repeat(modalHeight));
+            ttyWriteStream.write(`\x1b[${modalHeight}A`);
+          }
         }
 
         await new Promise<void>((resolve) => {
@@ -156,8 +150,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               },
             });
 
-          const renderOptions =
-            ttyReadStream && ttyWriteStream ? { stdin: ttyReadStream, stdout: ttyWriteStream } : {};
+          const renderOptions = inZellij
+            ? {}
+            : (ttyReadStream && ttyWriteStream ? { stdin: ttyReadStream, stdout: ttyWriteStream } : {});
 
           const app = render(buildCandidateElement(null), renderOptions);
 
@@ -192,6 +187,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       void appendDebugLog('client', 'wrote cancel result', { resultFile });
     }
   } finally {
-    await ttyHandle.close();
+    await ttyHandle?.close();
   }
 }
