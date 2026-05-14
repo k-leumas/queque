@@ -8,7 +8,31 @@ import tty from 'node:tty';
 
 const repoRoot = process.cwd();
 const repoName = path.basename(repoRoot);
-const buildCommand = process.argv.length > 2 ? process.argv.slice(2) : ['pnpm', 'run', 'build'];
+const { ignorePaths, buildCommand } = (() => {
+  const ignores = [];
+  const rest = [];
+  for (let i = 2; i < process.argv.length; i++) {
+    if (process.argv[i].startsWith('--ignore-paths=')) {
+      ignores.push(
+        ...process.argv[i]
+          .slice(15)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
+      );
+    } else if (process.argv[i] === '--ignore-paths' && i + 1 < process.argv.length) {
+      ignores.push(
+        ...process.argv[++i]
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean),
+      );
+    } else {
+      rest.push(process.argv[i]);
+    }
+  }
+  return { ignorePaths: ignores, buildCommand: rest.length > 0 ? rest : ['pnpm', 'run', 'build'] };
+})();
 const debounceMs = Number.parseInt(process.env.BUILD_DASHBOARD_DEBOUNCE ?? '150', 10);
 const fallbackPollMs = Number.parseInt(process.env.BUILD_DASHBOARD_INTERVAL ?? '1000', 10);
 const watchmanName = `build-dashboard-${process.pid}`;
@@ -277,6 +301,16 @@ async function startWatchmanLoop() {
         ['not', ['dirname', '.wolf']],
         ['not', ['dirname', '.claude']],
         ['not', ['dirname', '.playwright-profile-firefox']],
+        ...ignorePaths.map((p) => {
+          const clean = p.replace(/\/$/, '');
+          if (clean.includes('/')) {
+            return [
+              'not',
+              ['anyof', ['match', clean, 'wholename'], ['match', `${clean}/**`, 'wholename']],
+            ];
+          }
+          return ['not', ['dirname', clean]];
+        }),
       ],
       fields: ['name', 'exists'],
       empty_on_fresh_instance: true,
@@ -426,6 +460,11 @@ function shouldWatchFile(relPath) {
   if (normalized.startsWith('apps/site/src/')) return true;
   if (normalized.startsWith('apps/site/public/')) return true;
   if (normalized.startsWith('apps/site/') && basename === 'package.json') return true;
+
+  for (const ignore of ignorePaths) {
+    const prefix = ignore.endsWith('/') ? ignore : `${ignore}/`;
+    if (normalized === ignore || normalized.startsWith(prefix)) return false;
+  }
 
   return rootConfigFiles.has(normalized);
 }
@@ -625,7 +664,8 @@ function render() {
   lines.push(
     `${dim('branch')} ${state.branch}${state.worktree ? `  ${dim('worktree')} ${state.worktree}` : ''}`,
   );
-  lines.push(`${dim('root')}   ${truncate(abbreviatePath(repoRoot), width - 8)}`);
+  const ignoreNote = ignorePaths.length ? `  ${dim(`ignoring: ${ignorePaths.join(', ')}`)}` : '';
+  lines.push(`${dim('root')}   ${truncate(abbreviatePath(repoRoot), width - 8)}${ignoreNote}`);
   lines.push(`${dim('command')} ${buildCommand.join(' ')}`);
   lines.push(`${dim('version')} ${state.version || 'unknown'}`);
   lines.push(`${statusColor}[${statusLabel}]\x1b[0m ${truncate(state.message, width - 12)}`);
