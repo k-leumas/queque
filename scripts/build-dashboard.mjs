@@ -95,11 +95,13 @@ const state = {
   branch: '',
   worktree: '',
   defineVars: [],
+  builtSha: '',
 };
 
 let repoMeta = null;
 let debounceTimer = null;
 let spinnerTimer = null;
+let gitMetaTimer = null;
 let pendingFiles = new Set();
 let watchmanSocket = null;
 let watchmanStdoutBuffer = '';
@@ -126,7 +128,7 @@ async function main() {
     state.version = repoMeta.label;
     state.branch = repoMeta.branch;
     state.worktree = repoMeta.worktree;
-    state.defineVars = buildScript ? parseBuildScriptDefines(buildScript) : [];
+    state.defineVars = buildScript ? parseBuildScriptDefines(buildScript, repoMeta) : [];
     state.message = `Watching source files in ${repoName}`;
     state.lastUpdateAt = formatClock(new Date());
 
@@ -138,6 +140,20 @@ async function main() {
       state.spinnerIndex = (state.spinnerIndex + 1) % spinnerFrames.length;
       render();
     }, 150);
+
+    gitMetaTimer = setInterval(async () => {
+      if (state.buildRunning || state.stopRequested) return;
+      try {
+        repoMeta = await captureRepoMeta();
+        state.version = repoMeta.label;
+        state.branch = repoMeta.branch;
+        state.worktree = repoMeta.worktree;
+        state.defineVars = buildScript ? parseBuildScriptDefines(buildScript, repoMeta) : [];
+        render();
+      } catch {
+        // git unavailable, keep stale values
+      }
+    }, 30_000);
 
     await startEventLoop();
     render();
@@ -170,6 +186,7 @@ function setupTerminal() {
 
 function teardownTerminal() {
   if (spinnerTimer) clearInterval(spinnerTimer);
+  if (gitMetaTimer) clearInterval(gitMetaTimer);
   if (debounceTimer) clearTimeout(debounceTimer);
   if (inputStream) {
     inputStream.off('data', handleInput);
@@ -201,6 +218,19 @@ async function requestStop() {
   stopFallbackLoop();
   teardownTerminal();
   process.exit(0);
+}
+
+async function restartSelf() {
+  if (state.stopRequested) return;
+  state.stopRequested = true;
+  await shutdownWatchman();
+  stopFallbackLoop();
+  teardownTerminal();
+  const child = spawn(process.execPath, process.argv.slice(1), {
+    stdio: 'inherit',
+    env: process.env,
+  });
+  child.on('close', (code) => process.exit(code ?? 0));
 }
 
 function handleFatal(error) {
@@ -248,6 +278,19 @@ function handleInput(chunk) {
   if (chunk === 'e' || chunk === 'E') {
     state.showErrorPane = !state.showErrorPane;
     render();
+    return;
+  }
+
+  if (chunk === 'b' || chunk === 'B') {
+    if (!state.buildRunning && !state.stopRequested) {
+      pendingFiles.add('(manual)');
+      scheduleBuild();
+    }
+    return;
+  }
+
+  if (chunk === 'r' || chunk === 'R') {
+    void restartSelf();
   }
 }
 
@@ -411,6 +454,7 @@ async function flushPendingBuild() {
 
   const triggerMeta = await captureRepoMeta();
   const summary = describeTrigger(triggerFiles, repoMeta, triggerMeta);
+  const buildStartSha = shaFingerprint(triggerMeta);
 
   state.buildRunning = true;
   state.status = 'building';
@@ -428,7 +472,7 @@ async function flushPendingBuild() {
   state.version = repoMeta.label;
   state.branch = repoMeta.branch;
   state.worktree = repoMeta.worktree;
-  state.defineVars = buildScript ? parseBuildScriptDefines(buildScript) : [];
+  state.defineVars = buildScript ? parseBuildScriptDefines(buildScript, repoMeta) : [];
   state.lastUpdateAt = formatClock(new Date());
   state.buildRunning = false;
 
@@ -442,9 +486,11 @@ async function flushPendingBuild() {
 
   if (code === 0) {
     state.status = 'ok';
+    state.builtSha = buildStartSha;
     state.message = `${state.lastUpdateAt} ${summary}`;
   } else {
     state.status = 'error';
+    state.showErrorPane = true;
     state.message = `${state.lastUpdateAt} exit ${code} ${summary}`;
     state.lastErrorLog = tailLines(output, 16);
   }
@@ -530,6 +576,11 @@ function diffStatusSnapshots(previousSnapshot, currentSnapshot) {
   }
 
   return changed.length > 0 ? changed : parseStatusPaths(currentSnapshot);
+}
+
+function shaFingerprint(meta) {
+  const dirty = meta.label.endsWith('-dirty');
+  return `${meta.head.slice(0, 7)}${dirty ? '-dirty' : ''}`;
 }
 
 async function captureRepoMeta() {
@@ -693,6 +744,14 @@ function render() {
   for (const [key, val] of state.defineVars) {
     lines.push(`${dim(key)}  ${val}`);
   }
+  if (state.builtSha && repoMeta) {
+    const currentSha = shaFingerprint(repoMeta);
+    const synced = state.builtSha === currentSha;
+    const indicator = synced
+      ? '\x1b[32m✓ synced\x1b[0m'
+      : `\x1b[33m↑ stale  (built from ${state.builtSha})\x1b[0m`;
+    lines.push(`${dim('built')}   ${currentSha}  ${indicator}`);
+  }
   lines.push(`${dim('command')} ${buildCommand.join(' ')}`);
   lines.push(`${dim('version')} ${state.version || 'unknown'}`);
   lines.push(`${statusColor}[${statusLabel}]\x1b[0m ${truncate(state.message, width - 12)}`);
@@ -725,7 +784,7 @@ function render() {
   lines.push('');
   lines.push(
     dim(
-      'watching source files only; tests/docs ignored | q quit  c clear history  e toggle error pane',
+      'watching source files only; tests/docs ignored | q quit  b build  r restart  c clear  e errors',
     ),
   );
 
@@ -783,7 +842,7 @@ function loadDotEnv(envFilePath) {
   }
 }
 
-function parseBuildScriptDefines(scriptPath) {
+function parseBuildScriptDefines(scriptPath, meta) {
   try {
     const source = fsSync.readFileSync(scriptPath, 'utf8');
     const m = source.match(/\bdefine\s*:\s*\{([^}]*)\}/s);
@@ -817,6 +876,12 @@ function parseBuildScriptDefines(scriptPath) {
         if (m3) value = m3[1];
       }
 
+      if (value === undefined && meta && expr.match(/JSON\.stringify\(\s*\w+\(\)\s*\)/)) {
+        if (/sha|commit|rev(?:ision)?|hash/i.test(key)) {
+          value = shaFingerprint(meta);
+        }
+      }
+
       const isSensitive = /token|secret|password|api/i.test(key);
       let display;
       if (value === undefined) {
@@ -829,7 +894,7 @@ function parseBuildScriptDefines(scriptPath) {
         display = value;
       }
 
-      if (/\btoken\b/i.test(key)) continue;
+      if (/(?<![a-z])token(?![a-z])/i.test(key)) continue;
       result.push([key, display]);
     }
 
