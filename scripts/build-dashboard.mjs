@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import fsSync from 'node:fs';
 import fs from 'node:fs/promises';
+import net from 'node:net';
 import path from 'node:path';
 import process from 'node:process';
 import tty from 'node:tty';
@@ -50,7 +51,7 @@ let repoMeta = null;
 let debounceTimer = null;
 let spinnerTimer = null;
 let pendingFiles = new Set();
-let watchmanClient = null;
+let watchmanSocket = null;
 let watchmanStdoutBuffer = '';
 const watchmanPendingResponses = [];
 let watchmanWatchRoot = '';
@@ -211,23 +212,38 @@ function createInputStream() {
 }
 
 async function startWatchmanLoop() {
-  watchmanClient = spawn('watchman', ['-j'], {
-    cwd: repoRoot,
-    env: process.env,
-    stdio: ['pipe', 'pipe', 'pipe'],
+  const sockname = await new Promise((resolve, reject) => {
+    const child = spawn('watchman', ['get-sockname'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let out = '';
+    child.stdout.on('data', (d) => {
+      out += d;
+    });
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject(new Error('watchman get-sockname failed'));
+        return;
+      }
+      try {
+        resolve(JSON.parse(out).sockname);
+      } catch {
+        reject(new Error('watchman get-sockname: bad JSON'));
+      }
+    });
+    child.on('error', reject);
   });
 
-  watchmanClient.stdout.setEncoding('utf8');
-  watchmanClient.stdout.on('data', onWatchmanStdout);
-  watchmanClient.stderr.on('data', (chunk) => {
-    state.status = 'error';
-    state.message = `watchman client error: ${String(chunk).trim()}`;
-    render();
-  });
-
-  watchmanClient.stdin.on('error', (err) => {
-    const pending = watchmanPendingResponses.splice(0);
-    for (const p of pending) p.reject(err);
+  await new Promise((resolve, reject) => {
+    watchmanSocket = net.createConnection(sockname);
+    watchmanSocket.setEncoding('utf8');
+    watchmanSocket.on('data', onWatchmanStdout);
+    watchmanSocket.on('error', (err) => {
+      const pending = watchmanPendingResponses.splice(0);
+      for (const p of pending) p.reject(err);
+    });
+    watchmanSocket.once('connect', resolve);
+    watchmanSocket.once('error', reject);
   });
 
   const watchResponse = await sendWatchmanCommand(['watch-project', repoRoot]);
@@ -274,7 +290,7 @@ function onWatchmanStdout(chunk) {
 
     let payload;
     try {
-      payload = line; //since we are asking for formatted output we dont need to parse JSON.parse(line);
+      payload = JSON.parse(line);
     } catch (error) {
       state.status = 'error';
       state.message = `watchman parse error: ${line}`;
@@ -509,12 +525,12 @@ function runCommand(command, cwd) {
 
 function sendWatchmanCommand(command) {
   return new Promise((resolve, reject) => {
-    if (!watchmanClient || watchmanClient.stdin.destroyed || !watchmanClient.stdin.writable) {
-      reject(new Error('watchman client is not available'));
+    if (!watchmanSocket || watchmanSocket.destroyed) {
+      reject(new Error('watchman socket not available'));
       return;
     }
     watchmanPendingResponses.push({ resolve, reject });
-    watchmanClient.stdin.write(`${JSON.stringify(command)}\n`);
+    watchmanSocket.write(`${JSON.stringify(command)}\n`);
   });
 }
 
@@ -524,10 +540,9 @@ async function shutdownWatchman() {
     debounceTimer = null;
   }
 
-  if (watchmanClient) {
-    watchmanClient.stdin.end();
-    watchmanClient.kill('SIGTERM');
-    watchmanClient = null;
+  if (watchmanSocket) {
+    watchmanSocket.destroy();
+    watchmanSocket = null;
   }
 }
 
