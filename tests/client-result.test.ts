@@ -289,20 +289,34 @@ describe('runForegroundClient', () => {
   });
 
   it('opens /dev/tty for interactive stdio instead of using inherited stdio', async () => {
-    const fsp = await import('node:fs/promises');
-    const openSpy = vi.spyOn(fsp, 'open');
+    // This test verifies the non-Zellij path — ensure ZELLIJ is not set so the
+    // implementation takes the /dev/tty branch even when running inside a Zellij session.
+    const savedZellij = process.env['ZELLIJ'];
+    delete process.env['ZELLIJ'];
 
-    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    try {
+      const fsp = await import('node:fs/promises');
+      const openSpy = vi.spyOn(fsp, 'open');
 
-    await runForegroundClient({
-      requestFile,
-      resultFile,
-      resultMode: 'cancel',
-    });
+      const { runForegroundClient } = await import('../src/client/run-foreground.js');
 
-    // /dev/tty must have been opened
-    const ttyCall = openSpy.mock.calls.find((args) => args[0] === '/dev/tty');
-    expect(ttyCall).toBeDefined();
+      await runForegroundClient({
+        requestFile,
+        resultFile,
+        resultMode: 'cancel',
+      });
+
+      // /dev/tty must have been opened
+      const ttyCall = openSpy.mock.calls.find((args) => args[0] === '/dev/tty');
+      expect(ttyCall).toBeDefined();
+    } finally {
+      // Restore ZELLIJ env to its original state
+      if (savedZellij === undefined) {
+        delete process.env['ZELLIJ'];
+      } else {
+        process.env['ZELLIJ'] = savedZellij;
+      }
+    }
   });
 
   it('emits a replace-buffer result in llm mode and the shell applies it', async () => {
@@ -362,6 +376,8 @@ describe('runForegroundClient: Zellij branch skips /dev/tty open', () => {
   };
 
   beforeEach(() => {
+    // Clear all mock call history so previous-test spy calls don't leak in.
+    vi.clearAllMocks();
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-zellij-test-'));
     requestFile = path.join(tmpDir, 'request.json');
     resultFile = path.join(tmpDir, 'result.json');
