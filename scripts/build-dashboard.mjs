@@ -8,9 +8,10 @@ import tty from 'node:tty';
 
 const repoRoot = process.cwd();
 const repoName = path.basename(repoRoot);
-const { ignorePaths, buildCommand } = (() => {
+const { ignorePaths, buildScript, buildCommand } = (() => {
   const ignores = [];
   const rest = [];
+  let bscript = null;
   for (let i = 2; i < process.argv.length; i++) {
     if (process.argv[i].startsWith('--ignore-paths=')) {
       ignores.push(
@@ -27,11 +28,33 @@ const { ignorePaths, buildCommand } = (() => {
           .map((s) => s.trim())
           .filter(Boolean),
       );
+    } else if (process.argv[i].startsWith('--build-script=')) {
+      bscript = path.resolve(process.argv[i].slice(15));
+    } else if (process.argv[i] === '--build-script' && i + 1 < process.argv.length) {
+      bscript = path.resolve(process.argv[++i]);
     } else {
       rest.push(process.argv[i]);
     }
   }
-  return { ignorePaths: ignores, buildCommand: rest.length > 0 ? rest : ['pnpm', 'run', 'build'] };
+  if (!bscript) {
+    for (const c of [
+      'scripts/esbuild-build.mjs',
+      'scripts/esbuild.mjs',
+      'scripts/build.mjs',
+      'esbuild.config.mjs',
+    ]) {
+      const full = path.join(repoRoot, c);
+      if (fsSync.existsSync(full)) {
+        bscript = full;
+        break;
+      }
+    }
+  }
+  return {
+    ignorePaths: ignores,
+    buildScript: bscript,
+    buildCommand: rest.length > 0 ? rest : ['pnpm', 'run', 'build'],
+  };
 })();
 const debounceMs = Number.parseInt(process.env.BUILD_DASHBOARD_DEBOUNCE ?? '150', 10);
 const fallbackPollMs = Number.parseInt(process.env.BUILD_DASHBOARD_INTERVAL ?? '1000', 10);
@@ -71,6 +94,7 @@ const state = {
   backend: 'watchman',
   branch: '',
   worktree: '',
+  defineVars: [],
 };
 
 let repoMeta = null;
@@ -102,6 +126,7 @@ async function main() {
     state.version = repoMeta.label;
     state.branch = repoMeta.branch;
     state.worktree = repoMeta.worktree;
+    state.defineVars = buildScript ? parseBuildScriptDefines(buildScript) : [];
     state.message = `Watching source files in ${repoName}`;
     state.lastUpdateAt = formatClock(new Date());
 
@@ -650,8 +675,6 @@ function render() {
   const width = process.stdout.columns || 80;
   const height = process.stdout.rows || 24;
   const errorPaneLines = state.showErrorPane && state.lastErrorLog ? 8 : 0;
-  const historyRows = Math.max(5, height - 13 - errorPaneLines);
-  const history = state.history.slice(-historyRows);
 
   const statusLabel =
     state.status === 'building'
@@ -666,17 +689,27 @@ function render() {
   );
   const ignoreNote = ignorePaths.length ? `  ${dim(`ignoring: ${ignorePaths.join(', ')}`)}` : '';
   lines.push(`${dim('root')}   ${truncate(abbreviatePath(repoRoot), width - 8)}${ignoreNote}`);
+  for (const [key, val] of state.defineVars) {
+    lines.push(`${dim(key)}  ${val}`);
+  }
   lines.push(`${dim('command')} ${buildCommand.join(' ')}`);
   lines.push(`${dim('version')} ${state.version || 'unknown'}`);
   lines.push(`${statusColor}[${statusLabel}]\x1b[0m ${truncate(state.message, width - 12)}`);
   lines.push('');
   lines.push(tableHeader(width));
 
+  const headerSize = lines.length;
+  const historyRows = Math.max(
+    5,
+    height - headerSize - 2 - (errorPaneLines > 0 ? errorPaneLines + 2 : 0),
+  );
+  const history = state.history.slice(-historyRows);
+
   for (const entry of history) {
     lines.push(formatEntry(entry, width));
   }
 
-  while (lines.length < 8 + historyRows) {
+  while (lines.length < headerSize + historyRows) {
     lines.push('');
   }
 
@@ -727,6 +760,80 @@ function trimHistory() {
   const maxEntries = 200;
   if (state.history.length > maxEntries) {
     state.history.splice(0, state.history.length - maxEntries);
+  }
+}
+
+function loadDotEnv(envFilePath) {
+  try {
+    const env = {};
+    for (const line of fsSync.readFileSync(envFilePath, 'utf8').split('\n')) {
+      const t = line.trim();
+      if (!t || t.startsWith('#')) continue;
+      const eq = t.indexOf('=');
+      if (eq < 0) continue;
+      const k = t.slice(0, eq).trim();
+      let v = t.slice(eq + 1).trim();
+      if (v.length > 1 && v[0] === v.at(-1) && (v[0] === '"' || v[0] === "'")) v = v.slice(1, -1);
+      env[k] = v;
+    }
+    return env;
+  } catch {
+    return {};
+  }
+}
+
+function parseBuildScriptDefines(scriptPath) {
+  try {
+    const source = fsSync.readFileSync(scriptPath, 'utf8');
+    const m = source.match(/\bdefine\s*:\s*\{([^}]*)\}/s);
+    if (!m) return [];
+
+    const dotEnv = loadDotEnv(path.join(repoRoot, '.env.local'));
+    const env = { ...dotEnv, ...process.env };
+    const result = [];
+
+    for (const line of m[1].split('\n')) {
+      const t = line.trim().replace(/,$/, '');
+      if (!t || t.startsWith('//')) continue;
+      const ci = t.indexOf(':');
+      if (ci < 0) continue;
+      const key = t.slice(0, ci).trim();
+      const expr = t.slice(ci + 1).trim();
+
+      let value;
+      const m1 = expr.match(
+        /JSON\.stringify\(\s*process\.env\.(\w+)\s*\?\?\s*['"]([^'"]*)['"]\s*\)/,
+      );
+      if (m1) value = env[m1[1]] !== undefined ? env[m1[1]] : m1[2];
+
+      if (value === undefined) {
+        const m2 = expr.match(/JSON\.stringify\(\s*process\.env\.(\w+)\s*\)/);
+        if (m2) value = env[m2[1]] ?? '';
+      }
+
+      if (value === undefined) {
+        const m3 = expr.match(/JSON\.stringify\(\s*['"]([^'"]*)['"]\s*\)/);
+        if (m3) value = m3[1];
+      }
+
+      const isSensitive = /token|secret|password|api/i.test(key);
+      let display;
+      if (value === undefined) {
+        display = dim('<computed>');
+      } else if (value === '') {
+        display = dim('<empty>');
+      } else if (isSensitive && value.length > 4) {
+        display = `${value.slice(0, 4)}${'*'.repeat(Math.min(value.length - 4, 8))}`;
+      } else {
+        display = value;
+      }
+
+      result.push([key, display]);
+    }
+
+    return result;
+  } catch {
+    return [];
   }
 }
 
