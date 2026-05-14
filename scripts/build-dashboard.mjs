@@ -63,6 +63,8 @@ let lastFallbackStatusSnapshot = '';
 let inputStream = null;
 let inputFd = null;
 
+const _stripAnsiRe = new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g');
+
 await main();
 
 async function main() {
@@ -752,7 +754,6 @@ function dim(text) {
   return `\x1b[2m${text}\x1b[0m`;
 }
 
-const _stripAnsiRe = new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g');
 function stripAnsi(text) {
   return text.replace(_stripAnsiRe, '');
 }
