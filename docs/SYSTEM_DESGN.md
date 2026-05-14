@@ -236,6 +236,117 @@ flowchart TD
 - Request and result files are short-lived temp files created by the shell widget.
 - Keeping the socket path short is a deliberate macOS compatibility choice.
 
+## Phase 3.2: Zellij Floating Pane + FIFO
+
+Phase 3.2 replaces the inline `/dev/tty` rendering path with a Zellij floating pane. The key architectural change is the result channel: instead of an atomic-rename temp file polled after the client exits, the shell widget blocks on a named pipe (FIFO) that the client writes to directly.
+
+### End-to-End Flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Zsh as zsh widget
+    participant Zellij as Zellij (floating pane)
+    participant Client as qq client
+    participant Daemon as qq daemon
+    participant LLM as Claude API
+    participant FIFO as FIFO\n/tmp/qq-fifo.XXXXXX
+
+    User->>Zsh: Type ??
+    Zsh->>Zsh: Check $ZELLIJ — exit with message if unset
+    Zsh->>Zsh: Capture LBUFFER / RBUFFER
+    Zsh->>Zsh: mktemp → req_file
+    Zsh->>FIFO: mkfifo → fifo_path
+    Zsh->>Zsh: Write shell request JSON to req_file
+    Zsh->>Zellij: zellij run --floating --close-on-exit\n--width 80 --height 24\n-- qq client --request-file $req --result-file $fifo &!
+    Zsh->>FIFO: Block: IFS= read -r -t 30 result < fifo_path
+
+    Zellij->>Client: Spawn in floating pane (own PTY)
+    Client->>Client: Detect ZELLIJ env — skip /dev/tty open
+    Client->>Client: Read + validate shell request (Zod)
+    Client->>Daemon: ensureDaemon(socket)
+    Daemon-->>Client: Ready
+    Client->>Client: Render Ink TUI to pane stdout
+    Client->>LLM: Stream candidates
+    LLM-->>Client: Streamed tokens
+    Client->>Client: Display candidates in pane
+
+    User->>Client: Select candidate (Enter) or cancel (Esc)
+    Client->>FIFO: fsp.writeFile(fifo_path, result JSON)
+    Note over Client,FIFO: Direct write — rename() would destroy FIFO inode
+
+    FIFO-->>Zsh: Unblocks read
+    Zsh->>Zsh: Parse result: cancel or replace-buffer
+    Zsh->>Zsh: Apply LBUFFER / RBUFFER
+    Zsh->>Zsh: _qq_cleanup — rm -f req_file fifo_path
+    Zellij->>Zellij: Pane closes (--close-on-exit)
+    Zsh-->>User: Updated shell buffer
+```
+
+### FIFO Data Flow
+
+```mermaid
+flowchart TD
+    subgraph zsh["ZSH Widget (ZLE context)"]
+        W1[Detect ??]
+        W2[mkfifo /tmp/qq-fifo.XXXXXX]
+        W3[Write request JSON to /tmp/qq-req.XXXXXX]
+        W4["zellij run --floating &!"]
+        W5["Block: read < fifo_path"]
+        W6[Apply result to LBUFFER / RBUFFER]
+        W7[rm -f req_file fifo_path]
+    end
+
+    subgraph pane["Floating Pane (own PTY, 80×24)"]
+        P1[qq client starts]
+        P2[Detect ZELLIJ env — skip /dev/tty]
+        P3[Read + validate request JSON]
+        P4[ensureDaemon]
+        P5[Ink renders to pane stdout]
+        P6[Fetch candidates from LLM]
+        P7[User selection]
+        P8["fsp.writeFile(fifo_path, result)"]
+    end
+
+    FIFO["/tmp/qq-fifo.XXXXXX\n(named pipe)"]
+    REQ["/tmp/qq-req.XXXXXX\n(request JSON)"]
+    SOCK["/tmp/qq-UID.sock\n(daemon socket)"]
+
+    W1 --> W2 --> W3 --> W4 --> W5
+    W4 --> P1
+    W3 --> REQ
+    REQ --> P3
+    P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
+    P4 <--> SOCK
+    P8 --> FIFO
+    FIFO --> W5
+    W5 --> W6 --> W7
+```
+
+### What Changed from Phase 3.1
+
+| | Phase 3.1 | Phase 3.2 |
+|---|---|---|
+| Pane rendering | Inline in current terminal pane (`/dev/tty` + scroll hack) | Floating pane (`zellij run --floating`) |
+| Result channel | Atomic temp file (`write .tmp → rename`) | Named pipe (`mkfifo` + direct `writeFile`) |
+| Client TTY | Opens `/dev/tty` explicitly | Uses pane's own PTY (`process.stdout`) |
+| Widget blocking | Polls or waits for client exit | Blocks on `read < fifo_path` |
+| MODAL_CHROME_LINES | Required (scroll room for modal) | Removed (pane is its own viewport) |
+| Non-Zellij behavior | Degraded inline rendering | Hard exit with message |
+
+### Runtime Paths (Phase 3.2)
+
+```mermaid
+flowchart LR
+    UID[Current user UID] --> SOCK["/tmp/qq-UID.sock\ndaemon socket"]
+    ZSH[zsh widget] --> REQ["/tmp/qq-req.XXXXXX\nrequest JSON — short-lived"]
+    ZSH --> FIFO["/tmp/qq-fifo.XXXXXX\nnamed pipe — short-lived"]
+    CLIENT[qq client] --> FIFO
+    FIFO --> ZSH
+```
+
+---
+
 ## Implemented vs Intended Architecture
 
 | Area | Implemented now | Intended later |
