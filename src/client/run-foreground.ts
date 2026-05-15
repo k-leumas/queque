@@ -55,9 +55,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     inZellij,
   });
 
-  // In Zellij: process.stdin/stdout ARE the pane's PTY — no /dev/tty needed.
-  // Outside Zellij: open /dev/tty for interactive stdio (ZLE redirects stdin from /dev/null).
-  const ttyHandle = inZellij ? null : await fsp.open('/dev/tty', 'r+');
+  // Always open /dev/tty for interactive stdio.
+  // Outside Zellij: ZLE redirects process.stdin from /dev/null, so /dev/tty is required.
+  // Inside Zellij (zellij run): process.stdin is not wired to the pane PTY by zellij run,
+  // but /dev/tty always refers to the controlling terminal which IS the pane PTY.
+  const ttyHandle = await fsp.open('/dev/tty', 'r+').catch(() => null);
 
   try {
     // Read and validate the shell request
@@ -107,25 +109,26 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
         // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
 
-        // In Zellij: process.stdin/stdout are the pane's PTY — no tty streams needed.
-        // Outside Zellij: try to create TTY streams for Ink; fall back to process stdio if unavailable.
-        // (In test environments, ttyHandle.fd may be a synthetic fd that is not a real TTY.)
+        // Try to create TTY streams from /dev/tty for Ink.
+        // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
+        // Falls back to process.stdin/stdout if /dev/tty was unavailable (e.g. tests).
         let ttyReadStream: tty.ReadStream | undefined;
         let ttyWriteStream: tty.WriteStream | undefined;
-        if (!inZellij) {
+        if (ttyHandle) {
           try {
-            ttyReadStream = new tty.ReadStream(ttyHandle!.fd);
-            ttyWriteStream = new tty.WriteStream(ttyHandle!.fd);
+            ttyReadStream = new tty.ReadStream(ttyHandle.fd);
+            ttyWriteStream = new tty.WriteStream(ttyHandle.fd);
           } catch {
-            // Non-TTY environment (e.g. tests) — Ink will use process.stdin/stdout
+            // Synthetic fd (e.g. tests) — Ink will use process.stdin/stdout
           }
+        }
 
-          if (ttyWriteStream) {
-            // Blank out the modal viewport so the render doesn't overwrite prior output.
-            const modalHeight = 14;
-            ttyWriteStream.write('\n'.repeat(modalHeight));
-            ttyWriteStream.write(`\x1b[${modalHeight}A`);
-          }
+        if (ttyWriteStream && !inZellij) {
+          // Blank out the modal viewport so the render doesn't overwrite prior output.
+          // Skip in Zellij: the floating pane starts with a clean screen.
+          const modalHeight = 14;
+          ttyWriteStream.write('\n'.repeat(modalHeight));
+          ttyWriteStream.write(`\x1b[${modalHeight}A`);
         }
 
         await new Promise<void>((resolve) => {
@@ -159,11 +162,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               },
             });
 
-          const renderOptions = inZellij
-            ? {}
-            : ttyReadStream && ttyWriteStream
-              ? { stdin: ttyReadStream, stdout: ttyWriteStream }
-              : {};
+          const renderOptions =
+            ttyReadStream && ttyWriteStream ? { stdin: ttyReadStream, stdout: ttyWriteStream } : {};
 
           const app = render(buildCandidateElement(null), renderOptions);
 

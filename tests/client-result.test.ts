@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
-import * as fsp from 'node:fs/promises';
 import * as fs from 'node:fs';
+import * as fsp from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { dirname } from 'node:path';
@@ -65,12 +65,16 @@ vi.mock('node:fs/promises', async (importOriginal) => {
     // Passthrough vi.fn()s so vi.mocked() can intercept them per-test.
     // The ESM namespace exports non-configurable bindings; wrapping here makes
     // them configurable in the mock so implementations can be swapped per-test.
-    writeFile: vi.fn().mockImplementation((...args: Parameters<typeof original.writeFile>) =>
-      original.writeFile(...args),
-    ),
-    rename: vi.fn().mockImplementation((...args: Parameters<typeof original.rename>) =>
-      original.rename(...args),
-    ),
+    writeFile: vi
+      .fn()
+      .mockImplementation((...args: Parameters<typeof original.writeFile>) =>
+        original.writeFile(...args),
+      ),
+    rename: vi
+      .fn()
+      .mockImplementation((...args: Parameters<typeof original.rename>) =>
+        original.rename(...args),
+      ),
   };
 });
 
@@ -198,14 +202,12 @@ describe('writeShellResult — FIFO path', () => {
     const fspMock = await import('node:fs/promises');
     if (realFsp.writeFile) {
       vi.mocked(fspMock.writeFile).mockImplementation(
-        (...args: Parameters<typeof fspMock.writeFile>) =>
-          realFsp.writeFile!(...args),
+        (...args: Parameters<typeof fspMock.writeFile>) => realFsp.writeFile!(...args),
       );
     }
     if (realFsp.rename) {
-      vi.mocked(fspMock.rename).mockImplementation(
-        (...args: Parameters<typeof fspMock.rename>) =>
-          realFsp.rename!(...args),
+      vi.mocked(fspMock.rename).mockImplementation((...args: Parameters<typeof fspMock.rename>) =>
+        realFsp.rename!(...args),
       );
     }
     try {
@@ -222,9 +224,9 @@ describe('writeShellResult — FIFO path', () => {
     vi.mocked(fspMock.writeFile).mockResolvedValue(undefined);
     vi.mocked(fspMock.rename).mockResolvedValue(undefined);
 
-    vi.mocked(fspMock.stat).mockResolvedValueOnce(
-      { isFIFO: () => true } as ReturnType<typeof fspMock.stat>,
-    );
+    vi.mocked(fspMock.stat).mockResolvedValueOnce({ isFIFO: () => true } as ReturnType<
+      typeof fspMock.stat
+    >);
 
     const { writeShellResult } = await import('../src/client/result-writer.js');
 
@@ -393,7 +395,7 @@ describe('runForegroundClient', () => {
   });
 });
 
-describe('runForegroundClient: Zellij branch skips /dev/tty open', () => {
+describe('runForegroundClient: Zellij branch opens /dev/tty', () => {
   let tmpDir: string;
   let requestFile: string;
   let resultFile: string;
@@ -432,7 +434,7 @@ describe('runForegroundClient: Zellij branch skips /dev/tty open', () => {
     }
   });
 
-  it('does not call fsp.open("/dev/tty") when process.env.ZELLIJ is defined', async () => {
+  it('calls fsp.open("/dev/tty") even when process.env.ZELLIJ is defined', async () => {
     process.env['ZELLIJ'] = '0';
 
     const fspDynamic = await import('node:fs/promises');
@@ -446,8 +448,10 @@ describe('runForegroundClient: Zellij branch skips /dev/tty open', () => {
       resultMode: 'cancel',
     });
 
+    // /dev/tty must be opened in Zellij too — zellij run does not wire stdin to the pane PTY,
+    // so we must always use /dev/tty to get a real TTY for Ink.
     const ttyCall = openSpy.mock.calls.find((args: unknown[]) => args[0] === '/dev/tty');
-    expect(ttyCall).toBeUndefined();
+    expect(ttyCall).toBeDefined();
 
     // The cancel path must still write a result
     const content = fs.readFileSync(resultFile, 'utf-8');

@@ -3,6 +3,7 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 | 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
+| 20:46 | gsd-plan-phase 3 — research, pattern map, 3 PLAN.md files, verified, committed | .planning/phases/03-claude-fast-path-and-ranked-suggestions/ | PLANNING COMPLETE — 3 plans in 2 waves | ~350k |
 | 00:01 | fixed EPIPE in sendWatchmanCommand — added writable guard + write error callback | scripts/build-dashboard.mjs:541 | EPIPE prevented | ~200 |
 | 08:25 | plan-phase 2 --wave 3: appended wave 3 supplemental research (bootstrap idempotency, pipeline import removal, stub comments) | .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md | complete | ~8000 |
 | 21:35 | researched Phase 1 shell bridge, wrote prescriptive RESEARCH.md, updated anatomy/cerebrum | .planning/phases/01-shell-bridge-and-result-contract/01-RESEARCH.md; .wolf/anatomy.md; .wolf/cerebrum.md | complete | ~9000 |
@@ -351,3 +352,163 @@
 | 14:24 | Edited scripts/build-dashboard.mjs | added 1 condition(s) | ~28 |
 | 14:28 | Session end: 27 writes across 4 files (build-dashboard.mjs, .continue-here.md, feedback_no_coauthored.md, MEMORY.md) | 6 reads | ~12759 tok |
 | 14:35 | Created .planning/.continue-here.md | — | ~527 |
+| 14:35 | Session end: 28 writes across 4 files (build-dashboard.mjs, .continue-here.md, feedback_no_coauthored.md, MEMORY.md) | 6 reads | ~13324 tok |
+
+## Session: 2026-05-14 14:39
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:51 | Edited scripts/build-dashboard.mjs | inline fix | ~16 |
+| 14:53 | Edited scripts/build-dashboard.mjs | 3→4 lines | ~26 |
+| 14:53 | Edited scripts/build-dashboard.mjs | added error handling | ~178 |
+| 14:53 | Edited scripts/build-dashboard.mjs | added 1 condition(s) | ~48 |
+| 14:53 | Edited scripts/build-dashboard.mjs | inline fix | ~14 |
+| 14:53 | Edited scripts/build-dashboard.mjs | added 2 condition(s) | ~136 |
+| 14:54 | Edited scripts/build-dashboard.mjs | inline fix | ~13 |
+| 14:54 | Session end: 7 writes across 1 files (build-dashboard.mjs) | 6 reads | ~9018 tok |
+| 15:02 | Edited scripts/build-dashboard.mjs | added 3 condition(s) | ~98 |
+| 15:02 | Edited scripts/build-dashboard.mjs | added nullish coalescing | ~99 |
+| 15:02 | Edited scripts/build-dashboard.mjs | 3→3 lines | ~32 |
+| 15:03 | Session end: 10 writes across 1 files (build-dashboard.mjs) | 6 reads | ~9263 tok |
+| 15:30 | Edited scripts/build-dashboard.mjs | 4→5 lines | ~18 |
+| 15:31 | Edited scripts/build-dashboard.mjs | 4→5 lines | ~54 |
+| 15:31 | Edited scripts/build-dashboard.mjs | modified if() | ~88 |
+| 15:31 | Edited scripts/build-dashboard.mjs | modified shaFingerprint() | ~48 |
+| 15:31 | Edited scripts/build-dashboard.mjs | 7→5 lines | ~55 |
+| 15:31 | Edited scripts/build-dashboard.mjs | added 1 condition(s) | ~129 |
+| 15:41 | feat(build-dashboard): fixed token regex (\btoken\b → letter-lookaround), resolved __BUILD_SHA__ via shaFingerprint(), added 30s git meta refresh, 'b' force build, 'r' self-restart, builtSha stale indicator, auto-show error pane on build failure | scripts/build-dashboard.mjs | committed 0825b3e | ~800 |
+| 15:42 | Session end: 16 writes across 1 files (build-dashboard.mjs) | 6 reads | ~9883 tok |
+| 15:42 | Edited scripts/build-dashboard.mjs | inline fix | ~7 |
+| 17:10 | Session end: 17 writes across 1 files (build-dashboard.mjs) | 6 reads | ~9980 tok |
+| 17:33 | Session end: 17 writes across 1 files (build-dashboard.mjs) | 8 reads | ~12559 tok |
+| 17:44 | Edited .planning/ROADMAP.md | 2→2 lines | ~75 |
+| 17:44 | Edited .planning/ROADMAP.md | started() → Complete() | ~50 |
+| 17:45 | Edited .planning/ROADMAP.md | 3→3 lines | ~124 |
+| 18:31 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-CONTEXT.md | — | ~1892 |
+| 18:32 | Session end: 21 writes across 3 files (build-dashboard.mjs, ROADMAP.md, 03-CONTEXT.md) | 11 reads | ~14854 tok |
+
+## Session: 2026-05-15 18:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 19:01 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-RESEARCH.md | — | ~8554 |
+| 19:22 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-VALIDATION.md | — | ~1008 |
+| 19:25 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-PATTERNS.md | — | ~5588 |
+| 19:29 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-01-PLAN.md | — | ~4196 |
+| 19:30 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-02-PLAN.md | — | ~3342 |
+| 19:31 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-03-PLAN.md | — | ~2647 |
+| 19:34 | Created .planning/ROADMAP.md | — | ~2843 |
+
+| 20:15 | Phase 03 planning complete — 3 PLAN.md files written (03-01, 03-02, 03-03) | .planning/phases/03-claude-fast-path-and-ranked-suggestions/*.md, ROADMAP.md | committed e4e51b0, all 109 tests green | ~4200 |
+| 20:47 | Session end: 7 writes across 7 files (03-RESEARCH.md, 03-VALIDATION.md, 03-PATTERNS.md, 03-01-PLAN.md, 03-02-PLAN.md) | 29 reads | ~62874 tok |
+| 21:14 | Session end: 7 writes across 7 files (03-RESEARCH.md, 03-VALIDATION.md, 03-PATTERNS.md, 03-01-PLAN.md, 03-02-PLAN.md) | 31 reads | ~64161 tok |
+
+## Session: 2026-05-15 21:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:29 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md | — | ~6617 |
+
+| 21:30 | code review for phase 03 | .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md | 19 findings (7 critical, 8 warning, 4 info), committed | ~120k tok || 21:30 | Session end: 1 writes across 1 files (03-REVIEW.md) | 54 reads | ~22067 tok |
+| 22:03 | Session end: 1 writes across 1 files (03-REVIEW.md) | 55 reads | ~22067 tok |
+| 22:13 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/providers/claude.ts | 10→8 lines | ~62 |
+| 02:43 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/providers/claude.ts | inline fix | ~27 |
+| 02:55 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/providers/claude.ts | 8→13 lines | ~126 |
+| 03:00 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/providers/claude.ts | added 1 condition(s) | ~115 |
+| 03:09 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/ui/CandidateSelect.tsx | added 1 condition(s) | ~73 |
+| 03:09 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/contracts/shell.ts | inline fix | ~22 |
+| 03:09 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | added 1 import(s) | ~110 |
+| 03:10 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | added error handling | ~95 |
+| 03:10 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | modified getChangedFiles() | ~53 |
+| 03:10 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | 2→3 lines | ~30 |
+| 03:10 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/daemon/server.ts | modified if() | ~62 |
+| 03:11 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/daemon/server.ts | modified TODO() | ~112 |
+| 03:12 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/shell/zsh/qq.zsh | modified namespace() | ~174 |
+| 03:15 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/shell/zsh/qq.zsh | 14→12 lines | ~142 |
+| 03:15 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/shell/zsh/qq.zsh | 4→4 lines | ~12 |
+| 03:17 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/shared/env-file.ts | added 1 condition(s) | ~238 |
+| 03:18 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/pipeline.ts | modified gatherContext() | ~134 |
+| 03:19 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/cli/main.ts | added 1 import(s) | ~56 |
+| 03:19 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/cli/main.ts | modified main() | ~35 |
+| 03:19 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/daemon/bootstrap.ts | modified assertSafeSocketPath() | ~115 |
+| 03:20 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | modified unescapeGitPath() | ~113 |
+| 03:21 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/client/run-foreground.ts | added 2 condition(s) | ~325 |
+| 03:23 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/shared/debug-log.ts | added optional chaining | ~35 |
+| 03:23 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/shared/debug-log.ts | inline fix | ~24 |
+| 03:24 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/client-result.test.ts | added 1 condition(s) | ~378 |
+| 03:26 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/cli/commands/client.ts | error() → appendDebugLog() | ~31 |
+| 03:33 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/daemon-bootstrap.test.ts | modified if() | ~195 |
+| 03:33 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/daemon-bootstrap.test.ts | modified if() | ~165 |
+| 03:33 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/daemon-bootstrap.test.ts | 4→3 lines | ~40 |
+| 03:34 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/context-pipeline.test.ts | added 1 import(s) | ~62 |
+| 03:34 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/context-pipeline.test.ts | 3→2 lines | ~38 |
+| 03:34 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/context-pipeline.test.ts | 22→27 lines | ~245 |
+| 03:39 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | 3→2 lines | ~20 |
+| 03:40 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts | modified getChangedFiles() | ~54 |
+| 03:45 | Edited ../../../../tmp/sv-03-reviewfix-B78We4/tests/daemon-bootstrap.test.ts | "ping" → "${JSON.stringify({ kind: " | ~18 |
+| 03:47 | Edited .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md | 1→2 lines | ~10 |
+| 03:48 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW-FIX.md | — | ~2028 |
+
+| 03:49 | auto-fix all 19 review findings (phase 03) | src/providers/claude.ts, src/ui/CandidateSelect.tsx, src/contracts/shell.ts, src/daemon/server.ts, src/client/run-foreground.ts, shell/zsh/qq.zsh, src/shared/debug-log.ts, src/shared/env-file.ts, src/context/pipeline.ts, src/cli/main.ts, src/daemon/bootstrap.ts, src/context/providers/git-context.ts, src/cli/commands/client.ts, tests/* | 16 commits, 109 tests pass | ~122k tok || 03:49 | Session end: 38 writes across 18 files (03-REVIEW.md, claude.ts, CandidateSelect.tsx, shell.ts, git-context.ts) | 76 reads | ~41298 tok |
+
+## Session: 2026-05-15 04:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 04:32 | Created .claude/worktrees/agent-a5c7276f6fe389a4e/tests/claude-provider.test.ts | — | ~1262 |
+| 04:32 | Created .claude/worktrees/agent-a5c7276f6fe389a4e/tests/shell-contract.test.ts | — | ~804 |
+| 04:34 | Created .claude/worktrees/agent-a5c7276f6fe389a4e/src/providers/provider.ts | — | ~67 |
+| 04:34 | Edited .claude/worktrees/agent-a5c7276f6fe389a4e/src/contracts/shell.ts | 23→28 lines | ~242 |
+| 04:35 | Created .claude/worktrees/agent-a5c7276f6fe389a4e/src/providers/claude.ts | — | ~1301 |
+| 04:37 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-01-SUMMARY.md | — | ~1406 |
+| 04:37 | Edited .claude/worktrees/agent-a5c7276f6fe389a4e/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-01-SUMMARY.md | modified 353655c() | ~98 |
+| 04:40 | Session end: 7 writes across 6 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 13 reads | ~20842 tok |
+| 04:41 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/tests/client-result.test.ts | expanded (+14 lines) | ~261 |
+| 04:41 | Edited .claude/worktrees/agent-a1a70f3e84a5ede72/tests/zsh-widget.test.ts | expanded (+27 lines) | ~294 |
+| 04:44 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/contracts/request.ts | 3→4 lines | ~41 |
+| 04:44 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/client/run-foreground.ts | inline fix | ~34 |
+| 04:44 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/client/run-foreground.ts | modified catch() | ~90 |
+| 04:44 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/registry/bootstrap.ts | added 1 import(s) | ~118 |
+| 04:44 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/registry/bootstrap.ts | expanded (+6 lines) | ~109 |
+| 04:44 | Edited .claude/worktrees/agent-a1a70f3e84a5ede72/shell/zsh/qq.zsh | expanded (+6 lines) | ~100 |
+| 04:44 | Edited .claude/worktrees/agent-a1a70f3e84a5ede72/shell/zsh/qq.zsh | 7→12 lines | ~72 |
+| 04:45 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/tests/registry-bootstrap.test.ts | added 1 import(s) | ~184 |
+| 04:45 | Created .claude/worktrees/agent-a1a70f3e84a5ede72/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-03-SUMMARY.md | — | ~821 |
+| 04:46 | Session end: 18 writes across 14 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 22 reads | ~27821 tok |
+| 04:46 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/client/run-foreground.ts | added optional chaining | ~226 |
+| 04:47 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/src/client/run-foreground.ts | 13→13 lines | ~221 |
+| 04:48 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/tests/client-result.test.ts | modified if() | ~124 |
+| 04:50 | Created .claude/worktrees/agent-a78bb2a4d3d56c042/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-02-SUMMARY.md | — | ~1595 |
+| 04:50 | Edited .claude/worktrees/agent-a78bb2a4d3d56c042/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-02-SUMMARY.md | expanded (+12 lines) | ~92 |
+| 06:51 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md | — | ~3072 |
+| 07:25 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/src/client/run-foreground.ts | inline fix | ~29 |
+| 07:28 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/src/providers/claude.ts | 256 → 1024 | ~8 |
+| 07:29 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/src/client/run-foreground.ts | then() → async() | ~155 |
+| 07:30 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/src/providers/claude.ts | modified parseCandidates() | ~156 |
+| 07:32 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/shell/zsh/qq.zsh | expanded (+10 lines) | ~132 |
+| 07:39 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/shell/zsh/qq.zsh | 16→13 lines | ~129 |
+| 07:48 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/tests/zsh-widget.test.ts | inline fix | ~24 |
+| 08:02 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/tests/zsh-widget.test.ts | 12→13 lines | ~140 |
+| 08:02 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/tests/zsh-widget.test.ts | 5→6 lines | ~56 |
+| 08:02 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/tests/zsh-widget.test.ts | inline fix | ~15 |
+| 08:04 | Edited ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md | 2→3 lines | ~13 |
+| 08:05 | Created ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW-FIX.md | — | ~852 |
+| 08:08 | Created .planning/phases/03-claude-fast-path-and-ranked-suggestions/03-VERIFICATION.md | — | ~2621 |
+| 08:08 | Edited .planning/PROJECT.md | inline fix | ~39 |
+
+| 11:55 | Phase 03 execute-phase complete — LLMAdapter contract, Claude provider, error ShellResult, ZSH error handler | src/providers/provider.ts, src/providers/claude.ts, src/contracts/shell.ts, src/client/run-foreground.ts, src/registry/bootstrap.ts, shell/zsh/qq.zsh | 3 plans, 114 tests, 6 review fixes applied | ~200k |
+| 08:09 | Session end: 38 writes across 19 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 54 reads | ~55218 tok |
+| 08:35 | Session end: 38 writes across 19 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 55 reads | ~55218 tok |
+| 11:01 | Session end: 38 writes across 19 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 56 reads | ~55612 tok |
+| 11:33 | Session end: 38 writes across 19 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 56 reads | ~55612 tok |
+| 11:48 | Session end: 38 writes across 19 files (claude-provider.test.ts, shell-contract.test.ts, provider.ts, shell.ts, claude.ts) | 56 reads | ~55612 tok |
+
+## Session: 2026-05-15 11:53
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:59 | Edited src/client/run-foreground.ts | stdio() → Zellij() | ~166 |
+| 13:00 | Edited src/client/run-foreground.ts | modified if() | ~656 |
+| 13:04 | Edited tests/client-result.test.ts | "runForegroundClient: Zell" → "runForegroundClient: Zell" | ~20 |
+| 13:04 | Edited tests/client-result.test.ts | toBeUndefined() → toBeDefined() | ~254 |
+| 20:10 | fix: always open /dev/tty for Ink — zellij run does not wire stdin to pane PTY | src/client/run-foreground.ts, tests/client-result.test.ts | floating pane no longer crashes immediately | ~500 |
