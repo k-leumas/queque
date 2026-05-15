@@ -27,7 +27,7 @@ function parseResultMode(mode: string | undefined): ResultMode {
   if (mode === undefined || mode === 'llm') return 'llm';
   if (mode === 'cancel') return 'cancel';
   if (mode === 'replace-buffer-fixture') return 'replace-buffer-fixture';
-  console.error(`Warning: unknown --result-mode "${mode}", defaulting to cancel`);
+  void appendDebugLog('client', `unknown --result-mode "${mode}", defaulting to cancel`);
   return 'cancel';
 }
 
