@@ -377,6 +377,20 @@ describe('runForegroundClient', () => {
     expect(shellResult.stdout).toContain('lbuffer=git status');
     expect(shellResult.stdout).toContain('rbuffer=');
   });
+
+  it('writes error ShellResult to FIFO when fetchCandidates rejects', async () => {
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    vi.mocked(fetchCandidates).mockRejectedValue(new Error('API timeout'));
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const resultContent = fs.readFileSync(resultFile, 'utf-8');
+    const parsed = JSON.parse(resultContent.trim());
+    expect(parsed.kind).toBe('error');
+    expect(parsed.message).toContain('API timeout');
+    expect(parsed.message).toContain('Que-Que:');
+  });
 });
 
 describe('runForegroundClient: Zellij branch skips /dev/tty open', () => {
