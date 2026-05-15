@@ -109,7 +109,7 @@ export async function fetchCandidates(
     const response = await client.messages.create(
       {
         model,
-        max_tokens: 256,
+        max_tokens: 1024,
         temperature: 0,
         system:
           'You are Que-Que, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences.',
