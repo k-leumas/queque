@@ -19,9 +19,17 @@ function assertSafeCwd(cwd: string): void {
   if (!st.isDirectory()) throw new Error(`cwd is not a directory: ${cwd}`);
 }
 
+function unescapeGitPath(s: string): string {
+  return s
+    .replace(/\\([0-7]{3})/g, (_, oct) => String.fromCodePoint(parseInt(oct, 8)))
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '\t')
+    .replace(/\\\\/g, '\\');
+}
+
 function stripQuotes(value: string): string {
   if (value.startsWith('"') && value.endsWith('"')) {
-    return value.slice(1, -1);
+    return unescapeGitPath(value.slice(1, -1));
   }
 
   return value;
