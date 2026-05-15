@@ -273,6 +273,33 @@ describe('result application: replace-buffer writes new buffers', () => {
   });
 });
 
+describe('result application: error kind restores buffers and returns 0', () => {
+  it('_qq_apply_result exits 0 and leaves buffers unchanged on error kind', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(
+      resultFile,
+      JSON.stringify({ kind: 'error', message: 'Que-Que: API timeout — press any key' }),
+    );
+    const script = `
+      LBUFFER="mutated"
+      RBUFFER="mutated right"
+      QQ_ORIG_LBUFFER="original left"
+      QQ_ORIG_RBUFFER="original right"
+      _qq_apply_result "${resultFile}"
+      echo "exit=$?"
+      echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    unlinkSync(resultFile);
+    expect(status).toBe(0);
+    expect(stdout).toContain('exit=0');
+    expect(stdout).toContain('lbuffer=original left');
+    expect(stdout).toContain('rbuffer=original right');
+  });
+});
+
 describe('result application: malformed JSON leaves buffers intact', () => {
   it('malformed JSON returns nonzero and leaves LBUFFER/RBUFFER unchanged', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
