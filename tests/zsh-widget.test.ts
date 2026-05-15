@@ -18,7 +18,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { chmodSync, mkdirSync, mkdtempSync, unlinkSync, writeFileSync } from 'node:fs';
+import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -109,6 +109,7 @@ describe('? widget: single ? inserts without delay', () => {
       [[ -e "${logFile}" ]] && echo "log-created" || :
     `;
     const { stdout, status } = runZsh(script);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(stdout).not.toContain('log-created');
   });
@@ -179,7 +180,7 @@ describe('?? trigger: cancel restores pre-trigger buffer', () => {
     `;
     const { stdout, status } = runZsh(script);
     const lines = stdout.trim().split('\n').filter(Boolean);
-    unlinkSync(resultFile);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(lines).toContain('lbuffer=git stat');
     expect(lines).toContain('rbuffer=');
@@ -217,6 +218,7 @@ printf '%s\n' "$*" > "${marker}"
       [[ -f "${marker}" ]] && cat "${marker}"
     `;
     const { stdout, status } = runInteractiveZsh(script);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(stdout).toContain('daemon --ensure');
   });
@@ -241,7 +243,7 @@ describe('result application: cancel restores buffers', () => {
       echo "rbuffer=$RBUFFER"
     `;
     const { stdout, status } = runZsh(script);
-    unlinkSync(resultFile);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(stdout).toContain('lbuffer=original left');
     expect(stdout).toContain('rbuffer=original right');
@@ -266,7 +268,7 @@ describe('result application: replace-buffer writes new buffers', () => {
       echo "rbuffer=$RBUFFER"
     `;
     const { stdout, status } = runZsh(script);
-    unlinkSync(resultFile);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(stdout).toContain('lbuffer=git status');
     expect(stdout).toContain('rbuffer=');
@@ -292,7 +294,7 @@ describe('result application: error kind restores buffers and returns 0', () => 
       echo "rbuffer=$RBUFFER"
     `;
     const { stdout, status } = runZsh(script);
-    unlinkSync(resultFile);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(stdout).toContain('exit=0');
     expect(stdout).toContain('lbuffer=original left');
@@ -317,7 +319,7 @@ describe('result application: malformed JSON leaves buffers intact', () => {
       exit $result_status
     `;
     const { stdout, status } = runZsh(script);
-    unlinkSync(resultFile);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).not.toBe(0);
     expect(stdout).toContain('lbuffer=safe left');
     expect(stdout).toContain('rbuffer=safe right');
@@ -339,7 +341,7 @@ describe('result application: malformed JSON leaves buffers intact', () => {
       exit $result_status
     `;
     const { stdout, status } = runZsh(script);
-    unlinkSync(resultFile);
+    rmSync(dir, { recursive: true, force: true });
     expect(status).not.toBe(0);
     expect(stdout).toContain('lbuffer=left');
     expect(stdout).toContain('rbuffer=right');
