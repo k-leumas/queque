@@ -60,9 +60,10 @@ async function waitForSocket(
 function assertSafeSocketPath(socketPath: string): void {
   const resolved = path.resolve(socketPath);
   const base = path.basename(resolved);
+  const dir = path.dirname(resolved);
   const tmpRoots = ['/tmp', '/private/tmp'];
   if (
-    !tmpRoots.some((root) => resolved.startsWith(root + path.sep)) ||
+    !tmpRoots.includes(dir) ||
     !base.startsWith('qq-') ||
     !base.endsWith('.sock')
   ) {
