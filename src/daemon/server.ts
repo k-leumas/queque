@@ -17,6 +17,9 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
   return new Promise((resolve, reject) => {
     const MAX_BUF_BYTES = 64 * 1024; // 64 KB — generous for any realistic IPC message
 
+    // TODO(CR-005): Add session token authentication before Phase 4 LLM integration.
+    // Generate a random token in ensureDaemon, write it to a chmod-600 file in
+    // /tmp/qq-<uid>/, and require clients to send it as the first IPC frame field.
     const server = net.createServer((socket) => {
       let buf = '';
       void appendDebugLog('daemon', 'socket connected', { socketPath });
