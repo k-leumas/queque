@@ -224,9 +224,16 @@ JSON
       ;;
     replace-buffer)
       new_lbuffer=$(printf '%s' "$result" | jq -r '.lbuffer // empty' 2>/dev/null)
-      new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""'    2>/dev/null)
-      LBUFFER="$new_lbuffer"
-      RBUFFER="$new_rbuffer"
+      local _jq_lbuf_status=$?
+      new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""' 2>/dev/null)
+      local _jq_rbuf_status=$?
+      if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]]; then
+        LBUFFER="$QQ_ORIG_LBUFFER"
+        RBUFFER="$QQ_ORIG_RBUFFER"
+      else
+        LBUFFER="$new_lbuffer"
+        RBUFFER="$new_rbuffer"
+      fi
       ;;
     error)
       # Error kind — provider failure; restore original buffers (D-11)
