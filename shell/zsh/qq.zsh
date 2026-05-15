@@ -6,6 +6,17 @@
 
 : "${QQ_DEBUG_LOG_FILE:=}"
 
+# ---------------------------------------------------------------------------
+# Cleanup helper — defined at top level so it is not re-defined on each
+# trigger and does not clobber global function namespace (IN-002 fix).
+# Accepts the session tmpdir as $1 and removes the whole directory.
+# ---------------------------------------------------------------------------
+_qq_cleanup() {
+  local tmpdir="$1"
+  rm -rf "$tmpdir"
+  trap - EXIT ERR INT
+}
+
 typeset -g QQ_DAEMON_PREWARMED="${QQ_DAEMON_PREWARMED:-0}"
 
 _qq_log() {
@@ -155,20 +166,18 @@ qq-question-widget() {
   LBUFFER="$QQ_LBUFFER"
   RBUFFER="$QQ_RBUFFER"
 
-  # Create temp files for the request/FIFO exchange (D-03, D-07)
-  local req_file fifo_path
-  req_file=$(mktemp /tmp/qq-req.XXXXXX)
-  fifo_path=$(mktemp -u /tmp/qq-fifo.XXXXXX)
+  # Create a private session directory, request file, and FIFO inside it (CR-006 fix).
+  # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on the FIFO path.
+  local tmpdir req_file fifo_path
+  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX)
+  chmod 700 "$tmpdir"
+  req_file="$tmpdir/request.json"
+  fifo_path="$tmpdir/result.fifo"
   mkfifo "$fifo_path"
   _qq_log "files req=${req_file} fifo=${fifo_path}"
 
-  # Cleanup trap: removes both temp files and resets trap to avoid leaking
-  # into the user's interactive shell (Pitfall 5).
-  _qq_cleanup() {
-    rm -f "$req_file" "$fifo_path"
-    trap - EXIT ERR INT
-  }
-  trap '_qq_cleanup' EXIT ERR INT
+  # Cleanup trap: removes the whole session directory (IN-002 / CR-006 fix).
+  trap "_qq_cleanup '$tmpdir'" EXIT ERR INT
 
   # Build the shell request JSON.
   # Escape every scalar through jq -Rs . to prevent JSON injection from
@@ -219,7 +228,7 @@ JSON
       ;;
   esac
 
-  _qq_cleanup
+  _qq_cleanup "$tmpdir"
   zle -R
   return 0
 }
