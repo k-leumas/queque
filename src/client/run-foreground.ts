@@ -178,15 +178,19 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               void appendDebugLog('client', 'candidates received', { count: candidates.length });
               app.rerender(buildCandidateElement(candidates));
             })
-            .catch((err) => {
+            .catch(async (err) => {
               const message = err instanceof Error ? err.message : String(err);
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;
               resolved = true;
-              void writeShellResult(resultFile, {
-                kind: 'error',
-                message: `Que-Que: ${message} — press any key`,
-              }).then(() => unmount?.());
+              try {
+                await writeShellResult(resultFile, {
+                  kind: 'error',
+                  message: `Que-Que: ${message} — press any key`,
+                });
+              } finally {
+                unmount?.();
+              }
             });
         });
 
