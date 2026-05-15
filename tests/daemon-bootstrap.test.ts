@@ -1,6 +1,5 @@
 import * as fs from 'node:fs';
 import * as net from 'node:net';
-import * as path from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn
@@ -37,13 +36,13 @@ vi.mock('node:fs', async (importOriginal) => {
 });
 
 describe('daemon bootstrap', () => {
-  let tmpDir: string;
   let socketPath: string;
   let testServer: net.Server | null = null;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync('/tmp/qq-test-');
-    socketPath = path.join(tmpDir, 'qq-test.sock');
+    // Use a socket directly in /tmp so assertSafeSocketPath accepts it (WR-003).
+    const suffix = Math.random().toString(36).slice(2);
+    socketPath = `/tmp/qq-test-${suffix}.sock`;
     spawnFn.mockClear();
     spawnFn.mockReturnValue({ unref: vi.fn(), on: vi.fn() });
   });
@@ -54,7 +53,7 @@ describe('daemon bootstrap', () => {
       testServer = null;
     }
     try {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      fs.rmSync(socketPath, { force: true });
     } catch {
       // ignore cleanup errors
     }
@@ -109,13 +108,13 @@ describe('daemon bootstrap', () => {
 });
 
 describe('daemon server', () => {
-  let tmpDir: string;
   let socketPath: string;
   let testServer: net.Server | null = null;
 
   beforeEach(() => {
-    tmpDir = fs.mkdtempSync('/tmp/qq-server-test-');
-    socketPath = path.join(tmpDir, 'qq-server.sock');
+    // Use a socket directly in /tmp so assertSafeSocketPath accepts it (WR-003).
+    const suffix = Math.random().toString(36).slice(2);
+    socketPath = `/tmp/qq-server-${suffix}.sock`;
   });
 
   afterEach(async () => {
@@ -124,7 +123,7 @@ describe('daemon server', () => {
       testServer = null;
     }
     try {
-      fs.rmSync(tmpDir, { recursive: true, force: true });
+      fs.rmSync(socketPath, { force: true });
     } catch {
       // ignore
     }
@@ -137,7 +136,7 @@ describe('daemon server', () => {
 
     const result = await new Promise<string>((resolve, reject) => {
       const client = net.createConnection(socketPath, () => {
-        const msg = JSON.stringify({ kind: 'ping' }) + '\n';
+        const msg = `${JSON.stringify({ kind: 'ping' })}\n`;
         client.write(msg);
       });
 

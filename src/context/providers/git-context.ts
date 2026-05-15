@@ -53,8 +53,8 @@ export function parsePorcelainLine(line: string): string | null {
 }
 
 async function getChangedFiles(cwd: string): Promise<string[]> {
-  assertSafeCwd(cwd);
   try {
+    assertSafeCwd(cwd);
     const { stdout } = await execFileAsync('git', ['-C', cwd, 'status', '--porcelain'], {
       encoding: 'utf8',
       timeout: GIT_TIMEOUT_MS,
@@ -82,7 +82,6 @@ export const gitContextProvider: ContextProvider = {
     }
 
     try {
-      assertSafeCwd(input.base.cwd);
       const vcs = await detectVcsContext(input.base.cwd);
       if (vcs.kind === 'none') {
         return null;

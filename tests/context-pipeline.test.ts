@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { type NormalizedRequest } from '../src/contracts/request.js';
+import type { NormalizedRequest } from '../src/contracts/request.js';
 
 const { detectVcsContextMock, execFileMock } = vi.hoisted(() => ({
   detectVcsContextMock: vi.fn(),
@@ -14,9 +14,7 @@ vi.mock('node:child_process', () => ({
   execFile: execFileMock,
 }));
 
-function buildRequest(
-  overrides: Partial<NormalizedRequest> = {},
-): NormalizedRequest {
+function buildRequest(overrides: Partial<NormalizedRequest> = {}): NormalizedRequest {
   return {
     version: 1,
     ttyPath: '/dev/tty',
@@ -30,7 +28,7 @@ function buildRequest(
 }
 
 describe('gatherContext', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetModules();
     detectVcsContextMock.mockReset();
     execFileMock.mockReset();
@@ -51,6 +49,11 @@ describe('gatherContext', () => {
         callback(null, { stdout: '' });
       },
     );
+    // bootstrapBuiltins is no longer called inside gatherContext (WR-002 fix).
+    // Tests must bootstrap explicitly. Use dynamic import to get the freshly
+    // reset module instance after vi.resetModules().
+    const { bootstrapBuiltins } = await import('../src/registry/bootstrap.js');
+    bootstrapBuiltins();
   });
 
   it('always includes base context and git extras for codebase requests', async () => {
