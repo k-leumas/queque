@@ -87,13 +87,32 @@ vi.mock('ink', () => ({
       (element: {
         props: { onSelect?: (cmd: string) => void; candidates?: Array<{ command: string }> };
       }) => {
+        let currentElement = element;
         const { onSelect, candidates } = element.props;
         if (onSelect) {
           Promise.resolve().then(() => {
             onSelect(candidates?.[0]?.command ?? 'git status');
           });
         }
-        return { unmount: vi.fn(), rerender: vi.fn() };
+        return {
+          unmount: vi.fn(),
+          rerender: vi.fn().mockImplementation(
+            (newEl: {
+              props: {
+                onSelect?: (cmd: string) => void;
+                candidates?: Array<{ command: string }>;
+              };
+            }) => {
+              currentElement = newEl;
+              const { onSelect: newOnSelect, candidates: newCandidates } = currentElement.props;
+              if (newOnSelect && newCandidates) {
+                Promise.resolve().then(() => {
+                  newOnSelect(newCandidates[0]?.command ?? 'git status');
+                });
+              }
+            },
+          ),
+        };
       },
     ),
   Box: ({ children }: { children?: unknown }) => children,
