@@ -123,6 +123,12 @@ _qq_apply_result() {
       RBUFFER="$new_rbuffer"
       return 0
       ;;
+    error)
+      # Error kind — provider failure; restore original buffers without mutating the shell line (D-11)
+      LBUFFER="$QQ_ORIG_LBUFFER"
+      RBUFFER="$QQ_ORIG_RBUFFER"
+      return 0
+      ;;
     *)
       # Unknown kind — leave buffers untouched and signal failure
       LBUFFER="$QQ_ORIG_LBUFFER"
@@ -221,6 +227,11 @@ JSON
       new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""'    2>/dev/null)
       LBUFFER="$new_lbuffer"
       RBUFFER="$new_rbuffer"
+      ;;
+    error)
+      # Error kind — provider failure; restore original buffers (D-11)
+      LBUFFER="$QQ_ORIG_LBUFFER"
+      RBUFFER="$QQ_ORIG_RBUFFER"
       ;;
     *)
       LBUFFER="$QQ_ORIG_LBUFFER"
