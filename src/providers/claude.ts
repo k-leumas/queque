@@ -5,8 +5,6 @@ import { type ShellResult, shellResultSchema } from '../contracts/shell.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
 
-const DEFAULT_MODEL = 'claude-sonnet-4-0';
-
 const CHEAPEST_FIRST_MODEL_IDS = [
   'claude-3-haiku-20240307',
   'claude-3-5-haiku-20241022',
@@ -42,7 +40,7 @@ function chooseCheapestAvailableModel(availableModelIds: string[]): string {
     }
   }
 
-  return availableModelIds[0] ?? DEFAULT_MODEL;
+  return availableModelIds[0] ?? CHEAPEST_FIRST_MODEL_IDS.at(-1) ?? 'claude-3-haiku-20240307';
 }
 
 function extractText(content: Array<{ type: string; text?: string }>): string {
@@ -151,14 +149,19 @@ export async function fetchCandidates(
 
   for (const model of models) {
     try {
-      const response = await client.messages.create({
-        model,
-        max_tokens: 256,
-        temperature: 0,
-        system:
-          'You are Que-Que, a terminal assistant. Return only JSON matching {"command":"..."} and nothing else.',
-        messages: [{ role: 'user', content: prompt }],
-      });
+      const response = await client.messages.create(
+        {
+          model,
+          max_tokens: 256,
+          temperature: 0,
+          system:
+            'You are Que-Que, a terminal assistant. Return only JSON matching {"command":"..."} and nothing else.',
+          messages: [{ role: 'user', content: prompt }],
+        },
+        {
+          timeout: 25_000, // 25s — slightly under the zsh 30s FIFO timeout
+        },
+      );
 
       const text = extractText(response.content);
       const candidates = ensureSelectableCandidates(parseCandidates(text));
@@ -188,6 +191,7 @@ export async function suggestShellResult(
 ): Promise<ShellResult> {
   const candidates = await fetchCandidates(envelope, rbuffer);
   const command = candidates[0]?.command;
+  if (!command) throw new Error('No candidate returned by provider');
 
   return shellResultSchema.parse({
     kind: 'replace-buffer',
