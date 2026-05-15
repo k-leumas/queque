@@ -4,12 +4,14 @@ import {
   clearContextProviders,
   listContextProviders,
 } from '../src/registry/context-providers.js';
+import { clearProviderBackends } from '../src/registry/provider-backends.js';
 import { clearShellAdapters, listShellAdapters } from '../src/registry/shell-adapters.js';
 import { clearStorageHooks, listStorageHooks } from '../src/registry/storage-hooks.js';
 
 describe('bootstrapBuiltins()', () => {
   beforeEach(() => {
     clearContextProviders();
+    clearProviderBackends();
     clearShellAdapters();
     clearStorageHooks();
     resetBootstrap();

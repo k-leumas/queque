@@ -28,6 +28,7 @@ export type RequestIntent = z.infer<typeof requestIntentSchema>;
  */
 export const normalizedRequestSchema = shellRequestSchema.extend({
   intent: requestIntentSchema,
+  confidence: z.number().min(0).max(1),
 });
 
 export type NormalizedRequest = z.infer<typeof normalizedRequestSchema>;

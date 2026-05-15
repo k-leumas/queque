@@ -1,6 +1,7 @@
 import { filesystemContextProvider } from '../context/providers/filesystem-context.js';
 import { gitContextProvider } from '../context/providers/git-context.js';
 import { registerContextProvider } from './context-providers.js';
+import { registerProviderBackend } from './provider-backends.js';
 import { registerShellAdapter } from './shell-adapters.js';
 import { registerStorageHook } from './storage-hooks.js';
 
@@ -35,6 +36,12 @@ export function bootstrapBuiltins(): void {
   registerStorageHook({
     id: 'memory',
     description: 'In-memory storage hook (test and ephemeral use)',
+  });
+
+  registerProviderBackend({
+    id: 'claude',
+    name: 'Claude (Anthropic)',
+    description: 'Anthropic Claude adapter — default LLM backend',
   });
 }
 

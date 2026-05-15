@@ -93,7 +93,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           signals: decision.signals,
         });
 
-        const normalized: NormalizedRequest = { ...request, intent: decision.intent };
+        const normalized: NormalizedRequest = { ...request, intent: decision.intent, confidence: decision.confidence };
         const envelope = await gatherContext(normalized);
         void appendDebugLog('client', 'context gathered', {
           extraCount: envelope.extras.length,
@@ -175,17 +175,19 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             .catch((err) => {
               const message = err instanceof Error ? err.message : String(err);
               void appendDebugLog('client', 'llm request failed', { message });
-              app.rerender(buildCandidateElement(null, true));
+              if (resolved) return;
+              resolved = true;
+              void writeShellResult(resultFile, { kind: 'error', message: `Que-Que: ${message} — press any key` }).then(() => unmount?.());
             });
         });
 
         void appendDebugLog('client', 'wrote llm result', { resultFile });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        void appendDebugLog('client', 'llm request failed; falling back to cancel', {
+        void appendDebugLog('client', 'llm request failed', {
           message,
         });
-        await writeShellResult(resultFile, { kind: 'cancel' });
+        await writeShellResult(resultFile, { kind: 'error', message: `Que-Que: ${message} — press any key` });
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });

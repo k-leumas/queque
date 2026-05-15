@@ -89,9 +89,9 @@ vi.mock('ink', () => ({
       }) => {
         let currentElement = element;
         const { onSelect, candidates } = element.props;
-        if (onSelect) {
+        if (onSelect && candidates) {
           Promise.resolve().then(() => {
-            onSelect(candidates?.[0]?.command ?? 'git status');
+            onSelect(candidates[0]?.command ?? 'git status');
           });
         }
         return {
