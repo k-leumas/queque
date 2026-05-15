@@ -22,12 +22,11 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
       void appendDebugLog('daemon', 'socket connected', { socketPath });
 
       socket.on('data', (chunk) => {
-        buf += chunk.toString();
-
-        if (buf.length > MAX_BUF_BYTES) {
+        if (buf.length + chunk.length > MAX_BUF_BYTES) {
           socket.destroy(new Error('IPC message too large'));
           return;
         }
+        buf += chunk.toString();
         let nl = buf.indexOf('\n');
 
         while (nl !== -1) {
