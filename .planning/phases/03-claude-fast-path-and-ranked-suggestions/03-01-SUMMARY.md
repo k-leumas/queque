@@ -115,6 +115,17 @@ None — no external service configuration required.
 - `claudeAdapter` exported and typed as `LLMAdapter` — ready for `registerProviderBackend` wiring in bootstrap
 - All 112 tests green; full suite passes
 
+## Self-Check: PASSED
+
+- src/providers/provider.ts: FOUND
+- src/providers/claude.ts: FOUND
+- src/contracts/shell.ts: FOUND
+- 03-01-SUMMARY.md: FOUND
+- commit 353655c (test RED): FOUND
+- commit dc14eec (feat provider.ts): FOUND
+- commit 330c416 (feat GREEN): FOUND
+- All 112 tests green
+
 ---
 *Phase: 03-claude-fast-path-and-ranked-suggestions*
 *Completed: 2026-05-15*
