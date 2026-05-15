@@ -15,8 +15,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
 - [x] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps Que-Que general-purpose instead of repo-centric.
 - [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
-- [ ] **Phase 3.1: Monocle-style Interface and Interactivity** - Update interface and interactivity to match the monocle terminal UI model. (INSERTED)
-- [ ] **Phase 3.2: Zellij floating pane integration for best UX** - Reduce scope to Zellij floating panes for best UX. (INSERTED)
+- [x] **Phase 3.1: Monocle-style Interface and Interactivity** - Update interface and interactivity to match the monocle terminal UI model. (INSERTED)
+- [x] **Phase 3.2: Zellij floating pane integration for best UX** - Reduce scope to Zellij floating panes for best UX. (INSERTED)
 - [ ] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
 - [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
@@ -95,9 +95,9 @@ Plans:
 **Plans:** 3 plans
 
 Plans:
-- [ ] 03.2-01-PLAN.md — Wave 1: extend test mocks in client-result.test.ts (stat/FIFO) and zsh-widget.test.ts (Zellij detection + static content assertions)
-- [ ] 03.2-02-PLAN.md — Wave 2: implement FIFO-aware writeShellResult in result-writer.ts; add Zellij branch to run-foreground.ts
-- [ ] 03.2-03-PLAN.md — Wave 3: rewrite qq-question-widget in qq.zsh (Zellij detection, mkfifo, zellij run, FIFO blocking read, inline jq apply) + manual verification checkpoint
+- [x] 03.2-01-PLAN.md — Wave 1: extend test mocks in client-result.test.ts (stat/FIFO) and zsh-widget.test.ts (Zellij detection + static content assertions)
+- [x] 03.2-02-PLAN.md — Wave 2: implement FIFO-aware writeShellResult in result-writer.ts; add Zellij branch to run-foreground.ts
+- [x] 03.2-03-PLAN.md — Wave 3: rewrite qq-question-widget in qq.zsh (Zellij detection, mkfifo, zellij run, FIFO blocking read, inline jq apply) + manual verification checkpoint
 
 ### Phase 4: Fuzzy TUI Selection UX
 **Goal**: Turn high-confidence command selection into a fast, intuitive, keyboard-only flow with explanations visible inline.
@@ -159,8 +159,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 5 → 6
 | 1. Shell Bridge and Result Contract | 3/3 | Complete | 2026-05-02 |
 | 2. Intent Router and Context Pipeline | 3/3 | Complete | 2026-05-02 |
 | 3. Claude Fast Path and Ranked Suggestions | 0/3 | Not started | - |
-| 3.1. Monocle-style Interface and Interactivity | 0/3 | Not started (INSERTED) | - |
-| 3.2. Zellij floating pane integration for best UX | 0/3 | Not started (INSERTED) | - |
+| 3.1. Monocle-style Interface and Interactivity | 3/3 | Complete (INSERTED) | 2026-05-14 |
+| 3.2. Zellij floating pane integration for best UX | 3/3 | Complete (INSERTED) | 2026-05-14 |
 | 4. Fuzzy TUI Selection UX | 0/3 | Not started | - |
 | 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |
 | 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | Not started | - |
