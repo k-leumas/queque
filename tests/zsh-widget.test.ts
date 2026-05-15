@@ -94,7 +94,9 @@ describe('? widget: single ? inserts without delay', () => {
   });
 
   it('widget invokes qq client --request-file and --result-file', () => {
-    const result = spawnSync('grep', ['-q', 'qq client --request-file', widgetPath], {
+    // The widget resolves qq to a full path stored in $qq_bin, then invokes
+    // "$qq_bin" client --request-file, so match on the argument rather than the binary name.
+    const result = spawnSync('grep', ['-q', 'client --request-file', widgetPath], {
       encoding: 'utf8',
     });
     expect(result.status).toBe(0);

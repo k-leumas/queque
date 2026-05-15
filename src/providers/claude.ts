@@ -19,10 +19,15 @@ function extractText(content: Array<{ type: string; text?: string }>): string {
     .trim();
 }
 
+function stripCodeFence(raw: string): string {
+  const m = raw.trim().match(/^```(?:json)?\s*\n?([\s\S]*?)\n?```\s*$/);
+  return m ? m[1].trim() : raw.trim();
+}
+
 function parseCandidates(text: string): CandidateList {
   let parsed: unknown;
   try {
-    parsed = JSON.parse(text);
+    parsed = JSON.parse(stripCodeFence(text));
   } catch {
     // Not JSON at all — treat entire text as a plain command (prose fallback)
     const trimmed = text.trim();

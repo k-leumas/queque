@@ -203,10 +203,25 @@ qq-question-widget() {
 }
 JSON
 
+  # Build the qq invocation.
+  # qq may be a shell function (dev mode) or an installed binary. zellij run
+  # uses exec — it does not start a shell, so shell functions are invisible.
+  # Use node + the script path directly when QQ_DEV_ROOT is set; otherwise
+  # fall back to a bare qq (assumes a globally-installed binary).
+  local -a qq_cmd
+  if [[ -n "${QQ_DEV_ROOT:-}" && -f "${QQ_DEV_ROOT}/dist/cli/main.js" ]]; then
+    qq_cmd=("node" "${QQ_DEV_ROOT}/dist/cli/main.js")
+  else
+    qq_cmd=("qq")
+  fi
+  _qq_log "qq_cmd=${qq_cmd[*]}"
+
   # Launch the floating pane backgrounded+disowned so it does not block the
   # widget or inherit the widget's signal disposition (D-06).
+  # Stderr is appended to the debug log so zellij run failures are visible.
   zellij run --floating --close-on-exit --width 80 --height 24 -- \
-    qq client --request-file "$req_file" --result-file "$fifo_path" &!
+    "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
+    2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
 
   # Block on FIFO read with a 30 s timeout (D-05, Pitfall 3: read -t not cat).
   # || true ensures widget continues on timeout (treated as cancel).
