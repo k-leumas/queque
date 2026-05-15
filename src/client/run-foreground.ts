@@ -87,13 +87,17 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       });
     } else if (resultMode === 'llm') {
       try {
-        const decision = classifyIntent({ ...request, intent: 'unknown' as const });
+        const decision = classifyIntent({ ...request, intent: 'unknown' as const, confidence: 0 });
         void appendDebugLog('client', 'intent classified', {
           intent: decision.intent,
           signals: decision.signals,
         });
 
-        const normalized: NormalizedRequest = { ...request, intent: decision.intent, confidence: decision.confidence };
+        const normalized: NormalizedRequest = {
+          ...request,
+          intent: decision.intent,
+          confidence: decision.confidence,
+        };
         const envelope = await gatherContext(normalized);
         void appendDebugLog('client', 'context gathered', {
           extraCount: envelope.extras.length,
@@ -157,7 +161,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
 
           const renderOptions = inZellij
             ? {}
-            : (ttyReadStream && ttyWriteStream ? { stdin: ttyReadStream, stdout: ttyWriteStream } : {});
+            : ttyReadStream && ttyWriteStream
+              ? { stdin: ttyReadStream, stdout: ttyWriteStream }
+              : {};
 
           const app = render(buildCandidateElement(null), renderOptions);
 
@@ -177,7 +183,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;
               resolved = true;
-              void writeShellResult(resultFile, { kind: 'error', message: `Que-Que: ${message} — press any key` }).then(() => unmount?.());
+              void writeShellResult(resultFile, {
+                kind: 'error',
+                message: `Que-Que: ${message} — press any key`,
+              }).then(() => unmount?.());
             });
         });
 
@@ -187,7 +196,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         void appendDebugLog('client', 'llm request failed', {
           message,
         });
-        await writeShellResult(resultFile, { kind: 'error', message: `Que-Que: ${message} — press any key` });
+        await writeShellResult(resultFile, {
+          kind: 'error',
+          message: `Que-Que: ${message} — press any key`,
+        });
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });
