@@ -71,7 +71,7 @@ Plans:
 **UI hint**: no
 
 Plans:
-- [ ] 03-01-PLAN.md — Wave 1: update tests (remove modelListMock, add error variant tests); create LLMAdapter interface; refactor claude.ts (haiku default, claudeAdapter export, remove suggestShellResult); extend shellResultSchema with error variant.
+- [x] 03-01-PLAN.md — Wave 1: update tests (remove modelListMock, add error variant tests); create LLMAdapter interface; refactor claude.ts (haiku default, claudeAdapter export, remove suggestShellResult); extend shellResultSchema with error variant.
 - [ ] 03-02-PLAN.md — Wave 2: add confidence field to NormalizedRequest; wire confidence from classifyIntent into run-foreground; change outer catch to write error ShellResult; register claude backend in bootstrapBuiltins.
 - [ ] 03-03-PLAN.md — Wave 2 (parallel): add error) case to both _qq_apply_result and qq-question-widget in qq.zsh; add zsh-widget test for error kind.
 
@@ -80,7 +80,7 @@ Plans:
 **Goal**: Redesign CandidateSelect and Modal to match the monocle terminal UI model — 80-col modal, ┌> selection glyph, live search zone, animated loading spinner, monocle ANSI 256 palette, and modal-first async render before provider responds.
 **Requirements**: TUI-01, CMD-03, SAFE-01
 **Depends on:** Phase 3
-**Plans:** 3/3 plans complete
+**Plans:** 1/3 plans executed
 
 Plans:
 - [x] 03.1-01-PLAN.md — Wave 0: extend vitest config for .tsx tests, update client-result.test.ts, scaffold candidate-select.test.tsx
