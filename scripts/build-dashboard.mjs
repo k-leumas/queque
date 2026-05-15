@@ -808,12 +808,9 @@ function formatEntry(entry, width) {
   const duration = `${(entry.durationMs / 1000).toFixed(1)}s`;
   const summary = truncate(entry.summary, Math.max(20, width - 34));
 
-  return [
-    padRight(entry.time, 8),
-    padRight(status, 10 + ansiVisibleDelta(status)),
-    padRight(duration, 10),
-    summary,
-  ].join('  ');
+  return [padRight(entry.time, 8), padRight(status, 10), padRight(duration, 10), summary].join(
+    '  ',
+  );
 }
 
 function trimHistory() {
