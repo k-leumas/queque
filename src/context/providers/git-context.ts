@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process';
+import { statSync } from 'node:fs';
 import { promisify } from 'node:util';
 import type { ContextChunk } from '../../contracts/request.js';
 import { appendDebugLog } from '../../shared/debug-log.js';
@@ -7,6 +8,16 @@ import type { ContextProvider, GatherContextInput } from '../provider.js';
 
 const execFileAsync = promisify(execFile);
 const GIT_TIMEOUT_MS = 5000;
+
+function assertSafeCwd(cwd: string): void {
+  let st: ReturnType<typeof statSync>;
+  try {
+    st = statSync(cwd);
+  } catch {
+    throw new Error(`cwd not accessible: ${cwd}`);
+  }
+  if (!st.isDirectory()) throw new Error(`cwd is not a directory: ${cwd}`);
+}
 
 function stripQuotes(value: string): string {
   if (value.startsWith('"') && value.endsWith('"')) {
@@ -34,6 +45,7 @@ export function parsePorcelainLine(line: string): string | null {
 }
 
 async function getChangedFiles(cwd: string): Promise<string[]> {
+  assertSafeCwd(cwd);
   try {
     const { stdout } = await execFileAsync('git', ['-C', cwd, 'status', '--porcelain'], {
       encoding: 'utf8',
@@ -62,6 +74,7 @@ export const gitContextProvider: ContextProvider = {
     }
 
     try {
+      assertSafeCwd(input.base.cwd);
       const vcs = await detectVcsContext(input.base.cwd);
       if (vcs.kind === 'none') {
         return null;

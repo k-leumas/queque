@@ -8,7 +8,7 @@ import { z } from 'zod';
 export const shellRequestSchema = z.object({
   version: z.literal(1),
   ttyPath: z.string(),
-  cwd: z.string(),
+  cwd: z.string().regex(/^\/[^\0]*$/, 'cwd must be an absolute POSIX path'),
   shellPid: z.number().int().positive(),
   lbuffer: z.string(),
   rbuffer: z.string(),
