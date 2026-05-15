@@ -1,4 +1,5 @@
 import { cac } from 'cac';
+import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { clientCommand } from './commands/client.js';
 import { daemonCommand } from './commands/daemon.js';
 
@@ -22,6 +23,7 @@ function requiredOption(name: string, value: string | undefined): string {
 }
 
 export async function main(argv = process.argv.slice(2)): Promise<void> {
+  bootstrapBuiltins();
   const cli = cac('qq');
 
   cli

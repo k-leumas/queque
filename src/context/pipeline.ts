@@ -1,13 +1,10 @@
 import type { ContextEnvelope, NormalizedRequest } from '../contracts/request.js';
 import { classifyIntent } from '../intent/router.js';
-import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { listContextProviders } from '../registry/context-providers.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { buildBaseContext } from './base-context.js';
 
 export async function gatherContext(request: NormalizedRequest): Promise<ContextEnvelope> {
-  bootstrapBuiltins();
-
   void appendDebugLog('context', 'pipeline start', {
     lbuffer: request.lbuffer,
     intent: request.intent,
