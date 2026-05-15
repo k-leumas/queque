@@ -20,11 +20,19 @@ function extractText(content: Array<{ type: string; text?: string }>): string {
 }
 
 function parseCandidates(text: string): CandidateList {
+  let parsed: unknown;
   try {
-    return candidateListSchema.parse(JSON.parse(text));
+    parsed = JSON.parse(text);
   } catch {
+    // Not JSON at all — treat entire text as a plain command (prose fallback)
     const trimmed = text.trim();
     return [{ command: trimmed || 'echo ""', explanation: '' }];
+  }
+  // Valid JSON but wrong schema — do not use raw JSON text as a command
+  try {
+    return candidateListSchema.parse(parsed);
+  } catch {
+    return [{ command: 'echo ""', explanation: 'Que-Que: unexpected response format' }];
   }
 }
 
