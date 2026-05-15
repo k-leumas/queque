@@ -19,9 +19,10 @@ export type ShellRequest = z.infer<typeof shellRequestSchema>;
 /**
  * Shell result — written by the qq client so the zsh widget can apply it.
  *
- * Two variants:
- *   cancel        — leave LBUFFER/RBUFFER untouched (Esc or error)
+ * Three variants:
+ *   cancel        — leave LBUFFER/RBUFFER untouched (Esc or dismiss)
  *   replace-buffer — overwrite LBUFFER and RBUFFER with the chosen command
+ *   error         — provider or client error; message shown to user, buffers restored
  *
  * The deprecated {buffer, cursor} shape is intentionally excluded.
  * Numeric cursor offsets create Unicode index mismatches between Node (UTF-16)
@@ -37,6 +38,10 @@ export const shellResultSchema = z.discriminatedUnion('kind', [
     kind: z.literal('replace-buffer'),
     lbuffer: z.string(),
     rbuffer: z.string(),
+  }),
+  z.object({
+    kind: z.literal('error'),
+    message: z.string(),
   }),
 ]);
 

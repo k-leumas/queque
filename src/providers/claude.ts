@@ -1,46 +1,14 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { type CandidateList, candidateListSchema } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
-import { type ShellResult, shellResultSchema } from '../contracts/shell.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
+import type { LLMAdapter } from './provider.js';
 
-const CHEAPEST_FIRST_MODEL_IDS = [
-  'claude-3-haiku-20240307',
-  'claude-3-5-haiku-20241022',
-  'claude-3-7-sonnet-20250219',
-  'claude-sonnet-4-20250514',
-  'claude-opus-4-20250514',
-  'claude-opus-4-1-20250805',
-];
+const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
 
-async function listAvailableModelIds(client: Anthropic): Promise<string[]> {
-  const modelIds: string[] = [];
-
-  try {
-    for await (const model of client.models.list()) {
-      modelIds.push(model.id);
-    }
-  } catch (error) {
-    void appendDebugLog('provider', 'model list unavailable; using configured default', {
-      message: error instanceof Error ? error.message : String(error),
-    });
-    return [];
-  }
-
-  return modelIds;
-}
-
-function chooseCheapestAvailableModel(availableModelIds: string[]): string {
-  const available = new Set(availableModelIds);
-
-  for (const modelId of CHEAPEST_FIRST_MODEL_IDS) {
-    if (available.has(modelId)) {
-      return modelId;
-    }
-  }
-
-  return availableModelIds[0] ?? CHEAPEST_FIRST_MODEL_IDS.at(-1) ?? 'claude-3-haiku-20240307';
+function resolveModel(): string {
+  return process.env.QQ_MODEL ?? readEnvValueFromDotEnvLocal('QQ_MODEL') ?? DEFAULT_MODEL;
 }
 
 function extractText(content: Array<{ type: string; text?: string }>): string {
@@ -110,16 +78,6 @@ function buildPrompt(envelope: ContextEnvelope): string {
   ].join('\n');
 }
 
-async function getCandidateModels(client: Anthropic): Promise<string[]> {
-  const configuredModel = process.env.QQ_MODEL ?? readEnvValueFromDotEnvLocal('QQ_MODEL');
-  if (configuredModel) {
-    return [configuredModel];
-  }
-
-  const availableModelIds = await listAvailableModelIds(client);
-  return [chooseCheapestAvailableModel(availableModelIds)];
-}
-
 /**
  * Calls Claude with the assembled context envelope and returns ranked command candidates.
  *
@@ -138,64 +96,49 @@ export async function fetchCandidates(
 
   const client = new Anthropic({ apiKey });
   const prompt = buildPrompt(envelope);
-  const models = await getCandidateModels(client);
+  const model = resolveModel();
 
   void appendDebugLog('provider', 'request start', {
-    models,
+    model,
     cwd: envelope.base.cwd,
     rbufferLength: rbuffer.length,
     extras: envelope.extras.map((chunk) => chunk.kind),
   });
 
-  for (const model of models) {
-    try {
-      const response = await client.messages.create(
-        {
-          model,
-          max_tokens: 256,
-          temperature: 0,
-          system:
-            'You are Que-Que, a terminal assistant. Return only JSON matching {"command":"..."} and nothing else.',
-          messages: [{ role: 'user', content: prompt }],
-        },
-        {
-          timeout: 25_000, // 25s — slightly under the zsh 30s FIFO timeout
-        },
-      );
-
-      const text = extractText(response.content);
-      const candidates = ensureSelectableCandidates(parseCandidates(text));
-
-      void appendDebugLog('provider', 'response parsed', {
+  try {
+    const response = await client.messages.create(
+      {
         model,
-        candidateCount: candidates.length,
-        forceSelector: shouldForceSelector(),
-      });
+        max_tokens: 256,
+        temperature: 0,
+        system:
+          'You are Que-Que, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences.',
+        messages: [{ role: 'user', content: prompt }],
+      },
+      {
+        timeout: 25_000, // 25s — slightly under the zsh 30s FIFO timeout
+      },
+    );
 
-      return candidates;
-    } catch (error) {
-      void appendDebugLog('provider', 'request failed', {
-        model,
-        message: error instanceof Error ? error.message : String(error),
-      });
-      throw error;
-    }
+    const text = extractText(response.content);
+    const candidates = ensureSelectableCandidates(parseCandidates(text));
+
+    void appendDebugLog('provider', 'response parsed', {
+      model,
+      candidateCount: candidates.length,
+      forceSelector: shouldForceSelector(),
+    });
+
+    return candidates;
+  } catch (error) {
+    void appendDebugLog('provider', 'request failed', {
+      model,
+      message: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
   }
-
-  throw new Error('Claude request failed');
 }
 
-export async function suggestShellResult(
-  envelope: ContextEnvelope,
-  rbuffer: string = '',
-): Promise<ShellResult> {
-  const candidates = await fetchCandidates(envelope, rbuffer);
-  const command = candidates[0]?.command;
-  if (!command) throw new Error('No candidate returned by provider');
-
-  return shellResultSchema.parse({
-    kind: 'replace-buffer',
-    lbuffer: command,
-    rbuffer,
-  });
-}
+export const claudeAdapter: LLMAdapter = {
+  fetchCandidates,
+};
