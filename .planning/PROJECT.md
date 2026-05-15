@@ -83,4 +83,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-30 after initialization*
+*Last updated: 2026-05-15 — Phase 03 complete (Claude fast path, LLMAdapter contract, ranked candidates, error propagation, ZSH buffer safety)*
