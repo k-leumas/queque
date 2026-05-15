@@ -71,9 +71,9 @@ Plans:
 **UI hint**: no
 
 Plans:
-- [ ] 03-01: Define the shared LLM adapter contract and implement the Claude backend against it.
-- [ ] 03-02: Build the fast-path prompt contract, confidence extraction, and ranking model on top of the adapter.
-- [ ] 03-03: Add error handling, debug surfaces, and shell-safe fallback behavior.
+- [ ] 03-01-PLAN.md — Wave 1: update tests (remove modelListMock, add error variant tests); create LLMAdapter interface; refactor claude.ts (haiku default, claudeAdapter export, remove suggestShellResult); extend shellResultSchema with error variant.
+- [ ] 03-02-PLAN.md — Wave 2: add confidence field to NormalizedRequest; wire confidence from classifyIntent into run-foreground; change outer catch to write error ShellResult; register claude backend in bootstrapBuiltins.
+- [ ] 03-03-PLAN.md — Wave 2 (parallel): add error) case to both _qq_apply_result and qq-question-widget in qq.zsh; add zsh-widget test for error kind.
 
 ### Phase 03.1: Monocle-style Interface and Interactivity (INSERTED)
 
