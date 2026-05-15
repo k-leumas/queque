@@ -50,15 +50,28 @@ function parseEnvFile(content: string): Map<string, string> {
   return values;
 }
 
+// Module-level cache: keyed by "key\0startDir" so different start directories
+// are cached independently. Null means the key was not found. Undefined means
+// the entry has not been populated yet (Map.get returns undefined for missing keys).
+const envCache = new Map<string, string | null>();
+
 export function readEnvValueFromDotEnvLocal(
   key: string,
   startDir = dirname(fileURLToPath(import.meta.url)),
 ): string | null {
+  const cacheKey = `${key}\0${startDir}`;
+  if (envCache.has(cacheKey)) {
+    return envCache.get(cacheKey) ?? null;
+  }
+
   const envPath = findUp(startDir, '.env.local');
   if (!envPath) {
+    envCache.set(cacheKey, null);
     return null;
   }
 
   const values = parseEnvFile(readFileSync(envPath, 'utf8'));
-  return values.get(key) ?? null;
+  const result = values.get(key) ?? null;
+  envCache.set(cacheKey, result);
+  return result;
 }
