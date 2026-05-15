@@ -93,7 +93,8 @@ export function CandidateSelect({
 
     if (key.return && candidates) {
       const visible = filterCandidates(candidates, query);
-      onSelect(visible[selectedIndex]?.command ?? visible[0]?.command);
+      if (visible.length === 0) return; // no match — ignore Enter
+      onSelect(visible[selectedIndex]?.command ?? visible[0]!.command);
       return;
     }
   });
