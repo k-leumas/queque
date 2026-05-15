@@ -47,6 +47,23 @@ describe('shellResultSchema', () => {
       rbuffer: '"',
     });
   });
+
+  it('accepts {kind: error, message} ShellResult', () => {
+    const validError = shellResultSchema.safeParse({
+      kind: 'error',
+      message: 'Que-Que: API timeout — press any key',
+    });
+    expect(validError.success).toBe(true);
+    expect(validError.data).toEqual({
+      kind: 'error',
+      message: 'Que-Que: API timeout — press any key',
+    });
+  });
+
+  it('rejects error variant without message field', () => {
+    const noMessage = shellResultSchema.safeParse({ kind: 'error' });
+    expect(noMessage.success).toBe(false);
+  });
 });
 
 describe('shellRequestSchema', () => {

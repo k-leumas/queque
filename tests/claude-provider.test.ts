@@ -1,25 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { type ContextEnvelope } from '../src/contracts/request.js';
 
-const { createMock, modelListMock, anthropicCtorMock } = vi.hoisted(() => {
+const { createMock, anthropicCtorMock } = vi.hoisted(() => {
   const createMock = vi.fn();
-  const modelListMock = vi.fn();
   const anthropicCtorMock = vi.fn();
 
-  return { createMock, modelListMock, anthropicCtorMock };
+  return { createMock, anthropicCtorMock };
 });
 
 class AnthropicMock {
   messages: { create: typeof createMock };
-  models: { list: typeof modelListMock };
 
   constructor(options: unknown) {
     anthropicCtorMock(options);
     this.messages = {
       create: createMock,
-    };
-    this.models = {
-      list: modelListMock,
     };
   }
 }
@@ -49,16 +44,10 @@ describe('fetchCandidates', () => {
     delete process.env.QQ_MODEL;
     delete process.env.QQ_FORCE_SELECTOR;
     createMock.mockReset();
-    modelListMock.mockReset();
     anthropicCtorMock.mockClear();
   });
 
   it('returns candidate JSON from Claude and includes git context in the prompt', async () => {
-    modelListMock.mockImplementation(async function* () {
-      yield { id: 'claude-sonnet-4-20250514' };
-      yield { id: 'claude-3-5-haiku-20241022' };
-      yield { id: 'claude-3-haiku-20240307' };
-    });
     createMock.mockResolvedValue({
       content: [
         {
@@ -87,20 +76,34 @@ describe('fetchCandidates', () => {
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(anthropicCtorMock).toHaveBeenCalledWith({ apiKey: 'test-key' });
-    expect(modelListMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledTimes(1);
 
     const request = createMock.mock.calls[0][0];
-    expect(request.model).toBe('claude-3-haiku-20240307');
+    expect(request.model).toBe('claude-haiku-4-5-20251001');
     expect(request.messages[0].content).toContain('versionControl');
     expect(request.messages[0].content).toContain('"branch": "main"');
     expect(request.messages[0].content).toContain('"changedFiles"');
   });
 
-  it('falls back to a single candidate when Claude returns malformed JSON', async () => {
-    modelListMock.mockImplementation(async function* () {
-      yield { id: 'claude-sonnet-4-20250514' };
+  it('uses QQ_MODEL env var when set', async () => {
+    process.env.QQ_MODEL = 'claude-custom';
+    createMock.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '[{"command":"git status","explanation":""}]',
+        },
+      ],
     });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(buildEnvelope(), '');
+
+    const request = createMock.mock.calls[0][0];
+    expect(request.model).toBe('claude-custom');
+  });
+
+  it('falls back to a single candidate when Claude returns malformed JSON', async () => {
     createMock.mockResolvedValue({
       content: [
         {
@@ -117,22 +120,15 @@ describe('fetchCandidates', () => {
   });
 
   it('does not retry on model errors', async () => {
-    modelListMock.mockImplementation(async function* () {
-      yield { id: 'claude-sonnet-4-20250514' };
-    });
     createMock.mockRejectedValueOnce(new Error('404 model not found'));
 
     const { fetchCandidates } = await import('../src/providers/claude.js');
     await expect(fetchCandidates(buildEnvelope(), '')).rejects.toThrow('404 model not found');
     expect(createMock).toHaveBeenCalledTimes(1);
-    expect(createMock.mock.calls[0][0].model).toBe('claude-sonnet-4-20250514');
   });
 
   it('pads a single candidate to two when QQ_FORCE_SELECTOR is enabled', async () => {
     process.env.QQ_FORCE_SELECTOR = 'true';
-    modelListMock.mockImplementation(async function* () {
-      yield { id: 'claude-sonnet-4-20250514' };
-    });
     createMock.mockResolvedValue({
       content: [
         {
