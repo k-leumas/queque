@@ -126,6 +126,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
 
         await new Promise<void>((resolve) => {
           let unmount: (() => void) | undefined;
+          let resolved = false;
 
           // Build initial element with null candidates (D-06 loading state)
           const buildCandidateElement = (
@@ -137,6 +138,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               initialQuery: request.lbuffer,
               error: errorState,
               onSelect: async (command: string) => {
+                if (resolved) return;
+                resolved = true;
                 await writeShellResult(resultFile, {
                   kind: 'replace-buffer',
                   lbuffer: command,
@@ -145,6 +148,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
                 unmount?.();
               },
               onCancel: async () => {
+                if (resolved) return;
+                resolved = true;
                 await writeShellResult(resultFile, { kind: 'cancel' });
                 unmount?.();
               },
