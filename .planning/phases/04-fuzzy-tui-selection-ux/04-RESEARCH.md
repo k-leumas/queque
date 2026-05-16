@@ -376,22 +376,25 @@ New test cases needed (not new files — extend existing files):
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Should `resultMode` seam be removed in Phase 4?**
    - What we know: `resultMode` is always `'llm'` in production; `'replace-buffer-fixture'` and `'cancel'` are Phase 1 test scaffolding.
    - What's unclear: The seam is currently tested in `client-result.test.ts`. Removing it changes the test surface.
    - Recommendation: Leave for Phase 6 cleanup. Phase 4 should not break existing tests.
+   - **RESOLVED:** Leave for Phase 6 cleanup. Phase 4 scope is TUI UX and lifecycle hardening only.
 
 2. **Should `selectedIndex` reset on query change or clamp?**
    - What we know: Current code uses `visible[selectedIndex]?.command ?? visible[0]!.command` as a runtime guard. The Phase 3.1 plan also added `useEffect` to reset index when `candidates` (the prop) changes, not when `query` changes.
    - What's unclear: If user has index=3 and types a char that narrows to 1 result, index=3 is out of bounds. The current fallback uses `visible[0]` silently.
    - Recommendation: Add `useEffect(() => setSelectedIndex(0), [query])` in Phase 4 for deterministic behavior. Simpler than clamp math.
+   - **RESOLVED:** Add `useEffect(() => setSelectedIndex(0), [query])` in Phase 4 for deterministic behavior.
 
 3. **Is the non-Zellij branch in `run-foreground.ts` dead code?**
    - What we know: Phase 3.2 made Zellij a hard requirement. The non-Zellij `/dev/tty` stream path still exists in `run-foreground.ts`.
    - What's unclear: Whether Phase 4 should clean it up or leave it for Phase 6.
    - Recommendation: Keep for now — Phase 4's scope is TUI UX and lifecycle hardening, not dead code removal.
+   - **RESOLVED:** Keep for now. Dead code removal is Phase 6 scope.
 
 ---
 
