@@ -1,96 +1,47 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-14T18:59:23.245Z",
-  "phase": null,
-  "phase_name": "ad-hoc: build-dashboard watchman fix",
-  "phase_dir": null,
+  "timestamp": "2026-05-21T12:16:46.566Z",
+  "phase": "04",
+  "phase_name": "Fuzzy TUI Selection UX",
+  "phase_dir": ".planning/phases/04-fuzzy-tui-selection-ux",
   "plan": null,
   "task": null,
-  "total_tasks": 6,
-  "status": "paused",
-  "completed_tasks": [
-    {
-      "id": 1,
-      "name": "Remove stray string literal + guard EPIPE in sendWatchmanCommand",
-      "status": "done",
-      "commit": "436406c"
-    },
-    {
-      "id": 2,
-      "name": "Hoist _stripAnsiRe above await main (fix TDZ)",
-      "status": "done",
-      "commit": "84ad43d"
-    },
-    {
-      "id": 3,
-      "name": "Switch to system watchman daemon (watchman -j)",
-      "status": "done",
-      "commit": "f947c5b"
-    },
-    {
-      "id": 4,
-      "name": "Surface real watchman error in status line",
-      "status": "done",
-      "commit": "f947c5b"
-    },
-    {
-      "id": 5,
-      "name": "Add net import + rename watchmanClient → watchmanSocket",
-      "status": "in_progress",
-      "progress": "import added, variable renamed in declaration only — function bodies still reference watchmanClient (broken)"
-    }
-  ],
+  "total_tasks": null,
+  "status": "ready_to_execute",
+  "completed_tasks": [],
   "remaining_tasks": [
+    { "id": "04-01", "name": "RED test scaffolding (Wave 0)", "status": "not_started" },
     {
-      "id": 5,
-      "name": "Complete watchmanSocket rename in all function bodies",
-      "status": "in_progress"
-    },
-    {
-      "id": 6,
-      "name": "Rewrite startWatchmanLoop to use net.createConnection via watchman get-sockname",
+      "id": "04-02",
+      "name": "CandidateSelect useEffect([query]) fix (Wave 1)",
       "status": "not_started"
     },
     {
-      "id": 7,
-      "name": "Update sendWatchmanCommand to write to socket directly",
+      "id": "04-03",
+      "name": "Lifecycle hardening — uncaughtException handlers (Wave 1)",
       "status": "not_started"
-    },
-    { "id": 8, "name": "Update shutdownWatchman to destroy socket", "status": "not_started" },
-    {
-      "id": 9,
-      "name": "Fix onWatchmanStdout JSON parsing bug (payload = line → payload = JSON.parse(line))",
-      "status": "not_started"
-    },
-    { "id": 10, "name": "Commit and verify watchman backend works", "status": "not_started" }
-  ],
-  "blockers": [
-    {
-      "description": "scripts/build-dashboard.mjs is in a broken mid-refactor state — net imported, watchmanSocket declared, but all function bodies still reference watchmanClient",
-      "type": "technical",
-      "workaround": "Complete the refactor before committing"
     }
   ],
+  "blockers": [],
   "human_actions_pending": [],
   "decisions": [
     {
-      "decision": "Use net.createConnection to watchman daemon socket instead of watchman -j subprocess",
-      "rationale": "watchman -j exits after each response (not persistent); direct socket connection is persistent and the correct approach for subscriptions",
-      "phase": "ad-hoc"
-    },
-    {
-      "decision": "Get socket path via watchman get-sockname (one-shot spawn)",
-      "rationale": "Most reliable cross-platform way to find the running daemon socket",
-      "phase": "ad-hoc"
+      "decision": "Phase 4 planned and verified — 3 plans, 2 waves",
+      "rationale": "Research confirmed Phase 4 is refinement not greenfield; tests go RED in Wave 0 then GREEN in Wave 1",
+      "phase": "04"
     }
   ],
-  "uncommitted_files": [
-    "scripts/build-dashboard.mjs",
-    ".wolf/anatomy.md",
-    ".wolf/buglog.json",
-    ".wolf/cerebrum.md",
-    ".wolf/memory.md"
-  ],
-  "next_action": "Read the current state of scripts/build-dashboard.mjs, then complete the net.createConnection refactor: finish renaming watchmanClient → watchmanSocket everywhere, rewrite startWatchmanLoop, fix sendWatchmanCommand, fix shutdownWatchman, fix onWatchmanStdout JSON parsing",
-  "context_notes": "The watchman -j approach fails because the subprocess exits after delivering responses — it is not a persistent streaming process. The correct approach is to call `watchman get-sockname` once (one-shot spawn, parses JSON output to get sockname field), then open a persistent net.Socket to that path. All subsequent command/response I/O goes over that socket. The existing onWatchmanStdout line-framing logic reuses cleanly — just change the data source from stdout to socket.on('data'). The JSON parsing bug (payload = line instead of JSON.parse(line)) also needs fixing or watchResponse.watch / clockResponse.clock will be undefined."
+  "uncommitted_files": [],
+  "queued_quick_task": {
+    "id": "260521-7ba",
+    "description": "Fix candidate selection UX — write command + explanation as shell comment to LBUFFER, cursor at first placeholder if command has inputs",
+    "status": "not_started",
+    "key_files": [
+      "src/ui/CandidateSelect.tsx",
+      "src/client/run-foreground.ts",
+      "src/contracts/candidates.ts",
+      "src/client/result-writer.ts"
+    ]
+  },
+  "next_action": "Run /gsd-execute-phase 4 for planned phase work, or /gsd-quick for the selection UX quick fix"
 }
