@@ -202,3 +202,131 @@ describe('CandidateSelect — D-01 pre-filter', () => {
     expect(onSelect).not.toHaveBeenCalledWith('ls -la');
   });
 });
+
+// ---------------------------------------------------------------------------
+// New test cases for Wave 1 (Phase 04) — added by Plan 04-01
+// ---------------------------------------------------------------------------
+
+describe('CandidateSelect — selectedIndex reset on query change', () => {
+  beforeEach(resetState);
+
+  // ACTIVATION REQUIRED IN PLAN 04-02:
+  // Replace it.todo with a real it() block containing this body:
+  //
+  //   const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+  //   const { useEffect } = await import('react');
+  //   const onSelect = vi.fn();
+  //   const onCancel = vi.fn();
+  //   CandidateSelect({
+  //     candidates: [
+  //       { command: 'git status', explanation: '' },
+  //       { command: 'ls -la', explanation: '' },
+  //     ],
+  //     onSelect,
+  //     onCancel,
+  //   });
+  //   // useEffect must be called twice: once for useEffect([candidates]) and
+  //   // once for useEffect([query]) — the latter added by Plan 04-02.
+  //   expect(useEffect).toHaveBeenCalledTimes(2);
+  //
+  // The pre-commit hook prevents committing actively failing tests, so this test
+  // is kept as .todo in Plan 04-01 and activated alongside the implementation in 04-02.
+  it.todo('registers a useEffect hook for query dependency');
+});
+
+describe('CandidateSelect — zero-match after filter', () => {
+  beforeEach(resetState);
+
+  // Regression guard: Return key is a no-op when no candidates match the query.
+  // This should be GREEN already (guard is present in CandidateSelect.tsx).
+  it('does not call onSelect when no candidates match the query', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    // initialQuery='zzz' matches neither 'git status' nor 'ls -la'
+    CandidateSelect({
+      candidates: [
+        { command: 'git status', explanation: '' },
+        { command: 'ls -la', explanation: '' },
+      ],
+      onSelect,
+      onCancel,
+      initialQuery: 'zzz',
+    });
+
+    // Press Return — zero-match guard prevents onSelect from being called
+    capturedInputHandler?.('', { ...zeroKeys, return: true });
+
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+});
+
+describe('CandidateSelect — wrapping navigation', () => {
+  beforeEach(resetState);
+
+  // Test 1: upArrow from index 0 wraps to the last candidate.
+  // Strategy: render once (selectedIndex=0), press upArrow to update stateValues[0]=2,
+  // then reset stateCallCount and re-render so the new closure captures selectedIndex=2,
+  // then press Return to confirm 'pwd' is selected.
+  it('wraps selection to last candidate when pressing upArrow at index 0', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const candidates = [
+      { command: 'git status', explanation: '' },
+      { command: 'ls -la', explanation: '' },
+      { command: 'pwd', explanation: '' },
+    ];
+
+    // First render — selectedIndex=0 captured in closure
+    CandidateSelect({ candidates, onSelect, onCancel });
+
+    // upArrow from 0 wraps to visible.length - 1 = 2; stateValues[0] is now 2
+    capturedInputHandler?.('', { ...zeroKeys, upArrow: true });
+
+    // Simulate re-render by resetting call counter and re-calling the component.
+    // stateValues[0] is already 2, so useState(0) returns [2, setter].
+    stateCallCount = 0;
+    CandidateSelect({ candidates, onSelect, onCancel });
+
+    // Press Return — selectedIndex=2 in new closure → onSelect('pwd')
+    capturedInputHandler?.('', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('pwd');
+  });
+
+  // Test 2: downArrow wraps from last back to index 0.
+  // Strategy: render once (selectedIndex=0), press downArrow twice (0->1->0),
+  // then reset stateCallCount and re-render so the new closure captures selectedIndex=0,
+  // then press Return to confirm 'git status' is selected.
+  it('wraps selection back to first candidate when pressing downArrow past the last', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const candidates = [
+      { command: 'git status', explanation: '' },
+      { command: 'ls -la', explanation: '' },
+    ];
+
+    // First render — selectedIndex=0 captured in closure
+    CandidateSelect({ candidates, onSelect, onCancel });
+
+    // downArrow: 0 -> 1; stateValues[0] = 1
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+    // downArrow: 1 -> wraps to 0; stateValues[0] = 0
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+
+    // Simulate re-render by resetting call counter and re-calling the component.
+    // stateValues[0] is 0 again, so useState(0) returns [0, setter].
+    stateCallCount = 0;
+    CandidateSelect({ candidates, onSelect, onCancel });
+
+    // Press Return — selectedIndex=0 in new closure → onSelect('git status')
+    capturedInputHandler?.('', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('git status');
+  });
+});

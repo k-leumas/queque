@@ -458,3 +458,107 @@ describe('runForegroundClient: Zellij branch opens /dev/tty', () => {
     expect(JSON.parse(content.trim())).toEqual({ kind: 'cancel' });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Task 2 (Plan 04-01): resolved guard prevents double write
+// ---------------------------------------------------------------------------
+
+describe('runForegroundClient: resolved guard prevents double write', () => {
+  let tmpDir: string;
+  let requestFile: string;
+  let resultFile: string;
+
+  const sampleRequest = {
+    version: 1 as const,
+    ttyPath: '/dev/tty',
+    cwd: '/home/user',
+    shellPid: 1234,
+    lbuffer: 'list files',
+    rbuffer: '',
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-resolved-guard-test-'));
+    requestFile = path.join(tmpDir, 'request.json');
+    resultFile = path.join(tmpDir, 'result.json');
+    fs.writeFileSync(requestFile, JSON.stringify(sampleRequest) + '\n');
+  });
+
+  afterEach(() => {
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+  });
+
+  it('writes replace-buffer result and never writes cancel after selection', async () => {
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    vi.mocked(fetchCandidates).mockResolvedValue([{ command: 'git status', explanation: '' }]);
+
+    const fspMock = await import('node:fs/promises');
+    const writeFileSpy = vi.spyOn(fspMock, 'writeFile');
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    // Result file must contain the replace-buffer outcome
+    const resultContent = fs.readFileSync(resultFile, 'utf-8');
+    const parsed = JSON.parse(resultContent.trim());
+    expect(parsed.kind).toBe('replace-buffer');
+    expect(parsed.lbuffer).toBe('git status');
+
+    // No writeFile call should have written a cancel payload after the selection resolved
+    const cancelCalls = writeFileSpy.mock.calls.filter((args) => {
+      const content = String(args[1]);
+      return content.includes('"cancel"');
+    });
+    expect(cancelCalls).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Task 3 (Plan 04-01): main.ts error handler tests
+// These tests are pending (todo) until Plan 04-03 adds the handlers to main.ts.
+//
+// ACTIVATION REQUIRED IN PLAN 04-03:
+// 1. Add vi.mock('node:fs', ...) at the top of this file with { writeFileSync: vi.fn() }.
+// 2. Replace each it.todo with a real it() block containing the body below.
+//
+// Body for 'uncaughtException handler writes cancel to QQ_RESULT_FILE':
+//
+//   vi.resetModules();
+//   process.env['QQ_RESULT_FILE'] = '/tmp/qq-test-handler-result';
+//   const processSpy = vi.spyOn(process, 'on');
+//   const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+//     throw new Error('process.exit called');
+//   });
+//   const fsMock = await import('node:fs');
+//   vi.mocked(fsMock.writeFileSync).mockImplementation(() => {});
+//   await import('../src/cli/main.js');
+//   const handlerCall = processSpy.mock.calls.find((args) => args[0] === 'uncaughtException');
+//   expect(handlerCall).toBeDefined();
+//   const handler = handlerCall![1] as (err: Error) => void;
+//   try { handler(new Error('test error')); } catch { /* process.exit caught */ }
+//   expect(vi.mocked(fsMock.writeFileSync)).toHaveBeenCalledWith(
+//     '/tmp/qq-test-handler-result',
+//     expect.stringMatching(/"kind":"cancel"/),
+//   );
+//   delete process.env['QQ_RESULT_FILE'];
+//   exitSpy.mockRestore();
+//   processSpy.mockRestore();
+//
+// Body for 'unhandledRejection handler writes cancel to QQ_RESULT_FILE':
+//   Same as above but find 'unhandledRejection' handler and invoke with a reason string.
+// ---------------------------------------------------------------------------
+
+describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', () => {
+  // ACTIVATION: remove .todo and add the body above when Plan 04-03 adds the handler.
+  it.todo('writes cancel JSON to QQ_RESULT_FILE on uncaught exception');
+});
+
+describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', () => {
+  // ACTIVATION: remove .todo and add the body above when Plan 04-03 adds the handler.
+  it.todo('writes cancel JSON to QQ_RESULT_FILE on unhandled rejection');
+});
