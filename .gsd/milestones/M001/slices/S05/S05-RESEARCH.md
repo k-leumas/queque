@@ -1,0 +1,723 @@
+# Phase 3.2: Zellij Floating Pane Integration - Research
+
+**Researched:** 2026-05-14
+**Domain:** Zellij CLI, Named Pipes (FIFO), ZSH ZLE widget, Ink TTY rendering
+**Confidence:** HIGH
+
+---
+
+<user_constraints>
+## User Constraints (from CONTEXT.md)
+
+### Locked Decisions
+
+- **D-01:** Zellij is a **hard requirement**. If `$ZELLIJ` env var is not set, Que-Que prints a clear message and exits without showing a modal. Non-Zellij support deferred to Phase 6.
+- **D-02:** The existing inline TTY rendering path (MODAL_CHROME_LINES scroll hack) is **removed**. No fallback rendering mode in this phase.
+- **D-03:** The ZSH widget creates a named pipe (`mkfifo`) before launching the floating pane. The FIFO path is passed to the client as `--result-file`.
+- **D-04:** The client writes the JSON result directly to the FIFO path using `result-writer.ts` logic. No separate temp result file.
+- **D-05:** The ZSH widget backgrounds the `zellij run` call, then blocks reading from the FIFO. Unblocks when client writes result. Widget applies result then cleans up FIFO.
+- **D-06:** Launch command: `zellij run --floating --close-on-exit --width 80 --height 24 -- qq client --request-file "$req_file" --result-file "$fifo_path"` (backgrounded with `&!`)
+- **D-07:** Request still passed via temp JSON file (`--request-file`). Only result moves to FIFO.
+- **D-08:** `run-foreground.ts` detects `process.env.ZELLIJ` at runtime. When set: skip `/dev/tty` open, skip blank-line scroll hack, render Ink to `process.stdout` directly.
+- **D-09:** Ink `render()` in Zellij context uses no explicit `stdin`/`stdout` options (defaults to `process.stdin`/`process.stdout`).
+- **D-10:** Fixed pane size: **80 columns × 24 rows**.
+
+### Claude's Discretion
+
+- FIFO timeout/cleanup strategy in the ZSH widget (e.g. `read -t 30`, cleanup on ERR/EXIT trap)
+- Exact error message copy for the non-Zellij exit path
+- Whether to check `$ZELLIJ_SESSION_NAME` vs `$ZELLIJ` for detection (use whichever is more reliable)
+- Daemon `ensureDaemon` call — keep or remove for Zellij pane path
+- TTY stream creation block in `run-foreground.ts` — clean removal vs guard
+
+### Deferred Ideas (OUT OF SCOPE)
+
+- Non-Zellij fallback rendering — explicitly out of scope for Phase 3.2. Revisit in Phase 6.
+- Configurable pane dimensions — fixed at 80×24 for MVP. Phase 6 can expose env vars.
+- `Ctrl+F` floating/tiled toggle — deferred from Phase 3.1, remains deferred.
+</user_constraints>
+
+---
+
+## Summary
+
+Phase 3.2 replaces the inline TTY rendering approach with a Zellij floating pane. The architecture is clean: ZSH widget creates a FIFO, backgrounds `zellij run --floating`, blocks on a FIFO read, and applies the JSON result written by the Node.js client when the user makes a selection. The client detects `$ZELLIJ` and renders Ink to `process.stdout` directly — no `/dev/tty` gymnastics.
+
+All critical mechanics were verified by direct experiment in this session. The most important non-obvious finding is that **`result-writer.ts`'s atomic rename pattern is incompatible with FIFO paths** — `rename(2)` replaces the FIFO with a regular file and the waiting zsh reader receives nothing. The fix is a direct `fsp.writeFile()` call when the result path is a FIFO, using `stat.isFIFO()` to detect the path type.
+
+The daemon `ensureDaemon` call adds at most ~500ms on cold start; the widget's existing `_qq_prewarm_daemon` already starts the daemon in the background before the trigger fires. Keeping `ensureDaemon` in the Zellij path is safe and provides resilience, but the code path in `run-foreground.ts` for creating `ttyHandle` (the `/dev/tty` open) must be removed or gated on `!process.env.ZELLIJ`.
+
+**Primary recommendation:** Three focused changes — rewrite `shell/zsh/qq.zsh`, add FIFO-aware write to `src/client/result-writer.ts`, and add `$ZELLIJ` branch to `src/client/run-foreground.ts`.
+
+---
+
+## Architectural Responsibility Map
+
+| Capability | Primary Tier | Secondary Tier | Rationale |
+|------------|-------------|----------------|-----------|
+| Zellij detection | Shell (zsh widget) + Client (Node.js) | — | Widget needs to decide whether to use FIFO/Zellij path; client needs to skip tty setup |
+| FIFO creation and cleanup | Shell (zsh widget) | — | ZSH creates the pipe before launching; cleans up after reading result |
+| Floating pane lifecycle | Shell (zsh widget via zellij CLI) | — | Widget issues `zellij run` to open and `--close-on-exit` to close |
+| Result IPC (write) | Node.js client (result-writer.ts) | — | Client writes JSON to FIFO path; existing contract unchanged except write strategy |
+| Result IPC (read + apply) | Shell (zsh widget) | — | Widget blocks on FIFO read; applies result to LBUFFER/RBUFFER |
+| UI rendering | Node.js client (Ink) | — | Renders to process.stdout in Zellij pane's PTY |
+| Keyboard input | Zellij PTY → process.stdin | — | Zellij gives each pane a real PTY; Ink raw mode works without extra setup |
+
+---
+
+## Standard Stack
+
+### Core
+| Library/Tool | Version | Purpose | Why Standard |
+|-------------|---------|---------|--------------|
+| `zellij` | 0.44.1 (installed) | Floating pane host | Hard requirement per D-01 |
+| `ink` | 7.0.1 (project) | Terminal UI in Zellij pane | Already used; no changes needed |
+| `node:fs/promises` | Node 24 LTS | FIFO write | Direct `fsp.writeFile()` to FIFO path |
+| `zsh` built-in `mkfifo` | /usr/bin/mkfifo | Named pipe creation | POSIX standard; verified present |
+
+### Supporting
+| Tool | Purpose | When to Use |
+|------|---------|-------------|
+| `jq` | JSON parsing in zsh widget | Result application after FIFO read |
+| `zsh read -t N` | Timeout on FIFO read | Fallback if Zellij pane crashes before writing result |
+| `zsh EXIT/ERR trap` | FIFO cleanup | Ensures FIFO removed on widget exit, error, or `Esc` cancel |
+
+**Version verification:**
+```bash
+zellij --version   # 0.44.1 [VERIFIED: direct CLI invocation]
+node --version     # v24.14.1 [VERIFIED: direct CLI invocation]
+jq --version       # jq-1.8.1 [VERIFIED: direct CLI invocation]
+```
+
+---
+
+## Architecture Patterns
+
+### System Architecture Diagram
+
+```
+ZSH ZLE widget (qq-question-widget)
+  │
+  ├─ [[ -n "$ZELLIJ" ]] ──── NO ──► print error message; exit 1
+  │
+  ├─ mkfifo $FIFO
+  ├─ write request JSON → $req_file (same as current)
+  │
+  ├─ zellij run --floating --close-on-exit --width 80 --height 24 \
+  │    -- qq client --request-file $req_file --result-file $FIFO  &!
+  │                                                 │
+  │         ┌───────────────────────────────────────┘
+  │         ▼
+  │   Zellij floating pane (new PTY, 80×24)
+  │     │
+  │     ├─ run-foreground.ts detects process.env.ZELLIJ
+  │     ├─ skip /dev/tty open, skip blank-line scroll hack
+  │     ├─ Ink render() → process.stdout (pane's PTY)
+  │     │    ├─ CandidateSelect (null candidates → spinner)
+  │     │    └─ fetchCandidates() → rerender() with results
+  │     │
+  │     ├─ user selects / cancels
+  │     ├─ writeShellResult($FIFO, result)   ◄─── fsp.writeFile() (no atomic rename)
+  │     ├─ Ink unmount
+  │     └─ process exits → pane closes (--close-on-exit)
+  │
+  ├─ result=$(cat "$FIFO")    ◄─── blocks here until pane writes + closes write end
+  ├─ _qq_apply_result_inline "$result"   (jq parse from variable, not file)
+  ├─ rm -f "$FIFO" "$req_file"
+  └─ zle -R
+```
+
+### Recommended Project Structure
+
+The phase modifies only existing files — no new source directories:
+
+```
+shell/zsh/
+└── qq.zsh            # Rewrite: Zellij detection, mkfifo, zellij run, FIFO read, trap cleanup
+
+src/client/
+├── run-foreground.ts # Modify: add $ZELLIJ branch, remove ttyHandle section
+└── result-writer.ts  # Modify: detect FIFO path via stat.isFIFO(), use direct write
+
+tests/
+├── zsh-widget.test.ts        # Add: FIFO round-trip test, Zellij detection test
+└── client-result.test.ts     # Add: mock for FIFO write path in result-writer
+```
+
+---
+
+## Critical Findings
+
+### Finding 1: `result-writer.ts` Atomic Rename BREAKS with FIFO Paths
+
+[VERIFIED: direct bash/node experiment in this session]
+
+**The problem:** `result-writer.ts` currently:
+1. Writes JSON to `${resultFile}.tmp` (a regular file)
+2. Calls `fsp.rename(tmpFile, resultFile)`
+
+When `resultFile` is a FIFO path, `rename(2)` **replaces the FIFO with a regular file**. The waiting `cat $FIFO` reader in the zsh widget receives nothing — the file descriptor it opened is pointing at the old FIFO inode, which now has zero data and no writer. The result is that the widget hangs or gets empty data.
+
+**Verified:** Direct `fsp.writeFile(fifoPath, data)` works correctly — the zsh reader receives the JSON immediately.
+
+**Fix:** Use `fsp.stat(resultFile).then(s => s.isFIFO())` to detect FIFO paths and skip the atomic rename:
+
+```typescript
+// Source: verified by direct Node.js experiment, fs.stat.isFIFO() documented in Node.js docs
+export async function writeShellResult(resultFile: string, result: ShellResult): Promise<void> {
+  const parsed = shellResultSchema.parse(result);
+  const line = `${JSON.stringify(parsed)}\n`;
+
+  let isFifo = false;
+  try {
+    const st = await fsp.stat(resultFile);
+    isFifo = st.isFIFO();
+  } catch {
+    // Path does not exist yet (e.g. regular result file not created) — not a FIFO
+  }
+
+  if (isFifo) {
+    // Direct write for named pipes — rename(2) would replace the FIFO inode
+    await fsp.writeFile(resultFile, line, { encoding: 'utf-8' });
+  } else {
+    // Atomic rename for regular files
+    const tmpFile = `${resultFile}.tmp`;
+    await fsp.writeFile(tmpFile, line, { encoding: 'utf-8' });
+    await fsp.rename(tmpFile, resultFile);
+  }
+}
+```
+
+**Note:** `stat.isFIFO()` returns `true` for named pipes. Verified in Node.js 24 on macOS.
+
+---
+
+### Finding 2: Zellij Environment Variables
+
+[VERIFIED: `env | grep ZELLIJ` inside current Zellij session]
+
+Inside any Zellij pane, these environment variables are set:
+
+| Variable | Value | Use |
+|----------|-------|-----|
+| `ZELLIJ` | `0` (integer string, not `true`) | Primary detection variable |
+| `ZELLIJ_PANE_ID` | `0`, `1`, etc. | Pane identifier |
+| `ZELLIJ_SESSION_NAME` | session name string | Secondary detection |
+| `ZELLIJ_SOCKET_DIR` | socket directory path | Not needed by Que-Que |
+
+**Detection recommendation:** Use `$ZELLIJ` (not `$ZELLIJ_SESSION_NAME`) for detection. In zsh:
+```zsh
+[[ -n "$ZELLIJ" ]]    # true when inside any Zellij pane (ZELLIJ=0 is -n truthy)
+```
+In Node.js:
+```typescript
+const inZellij = process.env['ZELLIJ'] !== undefined;
+// or: process.env['ZELLIJ'] != null
+```
+
+**Warning:** `ZELLIJ=0` is truthy in zsh (`[[ -n "0" ]]` is true). Do NOT use `[[ "$ZELLIJ" == "1" ]]` — that would miss active sessions where it's set to `0`. [VERIFIED: observed value in live Zellij session]
+
+---
+
+### Finding 3: `zellij run` CLI Flags — All Locked Flags Verified
+
+[VERIFIED: `zellij run --help` on Zellij 0.44.1]
+
+The exact command from D-06 is valid:
+```bash
+zellij run --floating --close-on-exit --width 80 --height 24 -- \
+  qq client --request-file "$req_file" --result-file "$fifo_path"
+```
+
+Verified flags:
+- `-f, --floating` — opens in floating mode
+- `-c, --close-on-exit` — closes pane immediately when command exits (not "hold" mode)
+- `--width <N>` — bare integer for absolute column count
+- `--height <N>` — bare integer for absolute row count
+- `--` — separates zellij flags from the command to run
+
+**Background (`&!`):** Zsh's `&!` backgrounds AND disowns the process (equivalent to `nohup ... &`). This prevents SIGINT to the widget from propagating to the Zellij pane. Regular `&` works too but `&!` is safer for decoupling widget lifecycle from pane lifecycle.
+
+**Blocking options (not used but noted):** `--block-until-exit` would make `zellij run` synchronous. We do NOT use this — we use the FIFO for synchronization instead, which is more precise (unblocks exactly when result is written, not when pane closes).
+
+---
+
+### Finding 4: Ink Renders Correctly in Zellij Panes
+
+[VERIFIED: Ink 7.0.1 source + is-in-ci module inspection]
+
+Ink's interactive mode detection logic (from `ink.js`):
+```javascript
+return interactive ?? (!isInCi && Boolean(this.options.stdout.isTTY));
+```
+
+Where `isInCi` checks `process.env.CI` and `process.env.CONTINUOUS_INTEGRATION` (not `ZELLIJ`).
+
+Inside a Zellij `run` pane:
+- `process.stdout.isTTY` → `true` (Zellij gives each pane a real PTY)
+- `process.stdin.isTTY` → `true` (real PTY, raw mode supported)
+- `isInCi` → `false` (no CI env vars set)
+- `process.stdin.setRawMode` → available
+
+**Conclusion:** Ink interactive mode works without any options when rendered inside a Zellij pane. D-09 (no explicit `stdin`/`stdout` options) is correct — `render(element)` with no options is sufficient.
+
+**Color support:** Zellij inherits TERM from the host terminal. The current environment shows `TERM=xterm-ghostty` with `COLORTERM=truecolor`. Zellij passes this through to panes — it does NOT override TERM to `xterm-256color` by default. Ink's color support will use the same full-color palette as the host terminal. [VERIFIED: TERM env var in current Zellij session]
+
+---
+
+### Finding 5: FIFO Blocking Semantics
+
+[VERIFIED: multiple direct bash/node/zsh experiments]
+
+Named pipe (FIFO) blocking behavior relevant to the widget:
+
+1. **Opening a FIFO for reading** (`cat $FIFO` or `read ... < $FIFO`) **blocks at the OS `open()` syscall** until a writer process opens the write end. There is no data race between widget starting the read and the client opening the write end — the reader simply waits.
+
+2. **`fsp.writeFile()` on a FIFO** — blocks the Node.js event loop until the reader opens the read end AND the data is consumed. This is correct behavior for the pane: the client writes the result and blocks briefly until the widget's `cat` call accepts it.
+
+3. **Cross-process FIFO round-trip** — verified: a zsh `result=$(cat $FIFO)` reader in one process receives exactly what a separate `fsp.writeFile()` writer sends. [VERIFIED: experiment with separate zsh background process + node process]
+
+4. **`read -t N < $FIFO`** — the timeout starts **after** a writer opens the write end. If Zellij fails to launch (write end never opened), `read -t 30` will block the full 30 seconds waiting for a writer to connect. `cat "$FIFO"` with no timeout would block forever. Use `read -r -t 30 result < "$FIFO"` for safety.
+
+5. **Preferred zsh read pattern** — `IFS= read -r -t 30 result < "$FIFO"`. The `IFS=` prevents field splitting; `-r` prevents backslash interpretation; `-t 30` is a safety timeout. The JSON is always single-line so one `read` gets the whole result.
+
+---
+
+### Finding 6: `ensureDaemon` Assessment for Zellij Pane Path
+
+[VERIFIED: bootstrap.ts source review + timing measurement]
+
+**Current behavior:** `ensureDaemon` does a `tryConnect` (500ms timeout) first. If daemon is already running, it returns in ~1ms. If not, it spawns the daemon and polls for up to 2 seconds.
+
+**In the Zellij context:** The `_qq_prewarm_daemon()` call in the widget runs `qq daemon --ensure` in the background when the shell starts. By the time the user types `??`, the daemon is almost certainly already warm.
+
+**Recommendation:** Keep `ensureDaemon` in the Zellij path. Rationale:
+- Near-zero cost when daemon is warm (already the common case)
+- Provides resilience if daemon was killed between sessions
+- Removes the need for the plan to add a separate "daemon already running" assumption
+
+The `ttyHandle = await fsp.open('/dev/tty', 'r+')` call MUST be removed or gated — opening `/dev/tty` is what Phase 3.2 eliminates. In the Zellij path, `process.stdin` IS the TTY (the pane's PTY). The ttyHandle block is used to create `ttyReadStream`/`ttyWriteStream` for passing to `render()` — in the Zellij path these are not needed (D-09: render with defaults).
+
+---
+
+### Finding 7: ZSH Widget Rewrite Patterns
+
+[VERIFIED: direct zsh scripting experiments]
+
+**FIFO creation and naming:**
+```zsh
+local fifo_path
+fifo_path=$(mktemp -u /tmp/qq-fifo.XXXXXX)
+mkfifo "$fifo_path"
+```
+
+**Backgrounded launch:**
+```zsh
+zellij run --floating --close-on-exit --width 80 --height 24 -- \
+  qq client --request-file "$req_file" --result-file "$fifo_path" &!
+```
+Use `&!` (disown) not `&` to decouple the pane's process group from the widget.
+
+**Blocking FIFO read with timeout:**
+```zsh
+local result
+if ! IFS= read -r -t 30 result < "$fifo_path"; then
+  # Timeout or error - treat as cancel
+  result='{"kind":"cancel"}'
+fi
+```
+
+**Result application from variable** (not file — `_qq_apply_result` currently reads from a file):
+```zsh
+# Option A: echo to a temp file and reuse _qq_apply_result (minimal code change)
+local tmp_result_file
+tmp_result_file=$(mktemp /tmp/qq-res.XXXXXX)
+printf '%s' "$result" > "$tmp_result_file"
+_qq_apply_result "$tmp_result_file"
+rm -f "$tmp_result_file"
+
+# Option B: inline jq parse (no temp file)
+local kind
+kind=$(printf '%s' "$result" | jq -r '.kind // empty' 2>/dev/null)
+case "$kind" in
+  cancel) ... ;;
+  replace-buffer) ... ;;
+esac
+```
+Option B (inline jq) is cleaner for the Zellij path — no extra temp file.
+
+**Cleanup with trap:**
+```zsh
+local _qq_fifo=""
+local _qq_req_file=""
+_qq_zellij_cleanup() {
+  [[ -n "$_qq_fifo" ]] && rm -f "$_qq_fifo"
+  [[ -n "$_qq_req_file" ]] && rm -f "$_qq_req_file"
+}
+trap '_qq_zellij_cleanup' EXIT ERR INT
+```
+Note: ZLE widgets run in the current shell, not a subshell. Trap must be scoped carefully to avoid leaking into the user's shell. Use `trap - EXIT ERR INT` to reset after cleanup.
+
+**Zellij detection:**
+```zsh
+if [[ -z "$ZELLIJ" ]]; then
+  zle -M "Que-Que requires Zellij (https://zellij.dev). See docs for setup."
+  return 1
+fi
+```
+Note: `zle -M "message"` displays a message below the prompt in ZLE context without disrupting the buffer. Prefer this over `print` which outputs to stdout and may interfere with terminal state.
+
+---
+
+## Don't Hand-Roll
+
+| Problem | Don't Build | Use Instead | Why |
+|---------|-------------|-------------|-----|
+| Cross-process synchronization | Custom socket, polling loop, temp-file polling | Named pipe (FIFO) + `cat` blocking read | POSIX-standard, zero-latency unblock on write, no polling, no race condition |
+| FIFO type detection | Parse `/proc/self/fd` or check `ls -la` output | `fsp.stat(path).then(s => s.isFIFO())` | Node.js built-in, single syscall |
+| Floating terminal UI | Custom Zellij plugin (Rust) | `zellij run --floating --close-on-exit` | Already exists; Ink in a pane is equivalent for this use case |
+
+---
+
+## Common Pitfalls
+
+### Pitfall 1: Using Atomic Rename for FIFO Path
+**What goes wrong:** `rename(tmpFile, fifoPath)` succeeds but **replaces the FIFO inode with a regular file**. The zsh reader's file descriptor points to the old FIFO inode, which now has no data and no writer. Widget hangs or reads empty string.
+**Why it happens:** `rename(2)` replaces the destination. For FIFO → regular file replacement, the FIFO is unlinked and the regular file takes its place. Any open FDs on the old FIFO see EOF.
+**How to avoid:** Detect `stat.isFIFO()` before writing. Use `fsp.writeFile()` directly for FIFO paths. [VERIFIED: demonstrated by experiment]
+**Warning signs:** zsh widget hangs after client exits, or `_qq_apply_result` gets empty/null `kind`.
+
+### Pitfall 2: Using `$ZELLIJ` for Truthy/Falsy Check Incorrectly
+**What goes wrong:** `[[ "$ZELLIJ" == "1" ]]` returns false even in a Zellij session because Zellij sets `ZELLIJ=0`, not `ZELLIJ=1`.
+**Why it happens:** Zellij uses `0` as the pane index of the first pane, not as a boolean true value.
+**How to avoid:** Use `[[ -n "$ZELLIJ" ]]` in zsh (any non-empty string is truthy) or `process.env['ZELLIJ'] !== undefined` in Node.js. [VERIFIED: ZELLIJ=0 observed in live session]
+**Warning signs:** Non-Zellij exit message appears even inside Zellij.
+
+### Pitfall 3: FIFO Reader Blocks Forever on Launch Failure
+**What goes wrong:** If `zellij run` fails to launch (binary missing, wrong flags, session disconnected), the write end of the FIFO is never opened. `result=$(cat "$fifo")` blocks the ZLE widget indefinitely. The terminal appears frozen.
+**Why it happens:** FIFO open() for reading blocks at the kernel level until a writer connects.
+**How to avoid:** Use `IFS= read -r -t 30 result < "$fifo"` instead of `cat`. The `-t 30` timeout gives the system 30 seconds to launch before falling back to cancel. The timeout starts after a writer connects (not from the moment the read is issued), so for the normal case this adds no latency.
+**Warning signs:** Terminal freezes after `??` trigger with no floating pane appearing.
+
+### Pitfall 4: Ink Not Running in Interactive Mode
+**What goes wrong:** Ink renders only a static final frame (no spinners, no updates). `useInput` does not respond to key presses.
+**Why it happens:** `process.stdout.isTTY` is falsy when stdout is piped. This can happen if `zellij run` is invoked in a way that pipes stdout.
+**How to avoid:** Use `zellij run` without `--` output redirects. The pane's stdout should be the PTY directly. Verify `process.stdout.isTTY === true` in debug log from inside the pane.
+**Warning signs:** Spinner never animates; keyboard input is ignored.
+
+### Pitfall 5: ZLE Trap Leaking into User Shell
+**What goes wrong:** `trap '_qq_cleanup' EXIT` set inside `qq-question-widget` persists after the widget returns, causing cleanup function to run on every subsequent shell EXIT.
+**Why it happens:** ZLE widgets run in the current interactive shell, not a subshell. Traps set in a widget persist.
+**How to avoid:** Reset the trap explicitly after cleanup: `trap - EXIT ERR INT`. Or use `local`-scoped traps with a zsh function that cleans up then resets:
+```zsh
+trap '_qq_zellij_cleanup; trap - EXIT ERR INT' EXIT ERR INT
+```
+**Warning signs:** FIFO temp files are deleted at unexpected times; `rm: no such file` errors on shell exit.
+
+### Pitfall 6: `--close-on-exit` Behavior vs Default
+**What goes wrong:** Without `--close-on-exit`, the pane stays open after the client exits, showing "ENDED (exit code 0) - [Enter] to re-run". This leaves a zombie floating pane that the user must dismiss.
+**Why it happens:** Zellij's default behavior on command exit is to hold the pane open ("hold" mode).
+**How to avoid:** Always include `-c` / `--close-on-exit`. [VERIFIED: zellij run --help confirms default is hold-open]
+
+---
+
+## Code Examples
+
+### ZSH Widget — New Zellij Path
+
+```zsh
+# Source: design based on D-01 through D-10, verified mechanics
+qq-question-widget() {
+  if [[ "$LBUFFER" != *\? ]]; then
+    _qq_log "first ? inserted"
+    zle .self-insert
+    return 0
+  fi
+
+  # --- Zellij detection ---
+  if [[ -z "$ZELLIJ" ]]; then
+    zle -M "Que-Que requires Zellij — see https://github.com/example/qq#setup"
+    return 1
+  fi
+
+  _qq_log "trigger fired lbuffer=${LBUFFER} rbuffer=${RBUFFER}"
+  _qq_capture_buffers
+
+  LBUFFER="$QQ_LBUFFER"
+  RBUFFER="$QQ_RBUFFER"
+
+  # --- Create temp files ---
+  local req_file fifo_path
+  req_file=$(mktemp /tmp/qq-req.XXXXXX)
+  fifo_path=$(mktemp -u /tmp/qq-fifo.XXXXXX)
+  mkfifo "$fifo_path"
+
+  # --- Cleanup trap ---
+  # Reset trap after cleanup to avoid leaking into user shell
+  _qq_cleanup() {
+    rm -f "$req_file" "$fifo_path"
+    trap - EXIT ERR INT
+  }
+  trap '_qq_cleanup' EXIT ERR INT
+
+  # --- Build request JSON (unchanged) ---
+  cat > "$req_file" << JSON
+{
+  "version": 1,
+  "ttyPath": $(printf '%s' "${TTY:-/dev/tty}" | jq -Rs .),
+  "cwd": $(printf '%s' "$PWD" | jq -Rs .),
+  "shellPid": $$,
+  "lbuffer": $(printf '%s' "$QQ_LBUFFER" | jq -Rs .),
+  "rbuffer": $(printf '%s' "$QQ_RBUFFER"  | jq -Rs .)
+}
+JSON
+
+  # --- Launch floating pane ---
+  zellij run --floating --close-on-exit --width 80 --height 24 -- \
+    qq client --request-file "$req_file" --result-file "$fifo_path" &!
+
+  # --- Block on FIFO read (up to 30s) ---
+  local result='{"kind":"cancel"}'
+  IFS= read -r -t 30 result < "$fifo_path" || true
+
+  _qq_log "fifo read complete result=${result}"
+
+  # --- Apply result inline ---
+  local kind new_lbuffer new_rbuffer
+  kind=$(printf '%s' "$result" | jq -r '.kind // empty' 2>/dev/null)
+  case "$kind" in
+    cancel)
+      LBUFFER="$QQ_ORIG_LBUFFER"
+      RBUFFER="$QQ_ORIG_RBUFFER"
+      ;;
+    replace-buffer)
+      new_lbuffer=$(printf '%s' "$result" | jq -r '.lbuffer // empty' 2>/dev/null)
+      new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""'    2>/dev/null)
+      LBUFFER="$new_lbuffer"
+      RBUFFER="$new_rbuffer"
+      ;;
+    *)
+      LBUFFER="$QQ_ORIG_LBUFFER"
+      RBUFFER="$QQ_ORIG_RBUFFER"
+      ;;
+  esac
+
+  _qq_cleanup
+  zle -R
+  return 0
+}
+```
+
+### Node.js — `run-foreground.ts` Zellij Branch
+
+```typescript
+// Source: D-08, D-09 decisions; ttyHandle block removed when in Zellij
+export async function runForegroundClient(args: ForegroundClientArgs): Promise<void> {
+  const { requestFile, resultFile, resultMode } = args;
+  const inZellij = process.env['ZELLIJ'] !== undefined;
+
+  void appendDebugLog('client', 'foreground start', {
+    requestFile, resultFile, resultMode, inZellij,
+  });
+
+  // In Zellij: process.stdin/stdout ARE the pane's PTY — no /dev/tty needed
+  const ttyHandle = inZellij ? null : await fsp.open('/dev/tty', 'r+');
+
+  try {
+    const raw = await fsp.readFile(requestFile, 'utf-8');
+    const request = shellRequestSchema.parse(JSON.parse(raw.trim()));
+    void appendDebugLog('client', 'request parsed', request);
+
+    await ensureDaemon(socketPath);
+    void appendDebugLog('client', 'daemon ensured');
+
+    if (resultMode === 'llm') {
+      // In Zellij path: no ttyReadStream/ttyWriteStream, no blank-line scroll hack
+      // render() defaults to process.stdin/process.stdout (the pane's PTY)
+      const renderOptions = inZellij
+        ? {}   // D-09: no explicit stdin/stdout; pane PTY is already correct
+        : (ttyHandle ? buildTtyOptions(ttyHandle) : {});
+
+      // ... rest of llm path unchanged, except no ttyWriteStream.write('\n'.repeat(...))
+    }
+  } finally {
+    await ttyHandle?.close();
+  }
+}
+```
+
+### Node.js — `result-writer.ts` FIFO-Aware Write
+
+```typescript
+// Source: verified by Node.js experiment — stat.isFIFO() + direct writeFile for named pipes
+export async function writeShellResult(resultFile: string, result: ShellResult): Promise<void> {
+  const parsed = shellResultSchema.parse(result);
+  const line = `${JSON.stringify(parsed)}\n`;
+
+  let isFifo = false;
+  try {
+    const st = await fsp.stat(resultFile);
+    isFifo = st.isFIFO();
+  } catch {
+    // File doesn't exist yet (pre-creation write) — treat as regular file
+  }
+
+  if (isFifo) {
+    // Named pipe: direct write. rename(2) would replace the FIFO inode and
+    // break the waiting reader. Direct write delivers data to the open reader.
+    await fsp.writeFile(resultFile, line, { encoding: 'utf-8' });
+  } else {
+    // Regular file: atomic rename for zero-partial-write guarantee
+    const tmpFile = `${resultFile}.tmp`;
+    await fsp.writeFile(tmpFile, line, { encoding: 'utf-8' });
+    await fsp.rename(tmpFile, resultFile);
+  }
+}
+```
+
+---
+
+## State of the Art
+
+| Old Approach | Current Approach | When Changed | Impact |
+|--------------|------------------|--------------|--------|
+| ZLE widget attaches client to `/dev/tty` for Ink rendering | Ink renders to `process.stdout` inside a Zellij PTY | Phase 3.2 | Cleaner; no tty gymnastics |
+| Blank-line scroll hack (`MODAL_CHROME_LINES`) to avoid overwriting output | Dedicated floating pane viewport | Phase 3.2 | Proper separation of concerns |
+| Temp result file + widget reads file after client exits | FIFO as result channel; widget blocks until result written | Phase 3.2 | Zero-latency unblock; no polling |
+
+---
+
+## Assumptions Log
+
+| # | Claim | Section | Risk if Wrong |
+|---|-------|---------|---------------|
+| A1 | Zellij inherits TERM from host terminal rather than overriding to xterm-256color | Finding 4 | Ink color support might not match monocle palette; LOW risk because Ink degrades gracefully |
+| A2 | `process.stdout.isTTY` is true inside a `zellij run` pane (inferred from PTY allocation) | Finding 4 | Ink falls back to non-interactive mode (no ANSI, no spinner animation) |
+| A3 | `read -t 30` timeout starts after writer connects (not from read invocation time) | Finding 5 | If timeout starts at read time, 30s may not be enough for slow Zellij startup; increase to 60s |
+
+All A-series items are LOW risk. The only one worth an explicit verification step in Wave 0 is A2 — add a debug log line from inside the pane: `appendDebugLog('client', 'tty check', { isTTY: process.stdout.isTTY })`.
+
+---
+
+## Open Questions (RESOLVED)
+
+1. **Should `_qq_apply_result` be refactored or kept as-is?**
+   - What we know: current function reads from a file path using `jq -r '.kind // empty' "$file"`
+   - What's unclear: whether to inline the FIFO result parsing (Option B above) or write to a temp file and call existing function (Option A)
+   - Recommendation: **Option B (inline jq parse)** — avoids an extra temp file and makes the data flow explicit. The existing `_qq_apply_result` function can be kept for backward-compat tests but is not called in the new Zellij path.
+
+2. **`resultMode` parameter in the Zellij path**
+   - What we know: `run-foreground.ts` has a `resultMode` parameter (`cancel | replace-buffer-fixture | llm`). Phase 3.2 primarily affects the `llm` path.
+   - What's unclear: whether `cancel` and `replace-buffer-fixture` modes need to support FIFO paths (used in tests)
+   - Recommendation: All `writeShellResult` calls should work with both FIFO and regular file paths after the stat-based fix. No special casing needed per result mode.
+
+---
+
+## Environment Availability
+
+| Dependency | Required By | Available | Version | Fallback |
+|------------|------------|-----------|---------|----------|
+| zellij | Phase 3.2 execution | ✓ | 0.44.1 | None — D-01 hard requirement |
+| node | Client runtime | ✓ | v24.14.1 | — |
+| jq | ZSH widget JSON parsing | ✓ | jq-1.8.1 | — |
+| mkfifo | ZSH widget FIFO creation | ✓ | /usr/bin/mkfifo | — |
+| zsh | Widget host | ✓ | 5.9 (x86_64-apple-darwin24.0) | — |
+
+**No missing dependencies.** All required tools are installed.
+
+---
+
+## Validation Architecture
+
+### Test Framework
+| Property | Value |
+|----------|-------|
+| Framework | vitest 4.0.4 |
+| Config file | `vitest.config.ts` (project root) |
+| Quick run command | `pnpm test:run` |
+| Full suite command | `pnpm test:run` |
+
+### Phase Requirements → Test Map
+
+| Req ID | Behavior | Test Type | Automated Command | File Exists? |
+|--------|----------|-----------|-------------------|-------------|
+| TUI-01 | Floating pane opens with correct dimensions | manual | — | manual only |
+| D-01 | Non-Zellij exit with message | unit | `pnpm test:run -- zsh-widget` | ✅ (extend existing) |
+| D-03 | FIFO created before pane launch | unit | `pnpm test:run -- zsh-widget` | ✅ (extend existing) |
+| D-04 | FIFO write delivers result to widget | unit | `pnpm test:run -- client-result` | ✅ (extend existing) |
+| D-05 | Widget blocks on FIFO, unblocks on write | unit (zsh subprocess) | `pnpm test:run -- zsh-widget` | ✅ (extend existing) |
+| D-08 | `process.env.ZELLIJ` branch skips ttyHandle | unit | `pnpm test:run -- client-result` | ✅ (extend existing) |
+| result-writer | isFIFO detection and direct write | unit | `pnpm test:run -- client-result` | ✅ (extend existing) |
+| Full round-trip | `??` → pane opens → select → buffer updated | manual | — | manual only |
+
+### Sampling Rate
+- **Per task commit:** `pnpm test:run`
+- **Per wave merge:** `pnpm test:run`
+- **Phase gate:** Full suite green before `/gsd-verify-work`
+
+### Wave 0 Gaps
+
+- [ ] No new test files needed — all new behavior slots into existing `tests/zsh-widget.test.ts` and `tests/client-result.test.ts`
+- [ ] `tests/client-result.test.ts` mock for `node:fs/promises` will need to cover `stat().isFIFO()` return — update mock to add `stat: vi.fn().mockResolvedValue({ isFIFO: () => false })`
+- [ ] `tests/zsh-widget.test.ts` needs new describe blocks:
+  - "Zellij detection: exits with message when $ZELLIJ is unset"
+  - "FIFO round-trip: widget creates FIFO, receives JSON, applies result"
+
+---
+
+## Security Domain
+
+### Applicable ASVS Categories
+
+| ASVS Category | Applies | Standard Control |
+|---------------|---------|-----------------|
+| V2 Authentication | no | — |
+| V3 Session Management | no | — |
+| V4 Access Control | no | — |
+| V5 Input Validation | yes | zod schema on JSON read from FIFO (same as current) |
+| V6 Cryptography | no | — |
+
+### Known Threat Patterns for FIFO + Shell Integration
+
+| Pattern | STRIDE | Standard Mitigation |
+|---------|--------|---------------------|
+| FIFO path injection (attacker-controlled result file path) | Tampering | FIFO path is generated by widget via `mktemp -u` — caller-controlled path already present in existing code |
+| FIFO race (attacker pre-creates FIFO at same path) | Tampering | `mktemp -u` generates unique path with XXXXXX suffix + process creates it with `mkfifo`; pre-creation would require guessing the path |
+| JSON injection via request lbuffer/rbuffer | Tampering | Already mitigated: `jq -Rs .` escapes all special characters in the widget |
+| Command injection via resultFile FIFO path | Tampering | Path used only as argument to `zellij run ... --result-file "$fifo_path"` with proper quoting |
+
+No new security concerns introduced by the FIFO IPC pattern. The security surface is the same as the existing temp file pattern.
+
+---
+
+## Sources
+
+### Primary (HIGH confidence)
+- `zellij run --help` (Zellij 0.44.1) — verified all flag names and descriptions
+- Direct bash/node/zsh experiments — FIFO write/rename/read behavior, cross-process round-trips, blocking semantics
+- `env | grep ZELLIJ` in live Zellij session — verified ZELLIJ=0, ZELLIJ_PANE_ID=0, ZELLIJ_SESSION_NAME
+- `node_modules/ink/build/render.d.ts` + `ink.js` — RenderOptions type, interactive detection logic
+- `node_modules/.pnpm/is-in-ci@2.0.0/node_modules/is-in-ci/index.js` — confirmed CI detection does not trigger on ZELLIJ var
+- `docs.rs/zellij-utils/latest/src/zellij_utils/envs.rs` — authoritative list: ZELLIJ, ZELLIJ_SESSION_NAME, ZELLIJ_SOCKET_DIR
+
+### Secondary (MEDIUM confidence)
+- [Zellij Integration docs](https://zellij.dev/documentation/integration.html) — env var documentation, integration patterns
+- [Zellij Run docs](https://zellij.dev/documentation/zellij-run-and-edit.html) — `--close-on-exit` behavior description
+
+### Tertiary (LOW confidence)
+- None
+
+---
+
+## Metadata
+
+**Confidence breakdown:**
+- `zellij run` CLI flags: HIGH — verified with `--help` on installed binary
+- FIFO semantics: HIGH — verified by direct experiments
+- Zellij env vars: HIGH — observed directly in live session
+- Ink interactive mode in Zellij: HIGH — source code + is-in-ci inspection; A2 is LOW (PTY allocation inferred)
+- ZSH trap behavior: HIGH — verified by experiment
+- result-writer FIFO incompatibility: HIGH — demonstrated by experiment
+
+**Research date:** 2026-05-14
+**Valid until:** 2026-07-14 (30 days; Zellij 0.44.x API is stable)

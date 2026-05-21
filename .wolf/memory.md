@@ -524,3 +524,60 @@
 | 15:02 | Session end: 9 writes across 5 files (run-foreground.ts, client-result.test.ts, qq.zsh, zsh-widget.test.ts, claude.ts) | 5 reads | ~4191 tok |
 | 18:02 | Session end: 9 writes across 5 files (run-foreground.ts, client-result.test.ts, qq.zsh, zsh-widget.test.ts, claude.ts) | 5 reads | ~4191 tok |
 | 19:38 | Created .planning/.continue-here.md | — | ~685 |
+
+## Session: 2026-05-16 19:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:24 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-RESEARCH.md | — | ~6836 |
+| 11:25 | research phase 04: fuzzy TUI selection UX | .planning/phases/04-fuzzy-tui-selection-ux/04-RESEARCH.md | RESEARCH.md written, committed bed0432 | ~8k tok |
+| 11:26 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-VALIDATION.md | — | ~1019 |
+| 11:28 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-PATTERNS.md | — | ~4827 |
+| 11:31 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-01-PLAN.md | — | ~3374 |
+| 11:31 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-02-PLAN.md | — | ~1833 |
+| 11:32 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-03-PLAN.md | — | ~2940 |
+| 11:33 | Created .planning/ROADMAP.md | — | ~2886 |
+| 11:34 | created Phase 4 plans (04-01/02/03): Wave 0 RED tests, Wave 1 CandidateSelect useEffect fix and main.ts FIFO safety handlers | .planning/phases/04-fuzzy-tui-selection-ux/04-{01,02,03}-PLAN.md .planning/ROADMAP.md | 3 plans committed, 114/114 tests green | ~8000 |
+| 11:39 | gsd-plan-phase revision: applied 4 checker fixes to phase 04 plans | .planning/phases/04-fuzzy-tui-selection-ux/04-RESEARCH.md, 04-01-PLAN.md, 04-03-PLAN.md | RESEARCH open questions RESOLVED; 04-01 Task 3 added for handler behavioral tests; 04-03 key_link via fixed; 04-03 files_modified + qq.zsh | ~800 |
+| 11:43 | Session end: 7 writes across 7 files (04-RESEARCH.md, 04-VALIDATION.md, 04-PATTERNS.md, 04-01-PLAN.md, 04-02-PLAN.md) | 36 reads | ~80389 tok |
+| 05:17 | Created .planning/.continue-here.md | — | ~938 |
+| 05:17 | Session end: 8 writes across 8 files (04-RESEARCH.md, 04-VALIDATION.md, 04-PATTERNS.md, 04-01-PLAN.md, 04-02-PLAN.md) | 38 reads | ~81394 tok |
+
+## Session: 2026-05-21 05:19
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 05:23 | Edited .claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx | expanded (+116 lines) | ~1439 |
+| 05:24 | Edited .claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx | CSS: Strategy, Strategy | ~832 |
+| 05:26 | Edited .claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx | CSS: GREEN | ~149 |
+| 05:26 | Edited .claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx | expanded (+17 lines) | ~306 |
+| 05:27 | Edited .claude/worktrees/agent-aac9f5d671b3b40db/tests/client-result.test.ts | added error handling | ~859 |
+| 05:28 | Edited .claude/worktrees/agent-aac9f5d671b3b40db/tests/client-result.test.ts | added error handling | ~953 |
+| 05:30 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-01-SUMMARY.md | — | ~1366 |
+| 05:35 | Session end: 7 writes across 3 files (candidate-select.test.tsx, client-result.test.ts, 04-01-SUMMARY.md) | 17 reads | ~25570 tok |
+| 05:36 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/shell/zsh/qq.zsh | 6→11 lines | ~191 |
+| 05:36 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/src/cli/main.ts | added 1 import(s) | ~65 |
+| 05:37 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/src/cli/main.ts | added error handling | ~600 |
+| 05:37 | Edited .claude/worktrees/agent-a2f4022ef0830f01e/src/ui/CandidateSelect.tsx | 9→14 lines | ~171 |
+| 05:37 | Edited .claude/worktrees/agent-a2f4022ef0830f01e/tests/candidate-select.test.tsx | todo() → async() | ~185 |
+| 05:38 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/tests/client-result.test.ts | expanded (+9 lines) | ~168 |
+| 05:38 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/tests/client-result.test.ts | added error handling | ~322 |
+| 05:38 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/tests/client-result.test.ts | added error handling | ~324 |
+| 05:39 | Session end: 15 writes across 6 files (candidate-select.test.tsx, client-result.test.ts, 04-01-SUMMARY.md, qq.zsh, main.ts) | 27 reads | ~41744 tok |
+| 05:40 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/src/cli/main.ts | inline fix | ~8 |
+| 05:40 | Session end: 16 writes across 6 files (candidate-select.test.tsx, client-result.test.ts, 04-01-SUMMARY.md, qq.zsh, main.ts) | 28 reads | ~41752 tok |
+| 05:41 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-02-SUMMARY.md | — | ~1269 |
+| 05:41 | Created .claude/worktrees/agent-ae3ff4eb91307526b/.planning/phases/04-fuzzy-tui-selection-ux/04-03-SUMMARY.md | — | ~1741 |
+| 05:42 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/.wolf/memory.md | 1→2 lines | ~120 |
+| 05:42 | Edited .claude/worktrees/agent-ae3ff4eb91307526b/.wolf/anatomy.md | 1→5 lines | ~56 |
+| 05:42 | Session end: 20 writes across 10 files (candidate-select.test.tsx, client-result.test.ts, 04-01-SUMMARY.md, qq.zsh, main.ts) | 30 reads | ~45167 tok |
+| 05:43 | Edited .claude/worktrees/agent-a2f4022ef0830f01e/.planning/phases/04-fuzzy-tui-selection-ux/04-02-SUMMARY.md | modified feat() | ~167 |
+| 10:53 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-REVIEW.md | — | ~3601 |
+| 10:56 | Created .planning/HANDOFF.json | — | ~692 |
+| 10:56 | Created .planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md | — | ~967 |
+| 10:57 | Session end: 24 writes across 13 files (candidate-select.test.tsx, client-result.test.ts, 04-01-SUMMARY.md, qq.zsh, main.ts) | 44 reads | ~65089 tok |
+
+## Session: 2026-05-21 11:22
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|

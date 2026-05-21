@@ -41,7 +41,7 @@
       "error_message": "Significant refactor of ",
       "file": "shell/zsh/qq.zsh",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 15\u219221 lines (3 removed)",
+      "fix": "Rewrote 15→21 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -105,7 +105,7 @@
       "error_message": "Significant refactor of ",
       "file": "src/client/result-writer.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 21\u219226 lines (3 removed)",
+      "fix": "Rewrote 21→26 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -120,7 +120,7 @@
       "timestamp": "2026-05-02T14:28:49.503Z",
       "error_message": "Missing error handling in buildPrompt",
       "file": ".planning/phases/02-intent-router-and-context-pipeline/02-02-PLAN.md",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -168,7 +168,7 @@
       "timestamp": "2026-05-14T15:27:47.335Z",
       "error_message": "Missing error handling in unknown",
       "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block | Also: describe('runForegroundClient: Zellij branch skips /dev/tty ; let tmpDir: string;",
       "tags": [
         "auto-detected",
@@ -217,7 +217,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
       "root_cause": "11 lines replaced/restructured",
-      "fix": "Rewrote 49\u219269 lines (11 removed) | Also: // Expose writeFile and rename as passthrough vi.f; // them within the FIFO-path describe block. The d",
+      "fix": "Rewrote 49→69 lines (11 removed) | Also: // Expose writeFile and rename as passthrough vi.f; // them within the FIFO-path describe block. The d",
       "tags": [
         "auto-detected",
         "refactor",
@@ -265,7 +265,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/client-result.test.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 30\u219244 lines (3 removed) | Also: // Restore the passthrough implementations on writ; // subsequent describe blocks continue to perform ",
+      "fix": "Rewrote 30→44 lines (3 removed) | Also: // Restore the passthrough implementations on writ; // subsequent describe blocks continue to perform ",
       "tags": [
         "auto-detected",
         "refactor",
@@ -281,7 +281,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/worktrees/agent-aac6444be33ddae2f/tests/zsh-widget.test.ts",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 6\u21928 lines (3 removed)",
+      "fix": "Rewrote 6→8 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -296,7 +296,7 @@
       "timestamp": "2026-05-14T15:46:58.260Z",
       "error_message": "Missing await",
       "file": ".claude/worktrees/agent-aac6444be33ddae2f/.wolf/cerebrum.md",
-      "root_cause": "Async call without await \u2014 returned Promise instead of value",
+      "root_cause": "Async call without await — returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -313,7 +313,7 @@
       "error_message": "Significant refactor of ",
       "file": ".claude/worktrees/agent-ab9387af30d3d2b0f/src/client/result-writer.ts",
       "root_cause": "5 lines replaced/restructured",
-      "fix": "Rewrote 20\u219244 lines (5 removed)",
+      "fix": "Rewrote 20→44 lines (5 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -345,7 +345,7 @@
       "error_message": "Wrong operator: == should be !=",
       "file": ".claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/qq.zsh",
       "root_cause": "Used \"==\" instead of \"!=\"",
-      "fix": "Changed operator == \u2192 !=",
+      "fix": "Changed operator == → !=",
       "tags": [
         "auto-detected",
         "operator-fix",
@@ -360,7 +360,7 @@
       "timestamp": "2026-05-14T00:00:00.000Z",
       "error_message": "Syntax error: stray string literal inside shutdownWatchman function body",
       "file": "scripts/build-dashboard.mjs",
-      "root_cause": "Accidental insertion of `\"Bash(ln *)\",` on line 567 inside the shutdownWatchman if-block \u2014 likely a copy-paste artifact from a shell command",
+      "root_cause": "Accidental insertion of `\"Bash(ln *)\",` on line 567 inside the shutdownWatchman if-block — likely a copy-paste artifact from a shell command",
       "fix": "Removed the stray string literal; the if-block now closes correctly after `debounceTimer = null;`",
       "tags": [
         "syntax-error",
@@ -393,7 +393,7 @@
       "error_message": "Wrong reference: serverError should be getServerError",
       "file": "scripts/build-dashboard.mjs",
       "root_cause": "Used \"serverError\" instead of \"getServerError\"",
-      "fix": "Changed serverError \u2192 getServerError",
+      "fix": "Changed serverError → getServerError",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -409,7 +409,7 @@
       "error_message": "Significant refactor of ",
       "file": "scripts/build-dashboard.mjs",
       "root_cause": "34 lines replaced/restructured",
-      "fix": "Rewrote 44\u21926 lines (34 removed) | Also: if (watchmanServer) {; watchmanServer.kill('SIGTERM');",
+      "fix": "Rewrote 44→6 lines (34 removed) | Also: if (watchmanServer) {; watchmanServer.kill('SIGTERM');",
       "tags": [
         "auto-detected",
         "refactor",
@@ -425,7 +425,7 @@
       "error_message": "Wrong reference: watchmanClient should be watchmanSocket",
       "file": "scripts/build-dashboard.mjs",
       "root_cause": "Used \"watchmanClient\" instead of \"watchmanSocket\"",
-      "fix": "Changed watchmanClient \u2192 watchmanSocket",
+      "fix": "Changed watchmanClient → watchmanSocket",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -440,7 +440,7 @@
       "timestamp": "2026-05-14T19:03:37.539Z",
       "error_message": "Missing error handling in function",
       "file": "scripts/build-dashboard.mjs",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -472,7 +472,7 @@
       "timestamp": "2026-05-14T19:30:00.000Z",
       "error_message": "build-dashboard.mjs broken mid-rename: watchmanClient referenced in function bodies after variable renamed to watchmanSocket; payload = line instead of JSON.parse(line)",
       "file": "scripts/build-dashboard.mjs",
-      "root_cause": "Session ended mid-refactor \u2014 declaration renamed but function bodies not updated, and JSON.parse removed with incorrect comment",
+      "root_cause": "Session ended mid-refactor — declaration renamed but function bodies not updated, and JSON.parse removed with incorrect comment",
       "fix": "Rewrote startWatchmanLoop to use net.createConnection (get sockname via watchman get-sockname), updated sendWatchmanCommand and shutdownWatchman to use socket API, restored JSON.parse in onWatchmanStdout",
       "tags": [
         "watchman",
@@ -490,7 +490,7 @@
       "error_message": "Significant refactor of ",
       "file": "scripts/build-dashboard.mjs",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 7\u219210 lines (2 removed)",
+      "fix": "Rewrote 7→10 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -554,7 +554,7 @@
       "error_message": "Significant refactor of ",
       "file": "scripts/build-dashboard.mjs",
       "root_cause": "15 lines replaced/restructured",
-      "fix": "Rewrote 25\u219225 lines (15 removed)",
+      "fix": "Rewrote 25→25 lines (15 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -569,7 +569,7 @@
       "timestamp": "2026-05-14T21:10:04.496Z",
       "error_message": "Missing error handling in loadDotEnv",
       "file": "scripts/build-dashboard.mjs",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -601,7 +601,7 @@
       "timestamp": "2026-05-14T21:53:27.581Z",
       "error_message": "Missing error handling in unknown",
       "file": "scripts/build-dashboard.mjs",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -650,7 +650,7 @@
       "error_message": "Significant refactor of ",
       "file": "scripts/build-dashboard.mjs",
       "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 7\u21925 lines (3 removed)",
+      "fix": "Rewrote 7→5 lines (3 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -666,7 +666,7 @@
       "error_message": "Wrong reference: DEFAULT_MODEL should be CHEAPEST_FIRST_MODEL_IDS",
       "file": "../../../../tmp/sv-03-reviewfix-B78We4/src/providers/claude.ts",
       "root_cause": "Used \"DEFAULT_MODEL\" instead of \"CHEAPEST_FIRST_MODEL_IDS\"",
-      "fix": "Changed DEFAULT_MODEL \u2192 CHEAPEST_FIRST_MODEL_IDS",
+      "fix": "Changed DEFAULT_MODEL → CHEAPEST_FIRST_MODEL_IDS",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -682,7 +682,7 @@
       "error_message": "Significant refactor of ",
       "file": "../../../../tmp/sv-03-reviewfix-B78We4/src/providers/claude.ts",
       "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 8\u219213 lines (2 removed)",
+      "fix": "Rewrote 8→13 lines (2 removed)",
       "tags": [
         "auto-detected",
         "refactor",
@@ -729,7 +729,7 @@
       "timestamp": "2026-05-15T10:10:07.217Z",
       "error_message": "Missing error handling in assertSafeCwd",
       "file": "../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/git-context.ts",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -809,7 +809,7 @@
       "timestamp": "2026-05-15T10:34:54.022Z",
       "error_message": "Missing await",
       "file": "../../../../tmp/sv-03-reviewfix-B78We4/tests/context-pipeline.test.ts",
-      "root_cause": "Async call without await \u2014 returned Promise instead of value",
+      "root_cause": "Async call without await — returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -842,7 +842,7 @@
       "error_message": "Wrong reference: findings should be fixed",
       "file": ".planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md",
       "root_cause": "Used \"findings\" instead of \"fixed\"",
-      "fix": "Changed findings \u2192 fixed",
+      "fix": "Changed findings → fixed",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -857,7 +857,7 @@
       "timestamp": "2026-05-15T11:41:35.409Z",
       "error_message": "Missing await",
       "file": ".claude/worktrees/agent-a78bb2a4d3d56c042/tests/client-result.test.ts",
-      "root_cause": "Async call without await \u2014 returned Promise instead of value",
+      "root_cause": "Async call without await — returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -890,7 +890,7 @@
       "error_message": "Wrong reference: 256 should be 1024",
       "file": "../../../../tmp/sv-03-reviewfix-9wn1wS/src/providers/claude.ts",
       "root_cause": "Used \"256\" instead of \"1024\"",
-      "fix": "Changed 256 \u2192 1024",
+      "fix": "Changed 256 → 1024",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -905,7 +905,7 @@
       "timestamp": "2026-05-15T14:29:35.303Z",
       "error_message": "Missing await",
       "file": "../../../../tmp/sv-03-reviewfix-9wn1wS/src/client/run-foreground.ts",
-      "root_cause": "Async call without await \u2014 returned Promise instead of value",
+      "root_cause": "Async call without await — returned Promise instead of value",
       "fix": "Added await to async call",
       "tags": [
         "auto-detected",
@@ -938,7 +938,7 @@
       "error_message": "Wrong reference: unlinkSync should be rmSync",
       "file": "../../../../tmp/sv-03-reviewfix-9wn1wS/tests/zsh-widget.test.ts",
       "root_cause": "Used \"unlinkSync\" instead of \"rmSync\"",
-      "fix": "Changed unlinkSync \u2192 rmSync",
+      "fix": "Changed unlinkSync → rmSync",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -970,7 +970,7 @@
       "error_message": "Wrong reference: issues_found should be fixed",
       "file": "../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/03-REVIEW.md",
       "root_cause": "Used \"issues_found\" instead of \"fixed\"",
-      "fix": "Changed issues_found \u2192 fixed",
+      "fix": "Changed issues_found → fixed",
       "tags": [
         "auto-detected",
         "wrong-reference",
@@ -985,7 +985,7 @@
       "timestamp": "2026-05-15T19:59:58.409Z",
       "error_message": "Missing error handling in unknown",
       "file": "src/client/run-foreground.ts",
-      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
       "fix": "Added try/catch block",
       "tags": [
         "auto-detected",
@@ -1015,7 +1015,7 @@
     {
       "id": "bug-064",
       "timestamp": "2026-05-15T20:10:00.000Z",
-      "error_message": "zellij run floating pane appears and closes immediately \u2014 no TUI visible, ZSH hangs on FIFO read",
+      "error_message": "zellij run floating pane appears and closes immediately — no TUI visible, ZSH hangs on FIFO read",
       "file": "src/client/run-foreground.ts",
       "root_cause": "When inZellij=true, code used process.stdin for Ink instead of /dev/tty. zellij run does not wire process.stdin to the pane PTY, so stdin.isTTY was false, causing Ink to throw raw mode error on mount and exit immediately.",
       "fix": "Always open /dev/tty (with .catch(() => null) fallback) for Ink stdin/stdout, regardless of inZellij. /dev/tty always refers to the controlling terminal which IS the pane PTY in a zellij run context.",
@@ -1037,7 +1037,7 @@
       "error_message": "Wrong operator: || should be &&",
       "file": "shell/zsh/qq.zsh",
       "root_cause": "Used \"||\" instead of \"&&\"",
-      "fix": "Changed operator || \u2192 &&",
+      "fix": "Changed operator || → &&",
       "tags": [
         "auto-detected",
         "operator-fix",
@@ -1066,6 +1066,166 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-05-15T21:25:00.000Z"
+    },
+    {
+      "id": "bug-067",
+      "timestamp": "2026-05-21T12:23:19.323Z",
+      "error_message": "CSS fix: 2, initialQuery",
+      "file": ".claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx",
+      "root_cause": "2: adds initialQuery prop → downArrow wraps from last back to index 0.; initialQuery: 'git', → 'zzz',",
+      "fix": "Changed 2: adds initialQuery prop → downArrow wraps from last back to index 0.; initialQuery: 'git', → 'zzz',",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:23:19.323Z"
+    },
+    {
+      "id": "bug-068",
+      "timestamp": "2026-05-21T12:24:31.563Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx",
+      "root_cause": "17 lines replaced/restructured",
+      "fix": "Rewrote 56→68 lines (17 removed) | Also: // This test is RED until Plan 04-02 adds useEffec; // The component currently only has useEffect([can",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-21T12:26:21.398Z"
+    },
+    {
+      "id": "bug-069",
+      "timestamp": "2026-05-21T12:26:33.440Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-aac9f5d671b3b40db/tests/candidate-select.test.tsx",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:26:33.441Z"
+    },
+    {
+      "id": "bug-070",
+      "timestamp": "2026-05-21T12:27:26.844Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-aac9f5d671b3b40db/tests/client-result.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: // ---------------------------------------------------------; // Task 3 (Plan 04-01): main.ts error handler tests",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-21T12:28:37.258Z"
+    },
+    {
+      "id": "bug-071",
+      "timestamp": "2026-05-21T12:36:42.812Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-ae3ff4eb91307526b/src/cli/main.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:36:42.812Z"
+    },
+    {
+      "id": "bug-072",
+      "timestamp": "2026-05-21T12:37:01.795Z",
+      "error_message": "Missing error handling in main",
+      "file": ".claude/worktrees/agent-ae3ff4eb91307526b/src/cli/main.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:37:01.795Z"
+    },
+    {
+      "id": "bug-073",
+      "timestamp": "2026-05-21T12:37:33.672Z",
+      "error_message": "CSS fix: useExhaustiveDependencies",
+      "file": ".claude/worktrees/agent-a2f4022ef0830f01e/src/ui/CandidateSelect.tsx",
+      "root_cause": "useExhaustiveDependencies: candidates is a prop → reset selectedIndex when query changes to prevent out-of-bounds access after filter narrows visible list",
+      "fix": "Changed useExhaustiveDependencies: candidates is a prop → reset selectedIndex when query changes to prevent out-of-bounds access after filter narrows visible list",
+      "tags": [
+        "auto-detected",
+        "style-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:37:33.672Z"
+    },
+    {
+      "id": "bug-074",
+      "timestamp": "2026-05-21T12:37:43.790Z",
+      "error_message": "Function not marked async",
+      "file": ".claude/worktrees/agent-a2f4022ef0830f01e/tests/candidate-select.test.tsx",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:37:43.790Z"
+    },
+    {
+      "id": "bug-075",
+      "timestamp": "2026-05-21T12:38:36.736Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-ae3ff4eb91307526b/tests/client-result.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-21T12:38:36.736Z"
+    },
+    {
+      "id": "bug-076",
+      "timestamp": "2026-05-21T12:38:47.580Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-ae3ff4eb91307526b/tests/client-result.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: it('writes cancel JSON to QQ_RESULT_FILE on unhandled reject; vi.resetModules();",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-21T12:38:56.888Z"
     }
   ]
 }

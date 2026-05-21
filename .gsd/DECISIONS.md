@@ -1,0 +1,24 @@
+- Intent classification remains fully synchronous and local, with no I/O or provider calls.
+- unknown intent is reserved for empty or whitespace-only queries; all other unmatched queries fall back to general.
+- Filesystem keywords route before generic file-path detection so rename/find prompts stay out of codebase intent.
+- Git context is only gathered for codebase requests and git-prefixed shell commands; filesystem requests never inherit repo state.
+- changedFiles parsing records rename destinations only and never reads file content.
+- Candidate selection is kept minimal in Phase 2 with raw arrow-key navigation instead of bringing in a larger selector dependency.
+- Bootstrap is the single source of truth for built-in registrations; provider modules do not self-register.
+- Three non-context registries remain Phase 2 stubs but exist now so later phases extend seams instead of refactoring architecture.
+- Registry clear/reset helpers are internal test utilities, not production runtime controls.
+- claude-haiku-4-5-20251001 is the hardcoded default model (no runtime API poll)
+- QQ_MODEL env or .env.local overrides model selection
+- suggestShellResult deleted — zero callers confirmed; fetchCandidates is the provider boundary
+- claudeAdapter exported as named const implementing LLMAdapter for registry binding
+- shellResultSchema error variant uses message string only (no executable payload)
+- ESM non-configurable property limitation: add writeFile/rename to vi.mock factory as vi.fn() passthroughs instead of relying on vi.spyOn on ...original spread
+- vi.hoisted() used to capture original implementations before factory runs, enabling afterEach restoration without losing passthrough behavior
+- grep -c used for /dev/tty absence assertion because macOS grep -qL has non-standard exit code behavior (exits 0 even when pattern found)
+- TDD RED state for Tests A and C in client-result and all Phase 3.2 widget tests is intentional Wave 1 foundation
+- Guard ttyHandle construction with inZellij ? null so the null handle is explicit and optional chaining in finally handles both paths safely
+- Keep ensureDaemon() call unconditionally in Zellij path — near-zero cost when daemon is warm, provides resilience
+- modalHeight hardcoded to 14 (was MODAL_CHROME_LINES + 5 = 9 + 5) in remaining non-Zellij scroll hack — constant removed, value inlined
+- Test env isolation: vi.clearAllMocks() in Zellij describe beforeEach prevents vi.spyOn call history leakage from preceding tests running inside a Zellij session
+- Activate it.todo and add implementation in a single atomic commit — pre-commit hook cannot run tests in worktree (no vitest in node_modules/.bin), so both changes are safe to ship together
+- useEffect([query]) placed immediately after useEffect([candidates]) block per plan spec, before useInput call

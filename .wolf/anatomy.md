@@ -1,7 +1,80 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-14T21:35:16.130Z
-> Files: 101 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-21T17:56:40.802Z
+> Files: 173 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-REVIEW-FIX.md` — Phase 03: Code Review Fix Report (~799 tok)
+- `03-REVIEW.md` — Phase 03: Code Review Report — Claude Fast Path and Ranked Suggestions (~2886 tok)
+
+## ../../../../tmp/sv-03-reviewfix-9wn1wS/shell/zsh/
+
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2448 tok)
+
+## ../../../../tmp/sv-03-reviewfix-9wn1wS/src/client/
+
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2457 tok)
+
+## ../../../../tmp/sv-03-reviewfix-9wn1wS/src/providers/
+
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1390 tok)
+
+## ../../../../tmp/sv-03-reviewfix-9wn1wS/tests/
+
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4246 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/shell/zsh/
+
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2291 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/cli/
+
+- `main.ts` — Exports main (~548 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/cli/commands/
+
+- `client.ts` — Real client command handler. (~467 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/client/
+
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2332 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/context/
+
+- `pipeline.ts` — Exports gatherContext (~494 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/context/providers/
+
+- `git-context.ts` — Exports parsePorcelainLine, gitContextProvider (~903 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/contracts/
+
+- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~370 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/daemon/
+
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~1309 tok)
+- `server.ts` — Starts the daemon Unix-socket server. (~943 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/providers/
+
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1764 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/shared/
+
+- `debug-log.ts` — Exports debugLogPath, appendDebugLog (~210 tok)
+- `env-file.ts` — Exports readEnvValueFromDotEnvLocal (~566 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/src/ui/
+
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1310 tok)
+
+## ../../../../tmp/sv-03-reviewfix-B78We4/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4543 tok)
+- `context-pipeline.test.ts` — NormalizedRequest: buildRequest (~1220 tok)
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1464 tok)
 
 ## ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/
 
@@ -40,6 +113,30 @@
 - `Modal.tsx` — Modal (~210 tok)
 - `SearchInput.tsx` — SearchInput (~112 tok)
 
+## .claude/worktrees/agent-a1a70f3e84a5ede72/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-03-SUMMARY.md` — Phase 03 Plan 03: Error Kind Handling in ZSH Widget Summary (~770 tok)
+
+## .claude/worktrees/agent-a1a70f3e84a5ede72/shell/zsh/
+
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2387 tok)
+
+## .claude/worktrees/agent-a1a70f3e84a5ede72/tests/
+
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4179 tok)
+
+## .claude/worktrees/agent-a2f4022ef0830f01e/.planning/phases/04-fuzzy-tui-selection-ux/
+
+- `04-02-SUMMARY.md` — Phase 04 Plan 02: useEffect([query]) Reset Hook Summary (~1331 tok)
+
+## .claude/worktrees/agent-a2f4022ef0830f01e/src/ui/
+
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1376 tok)
+
+## .claude/worktrees/agent-a2f4022ef0830f01e/tests/
+
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3290 tok)
+
 ## .claude/worktrees/agent-a4210920/.planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-01-SUMMARY.md` — Phase 01 Plan 01: Toolchain Baseline and Shell/IPC Contracts Summary (~1742 tok)
@@ -56,6 +153,45 @@
 ## .claude/worktrees/agent-a4210920/tests/
 
 - `shell-contract.test.ts` — Declares validCancel (~648 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-01-SUMMARY.md` — Dependency graph (~1389 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/src/contracts/
+
+- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~417 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/src/providers/
+
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1301 tok)
+- `provider.ts` — Exports LLMAdapter (~67 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/tests/
+
+- `claude-provider.test.ts` — ContextEnvelope: buildEnvelope (~1262 tok)
+- `shell-contract.test.ts` — Declares validCancel (~804 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-02-SUMMARY.md` — Phase 03 Plan 02: Confidence Propagation, Error ShellResult, and Claude Backend Registration Summary (~1577 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/src/client/
+
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2389 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/src/contracts/
+
+- `request.ts` — Broad intent categories classified before any context gathering. (~1039 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/src/registry/
+
+- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~439 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4737 tok)
+- `registry-bootstrap.test.ts` — Declares hookIds (~518 tok)
 
 ## .claude/worktrees/agent-aa6153ab/.planning/phases/01-shell-bridge-and-result-contract/
 
@@ -111,6 +247,11 @@
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~4186 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~3908 tok)
 
+## .claude/worktrees/agent-aac9f5d671b3b40db/tests/
+
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3380 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6022 tok)
+
 ## .claude/worktrees/agent-ab9387af30d3d2b0f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
 
 - `03.2-02-SUMMARY.md` — Phase 3.2 Plan 02: Wave 2 — FIFO-Aware Write and Zellij Branch Implementation Summary (~1955 tok)
@@ -156,14 +297,35 @@
 
 - `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2159 tok)
 
+## .claude/worktrees/agent-ae3ff4eb91307526b/.planning/phases/04-fuzzy-tui-selection-ux/
+
+- `04-03-SUMMARY.md` — Phase 04 Plan 03: Main.ts FIFO Safety Handlers Summary (~1632 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/.wolf/
+
+- `anatomy.md` — anatomy.md (~2675 tok)
+- `memory.md` — Memory (~12152 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/shell/zsh/
+
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2709 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/src/cli/
+
+- `main.ts` — Exports main (~1134 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6651 tok)
+
 ## .planning/
 
-- `.continue-here.md` — Session Checkpoint (~494 tok)
+- `.continue-here.md` — Session Checkpoint (~879 tok)
 - `config.json` (~258 tok)
-- `HANDOFF.json` — Declares bodies (~1014 tok)
-- `PROJECT.md` — Que-Que (~1287 tok)
+- `HANDOFF.json` (~692 tok)
+- `PROJECT.md` — Que-Que (~1527 tok)
 - `REQUIREMENTS.md` — Requirements: Que-Que (~1242 tok)
-- `ROADMAP.md` — Roadmap: Que-Que (~2579 tok)
+- `ROADMAP.md` — Roadmap: Que-Que (~2705 tok)
 - `STATE.md` — Project State (~387 tok)
 
 ## .planning/notes/
@@ -193,6 +355,20 @@
 - `02-RESEARCH.md` — Phase 2: Intent Router and Context Pipeline - Research (~5890 tok)
 - `02-REVIEWS.md` — Cross-AI Plan Review — Phase 2 (~2741 tok)
 
+## .planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-01-PLAN.md` — with: readEnvValueFromDotEnvLocal, appendDebugLog, resolveModel (~3933 tok)
+- `03-01-SUMMARY.md` — Dependency graph (~1318 tok)
+- `03-02-PLAN.md` — Trust Boundaries (~3133 tok)
+- `03-03-PLAN.md` — Trust Boundaries (~2481 tok)
+- `03-CONTEXT.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Context (~1774 tok)
+- `03-PATTERNS.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Pattern Map (~5239 tok)
+- `03-RESEARCH.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Research (~8019 tok)
+- `03-REVIEW-FIX.md` — Phase 03: Code Review Fix Report (~1902 tok)
+- `03-REVIEW.md` — Phase 03: Code Review Report — Claude Fast Path and Ranked Suggestions (~2880 tok)
+- `03-VALIDATION.md` — Phase 3 — Validation Strategy (~945 tok)
+- `03-VERIFICATION.md` — Phase 03: Claude Fast Path and Ranked Suggestions Verification Report (~2457 tok)
+
 ## .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/
 
 - `03.1-03-SUMMARY.md` — Phase 03.1 Plan 03: Wave 2 Core Implementation Summary (~2166 tok)
@@ -210,6 +386,19 @@
 - `03.2-RESEARCH.md` — Phase 3.2: Zellij Floating Pane Integration - Research (~8713 tok)
 - `03.2-REVIEWS.md` — Cross-AI Plan Review — Phase 3.2 (~2218 tok)
 - `03.2-VALIDATION.md` — Phase 3.2 — Validation Strategy (~848 tok)
+
+## .planning/phases/04-fuzzy-tui-selection-ux/
+
+- `.continue-here.md` — Session Checkpoint (~906 tok)
+- `04-01-PLAN.md` — Trust Boundaries (~3163 tok)
+- `04-01-SUMMARY.md` — Phase 04 Plan 01: TDD Test Scaffolding Summary (~1281 tok)
+- `04-02-PLAN.md` — Trust Boundaries (~1718 tok)
+- `04-02-SUMMARY.md` — Phase 04 Plan 02: useEffect([query]) Reset Hook Summary (~1190 tok)
+- `04-03-PLAN.md` — Trust Boundaries (~2757 tok)
+- `04-PATTERNS.md` — Phase 4: Fuzzy TUI Selection UX - Pattern Map (~4526 tok)
+- `04-RESEARCH.md` — Phase 4: Fuzzy TUI Selection UX - Research (~6409 tok)
+- `04-REVIEW.md` — Phase 04: Code Review Report (~3376 tok)
+- `04-VALIDATION.md` — Phase 04 — Validation Strategy (~955 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
@@ -229,11 +418,11 @@
 
 ## scripts/
 
-- `build-dashboard.mjs` — `, 'wholename']], (~6413 tok)
+- `build-dashboard.mjs` — `, 'wholename']], (~6945 tok)
 
 ## shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~1483 tok)
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2631 tok)
 
 ## src/cli/commands/
 
@@ -242,12 +431,16 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~818 tok)
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2493 tok)
 
 ## src/daemon/
 
 - `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~1134 tok)
 - `server.ts` — Starts the daemon Unix-socket server. (~699 tok)
+
+## src/providers/
+
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1440 tok)
 
 ## src/ui/
 
@@ -255,4 +448,6 @@
 
 ## tests/
 
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4780 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4294 tok)

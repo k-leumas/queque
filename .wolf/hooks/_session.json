@@ -1,217 +1,38 @@
 {
-  "session_id": "session-2026-05-14-1202",
-  "started": "2026-05-14T19:02:48.325Z",
+  "session_id": "session-2026-05-21-1122",
+  "started": "2026-05-21T18:22:47.301Z",
   "files_read": {
     "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 2,
+      "count": 1,
       "tokens": 387,
-      "first_read": "2026-05-14T19:02:59.009Z"
+      "first_read": "2026-05-21T18:23:03.074Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/.continue-here.md": {
       "count": 1,
-      "tokens": 1544,
-      "first_read": "2026-05-14T19:03:02.799Z"
+      "tokens": 879,
+      "first_read": "2026-05-21T18:23:03.547Z"
     },
-    "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs": {
-      "count": 2,
-      "tokens": 4956,
-      "first_read": "2026-05-14T19:03:09.465Z"
-    },
-    "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": {
+    "/Users/samuel/dev/tui-llm/.planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md": {
       "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-14T20:03:37.342Z"
+      "tokens": 906,
+      "first_read": "2026-05-21T18:23:03.795Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md": {
       "count": 1,
-      "tokens": 2579,
-      "first_read": "2026-05-14T20:37:37.628Z"
+      "tokens": 2705,
+      "first_read": "2026-05-21T18:23:10.338Z"
     },
-    "/Users/samuel/dev/tui-llm/tsup.config.ts": {
+    "/Users/samuel/.claude/get-shit-done/workflows/update.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-14T20:57:05.582Z"
+      "first_read": "2026-05-21T18:31:46.348Z"
     }
   },
-  "files_written": [
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 305,
-      "at": "2026-05-14T19:03:37.537Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 10,
-      "at": "2026-05-14T19:03:40.423Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 97,
-      "at": "2026-05-14T19:03:44.289Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 24,
-      "at": "2026-05-14T19:03:47.555Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/.continue-here.md",
-      "action": "create",
-      "tokens": 100,
-      "at": "2026-05-14T19:04:33.901Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 16,
-      "at": "2026-05-14T19:15:40.179Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 119,
-      "at": "2026-05-14T19:15:44.497Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 61,
-      "at": "2026-05-14T19:15:49.361Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 64,
-      "at": "2026-05-14T19:15:53.078Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 162,
-      "at": "2026-05-14T19:15:59.095Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 19,
-      "at": "2026-05-14T19:16:02.455Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 12,
-      "at": "2026-05-14T19:16:05.433Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 99,
-      "at": "2026-05-14T19:16:09.795Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 50,
-      "at": "2026-05-14T19:16:13.659Z"
-    },
-    {
-      "file": "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_no_coauthored.md",
-      "action": "create",
-      "tokens": 154,
-      "at": "2026-05-14T20:03:34.804Z"
-    },
-    {
-      "file": "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md",
-      "action": "create",
-      "tokens": 37,
-      "at": "2026-05-14T20:03:43.440Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 181,
-      "at": "2026-05-14T20:16:58.280Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 66,
-      "at": "2026-05-14T20:17:03.328Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 105,
-      "at": "2026-05-14T20:17:07.380Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 56,
-      "at": "2026-05-14T20:17:11.258Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 342,
-      "at": "2026-05-14T21:09:23.864Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 21,
-      "at": "2026-05-14T21:09:27.577Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 62,
-      "at": "2026-05-14T21:09:32.146Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 401,
-      "at": "2026-05-14T21:09:47.759Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 623,
-      "at": "2026-05-14T21:10:04.492Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 77,
-      "at": "2026-05-14T21:24:13.194Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs",
-      "action": "edit",
-      "tokens": 30,
-      "at": "2026-05-14T21:24:18.176Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/.continue-here.md",
-      "action": "create",
-      "tokens": 565,
-      "at": "2026-05-14T21:35:16.147Z"
-    }
-  ],
-  "edit_counts": {
-    "scripts/build-dashboard.mjs": 24,
-    ".planning/.continue-here.md": 2,
-    "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_no_coauthored.md": 1,
-    "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1
-  },
+  "files_written": [],
+  "edit_counts": {},
   "anatomy_hits": 4,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 2,
+  "anatomy_misses": 1,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 11
+  "stop_count": 2
 }
