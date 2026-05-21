@@ -458,3 +458,62 @@ describe('runForegroundClient: Zellij branch opens /dev/tty', () => {
     expect(JSON.parse(content.trim())).toEqual({ kind: 'cancel' });
   });
 });
+
+// ---------------------------------------------------------------------------
+// Task 2 (Plan 04-01): resolved guard prevents double write
+// ---------------------------------------------------------------------------
+
+describe('runForegroundClient: resolved guard prevents double write', () => {
+  let tmpDir: string;
+  let requestFile: string;
+  let resultFile: string;
+
+  const sampleRequest = {
+    version: 1 as const,
+    ttyPath: '/dev/tty',
+    cwd: '/home/user',
+    shellPid: 1234,
+    lbuffer: 'list files',
+    rbuffer: '',
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-resolved-guard-test-'));
+    requestFile = path.join(tmpDir, 'request.json');
+    resultFile = path.join(tmpDir, 'result.json');
+    fs.writeFileSync(requestFile, JSON.stringify(sampleRequest) + '\n');
+  });
+
+  afterEach(() => {
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+  });
+
+  it('writes replace-buffer result and never writes cancel after selection', async () => {
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    vi.mocked(fetchCandidates).mockResolvedValue([{ command: 'git status', explanation: '' }]);
+
+    const fspMock = await import('node:fs/promises');
+    const writeFileSpy = vi.spyOn(fspMock, 'writeFile');
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    // Result file must contain the replace-buffer outcome
+    const resultContent = fs.readFileSync(resultFile, 'utf-8');
+    const parsed = JSON.parse(resultContent.trim());
+    expect(parsed.kind).toBe('replace-buffer');
+    expect(parsed.lbuffer).toBe('git status');
+
+    // No writeFile call should have written a cancel payload after the selection resolved
+    const cancelCalls = writeFileSpy.mock.calls.filter((args) => {
+      const content = String(args[1]);
+      return content.includes('"cancel"');
+    });
+    expect(cancelCalls).toHaveLength(0);
+  });
+});
