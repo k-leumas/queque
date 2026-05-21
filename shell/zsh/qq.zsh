@@ -216,6 +216,11 @@ JSON
   fi
   _qq_log "qq_cmd=${qq_cmd[*]}"
 
+  # Export the FIFO path so the Node process can read it as process.env['QQ_RESULT_FILE'].
+  # This lets top-level uncaughtException/unhandledRejection handlers in main.ts
+  # write a cancel result to the FIFO even if the error escapes the Promise block.
+  export QQ_RESULT_FILE="$fifo_path"
+
   # Launch the floating pane backgrounded+disowned so it does not block the
   # widget or inherit the widget's signal disposition (D-06).
   # Stderr is appended to the debug log so zellij run failures are visible.

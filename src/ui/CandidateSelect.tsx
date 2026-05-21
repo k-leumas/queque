@@ -61,6 +61,11 @@ export function CandidateSelect({
     }
   }, [candidates]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selectedIndex when query changes to prevent out-of-bounds access after filter narrows visible list
+  useEffect(() => {
+    setSelectedIndex(0);
+  }, [query]);
+
   // Single useInput handler with null-guards (Pitfall 3 fix)
   useInput((input, key) => {
     if (key.escape) {

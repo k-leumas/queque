@@ -210,28 +210,23 @@ describe('CandidateSelect — D-01 pre-filter', () => {
 describe('CandidateSelect — selectedIndex reset on query change', () => {
   beforeEach(resetState);
 
-  // ACTIVATION REQUIRED IN PLAN 04-02:
-  // Replace it.todo with a real it() block containing this body:
-  //
-  //   const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
-  //   const { useEffect } = await import('react');
-  //   const onSelect = vi.fn();
-  //   const onCancel = vi.fn();
-  //   CandidateSelect({
-  //     candidates: [
-  //       { command: 'git status', explanation: '' },
-  //       { command: 'ls -la', explanation: '' },
-  //     ],
-  //     onSelect,
-  //     onCancel,
-  //   });
-  //   // useEffect must be called twice: once for useEffect([candidates]) and
-  //   // once for useEffect([query]) — the latter added by Plan 04-02.
-  //   expect(useEffect).toHaveBeenCalledTimes(2);
-  //
-  // The pre-commit hook prevents committing actively failing tests, so this test
-  // is kept as .todo in Plan 04-01 and activated alongside the implementation in 04-02.
-  it.todo('registers a useEffect hook for query dependency');
+  it('registers a useEffect hook for query dependency', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const { useEffect } = await import('react');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+    CandidateSelect({
+      candidates: [
+        { command: 'git status', explanation: '' },
+        { command: 'ls -la', explanation: '' },
+      ],
+      onSelect,
+      onCancel,
+    });
+    // useEffect must be called twice: once for useEffect([candidates]) and
+    // once for useEffect([query]) — the latter added by Plan 04-02.
+    expect(useEffect).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('CandidateSelect — zero-match after filter', () => {

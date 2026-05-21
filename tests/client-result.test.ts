@@ -79,6 +79,15 @@ vi.mock('node:fs/promises', async (importOriginal) => {
 });
 
 // ---------------------------------------------------------------------------
+// Mock node:fs (synchronous) so the uncaughtException and unhandledRejection
+// handlers in main.ts can be tested without touching the real filesystem.
+// The mock is module-level so it is hoisted before any dynamic import.
+// ---------------------------------------------------------------------------
+vi.mock('node:fs', () => ({
+  writeFileSync: vi.fn(),
+}));
+
+// ---------------------------------------------------------------------------
 // Mock ink so modal renders don't hang waiting for user input.
 // After D-03 the modal always opens regardless of candidate count; the mock
 // immediately invokes onSelect with the first candidate's command so the
@@ -554,11 +563,59 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
 // ---------------------------------------------------------------------------
 
 describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', () => {
-  // ACTIVATION: remove .todo and add the body above when Plan 04-03 adds the handler.
-  it.todo('writes cancel JSON to QQ_RESULT_FILE on uncaught exception');
+  it('writes cancel JSON to QQ_RESULT_FILE on uncaught exception', async () => {
+    vi.resetModules();
+    process.env['QQ_RESULT_FILE'] = '/tmp/qq-test-handler-result';
+    const processSpy = vi.spyOn(process, 'on');
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('process.exit called');
+    });
+    const fsMock = await import('node:fs');
+    vi.mocked(fsMock.writeFileSync).mockImplementation(() => {});
+    await import('../src/cli/main.js');
+    const handlerCall = processSpy.mock.calls.find((args) => args[0] === 'uncaughtException');
+    expect(handlerCall).toBeDefined();
+    const handler = handlerCall![1] as (err: Error) => void;
+    try {
+      handler(new Error('test error'));
+    } catch {
+      /* process.exit caught */
+    }
+    expect(vi.mocked(fsMock.writeFileSync)).toHaveBeenCalledWith(
+      '/tmp/qq-test-handler-result',
+      expect.stringMatching(/"kind":"cancel"/),
+    );
+    delete process.env['QQ_RESULT_FILE'];
+    exitSpy.mockRestore();
+    processSpy.mockRestore();
+  });
 });
 
 describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', () => {
-  // ACTIVATION: remove .todo and add the body above when Plan 04-03 adds the handler.
-  it.todo('writes cancel JSON to QQ_RESULT_FILE on unhandled rejection');
+  it('writes cancel JSON to QQ_RESULT_FILE on unhandled rejection', async () => {
+    vi.resetModules();
+    process.env['QQ_RESULT_FILE'] = '/tmp/qq-test-handler-result';
+    const processSpy = vi.spyOn(process, 'on');
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
+      throw new Error('process.exit called');
+    });
+    const fsMock = await import('node:fs');
+    vi.mocked(fsMock.writeFileSync).mockImplementation(() => {});
+    await import('../src/cli/main.js');
+    const handlerCall = processSpy.mock.calls.find((args) => args[0] === 'unhandledRejection');
+    expect(handlerCall).toBeDefined();
+    const handler = handlerCall![1] as (reason: unknown) => void;
+    try {
+      handler('test rejection reason');
+    } catch {
+      /* process.exit caught */
+    }
+    expect(vi.mocked(fsMock.writeFileSync)).toHaveBeenCalledWith(
+      '/tmp/qq-test-handler-result',
+      expect.stringMatching(/"kind":"cancel"/),
+    );
+    delete process.env['QQ_RESULT_FILE'];
+    exitSpy.mockRestore();
+    processSpy.mockRestore();
+  });
 });
