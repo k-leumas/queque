@@ -112,9 +112,9 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 04-01-PLAN.md — Wave 0: add RED test cases to candidate-select.test.tsx (selectedIndex reset, zero-match, wrapping) and client-result.test.ts (resolved guard)
-- [ ] 04-02-PLAN.md — Wave 1: add useEffect([query]) reset hook to CandidateSelect.tsx, making RED tests GREEN
-- [ ] 04-03-PLAN.md — Wave 1 (parallel): add uncaughtException/unhandledRejection handlers to main.ts; export QQ_RESULT_FILE in qq.zsh
+- [x] 04-01-PLAN.md — Wave 0: add RED test cases to candidate-select.test.tsx (selectedIndex reset, zero-match, wrapping) and client-result.test.ts (resolved guard)
+- [x] 04-02-PLAN.md — Wave 1: add useEffect([query]) reset hook to CandidateSelect.tsx, making RED tests GREEN
+- [x] 04-03-PLAN.md — Wave 1 (parallel): add uncaughtException/unhandledRejection handlers to main.ts; export QQ_RESULT_FILE in qq.zsh
 
 ### Phase 5: Clarification Chat in the Same TUI
 **Goal**: Keep ambiguous requests inside a refinement loop until the tool can return a stronger command suggestion.
