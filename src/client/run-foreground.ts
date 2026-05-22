@@ -134,10 +134,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
         // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
 
-        // Lines to scroll down before rendering so the modal doesn't overwrite prior output.
-        // Named constant so the chat flow can use a different height later.
-        const MODAL_VIEWPORT_LINES = 14;
-
         // Try to create TTY streams from /dev/tty for Ink.
         // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
         // Falls back to process.stdin/stdout if /dev/tty was unavailable (e.g. tests).
@@ -152,9 +148,13 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           }
         }
 
+        // Reserve exactly as many lines as the TUI needs (header + filter + up to 3
+        // candidates × 3 rows + controls + 2 buffer = 16). This scrolls previous
+        // terminal content up by only 16 lines so it stays visible above the TUI,
+        // rather than filling the whole screen.
+        // Skipped in Zellij: the floating pane starts with a clean screen.
+        const MODAL_VIEWPORT_LINES = 16;
         if (ttyWriteStream && !inZellij) {
-          // Blank out the modal viewport so the render doesn't overwrite prior output.
-          // Skip in Zellij: the floating pane starts with a clean screen.
           ttyWriteStream.write('\n'.repeat(MODAL_VIEWPORT_LINES));
           ttyWriteStream.write(`\x1b[${MODAL_VIEWPORT_LINES}A`);
         }
@@ -203,11 +203,21 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
 
           const app = render(buildCandidateElement(null), renderOptions);
 
-          // Clean up the TUI when the terminal closes or the process is asked to stop.
-          // Without this, Ink leaves rendered content on screen because unmount() is never
-          // called and the ANSI cursor/clear sequences are never emitted.
+          // After Ink unmounts, cursor sits at the top of the TUI area. Clear from
+          // there to end of screen so pre-scroll blank lines don't leave artifacts.
+          const clearScrollReserve = () => {
+            if (ttyWriteStream && !inZellij) {
+              try {
+                ttyWriteStream.write('\x1b[J');
+              } catch {
+                // TTY may already be gone (e.g. SIGHUP fired because terminal closed)
+              }
+            }
+          };
+
           const cleanupOnSignal = () => {
             app.unmount();
+            clearScrollReserve();
             process.exit(0);
           };
           process.once('SIGHUP', cleanupOnSignal);
@@ -217,6 +227,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             process.off('SIGHUP', cleanupOnSignal);
             process.off('SIGTERM', cleanupOnSignal);
             app.unmount();
+            clearScrollReserve();
             resolve();
           };
 
