@@ -157,6 +157,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         if (ttyWriteStream && !inZellij) {
           ttyWriteStream.write('\n'.repeat(MODAL_VIEWPORT_LINES));
           ttyWriteStream.write(`\x1b[${MODAL_VIEWPORT_LINES}A`);
+          // Save cursor at the top of the reserved area. Restored in clearScrollReserve
+          // so cleanup always erases from the right position regardless of where Ink
+          // leaves the cursor after unmount.
+          ttyWriteStream.write('\x1b7');
         }
 
         await new Promise<void>((resolve) => {
@@ -203,12 +207,12 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
 
           const app = render(buildCandidateElement(null), renderOptions);
 
-          // After Ink unmounts, cursor sits at the top of the TUI area. Clear from
-          // there to end of screen so pre-scroll blank lines don't leave artifacts.
+          // Restore cursor to the saved position (top of reserved area) then clear
+          // to end of screen. This works regardless of where Ink left the cursor.
           const clearScrollReserve = () => {
             if (ttyWriteStream && !inZellij) {
               try {
-                ttyWriteStream.write('\x1b[J');
+                ttyWriteStream.write('\x1b8\x1b[J');
               } catch {
                 // TTY may already be gone (e.g. SIGHUP fired because terminal closed)
               }
