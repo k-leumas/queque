@@ -203,7 +203,19 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
 
           const app = render(buildCandidateElement(null), renderOptions);
 
+          // Clean up the TUI when the terminal closes or the process is asked to stop.
+          // Without this, Ink leaves rendered content on screen because unmount() is never
+          // called and the ANSI cursor/clear sequences are never emitted.
+          const cleanupOnSignal = () => {
+            app.unmount();
+            process.exit(0);
+          };
+          process.once('SIGHUP', cleanupOnSignal);
+          process.once('SIGTERM', cleanupOnSignal);
+
           unmount = () => {
+            process.off('SIGHUP', cleanupOnSignal);
+            process.off('SIGTERM', cleanupOnSignal);
             app.unmount();
             resolve();
           };
