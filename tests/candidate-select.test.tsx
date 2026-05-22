@@ -147,7 +147,7 @@ describe('CandidateSelect — filterCandidates logic', () => {
     // Simulate Enter key — should accept 'git status' (only match for 'git' filter)
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('git status');
+    expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
   });
 });
 
@@ -198,7 +198,7 @@ describe('CandidateSelect — D-01 pre-filter', () => {
     // Press Enter — should accept 'git status' (the only candidate after filter)
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('git status');
+    expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
     expect(onSelect).not.toHaveBeenCalledWith('ls -la');
   });
 });
@@ -262,24 +262,46 @@ describe('CandidateSelect — onSelect receives explanation', () => {
 
   // The shell context line feature requires the explanation to flow through
   // onSelect so run-foreground.ts can include it in the FIFO result.
-  // RED: activate when CandidateSelect.tsx onSelect signature is updated to (command, explanation).
-  // BODY: CandidateSelect({ candidates: [{ command: 'git status', explanation: 'show working tree status' }, { command: 'ls -la', explanation: 'list directory contents' }], onSelect, onCancel });
-  //       capturedInputHandler?.('\r', { ...zeroKeys, return: true });
-  //       expect(onSelect).toHaveBeenCalledWith('git status', 'show working tree status');
-  it.todo('calls onSelect with command and explanation when Enter is pressed');
+  it('calls onSelect with command and explanation when Enter is pressed', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+    CandidateSelect({
+      candidates: [
+        { command: 'git status', explanation: 'show working tree status' },
+        { command: 'ls -la', explanation: 'list directory contents' },
+      ],
+      onSelect,
+      onCancel,
+    });
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+    expect(onSelect).toHaveBeenCalledWith('git status', 'show working tree status');
+  });
 
-  // RED: activate when fallback logic is implemented (explanation || `see man ${cmd.split(' ')[0]}`).
-  // BODY: CandidateSelect({ candidates: [{ command: 'ls', explanation: '' }], onSelect, onCancel });
-  //       capturedInputHandler?.('\r', { ...zeroKeys, return: true });
-  //       expect(onSelect).toHaveBeenCalledWith('ls', 'see man ls');
-  it.todo('falls back to "see man <command>" when candidate explanation is empty');
+  it('falls back to "see man <command>" when candidate explanation is empty', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+    CandidateSelect({ candidates: [{ command: 'ls', explanation: '' }], onSelect, onCancel });
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+    expect(onSelect).toHaveBeenCalledWith('ls', 'see man ls');
+  });
 
-  // RED: activate alongside the two tests above.
-  // BODY: CandidateSelect({ candidates, onSelect, onCancel }); capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
-  //       stateCallCount = 0; CandidateSelect({ candidates, onSelect, onCancel });
-  //       capturedInputHandler?.('\r', { ...zeroKeys, return: true });
-  //       expect(onSelect).toHaveBeenCalledWith('ls -la', 'list directory contents');
-  it.todo('passes explanation of the currently selected (non-first) candidate on Enter');
+  it('passes explanation of the currently selected (non-first) candidate on Enter', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+    const candidates = [
+      { command: 'git status', explanation: 'show working tree status' },
+      { command: 'ls -la', explanation: 'list directory contents' },
+    ];
+    CandidateSelect({ candidates, onSelect, onCancel });
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+    stateCallCount = 0;
+    CandidateSelect({ candidates, onSelect, onCancel });
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+    expect(onSelect).toHaveBeenCalledWith('ls -la', 'list directory contents');
+  });
 });
 
 describe('CandidateSelect — Enter key raw-mode regression', () => {
@@ -306,7 +328,7 @@ describe('CandidateSelect — Enter key raw-mode regression', () => {
     // Simulate raw-mode Enter: input='\r', key.return=true
     capturedInputHandler?.('\r', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('git status');
+    expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
     expect(onCancel).not.toHaveBeenCalled();
   });
 
@@ -351,7 +373,7 @@ describe('CandidateSelect — Enter key raw-mode regression', () => {
     // Press Enter via raw-mode '\r'
     capturedInputHandler?.('\r', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('ls -la');
+    expect(onSelect).toHaveBeenCalledWith('ls -la', 'see man ls');
   });
 });
 
@@ -387,7 +409,7 @@ describe('CandidateSelect — wrapping navigation', () => {
     // Press Return — selectedIndex=2 in new closure → onSelect('pwd')
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('pwd');
+    expect(onSelect).toHaveBeenCalledWith('pwd', 'see man pwd');
   });
 
   // Test 2: downArrow wraps from last back to index 0.
@@ -420,6 +442,6 @@ describe('CandidateSelect — wrapping navigation', () => {
     // Press Return — selectedIndex=0 in new closure → onSelect('git status')
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('git status');
+    expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
   });
 });

@@ -356,24 +356,108 @@ describe('result application: malformed JSON leaves buffers intact', () => {
 // ---------------------------------------------------------------------------
 
 describe('result application: replace-buffer with query context line', () => {
-  // RED: activate when _qq_apply_result prints context line for results with query field.
-  // BODY: write result JSON with kind:'replace-buffer', lbuffer:'git status  # show working tree status', query:'git stat'
-  //       run _qq_apply_result; expect stdout to match /que-que/i and contain 'git stat'
-  it.todo('prints a dimmed que-que context line to stdout when query field is present');
+  it('prints a dimmed que-que context line to stdout when query field is present', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(
+      resultFile,
+      JSON.stringify({
+        kind: 'replace-buffer',
+        lbuffer: 'git status  # show working tree status',
+        rbuffer: '',
+        query: 'git stat',
+      }),
+    );
+    const script = `
+      LBUFFER="old"
+      RBUFFER=""
+      QQ_ORIG_LBUFFER="old"
+      QQ_ORIG_RBUFFER=""
+      _qq_apply_result "${resultFile}"
+      echo "lbuffer=$LBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    expect(stdout).toMatch(/que-que/i);
+    expect(stdout).toContain('git stat');
+  });
 
-  // RED: activate when run-foreground.ts builds lbuffer as `command  # explanation` and widget passes it through.
-  // BODY: write result JSON with lbuffer:'git status  # show working tree status', query:'git stat'
-  //       run _qq_apply_result; echo "lbuffer=$LBUFFER"; expect stdout to contain 'lbuffer=git status  # show working tree status'
-  it.todo('sets LBUFFER to command with # explanation appended as a comment');
+  it('sets LBUFFER to command with # explanation appended as a comment', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(
+      resultFile,
+      JSON.stringify({
+        kind: 'replace-buffer',
+        lbuffer: 'git status  # show working tree status',
+        rbuffer: '',
+        query: 'git stat',
+      }),
+    );
+    const script = `
+      LBUFFER="old"
+      RBUFFER=""
+      QQ_ORIG_LBUFFER="old"
+      QQ_ORIG_RBUFFER=""
+      _qq_apply_result "${resultFile}"
+      echo "lbuffer=$LBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    expect(stdout).toContain('lbuffer=git status  # show working tree status');
+  });
 
-  // RED: activate alongside above — eval of lbuffer with # comment only runs the command.
-  // BODY: write result with lbuffer:'echo hello  # prints hello to stdout'
-  //       run _qq_apply_result; eval "$LBUFFER"; expect eval_output=hello and eval_status=0
-  it.todo('lbuffer with # explanation is valid shell syntax (comment, not error)');
+  it('lbuffer with # explanation is valid shell syntax (comment, not error)', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(
+      resultFile,
+      JSON.stringify({
+        kind: 'replace-buffer',
+        lbuffer: 'echo hello  # prints hello to stdout',
+        rbuffer: '',
+      }),
+    );
+    const script = `
+      LBUFFER="old"
+      RBUFFER=""
+      QQ_ORIG_LBUFFER="old"
+      QQ_ORIG_RBUFFER=""
+      _qq_apply_result "${resultFile}"
+      eval_output=$(eval "$LBUFFER")
+      eval_status=$?
+      echo "eval_output=$eval_output"
+      echo "eval_status=$eval_status"
+    `;
+    const { stdout, status } = runZsh(script);
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    expect(stdout).toContain('eval_output=hello');
+    expect(stdout).toContain('eval_status=0');
+  });
 
-  // RED: activate alongside above — no que-que annotation when query field absent.
-  // BODY: write result without query field; run _qq_apply_result; expect stdout NOT to match /que-que/i
-  it.todo('context line is omitted when query field is absent (backward compat)');
+  it('context line is omitted when query field is absent (backward compat)', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(
+      resultFile,
+      JSON.stringify({ kind: 'replace-buffer', lbuffer: 'git status', rbuffer: '' }),
+    );
+    const script = `
+      LBUFFER="old"
+      RBUFFER=""
+      QQ_ORIG_LBUFFER="old"
+      QQ_ORIG_RBUFFER=""
+      _qq_apply_result "${resultFile}"
+      echo "lbuffer=$LBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    expect(stdout).not.toMatch(/que-que/i);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -381,21 +465,20 @@ describe('result application: replace-buffer with query context line', () => {
 // These tests go RED until Plan 03 rewrites the widget (intentional TDD RED).
 // ---------------------------------------------------------------------------
 
-describe('Zellij detection: exits with message when ZELLIJ is unset', () => {
-  it('prints a message referencing Zellij when ZELLIJ env var is not set', () => {
-    // D-01: widget must exit with a message when ZELLIJ is not set.
-    // runZshWithoutZellij strips ZELLIJ from the child process environment so
-    // the detection guard fires even if the test host is inside a Zellij session.
-    const script = `
-      LBUFFER="test?"
-      qq-question-widget
-    `;
-    const { stdout, stderr, status } = runZshWithoutZellij(script);
-    // D-01: exits non-zero without showing modal
-    expect(status).not.toBe(0);
-    // The widget must print a message that mentions Zellij
-    const combined = stdout + stderr;
-    expect(combined.toLowerCase()).toContain('zellij');
+describe('Zellij detection: inline path used when ZELLIJ is unset', () => {
+  it('widget source no longer contains a hard-exit Zellij error message', () => {
+    // The old guard hard-exited with "Que-Que requires Zellij".
+    // Now the widget uses the inline foreground path when ZELLIJ is absent.
+    const result = spawnSync('grep', ['-q', 'Que-Que requires Zellij', widgetPath], {
+      encoding: 'utf8',
+    });
+    expect(result.status).not.toBe(0);
+  });
+
+  it('widget source contains inline fallback (_qq_apply_result call outside Zellij branch)', () => {
+    const result = spawnSync('grep', ['-c', '_qq_apply_result', widgetPath], { encoding: 'utf8' });
+    // At least 2 occurrences: function definition + inline call
+    expect(parseInt(result.stdout.trim(), 10)).toBeGreaterThanOrEqual(2);
   });
 });
 

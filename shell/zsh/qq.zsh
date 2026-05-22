@@ -121,6 +121,11 @@ _qq_apply_result() {
       fi
       LBUFFER="$new_lbuffer"
       RBUFFER="$new_rbuffer"
+      local query
+      query=$(jq -r '.query // empty' "$result_file" 2>/dev/null)
+      if [[ -n "$query" ]]; then
+        print -P "%F{240}que-que: ${query}%f"
+      fi
       return 0
       ;;
     error)
@@ -159,28 +164,19 @@ qq-question-widget() {
     return 0
   fi
 
-  # Second `?` detected — check Zellij environment (D-01)
-  if [[ -z "$ZELLIJ" ]]; then
-    print -r -u2 "Que-Que requires Zellij — see https://zellij.dev"
-    zle -M "Que-Que requires Zellij — see https://zellij.dev" 2>/dev/null || true
-    return 1
-  fi
-
-  # Consume the trigger and capture buffers
+  # Second `?` detected — consume trigger and capture buffers
   _qq_log "trigger fired lbuffer=${LBUFFER} rbuffer=${RBUFFER}"
   _qq_capture_buffers
   LBUFFER="$QQ_LBUFFER"
   RBUFFER="$QQ_RBUFFER"
 
-  # Create a private session directory, request file, and FIFO inside it (CR-006 fix).
-  # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on the FIFO path.
-  local tmpdir req_file fifo_path
+  # Create a private session directory (CR-006 fix).
+  # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on temp paths.
+  local tmpdir req_file
   tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX)
   chmod 700 "$tmpdir"
   req_file="$tmpdir/request.json"
-  fifo_path="$tmpdir/result.fifo"
-  mkfifo "$fifo_path"
-  _qq_log "files req=${req_file} fifo=${fifo_path}"
+  _qq_log "tmpdir=${tmpdir}"
 
   # Cleanup trap: removes the whole session directory (IN-002 / CR-006 fix).
   trap "_qq_cleanup '$tmpdir'" EXIT ERR INT
@@ -216,57 +212,79 @@ JSON
   fi
   _qq_log "qq_cmd=${qq_cmd[*]}"
 
-  # Export the FIFO path so the Node process can read it as process.env['QQ_RESULT_FILE'].
-  # This lets top-level uncaughtException/unhandledRejection handlers in main.ts
-  # write a cancel result to the FIFO even if the error escapes the Promise block.
-  export QQ_RESULT_FILE="$fifo_path"
+  if [[ -n "$ZELLIJ" ]]; then
+    # ---- Zellij path: FIFO + floating pane ----
+    local fifo_path="$tmpdir/result.fifo"
+    mkfifo "$fifo_path"
+    _qq_log "fifo=${fifo_path}"
 
-  # Launch the floating pane backgrounded+disowned so it does not block the
-  # widget or inherit the widget's signal disposition (D-06).
-  # Stderr is appended to the debug log so zellij run failures are visible.
-  zellij run --floating --close-on-exit --width 80 --height 24 -- \
-    "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
-    2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
+    # Export FIFO path so uncaughtException/unhandledRejection handlers in main.ts
+    # can write a cancel result even if the error escapes the Promise block.
+    export QQ_RESULT_FILE="$fifo_path"
 
-  # Block on FIFO read with a 30 s timeout (D-05, Pitfall 3: read -t not cat).
-  # || true ensures widget continues on timeout (treated as cancel).
-  local result='{"kind":"cancel"}'
-  IFS= read -r -t 30 result < "$fifo_path" || true
-  _qq_log "fifo read complete result=${result}"
+    # Launch the floating pane backgrounded+disowned (D-06).
+    zellij run --floating --close-on-exit --width 80 --height 24 -- \
+      "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
+      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
+
+    # Block on FIFO read with a 30 s timeout (D-05).
+    local result='{"kind":"cancel"}'
+    IFS= read -r -t 30 result < "$fifo_path" || true
+    _qq_log "fifo read complete result=${result}"
 
   # Apply result inline via jq (RESEARCH.md §Finding 7, Option B).
   local kind new_lbuffer new_rbuffer
-  kind=$(printf '%s' "$result" | jq -r '.kind // empty' 2>/dev/null)
-  case "$kind" in
-    cancel)
-      LBUFFER="$QQ_ORIG_LBUFFER"
-      RBUFFER="$QQ_ORIG_RBUFFER"
-      ;;
-    replace-buffer)
-      new_lbuffer=$(printf '%s' "$result" | jq -r '.lbuffer // empty' 2>/dev/null)
-      local _jq_lbuf_status=$?
-      new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""' 2>/dev/null)
-      local _jq_rbuf_status=$?
-      if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]]; then
+    local kind new_lbuffer new_rbuffer
+    kind=$(printf '%s' "$result" | jq -r '.kind // empty' 2>/dev/null)
+    case "$kind" in
+      cancel)
         LBUFFER="$QQ_ORIG_LBUFFER"
         RBUFFER="$QQ_ORIG_RBUFFER"
-      else
-        LBUFFER="$new_lbuffer"
-        RBUFFER="$new_rbuffer"
-      fi
-      ;;
-    error)
-      # Error kind — provider failure; restore original buffers (D-11)
-      LBUFFER="$QQ_ORIG_LBUFFER"
-      RBUFFER="$QQ_ORIG_RBUFFER"
-      ;;
-    *)
-      LBUFFER="$QQ_ORIG_LBUFFER"
-      RBUFFER="$QQ_ORIG_RBUFFER"
-      ;;
-  esac
+        ;;
+      replace-buffer)
+        new_lbuffer=$(printf '%s' "$result" | jq -r '.lbuffer // empty' 2>/dev/null)
+        local _jq_lbuf_status=$?
+        new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""' 2>/dev/null)
+        local _jq_rbuf_status=$?
+        if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]]; then
+          LBUFFER="$QQ_ORIG_LBUFFER"
+          RBUFFER="$QQ_ORIG_RBUFFER"
+        else
+          LBUFFER="$new_lbuffer"
+          RBUFFER="$new_rbuffer"
+          local inline_query
+          inline_query=$(printf '%s' "$result" | jq -r '.query // empty' 2>/dev/null)
+          if [[ -n "$inline_query" ]]; then
+            print -P "%F{240}que-que: ${inline_query}%f"
+          fi
+        fi
+        ;;
+      error)
+        LBUFFER="$QQ_ORIG_LBUFFER"
+        RBUFFER="$QQ_ORIG_RBUFFER"
+        ;;
+      *)
+        LBUFFER="$QQ_ORIG_LBUFFER"
+        RBUFFER="$QQ_ORIG_RBUFFER"
+        ;;
+    esac
+
+  else
+    # ---- Inline path: foreground child writes to a regular temp file ----
+    local result_file="$tmpdir/result.json"
+    export QQ_RESULT_FILE="$result_file"
+    _qq_log "inline mode result_file=${result_file}"
+
+    # Run the client as a foreground child. ZLE yields the terminal so Ink
+    # can open /dev/tty and render the selection UI inline.
+    "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
+      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}"
+
+    _qq_apply_result "$result_file" || true
+  fi
 
   _qq_cleanup "$tmpdir"
+  zle reset-prompt
   zle -R
   return 0
 }

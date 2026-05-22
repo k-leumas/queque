@@ -13,6 +13,31 @@ import { socketPathForUid } from '../shared/socket-path.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { writeShellResult } from './result-writer.js';
 
+/**
+ * Splits a command + explanation into shell buffer halves.
+ *
+ * Cursor lands before the first placeholder (text wrapped in `<...>`), so the
+ * user can immediately type the first required value. Angle brackets are
+ * stripped from all placeholders so the shell buffer looks natural.
+ * If no placeholders are present, cursor lands after the command, before the
+ * `  # explanation` comment.
+ */
+export function buildShellBuffers(
+  command: string,
+  explanation: string,
+): { lbuffer: string; rbuffer: string } {
+  const comment = `  # ${explanation}`;
+  const stripped = command.replace(/<([^>]+)>/g, '$1');
+  const firstAngle = command.indexOf('<');
+  if (firstAngle >= 0) {
+    return {
+      lbuffer: stripped.slice(0, firstAngle),
+      rbuffer: stripped.slice(firstAngle) + comment,
+    };
+  }
+  return { lbuffer: command, rbuffer: comment };
+}
+
 export interface ForegroundClientArgs {
   requestFile: string;
   resultFile: string;
@@ -109,6 +134,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
         // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
 
+        // Lines to scroll down before rendering so the modal doesn't overwrite prior output.
+        // Named constant so the chat flow can use a different height later.
+        const MODAL_VIEWPORT_LINES = 14;
+
         // Try to create TTY streams from /dev/tty for Ink.
         // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
         // Falls back to process.stdin/stdout if /dev/tty was unavailable (e.g. tests).
@@ -126,9 +155,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         if (ttyWriteStream && !inZellij) {
           // Blank out the modal viewport so the render doesn't overwrite prior output.
           // Skip in Zellij: the floating pane starts with a clean screen.
-          const modalHeight = 14;
-          ttyWriteStream.write('\n'.repeat(modalHeight));
-          ttyWriteStream.write(`\x1b[${modalHeight}A`);
+          ttyWriteStream.write('\n'.repeat(MODAL_VIEWPORT_LINES));
+          ttyWriteStream.write(`\x1b[${MODAL_VIEWPORT_LINES}A`);
         }
 
         await new Promise<void>((resolve) => {
@@ -144,13 +172,15 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               candidates,
               initialQuery: request.lbuffer,
               error: errorState,
-              onSelect: async (command: string) => {
+              onSelect: async (command: string, explanation: string) => {
                 if (resolved) return;
                 resolved = true;
+                const { lbuffer, rbuffer } = buildShellBuffers(command, explanation);
                 await writeShellResult(resultFile, {
                   kind: 'replace-buffer',
-                  lbuffer: command,
-                  rbuffer: request.rbuffer,
+                  lbuffer,
+                  rbuffer,
+                  query: request.lbuffer,
                 });
                 unmount?.();
               },

@@ -38,6 +38,7 @@ export const shellResultSchema = z.discriminatedUnion('kind', [
     kind: z.literal('replace-buffer'),
     lbuffer: z.string(),
     rbuffer: z.string(),
+    query: z.string().optional(),
   }),
   z.object({
     kind: z.literal('error'),

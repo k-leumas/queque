@@ -14,7 +14,7 @@ import { SearchInput } from './SearchInput.js';
 interface Props {
   candidates: CandidateList | null;
   initialQuery?: string;
-  onSelect: (command: string) => void;
+  onSelect: (command: string, explanation: string) => void;
   onCancel: () => void;
   error?: boolean;
 }
@@ -84,7 +84,9 @@ export function CandidateSelect({
     if (key.return && candidates) {
       const visible = filterCandidates(candidates, query);
       if (visible.length === 0) return;
-      onSelect(visible[selectedIndex]?.command ?? visible[0]!.command);
+      const selected = visible[selectedIndex] ?? visible[0]!;
+      const explanation = selected.explanation || `see man ${selected.command.split(' ')[0]}`;
+      onSelect(selected.command, explanation);
       return;
     }
 

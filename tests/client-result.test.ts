@@ -94,40 +94,45 @@ vi.mock('node:fs', () => ({
 // llm-mode test can complete without a real TTY interaction.
 // ---------------------------------------------------------------------------
 vi.mock('ink', () => ({
-  render: vi
-    .fn()
-    .mockImplementation(
-      (element: {
-        props: { onSelect?: (cmd: string) => void; candidates?: Array<{ command: string }> };
-      }) => {
-        let currentElement = element;
-        const { onSelect, candidates } = element.props;
-        if (onSelect && candidates) {
-          Promise.resolve().then(() => {
-            onSelect(candidates[0]?.command ?? 'git status');
-          });
-        }
-        return {
-          unmount: vi.fn(),
-          rerender: vi.fn().mockImplementation(
-            (newEl: {
-              props: {
-                onSelect?: (cmd: string) => void;
-                candidates?: Array<{ command: string }>;
-              };
-            }) => {
-              currentElement = newEl;
-              const { onSelect: newOnSelect, candidates: newCandidates } = currentElement.props;
-              if (newOnSelect && newCandidates) {
-                Promise.resolve().then(() => {
-                  newOnSelect(newCandidates[0]?.command ?? 'git status');
-                });
-              }
-            },
-          ),
-        };
-      },
-    ),
+  render: vi.fn().mockImplementation(
+    (element: {
+      props: {
+        onSelect?: (cmd: string, explanation: string) => void;
+        candidates?: Array<{ command: string; explanation?: string }>;
+      };
+    }) => {
+      let currentElement = element;
+      const { onSelect, candidates } = element.props;
+      if (onSelect && candidates) {
+        Promise.resolve().then(() => {
+          const cmd = candidates[0]?.command ?? 'git status';
+          const expl = candidates[0]?.explanation || `see man ${cmd.split(' ')[0]}`;
+          onSelect(cmd, expl);
+        });
+      }
+      return {
+        unmount: vi.fn(),
+        rerender: vi.fn().mockImplementation(
+          (newEl: {
+            props: {
+              onSelect?: (cmd: string, explanation: string) => void;
+              candidates?: Array<{ command: string; explanation?: string }>;
+            };
+          }) => {
+            currentElement = newEl;
+            const { onSelect: newOnSelect, candidates: newCandidates } = currentElement.props;
+            if (newOnSelect && newCandidates) {
+              Promise.resolve().then(() => {
+                const cmd = newCandidates[0]?.command ?? 'git status';
+                const expl = newCandidates[0]?.explanation || `see man ${cmd.split(' ')[0]}`;
+                newOnSelect(cmd, expl);
+              });
+            }
+          },
+        ),
+      };
+    },
+  ),
   Box: ({ children }: { children?: unknown }) => children,
   Text: ({ children }: { children?: unknown }) => children,
   useInput: vi.fn(),
@@ -366,7 +371,8 @@ describe('runForegroundClient', () => {
     expect(JSON.parse(resultContent.trim())).toEqual({
       kind: 'replace-buffer',
       lbuffer: 'git status',
-      rbuffer: '',
+      rbuffer: '  # see man git',
+      query: 'list files in src',
     });
 
     const shellResult = spawnSync(
@@ -517,6 +523,7 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
     const parsed = JSON.parse(resultContent.trim());
     expect(parsed.kind).toBe('replace-buffer');
     expect(parsed.lbuffer).toBe('git status');
+    expect(parsed.rbuffer).toBe('  # see man git');
 
     // No writeFile call should have written a cancel payload after the selection resolved
     const cancelCalls = writeFileSpy.mock.calls.filter((args) => {
