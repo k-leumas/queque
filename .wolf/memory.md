@@ -641,3 +641,45 @@
 | 18:17 | Created .planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md | — | ~1281 |
 | 19:14 | Edited tests/candidate-select.test.tsx | reduced (-39 lines) | ~466 |
 | 19:14 | Edited tests/zsh-widget.test.ts | reduced (-94 lines) | ~435 |
+| 19:15 | Session end: 3 writes across 3 files (.continue-here.md, candidate-select.test.tsx, zsh-widget.test.ts) | 4 reads | ~13337 tok |
+
+## Session: 2026-05-22 21:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:32 | Edited src/contracts/shell.ts | 5→6 lines | ~41 |
+| 21:32 | Edited src/ui/CandidateSelect.tsx | inline fix | ~17 |
+| 21:32 | Edited src/ui/CandidateSelect.tsx | modified if() | ~103 |
+| 21:32 | Edited src/client/run-foreground.ts | 8→9 lines | ~116 |
+| 21:32 | Edited shell/zsh/qq.zsh | 13→18 lines | ~155 |
+| 21:32 | Edited shell/zsh/qq.zsh | 13→18 lines | ~187 |
+| 21:32 | Edited tests/candidate-select.test.tsx | 5→5 lines | ~52 |
+| 21:33 | Edited tests/candidate-select.test.tsx | 5→5 lines | ~37 |
+| 21:33 | Edited tests/candidate-select.test.tsx | 2→2 lines | ~20 |
+| 21:33 | Edited tests/candidate-select.test.tsx | 6→6 lines | ~64 |
+
+## Session: 2026-05-22 21:34
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:34 | Edited tests/candidate-select.test.tsx | expanded (+22 lines) | ~528 |
+| 21:34 | Edited tests/zsh-widget.test.ts | expanded (+84 lines) | ~939 |
+| 21:36 | Edited tests/candidate-select.test.tsx | 5→5 lines | ~38 |
+| 21:36 | Edited tests/candidate-select.test.tsx | 2→2 lines | ~37 |
+| 21:36 | Edited tests/client-result.test.ts | modified if() | ~441 |
+| 21:36 | Edited tests/client-result.test.ts | 6→7 lines | ~73 |
+| 21:36 | Edited tests/client-result.test.ts | 2→2 lines | ~32 |
+| 21:37 | Session end: 7 writes across 3 files (candidate-select.test.tsx, zsh-widget.test.ts, client-result.test.ts) | 2 reads | ~13515 tok |
+| 11:22 | Session end: 7 writes across 3 files (candidate-select.test.tsx, zsh-widget.test.ts, client-result.test.ts) | 2 reads | ~13515 tok |
+| 11:31 | Session end: 7 writes across 3 files (candidate-select.test.tsx, zsh-widget.test.ts, client-result.test.ts) | 2 reads | ~13515 tok |
+| 11:50 | Edited src/client/run-foreground.ts | 5→9 lines | ~154 |
+| 11:50 | Edited src/client/run-foreground.ts | modified if() | ~100 |
+| 11:51 | Edited src/client/run-foreground.ts | added 1 condition(s) | ~257 |
+| 11:51 | Edited src/client/run-foreground.ts | 11→12 lines | ~140 |
+| 11:51 | Edited src/providers/claude.ts | 2→2 lines | ~136 |
+| 11:51 | Edited shell/zsh/qq.zsh | reduced (-9 lines) | ~161 |
+| 11:51 | Edited shell/zsh/qq.zsh | disposition() → disowned() | ~227 |
+| 11:52 | Edited shell/zsh/qq.zsh | expanded (+15 lines) | ~472 |
+| 11:52 | Edited tests/zsh-widget.test.ts | modified definition() | ~232 |
+| 11:52 | Edited tests/client-result.test.ts | 6→6 lines | ~54 |
+| 11:52 | Edited tests/client-result.test.ts | 1→2 lines | ~28 |

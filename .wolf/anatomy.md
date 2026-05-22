@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T02:14:55.057Z
-> Files: 176 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T18:52:56.982Z
+> Files: 177 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -423,7 +423,7 @@
 
 ## shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2631 tok)
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2837 tok)
 
 ## src/cli/commands/
 
@@ -432,7 +432,11 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2603 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~2942 tok)
+
+## src/contracts/
+
+- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
 
 ## src/daemon/
 
@@ -441,16 +445,16 @@
 
 ## src/providers/
 
-- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1440 tok)
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1516 tok)
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1428 tok)
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1472 tok)
 - `Modal.tsx` — Modal (~98 tok)
 
 ## tests/
 
-- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4509 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~4780 tok)
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4638 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6808 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4815 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~5328 tok)

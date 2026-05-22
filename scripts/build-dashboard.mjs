@@ -8,10 +8,11 @@ import tty from 'node:tty';
 
 const repoRoot = process.cwd();
 const repoName = path.basename(repoRoot);
-const { ignorePaths, buildScript, buildCommand } = (() => {
+const packageJson = readPackageJson();
+const packageScripts = packageJson.scripts ?? {};
+const { ignorePaths, buildScriptName, buildScriptPath, buildCommand } = (() => {
   const ignores = [];
-  const rest = [];
-  let bscript = null;
+  let requestedScript = 'build';
   for (let i = 2; i < process.argv.length; i++) {
     if (process.argv[i].startsWith('--ignore-paths=')) {
       ignores.push(
@@ -29,31 +30,29 @@ const { ignorePaths, buildScript, buildCommand } = (() => {
           .filter(Boolean),
       );
     } else if (process.argv[i].startsWith('--build-script=')) {
-      bscript = path.resolve(process.argv[i].slice(15));
+      requestedScript = process.argv[i].slice(15).trim();
     } else if (process.argv[i] === '--build-script' && i + 1 < process.argv.length) {
-      bscript = path.resolve(process.argv[++i]);
+      requestedScript = process.argv[++i].trim();
     } else {
-      rest.push(process.argv[i]);
+      failCliUsage(`unexpected argument: ${process.argv[i]}`);
     }
   }
-  if (!bscript) {
-    for (const c of [
-      'scripts/esbuild-build.mjs',
-      'scripts/esbuild.mjs',
-      'scripts/build.mjs',
-      'esbuild.config.mjs',
-    ]) {
-      const full = path.join(repoRoot, c);
-      if (fsSync.existsSync(full)) {
-        bscript = full;
-        break;
-      }
-    }
+
+  if (!requestedScript) {
+    failCliUsage('--build-script requires a package.json script name');
   }
+
+  if (!Object.hasOwn(packageScripts, requestedScript)) {
+    failCliUsage(
+      `invalid --build-script "${requestedScript}" (valid scripts: ${Object.keys(packageScripts).join(', ') || 'none'})`,
+    );
+  }
+
   return {
     ignorePaths: ignores,
-    buildScript: bscript,
-    buildCommand: rest.length > 0 ? rest : ['pnpm', 'run', 'build'],
+    buildScriptName: requestedScript,
+    buildScriptPath: resolveScriptPathFromPackageScript(packageScripts[requestedScript]),
+    buildCommand: ['pnpm', 'run', requestedScript],
   };
 })();
 const debounceMs = Number.parseInt(process.env.BUILD_DASHBOARD_DEBOUNCE ?? '150', 10);
@@ -96,6 +95,7 @@ const state = {
   worktree: '',
   defineVars: [],
   builtSha: '',
+  lastAutoSyncTargetSha: '',
 };
 
 let repoMeta = null;
@@ -128,7 +128,7 @@ async function main() {
     state.version = repoMeta.label;
     state.branch = repoMeta.branch;
     state.worktree = repoMeta.worktree;
-    state.defineVars = buildScript ? parseBuildScriptDefines(buildScript, repoMeta) : [];
+    state.defineVars = buildScriptPath ? parseBuildScriptDefines(buildScriptPath, repoMeta) : [];
     state.message = `Watching source files in ${repoName}`;
     state.lastUpdateAt = formatClock(new Date());
 
@@ -148,7 +148,9 @@ async function main() {
         state.version = repoMeta.label;
         state.branch = repoMeta.branch;
         state.worktree = repoMeta.worktree;
-        state.defineVars = buildScript ? parseBuildScriptDefines(buildScript, repoMeta) : [];
+        state.defineVars = buildScriptPath
+          ? parseBuildScriptDefines(buildScriptPath, repoMeta)
+          : [];
         render();
       } catch {
         // git unavailable, keep stale values
@@ -446,6 +448,22 @@ function scheduleBuild() {
   }, debounceMs);
 }
 
+function scheduleAutoSyncIfStale() {
+  if (!state.builtSha || !repoMeta || state.buildRunning || state.stopRequested) return;
+
+  const currentSha = shaFingerprint(repoMeta);
+  if (state.builtSha === currentSha) {
+    state.lastAutoSyncTargetSha = '';
+    return;
+  }
+
+  if (state.lastAutoSyncTargetSha === currentSha) return;
+
+  state.lastAutoSyncTargetSha = currentSha;
+  pendingFiles.add('(auto-sync)');
+  scheduleBuild();
+}
+
 async function flushPendingBuild() {
   if (state.buildRunning || state.stopRequested || pendingFiles.size === 0) return;
 
@@ -472,7 +490,7 @@ async function flushPendingBuild() {
   state.version = repoMeta.label;
   state.branch = repoMeta.branch;
   state.worktree = repoMeta.worktree;
-  state.defineVars = buildScript ? parseBuildScriptDefines(buildScript, repoMeta) : [];
+  state.defineVars = buildScriptPath ? parseBuildScriptDefines(buildScriptPath, repoMeta) : [];
   state.lastUpdateAt = formatClock(new Date());
   state.buildRunning = false;
 
@@ -487,6 +505,7 @@ async function flushPendingBuild() {
   if (code === 0) {
     state.status = 'ok';
     state.builtSha = buildStartSha;
+    state.lastAutoSyncTargetSha = '';
     state.message = `${state.lastUpdateAt} ${summary}`;
   } else {
     state.status = 'error';
@@ -542,15 +561,26 @@ function shouldWatchFile(relPath) {
 }
 
 function describeTrigger(files, previousMeta, currentMeta) {
+  const autoSync = files.includes('(auto-sync)');
+  const manual = files.includes('(manual)');
+  const sourceFiles = files.filter((file) => !file.startsWith('('));
   const parts = [];
 
   if (previousMeta.head !== currentMeta.head) {
     parts.push(`HEAD ${previousMeta.label} -> ${currentMeta.label}`);
   }
 
-  const sample = files.slice(0, 3).join(', ');
-  const suffix = files.length > 3 ? ' ...' : '';
-  parts.push(`${files.length} file(s): ${sample}${suffix}`);
+  if (autoSync) {
+    parts.push('(auto-sync)');
+  } else if (manual && sourceFiles.length === 0) {
+    parts.push('(manual)');
+  }
+
+  if (sourceFiles.length > 0) {
+    const sample = sourceFiles.slice(0, 3).join(', ');
+    const suffix = sourceFiles.length > 3 ? ' ...' : '';
+    parts.push(`${sourceFiles.length} file(s): ${sample}${suffix}`);
+  }
 
   return parts.join(' ; ');
 }
@@ -695,6 +725,9 @@ function stopFallbackLoop() {
 async function pollFallbackLoop() {
   if (state.stopRequested || state.buildRunning) return;
 
+  scheduleAutoSyncIfStale();
+  if (state.buildRunning || state.stopRequested) return;
+
   const currentSnapshot = await runGit([
     'status',
     '--short',
@@ -747,11 +780,15 @@ function render() {
   if (state.builtSha && repoMeta) {
     const currentSha = shaFingerprint(repoMeta);
     const synced = state.builtSha === currentSha;
+    if (!synced) {
+      scheduleAutoSyncIfStale();
+    }
     const indicator = synced
       ? '\x1b[32m✓ synced\x1b[0m'
       : `\x1b[33m↑ stale  (built from ${state.builtSha})\x1b[0m`;
     lines.push(`${dim('built')}   ${currentSha}  ${indicator}`);
   }
+  lines.push(`${dim('script')}  ${buildScriptName}`);
   lines.push(`${dim('command')} ${buildCommand.join(' ')}`);
   lines.push(`${dim('version')} ${state.version || 'unknown'}`);
   lines.push(`${statusColor}[${statusLabel}]\x1b[0m ${truncate(state.message, width - 12)}`);
@@ -818,6 +855,32 @@ function trimHistory() {
   if (state.history.length > maxEntries) {
     state.history.splice(0, state.history.length - maxEntries);
   }
+}
+
+function readPackageJson() {
+  try {
+    return JSON.parse(fsSync.readFileSync(path.join(repoRoot, 'package.json'), 'utf8'));
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    console.error(`build-dashboard: failed to read package.json (${reason})`);
+    process.exit(1);
+  }
+}
+
+function failCliUsage(message) {
+  console.error(`build-dashboard: ${message}`);
+  process.exit(1);
+}
+
+function resolveScriptPathFromPackageScript(scriptCommand) {
+  if (typeof scriptCommand !== 'string') return null;
+
+  const match = scriptCommand.match(
+    /^(?:node|tsx|ts-node(?:-esm)?)\s+((?:\.\/)?[^\s]+\.(?:[cm]?[jt]s|tsx?))/,
+  );
+  if (!match) return null;
+
+  return path.resolve(repoRoot, match[1]);
 }
 
 function loadDotEnv(envFilePath) {

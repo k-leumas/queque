@@ -1418,6 +1418,166 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T02:14:55.083Z"
+    },
+    {
+      "id": "bug-089",
+      "timestamp": "2026-05-22T04:32:15.129Z",
+      "error_message": "Wrong reference: void should be explanation",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "Used \"void\" instead of \"explanation\"",
+      "fix": "Changed void → explanation",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T04:32:15.129Z"
+    },
+    {
+      "id": "bug-090",
+      "timestamp": "2026-05-22T04:34:07.087Z",
+      "error_message": "Missing await",
+      "file": "tests/candidate-select.test.tsx",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T04:34:07.087Z"
+    },
+    {
+      "id": "bug-091",
+      "timestamp": "2026-05-22T04:34:30.942Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "15 lines replaced/restructured",
+      "fix": "Rewrote 20→104 lines (15 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T04:34:30.942Z"
+    },
+    {
+      "id": "bug-092",
+      "timestamp": "2026-05-22T04:36:15.918Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/candidate-select.test.tsx",
+      "root_cause": "Had 'ls -la'",
+      "fix": "Changed to 'see man git'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T04:36:15.918Z"
+    },
+    {
+      "id": "bug-093",
+      "timestamp": "2026-05-22T04:36:27.508Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 35→44 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T04:36:27.508Z"
+    },
+    {
+      "id": "bug-094",
+      "timestamp": "2026-05-22T04:36:35.913Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "Had 'git status'",
+      "fix": "Changed to 'git status  # see man git'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T04:36:35.913Z"
+    },
+    {
+      "id": "bug-095",
+      "timestamp": "2026-05-22T18:51:02.710Z",
+      "error_message": "Type error",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:51:02.710Z"
+    },
+    {
+      "id": "bug-096",
+      "timestamp": "2026-05-22T18:51:21.338Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/providers/claude.ts",
+      "root_cause": "Had 'You are Que-Que, a terminal shell assistant. Retu",
+      "fix": "Changed to 'You are Que-Que, a terminal shell assistant. Retu",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:51:21.338Z"
+    },
+    {
+      "id": "bug-097",
+      "timestamp": "2026-05-22T18:51:34.079Z",
+      "error_message": "Significant refactor of ",
+      "file": "shell/zsh/qq.zsh",
+      "root_cause": "13 lines replaced/restructured",
+      "fix": "Rewrote 25→16 lines (13 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "zsh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:51:34.080Z"
+    },
+    {
+      "id": "bug-098",
+      "timestamp": "2026-05-22T18:52:57.020Z",
+      "error_message": "Incorrect value in code",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "Had 'git status  # see man git'",
+      "fix": "Changed to 'git status'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T18:52:57.020Z"
     }
   ]
 }
