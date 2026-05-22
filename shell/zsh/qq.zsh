@@ -111,10 +111,12 @@ _qq_apply_result() {
       return 0
       ;;
     replace-buffer)
-      local new_lbuffer new_rbuffer
+      local new_lbuffer new_rbuffer _jq_lbuf_status _jq_rbuf_status
       new_lbuffer=$(jq -r '.lbuffer // empty' "$result_file" 2>/dev/null)
+      _jq_lbuf_status=$?
       new_rbuffer=$(jq -r '.rbuffer // ""' "$result_file" 2>/dev/null)
-      if [[ $? -ne 0 ]]; then
+      _jq_rbuf_status=$?
+      if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]] || [[ -z "$new_lbuffer" ]]; then
         LBUFFER="$QQ_ORIG_LBUFFER"
         RBUFFER="$QQ_ORIG_RBUFFER"
         return 1
@@ -246,7 +248,7 @@ JSON
         local _jq_lbuf_status=$?
         new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""' 2>/dev/null)
         local _jq_rbuf_status=$?
-        if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]]; then
+        if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]] || [[ -z "$new_lbuffer" ]]; then
           LBUFFER="$QQ_ORIG_LBUFFER"
           RBUFFER="$QQ_ORIG_RBUFFER"
         else

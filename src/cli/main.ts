@@ -38,16 +38,18 @@ function requiredOption(name: string, value: string | undefined): string {
 //      (writeShellResult is async-unsafe inside an exception handler).
 //   3. Call process.exit(1) unconditionally — the exit prevents re-entry.
 //
-// Security note (T-04-03-01): QQ_RESULT_FILE is set by the trusted zsh widget;
-// writeFileSync is wrapped in try/catch so a bad path causes a silent no-op
-// rather than an infinite error loop. assertSafeSocketPath-style validation
-// is a known limitation for this emergency handler path.
+// Security note (T-04-03-01): QQ_RESULT_FILE is set by the trusted zsh widget
+// (mktemp -d /tmp/qq-sess.XXXXXX), so we validate the path before writing to
+// prevent an attacker-controlled env var from redirecting writes to arbitrary files.
 // ---------------------------------------------------------------------------
+
+// Matches paths created by: mktemp -d /tmp/qq-sess.XXXXXX
+const QQ_RESULT_FILE_PATTERN = /^\/tmp\/qq-sess\.[A-Za-z0-9]+\//;
 
 process.on('uncaughtException', (err: Error) => {
   console.error('Que-Que: uncaught exception:', err.message);
   const resultFile = process.env.QQ_RESULT_FILE;
-  if (resultFile) {
+  if (resultFile && QQ_RESULT_FILE_PATTERN.test(resultFile)) {
     try {
       fs.writeFileSync(resultFile, '{"kind":"cancel"}\n');
     } catch {
@@ -61,7 +63,7 @@ process.on('unhandledRejection', (reason: unknown) => {
   const message = reason instanceof Error ? reason.message : String(reason);
   console.error('Que-Que: unhandled rejection:', message);
   const resultFile = process.env.QQ_RESULT_FILE;
-  if (resultFile) {
+  if (resultFile && QQ_RESULT_FILE_PATTERN.test(resultFile)) {
     try {
       fs.writeFileSync(resultFile, '{"kind":"cancel"}\n');
     } catch {

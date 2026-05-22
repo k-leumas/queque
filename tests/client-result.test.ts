@@ -572,7 +572,7 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
 describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', () => {
   it('writes cancel JSON to QQ_RESULT_FILE on uncaught exception', async () => {
     vi.resetModules();
-    process.env['QQ_RESULT_FILE'] = '/tmp/qq-test-handler-result';
+    process.env['QQ_RESULT_FILE'] = '/tmp/qq-sess.testXXXXXX/result.json';
     const processSpy = vi.spyOn(process, 'on');
     const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('process.exit called');
@@ -589,7 +589,7 @@ describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', (
       /* process.exit caught */
     }
     expect(vi.mocked(fsMock.writeFileSync)).toHaveBeenCalledWith(
-      '/tmp/qq-test-handler-result',
+      '/tmp/qq-sess.testXXXXXX/result.json',
       expect.stringMatching(/"kind":"cancel"/),
     );
     delete process.env['QQ_RESULT_FILE'];
@@ -601,7 +601,7 @@ describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', (
 describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', () => {
   it('writes cancel JSON to QQ_RESULT_FILE on unhandled rejection', async () => {
     vi.resetModules();
-    process.env['QQ_RESULT_FILE'] = '/tmp/qq-test-handler-result';
+    process.env['QQ_RESULT_FILE'] = '/tmp/qq-sess.testXXXXXX/result.json';
     const processSpy = vi.spyOn(process, 'on');
     const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('process.exit called');
@@ -618,7 +618,7 @@ describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', 
       /* process.exit caught */
     }
     expect(vi.mocked(fsMock.writeFileSync)).toHaveBeenCalledWith(
-      '/tmp/qq-test-handler-result',
+      '/tmp/qq-sess.testXXXXXX/result.json',
       expect.stringMatching(/"kind":"cancel"/),
     );
     delete process.env['QQ_RESULT_FILE'];
