@@ -94,9 +94,11 @@ None yet.
 | 260502-cf6 | fix the ci so the tests pass | 2026-05-02 | 0194dcc | [260502-cf6-fix-the-ci-so-the-tests-pass](./quick/260502-cf6-fix-the-ci-so-the-tests-pass/) |
 | 260502-qt-modal | update UI to modal display above ?? — Modal.tsx + CandidateSelect.tsx redesign | 2026-05-02 | — | [260502-qt-modal-candidate-ui](./quick/260502-qt-modal-candidate-ui/) |
 | 260506-pja | make qq initialization feel visually faster; investigate starting work on first question mark and reduce perceived latency | 2026-05-06 | — | [260506-pja-make-qq-initialization-feel-visually-fas](./quick/260506-pja-make-qq-initialization-feel-visually-fas/) |
+| 260522-uat-fixes | phase-04 UAT fixes — two-row layout, FILTER label, zellij --name qq, query context header, setopt interactivecomments | 2026-05-22 | ac90c65 | — |
+| 260522-tui-cleanup | unmount Ink TUI on SIGHUP/SIGTERM to clear terminal artifacts on close | 2026-05-22 | 599bb99 | [260522-tui-cleanup-on-close](./quick/260522-tui-cleanup-on-close/) |
 
 ## Session Continuity
 
-Last session: 2026-05-22T20:23:35.813Z
-Stopped at: context exhaustion at 76% (2026-05-22)
+Last session: 2026-05-22T14:26:00.000Z
+Stopped at: ~
 Resume file: None
