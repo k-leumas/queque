@@ -162,8 +162,14 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               },
             });
 
+          // Force interactive:true so Ink uses cursor-repositioning mode regardless of
+          // CI env vars (is-in-ci checks process.env.CI which many devtools set) and
+          // regardless of whether isTTY is correctly reported on a manually-constructed
+          // tty.WriteStream. We already confirmed /dev/tty opens, so it is a real terminal.
           const renderOptions =
-            ttyReadStream && ttyWriteStream ? { stdin: ttyReadStream, stdout: ttyWriteStream } : {};
+            ttyReadStream && ttyWriteStream
+              ? { stdin: ttyReadStream, stdout: ttyWriteStream, interactive: true }
+              : { interactive: true };
 
           const app = render(buildCandidateElement(null), renderOptions);
 

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-21T17:56:40.802Z
-> Files: 173 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T02:14:55.057Z
+> Files: 176 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -389,7 +389,7 @@
 
 ## .planning/phases/04-fuzzy-tui-selection-ux/
 
-- `.continue-here.md` — Session Checkpoint (~906 tok)
+- `.continue-here.md` — Session Checkpoint (~1201 tok)
 - `04-01-PLAN.md` — Trust Boundaries (~3163 tok)
 - `04-01-SUMMARY.md` — Phase 04 Plan 01: TDD Test Scaffolding Summary (~1281 tok)
 - `04-02-PLAN.md` — Trust Boundaries (~1718 tok)
@@ -398,6 +398,7 @@
 - `04-PATTERNS.md` — Phase 4: Fuzzy TUI Selection UX - Pattern Map (~4526 tok)
 - `04-RESEARCH.md` — Phase 4: Fuzzy TUI Selection UX - Research (~6409 tok)
 - `04-REVIEW.md` — Phase 04: Code Review Report (~3376 tok)
+- `04-UAT.md` — Current Test (~1187 tok)
 - `04-VALIDATION.md` — Phase 04 — Validation Strategy (~955 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
@@ -431,7 +432,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2493 tok)
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2603 tok)
 
 ## src/daemon/
 
@@ -444,10 +445,12 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1291 tok)
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1428 tok)
+- `Modal.tsx` — Modal (~98 tok)
 
 ## tests/
 
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4509 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~4780 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4294 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4815 tok)

@@ -1,38 +1,56 @@
 {
-  "session_id": "session-2026-05-21-1122",
-  "started": "2026-05-21T18:22:47.301Z",
+  "session_id": "session-2026-05-22-1816",
+  "started": "2026-05-22T01:16:26.285Z",
   "files_read": {
-    "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 1,
-      "tokens": 387,
-      "first_read": "2026-05-21T18:23:03.074Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/.continue-here.md": {
-      "count": 1,
-      "tokens": 879,
-      "first_read": "2026-05-21T18:23:03.547Z"
-    },
     "/Users/samuel/dev/tui-llm/.planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md": {
       "count": 1,
       "tokens": 906,
-      "first_read": "2026-05-21T18:23:03.795Z"
+      "first_read": "2026-05-22T01:17:10.563Z"
     },
-    "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md": {
-      "count": 1,
-      "tokens": 2705,
-      "first_read": "2026-05-21T18:23:10.338Z"
-    },
-    "/Users/samuel/.claude/get-shit-done/workflows/update.md": {
+    "/Users/samuel/dev/tui-llm/.lefthook.yml": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-21T18:31:46.348Z"
+      "first_read": "2026-05-22T02:13:48.439Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx": {
+      "count": 1,
+      "tokens": 4652,
+      "first_read": "2026-05-22T02:14:13.785Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts": {
+      "count": 3,
+      "tokens": 5506,
+      "first_read": "2026-05-22T02:14:14.571Z"
     }
   },
-  "files_written": [],
-  "edit_counts": {},
-  "anatomy_hits": 4,
+  "files_written": [
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md",
+      "action": "create",
+      "tokens": 1372,
+      "at": "2026-05-22T01:17:41.218Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "edit",
+      "tokens": 466,
+      "at": "2026-05-22T02:14:33.415Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "action": "edit",
+      "tokens": 435,
+      "at": "2026-05-22T02:14:55.080Z"
+    }
+  ],
+  "edit_counts": {
+    ".planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md": 1,
+    "tests/candidate-select.test.tsx": 1,
+    "tests/zsh-widget.test.ts": 1
+  },
+  "anatomy_hits": 3,
   "anatomy_misses": 1,
-  "repeated_reads_warned": 0,
+  "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
-  "stop_count": 2
+  "stop_count": 0
 }

@@ -3,6 +3,7 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 | 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
+| 01:30 | UAT session phase 04 — fixed Modal border, Ink stacking (interactive:true), Enter key '\r' bug; wrote 5 regression tests + 4 RED TDD tests for onSelect(explanation) + ZSH context line | src/ui/Modal.tsx, src/ui/CandidateSelect.tsx, src/client/run-foreground.ts, tests/candidate-select.test.tsx, tests/zsh-widget.test.ts | 127 green 4 red; paused for implementation | ~8000 |
 | 20:46 | gsd-plan-phase 3 — research, pattern map, 3 PLAN.md files, verified, committed | .planning/phases/03-claude-fast-path-and-ranked-suggestions/ | PLANNING COMPLETE — 3 plans in 2 waves | ~350k |
 | 00:01 | fixed EPIPE in sendWatchmanCommand — added writable guard + write error callback | scripts/build-dashboard.mjs:541 | EPIPE prevented | ~200 |
 | 08:25 | plan-phase 2 --wave 3: appended wave 3 supplemental research (bootstrap idempotency, pipeline import removal, stub comments) | .planning/phases/02-intent-router-and-context-pipeline/02-RESEARCH.md | complete | ~8000 |
@@ -581,3 +582,62 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+
+## Session: 2026-05-21 12:06
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-21 12:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:28 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | — | ~714 |
+| 12:28 | Session end: 1 writes across 1 files (04-UAT.md) | 6 reads | ~3236 tok |
+| 12:42 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 23→25 lines | ~379 |
+| 12:44 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | expanded (+31 lines) | ~441 |
+| 12:44 | Session end: 3 writes across 1 files (04-UAT.md) | 6 reads | ~4114 tok |
+| 12:46 | Edited src/ui/Modal.tsx | modified Modal() | ~92 |
+| 12:46 | Session end: 4 writes across 2 files (04-UAT.md, Modal.tsx) | 8 reads | ~5497 tok |
+| 12:50 | Edited src/ui/Modal.tsx | inline fix | ~17 |
+| 12:54 | Session end: 5 writes across 2 files (04-UAT.md, Modal.tsx) | 10 reads | ~5514 tok |
+| 13:01 | Session end: 5 writes across 2 files (04-UAT.md, Modal.tsx) | 11 reads | ~8007 tok |
+| 13:03 | Edited src/ui/Modal.tsx | modified Modal() | ~98 |
+| 13:03 | Edited src/client/run-foreground.ts | 2→7 lines | ~128 |
+| 13:05 | Session end: 7 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 11 reads | ~8395 tok |
+| 13:07 | Session end: 7 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 11 reads | ~8395 tok |
+| 13:24 | Edited src/client/run-foreground.ts | WriteStream() → vars() | ~156 |
+| 13:24 | Session end: 8 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 13 reads | ~11182 tok |
+| 13:26 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 3→3 lines | ~74 |
+| 13:27 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | first() → last() | ~65 |
+| 13:27 | Session end: 10 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 13 reads | ~11331 tok |
+| 13:34 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 3→3 lines | ~70 |
+| 13:35 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 6→6 lines | ~75 |
+| 13:35 | Session end: 12 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 13 reads | ~11486 tok |
+| 13:36 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 3→3 lines | ~90 |
+| 13:37 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 6→6 lines | ~76 |
+| 13:37 | Session end: 14 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 14 reads | ~12730 tok |
+| 13:38 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 3→3 lines | ~86 |
+| 13:39 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 6→6 lines | ~70 |
+| 13:39 | Session end: 16 writes across 3 files (04-UAT.md, Modal.tsx, run-foreground.ts) | 14 reads | ~12897 tok |
+| 13:42 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 6→4 lines | ~155 |
+| 13:42 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | removed 6 lines | ~5 |
+| 13:42 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | inline fix | ~5 |
+| 13:42 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | 6→6 lines | ~17 |
+| 13:48 | Edited .planning/phases/04-fuzzy-tui-selection-ux/04-UAT.md | expanded (+6 lines) | ~465 |
+| 13:51 | Edited src/ui/CandidateSelect.tsx | added optional chaining | ~181 |
+| 13:52 | Edited src/ui/CandidateSelect.tsx | modified if() | ~52 |
+| 13:53 | Session end: 23 writes across 4 files (04-UAT.md, Modal.tsx, run-foreground.ts, CandidateSelect.tsx) | 16 reads | ~14217 tok |
+| 18:01 | Edited tests/candidate-select.test.tsx | added optional chaining | ~742 |
+| 18:07 | Edited tests/candidate-select.test.tsx | added optional chaining | ~499 |
+| 18:09 | Edited tests/zsh-widget.test.ts | expanded (+120 lines) | ~1255 |
+| 18:12 | Edited tests/candidate-select.test.tsx | added optional chaining | ~187 |
+| 18:13 | Session end: 27 writes across 6 files (04-UAT.md, Modal.tsx, run-foreground.ts, CandidateSelect.tsx, candidate-select.test.tsx) | 19 reads | ~25974 tok |
+
+## Session: 2026-05-22 18:16
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:17 | Created .planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md | — | ~1281 |
+| 19:14 | Edited tests/candidate-select.test.tsx | reduced (-39 lines) | ~466 |
+| 19:14 | Edited tests/zsh-widget.test.ts | reduced (-94 lines) | ~435 |

@@ -257,6 +257,104 @@ describe('CandidateSelect — zero-match after filter', () => {
   });
 });
 
+describe('CandidateSelect — onSelect receives explanation', () => {
+  beforeEach(resetState);
+
+  // The shell context line feature requires the explanation to flow through
+  // onSelect so run-foreground.ts can include it in the FIFO result.
+  // RED: activate when CandidateSelect.tsx onSelect signature is updated to (command, explanation).
+  // BODY: CandidateSelect({ candidates: [{ command: 'git status', explanation: 'show working tree status' }, { command: 'ls -la', explanation: 'list directory contents' }], onSelect, onCancel });
+  //       capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+  //       expect(onSelect).toHaveBeenCalledWith('git status', 'show working tree status');
+  it.todo('calls onSelect with command and explanation when Enter is pressed');
+
+  // RED: activate when fallback logic is implemented (explanation || `see man ${cmd.split(' ')[0]}`).
+  // BODY: CandidateSelect({ candidates: [{ command: 'ls', explanation: '' }], onSelect, onCancel });
+  //       capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+  //       expect(onSelect).toHaveBeenCalledWith('ls', 'see man ls');
+  it.todo('falls back to "see man <command>" when candidate explanation is empty');
+
+  // RED: activate alongside the two tests above.
+  // BODY: CandidateSelect({ candidates, onSelect, onCancel }); capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+  //       stateCallCount = 0; CandidateSelect({ candidates, onSelect, onCancel });
+  //       capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+  //       expect(onSelect).toHaveBeenCalledWith('ls -la', 'list directory contents');
+  it.todo('passes explanation of the currently selected (non-first) candidate on Enter');
+});
+
+describe('CandidateSelect — Enter key raw-mode regression', () => {
+  beforeEach(resetState);
+
+  // In terminal raw mode, Enter sends '\r' as the `input` character alongside
+  // key.return=true. The generic `input && !key.ctrl && !key.meta` handler would
+  // previously consume '\r' and call setQuery before key.return was checked,
+  // silently preventing onSelect from ever firing.
+  it('fires onSelect when Enter sends \\r as input (raw mode)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    CandidateSelect({
+      candidates: [
+        { command: 'git status', explanation: '' },
+        { command: 'ls -la', explanation: '' },
+      ],
+      onSelect,
+      onCancel,
+    });
+
+    // Simulate raw-mode Enter: input='\r', key.return=true
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('git status');
+    expect(onCancel).not.toHaveBeenCalled();
+  });
+
+  it('does not append \\r to query when Enter is pressed', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    CandidateSelect({
+      candidates: [{ command: 'git status', explanation: '' }],
+      onSelect,
+      onCancel,
+    });
+
+    // State slot 1 = query; capture the setter before pressing Enter
+    const querySetterBefore = stateSetters[1];
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    // setQuery (stateSetters[1]) must NOT have been called — '\r' should not
+    // be appended to the search query
+    expect(querySetterBefore).not.toHaveBeenCalled();
+  });
+
+  it('selects correct candidate after navigating down then pressing Enter', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const candidates = [
+      { command: 'git status', explanation: '' },
+      { command: 'ls -la', explanation: '' },
+    ];
+
+    CandidateSelect({ candidates, onSelect, onCancel });
+    // Move to second candidate
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+
+    // Re-render with updated selectedIndex
+    stateCallCount = 0;
+    CandidateSelect({ candidates, onSelect, onCancel });
+
+    // Press Enter via raw-mode '\r'
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('ls -la');
+  });
+});
+
 describe('CandidateSelect — wrapping navigation', () => {
   beforeEach(resetState);
 

@@ -78,12 +78,22 @@ export function CandidateSelect({
       return;
     }
 
+    // key.return must be checked before the generic input handler — in raw mode
+    // Enter sends '\r' as `input` (truthy), which would otherwise be consumed by
+    // setQuery and prevent the accept action from firing.
+    if (key.return && candidates) {
+      const visible = filterCandidates(candidates, query);
+      if (visible.length === 0) return;
+      onSelect(visible[selectedIndex]?.command ?? visible[0]!.command);
+      return;
+    }
+
     if (input && !key.ctrl && !key.meta) {
       setQuery((q) => q + input);
       return;
     }
 
-    // Navigation and accept: guard against null candidates
+    // Navigation: guard against null candidates
     if (key.upArrow && candidates) {
       const visible = filterCandidates(candidates, query);
       setSelectedIndex((i) => (i === 0 ? visible.length - 1 : i - 1));
@@ -93,13 +103,6 @@ export function CandidateSelect({
     if (key.downArrow && candidates) {
       const visible = filterCandidates(candidates, query);
       setSelectedIndex((i) => (i + 1) % visible.length);
-      return;
-    }
-
-    if (key.return && candidates) {
-      const visible = filterCandidates(candidates, query);
-      if (visible.length === 0) return; // no match — ignore Enter
-      onSelect(visible[selectedIndex]?.command ?? visible[0]!.command);
       return;
     }
   });

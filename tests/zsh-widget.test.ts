@@ -351,6 +351,32 @@ describe('result application: malformed JSON leaves buffers intact', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Prompt context: replace-buffer with query + explanation
+// RED until the widget and result contract implement the context line feature.
+// ---------------------------------------------------------------------------
+
+describe('result application: replace-buffer with query context line', () => {
+  // RED: activate when _qq_apply_result prints context line for results with query field.
+  // BODY: write result JSON with kind:'replace-buffer', lbuffer:'git status  # show working tree status', query:'git stat'
+  //       run _qq_apply_result; expect stdout to match /que-que/i and contain 'git stat'
+  it.todo('prints a dimmed que-que context line to stdout when query field is present');
+
+  // RED: activate when run-foreground.ts builds lbuffer as `command  # explanation` and widget passes it through.
+  // BODY: write result JSON with lbuffer:'git status  # show working tree status', query:'git stat'
+  //       run _qq_apply_result; echo "lbuffer=$LBUFFER"; expect stdout to contain 'lbuffer=git status  # show working tree status'
+  it.todo('sets LBUFFER to command with # explanation appended as a comment');
+
+  // RED: activate alongside above — eval of lbuffer with # comment only runs the command.
+  // BODY: write result with lbuffer:'echo hello  # prints hello to stdout'
+  //       run _qq_apply_result; eval "$LBUFFER"; expect eval_output=hello and eval_status=0
+  it.todo('lbuffer with # explanation is valid shell syntax (comment, not error)');
+
+  // RED: activate alongside above — no que-que annotation when query field absent.
+  // BODY: write result without query field; run _qq_apply_result; expect stdout NOT to match /que-que/i
+  it.todo('context line is omitted when query field is absent (backward compat)');
+});
+
+// ---------------------------------------------------------------------------
 // Phase 3.2 Wave 1 tests: Zellij detection and static content assertions
 // These tests go RED until Plan 03 rewrites the widget (intentional TDD RED).
 // ---------------------------------------------------------------------------
