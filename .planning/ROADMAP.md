@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
 - [x] **Phase 3.1: Monocle-style Interface and Interactivity** - Update interface and interactivity to match the monocle terminal UI model. (INSERTED)
 - [x] **Phase 3.2: Zellij floating pane integration for best UX** - Reduce scope to Zellij floating panes for best UX. (INSERTED)
-- [ ] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
+- [x] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
 - [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
 
@@ -161,6 +161,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 5 → 6
 | 3. Claude Fast Path and Ranked Suggestions | 0/3 | Not started | - |
 | 3.1. Monocle-style Interface and Interactivity | 3/3 | Complete (INSERTED) | 2026-05-14 |
 | 3.2. Zellij floating pane integration for best UX | 3/3 | Complete (INSERTED) | 2026-05-14 |
-| 4. Fuzzy TUI Selection UX | 0/3 | Not started | - |
+| 4. Fuzzy TUI Selection UX | 3/3 | Complete | 2026-05-22 |
 | 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |
 | 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | Not started | - |
