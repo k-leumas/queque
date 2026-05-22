@@ -230,7 +230,7 @@ JSON
     export QQ_RESULT_FILE="$fifo_path"
 
     # Launch the floating pane backgrounded+disowned (D-06).
-    zellij run --floating --close-on-exit --width 80 --height 24 -- \
+    zellij run --floating --close-on-exit --width 80 --height 24 --name "qq" -- \
       "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
       2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
 

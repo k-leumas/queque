@@ -9,7 +9,7 @@ export function SearchInput({ query }: SearchInputProps): ReactElement {
   return (
     <Box>
       <Text color="cyan" bold>
-        {'SEARCH: '}
+        {'FILTER: '}
       </Text>
       {query ? <Text>{query}</Text> : <Text dimColor>{'type to filter…'}</Text>}
     </Box>

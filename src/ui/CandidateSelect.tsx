@@ -136,13 +136,18 @@ export function CandidateSelect({
           {visible.map((candidate, index) => {
             const active = index === selectedIndex;
             return (
-              <Box key={candidate.command}>
-                {active ? <Text color="ansi256(166)">{'┌> '}</Text> : <Text>{'   '}</Text>}
-                <Text bold={active} color={active ? 'white' : undefined} dimColor={!active}>
-                  {candidate.command}
-                </Text>
+              <Box key={candidate.command} flexDirection="column" marginBottom={1}>
+                <Box>
+                  {active ? <Text color="ansi256(166)">{'┌> '}</Text> : <Text>{'   '}</Text>}
+                  <Text bold={active} color={active ? 'white' : undefined} dimColor={!active}>
+                    {candidate.command}
+                  </Text>
+                </Box>
                 {candidate.explanation.length > 0 && (
-                  <Text dimColor>{`  — ${candidate.explanation}`}</Text>
+                  <Box>
+                    <Text>{'   '}</Text>
+                    <Text dimColor>{candidate.explanation}</Text>
+                  </Box>
                 )}
               </Box>
             );
@@ -154,6 +159,11 @@ export function CandidateSelect({
 
   return (
     <Modal>
+      {initialQuery && initialQuery.length > 0 && (
+        <Box>
+          <Text dimColor>{`que-que › ${initialQuery}`}</Text>
+        </Box>
+      )}
       <SearchInput query={query} />
       {content}
       <ControlsLine />
