@@ -6,6 +6,11 @@
 
 : "${QQ_DEBUG_LOG_FILE:=}"
 
+# Allow # to start a comment on the command line so qq's  cmd  # explanation
+# format executes cleanly (without this, # is treated as a literal character
+# and passed as an argument to the command).
+setopt interactivecomments
+
 # ---------------------------------------------------------------------------
 # Cleanup helper — defined at top level so it is not re-defined on each
 # trigger and does not clobber global function namespace (IN-002 fix).

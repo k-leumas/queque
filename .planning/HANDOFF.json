@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-21T17:55:31.752Z",
+  "timestamp": "2026-05-22T20:26:49.452Z",
   "phase": "04",
   "phase_name": "fuzzy-tui-selection-ux",
   "phase_dir": ".planning/phases/04-fuzzy-tui-selection-ux",
@@ -10,59 +10,57 @@
   "status": "paused",
   "completed_tasks": [
     {
-      "id": "04-01",
-      "name": "RED test scaffolding (it.todo pattern)",
+      "id": "cr-fix",
+      "name": "Fix CR-01 (QQ_RESULT_FILE path validation) + CR-02 (empty lbuffer guard)",
       "status": "done",
-      "commit": "0aee1d3"
+      "commit": "b87a0fc"
     },
     {
-      "id": "04-02",
-      "name": "useEffect([query]) reset hook + test activation",
+      "id": "verify",
+      "name": "Phase 04 verification report (04-VERIFICATION.md)",
       "status": "done",
-      "commit": "c0e5254"
-    },
-    {
-      "id": "04-03",
-      "name": "uncaughtException/unhandledRejection handlers + QQ_RESULT_FILE export",
-      "status": "done",
-      "commit": "c0e5254"
-    },
-    { "id": "review", "name": "Code review (04-REVIEW.md)", "status": "done", "commit": "9f1335e" }
+      "commit": "da3a5a0"
+    }
   ],
   "remaining_tasks": [
-    { "id": "verify", "name": "Phase verification (gsd-verifier)", "status": "not_started" },
     {
-      "id": "complete",
-      "name": "Mark phase complete in ROADMAP/STATE, update PROJECT.md",
-      "status": "not_started"
+      "id": "uat-fixes",
+      "name": "Quick task 260522-iln-phase-04-uat-fixes: 5 UAT fixes from live testing",
+      "status": "in_progress",
+      "progress": "setopt interactivecomments added to shell/zsh/qq.zsh (uncommitted); 4 of 5 changes still pending"
     },
     {
-      "id": "cr-fix",
-      "name": "Address 2 critical code review findings (CR-01, CR-02)",
+      "id": "complete",
+      "name": "Mark phase 04 complete in ROADMAP.md and STATE.md after UAT fixes ship",
       "status": "not_started"
     }
   ],
   "blockers": [],
-  "human_actions_pending": [],
+  "human_actions_pending": [
+    {
+      "action": "Live UAT retest after UAT fixes are applied",
+      "context": "User found 5 issues during live testing. After the quick task is done, user should retrigger ?? and verify: # comments execute cleanly, two-row layout, FILTER label, Zellij frame says qq, context header shows query.",
+      "blocking": false
+    }
+  ],
   "decisions": [
     {
-      "decision": "Use it.todo instead of truly failing RED tests",
-      "rationale": "pre-commit hook (lefthook pnpm test:run) blocks committing failing tests; activation instructions preserved in comments above each .todo; Wave 1 activates them",
+      "decision": "setopt interactivecomments applied globally (at qq.zsh source time)",
+      "rationale": "User confirmed: ensures # comments always work in the session with no per-invocation overhead",
       "phase": "04"
     },
     {
-      "decision": "Wave 1 committed as single squashed commit on main",
-      "rationale": "worktree merge commands ran in wrong git context (cwd became invalid after worktree removal); recovered by checking out file contents from the dangling merge commit object (49c96dd)",
+      "decision": "Query context header shows dim 'que-que › [initialQuery]' above filter when initialQuery is non-empty",
+      "rationale": "User selected 'Show the query context' option during UAT feedback session",
+      "phase": "04"
+    },
+    {
+      "decision": "Two-row candidate layout: command + glyph on row 1, explanation on row 2 indented 3 chars; marginBottom=1 between items",
+      "rationale": "User requested stacked layout for command + explanation",
       "phase": "04"
     }
   ],
-  "uncommitted_files": [
-    ".wolf/anatomy.md",
-    ".wolf/buglog.json",
-    ".wolf/hooks/_session.json",
-    ".wolf/memory.md",
-    "scripts/build-dashboard.mjs"
-  ],
-  "next_action": "Run gsd-verifier for phase 04, then mark phase complete, then fix CR-01 (QQ_RESULT_FILE path not validated) and CR-02 (widget inline parse can clear shell buffer)",
-  "context_notes": "All 3 plans executed. 121/121 tests pass. Review found 2 critical issues worth fixing before shipping: CR-01 (env var used directly as file path in error handlers) and CR-02 (dead _qq_apply_result, inline parse in widget can zero out LBUFFER). Paused at context 67%+ to preserve verification context."
+  "uncommitted_files": ["shell/zsh/qq.zsh"],
+  "next_action": "Run /gsd:quick to implement quick task 260522-iln-phase-04-uat-fixes. The qq.zsh setopt change is already applied (stage it in the first commit). Remaining 4 changes: (1) CandidateSelect.tsx: two-row layout — command+glyph row 1, explanation row 2 (3-char indent), marginBottom=1 between items; (2) SearchInput.tsx: SEARCH → FILTER label; (3) qq.zsh zellij run: add --name 'qq' before the -- separator; (4) CandidateSelect.tsx: add dim 'que-que › [initialQuery]' header above <SearchInput> when initialQuery is non-empty. After quick task: mark phase 04 complete in ROADMAP/STATE.",
+  "context_notes": "Phase 04 is functionally complete: all 3 plans executed, 132/132 tests pass, CR-01+CR-02 fixed (b87a0fc), verification report written (da3a5a0). Only blocking phase closure: (1) the 5 UAT fix changes and (2) the ROADMAP/STATE mark-complete step. Quick task slug pre-assigned by gsd-sdk: 260522-iln-phase-04-uat-fixes."
 }
