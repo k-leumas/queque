@@ -23,6 +23,7 @@ function buildRequest(overrides: Partial<NormalizedRequest> = {}): NormalizedReq
     lbuffer: 'fix src/index.ts',
     rbuffer: '',
     intent: 'codebase',
+    confidence: 1,
     ...overrides,
   };
 }

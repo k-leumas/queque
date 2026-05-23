@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T19:51:07.695Z
-> Files: 195 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T20:04:41.333Z
+> Files: 197 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -497,6 +497,8 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4638 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~6885 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6858 tok)
+- `context-pipeline.test.ts` — Declares buildRequest (~1224 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
+- `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~7280 tok)

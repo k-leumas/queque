@@ -3,8 +3,8 @@
   "started": "2026-05-23T18:50:13.657Z",
   "files_read": {
     "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts": {
-      "count": 3,
-      "tokens": 7004,
+      "count": 4,
+      "tokens": 7280,
       "first_read": "2026-05-23T18:56:31.185Z"
     },
     "/Users/samuel/dev/tui-llm/shell/zsh/qq.zsh": {
@@ -105,18 +105,50 @@
       "action": "edit",
       "tokens": 78,
       "at": "2026-05-23T19:51:07.736Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 93,
+      "at": "2026-05-23T19:59:49.688Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 29,
+      "at": "2026-05-23T20:03:09.799Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-05-23T20:03:26.058Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/intent-router.test.ts",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-05-23T20:03:32.475Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-05-23T20:04:41.383Z"
     }
   ],
   "edit_counts": {
     "shell/zsh/qq.zsh": 3,
-    "tests/zsh-widget.test.ts": 6,
-    "tests/client-result.test.ts": 1,
+    "tests/zsh-widget.test.ts": 7,
+    "tests/client-result.test.ts": 3,
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_lint_before_commit.md": 1,
-    "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1
+    "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1,
+    "tests/context-pipeline.test.ts": 1,
+    "tests/intent-router.test.ts": 1
   },
   "anatomy_hits": 5,
   "anatomy_misses": 1,
-  "repeated_reads_warned": 4,
+  "repeated_reads_warned": 5,
   "cerebrum_warnings": 0,
-  "stop_count": 7
+  "stop_count": 8
 }

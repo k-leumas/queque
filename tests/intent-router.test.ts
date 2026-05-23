@@ -11,6 +11,7 @@ function makeRequest(lbuffer: string): NormalizedRequest {
     ttyPath: '/dev/tty',
     shellPid: 1234,
     intent: 'unknown',
+    confidence: 1,
   };
 }
 

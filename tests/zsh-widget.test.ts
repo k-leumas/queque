@@ -64,7 +64,7 @@ function runInteractiveZsh(script: string): { stdout: string; stderr: string; st
  * with a message when ZELLIJ is unset.
  */
 function _runZshWithoutZellij(script: string): { stdout: string; stderr: string; status: number } {
-  const env = { ...process.env, PATH: process.env.PATH };
+  const env: NodeJS.ProcessEnv = { ...process.env, PATH: process.env.PATH };
   delete env.ZELLIJ;
   const result = spawnSync('zsh', ['-f', '-c', `source ${widgetPath}\n${script}`], {
     encoding: 'utf8',

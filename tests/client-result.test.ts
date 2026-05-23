@@ -215,12 +215,12 @@ describe('writeShellResult — FIFO path', () => {
     const fspMock = await import('node:fs/promises');
     if (realFsp.writeFile) {
       vi.mocked(fspMock.writeFile).mockImplementation(
-        (...args: Parameters<typeof fspMock.writeFile>) => realFsp.writeFile?.(...args),
+        (...args: Parameters<typeof fspMock.writeFile>) => realFsp.writeFile!(...args),
       );
     }
     if (realFsp.rename) {
       vi.mocked(fspMock.rename).mockImplementation((...args: Parameters<typeof fspMock.rename>) =>
-        realFsp.rename?.(...args),
+        realFsp.rename!(...args),
       );
     }
     try {
@@ -237,9 +237,9 @@ describe('writeShellResult — FIFO path', () => {
     vi.mocked(fspMock.writeFile).mockResolvedValue(undefined);
     vi.mocked(fspMock.rename).mockResolvedValue(undefined);
 
-    vi.mocked(fspMock.stat).mockResolvedValueOnce({ isFIFO: () => true } as ReturnType<
-      typeof fspMock.stat
-    >);
+    vi.mocked(fspMock.stat).mockResolvedValueOnce({
+      isFIFO: () => true,
+    } as import('node:fs').Stats);
 
     const { writeShellResult } = await import('../src/client/result-writer.js');
 
