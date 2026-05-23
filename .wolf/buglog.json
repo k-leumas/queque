@@ -1818,6 +1818,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T19:26:25.251Z"
+    },
+    {
+      "id": "bug-114",
+      "timestamp": "2026-05-23T19:51:07.746Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T19:51:07.746Z"
     }
   ]
 }

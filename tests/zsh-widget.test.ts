@@ -63,9 +63,9 @@ function runInteractiveZsh(script: string): { stdout: string; stderr: string; st
  * environment. Used to test the Zellij detection guard (D-01) which must exit
  * with a message when ZELLIJ is unset.
  */
-function runZshWithoutZellij(script: string): { stdout: string; stderr: string; status: number } {
+function _runZshWithoutZellij(script: string): { stdout: string; stderr: string; status: number } {
   const env = { ...process.env, PATH: process.env.PATH };
-  delete env['ZELLIJ'];
+  delete env.ZELLIJ;
   const result = spawnSync('zsh', ['-f', '-c', `source ${widgetPath}\n${script}`], {
     encoding: 'utf8',
     timeout: 5000,

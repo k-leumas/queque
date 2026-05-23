@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { type NormalizedRequest } from '../src/contracts/request.js';
+import type { NormalizedRequest } from '../src/contracts/request.js';
 import { classifyIntent } from '../src/intent/router.js';
 
 function makeRequest(lbuffer: string): NormalizedRequest {

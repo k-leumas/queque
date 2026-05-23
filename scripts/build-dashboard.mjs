@@ -1,6 +1,5 @@
 import { spawn } from 'node:child_process';
 import fsSync from 'node:fs';
-import fs from 'node:fs/promises';
 import net from 'node:net';
 import path from 'node:path';
 import process from 'node:process';
@@ -113,7 +112,7 @@ let lastFallbackStatusSnapshot = '';
 let inputStream = null;
 let inputFd = null;
 
-const _stripAnsiRe = new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g');
+const _stripAnsiRe = new RegExp(`${String.fromCharCode(27)}\\[[0-9;]*m`, 'g');
 
 await main();
 
@@ -170,7 +169,7 @@ async function main() {
 
 function setupTerminal() {
   inputStream = createInputStream();
-  if (!inputStream || !inputStream.isTTY) {
+  if (!inputStream?.isTTY) {
     throw new Error('build-dashboard: could not attach to the controlling TTY for keyboard input');
   }
 
@@ -399,7 +398,7 @@ function onWatchmanStdout(chunk) {
     let payload;
     try {
       payload = JSON.parse(line);
-    } catch (error) {
+    } catch (_error) {
       state.status = 'error';
       state.message = `watchman parse error: ${line}`;
       render();
@@ -750,7 +749,7 @@ async function pollFallbackLoop() {
   scheduleBuild();
 }
 
-function sleep(ms) {
+function _sleep(ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });
@@ -1002,6 +1001,6 @@ function stripAnsi(text) {
   return text.replace(_stripAnsiRe, '');
 }
 
-function ansiVisibleDelta(text) {
+function _ansiVisibleDelta(text) {
   return text.length - stripAnsi(text).length;
 }

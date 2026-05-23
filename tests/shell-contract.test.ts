@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { shellResultSchema, shellRequestSchema } from '../src/contracts/shell.js';
+import { describe, expect, it } from 'vitest';
+import { shellRequestSchema, shellResultSchema } from '../src/contracts/shell.js';
 import { socketPathForUid } from '../src/shared/socket-path.js';
 
 describe('shellResultSchema', () => {

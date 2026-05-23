@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { type ContextEnvelope } from '../src/contracts/request.js';
+import type { ContextEnvelope } from '../src/contracts/request.js';
 
 const { createMock, anthropicCtorMock } = vi.hoisted(() => {
   const createMock = vi.fn();

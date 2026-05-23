@@ -1,6 +1,5 @@
 import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
-import * as fsp from 'node:fs/promises';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { dirname } from 'node:path';
@@ -216,12 +215,12 @@ describe('writeShellResult — FIFO path', () => {
     const fspMock = await import('node:fs/promises');
     if (realFsp.writeFile) {
       vi.mocked(fspMock.writeFile).mockImplementation(
-        (...args: Parameters<typeof fspMock.writeFile>) => realFsp.writeFile!(...args),
+        (...args: Parameters<typeof fspMock.writeFile>) => realFsp.writeFile?.(...args),
       );
     }
     if (realFsp.rename) {
       vi.mocked(fspMock.rename).mockImplementation((...args: Parameters<typeof fspMock.rename>) =>
-        realFsp.rename!(...args),
+        realFsp.rename?.(...args),
       );
     }
     try {
@@ -292,7 +291,7 @@ describe('runForegroundClient', () => {
     requestFile = path.join(tmpDir, 'request.json');
     resultFile = path.join(tmpDir, 'result.json');
     // Write a sample shell request
-    fs.writeFileSync(requestFile, JSON.stringify(sampleRequest) + '\n');
+    fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
   });
 
   afterEach(() => {
@@ -326,8 +325,8 @@ describe('runForegroundClient', () => {
   it('opens /dev/tty for interactive stdio instead of using inherited stdio', async () => {
     // This test verifies the non-Zellij path — ensure ZELLIJ is not set so the
     // implementation takes the /dev/tty branch even when running inside a Zellij session.
-    const savedZellij = process.env['ZELLIJ'];
-    delete process.env['ZELLIJ'];
+    const savedZellij = process.env.ZELLIJ;
+    delete process.env.ZELLIJ;
 
     try {
       const fsp = await import('node:fs/promises');
@@ -347,9 +346,9 @@ describe('runForegroundClient', () => {
     } finally {
       // Restore ZELLIJ env to its original state
       if (savedZellij === undefined) {
-        delete process.env['ZELLIJ'];
+        delete process.env.ZELLIJ;
       } else {
-        process.env['ZELLIJ'] = savedZellij;
+        process.env.ZELLIJ = savedZellij;
       }
     }
   });
@@ -437,16 +436,16 @@ describe('runForegroundClient: Zellij branch opens /dev/tty', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-zellij-test-'));
     requestFile = path.join(tmpDir, 'request.json');
     resultFile = path.join(tmpDir, 'result.json');
-    fs.writeFileSync(requestFile, JSON.stringify(sampleRequest) + '\n');
-    originalZellij = process.env['ZELLIJ'];
+    fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
+    originalZellij = process.env.ZELLIJ;
   });
 
   afterEach(() => {
     // Restore ZELLIJ env to original state
     if (originalZellij === undefined) {
-      delete process.env['ZELLIJ'];
+      delete process.env.ZELLIJ;
     } else {
-      process.env['ZELLIJ'] = originalZellij;
+      process.env.ZELLIJ = originalZellij;
     }
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
@@ -456,7 +455,7 @@ describe('runForegroundClient: Zellij branch opens /dev/tty', () => {
   });
 
   it('calls fsp.open("/dev/tty") even when process.env.ZELLIJ is defined', async () => {
-    process.env['ZELLIJ'] = '0';
+    process.env.ZELLIJ = '0';
 
     const fspDynamic = await import('node:fs/promises');
     const openSpy = vi.spyOn(fspDynamic, 'open');
@@ -503,7 +502,7 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-resolved-guard-test-'));
     requestFile = path.join(tmpDir, 'request.json');
     resultFile = path.join(tmpDir, 'result.json');
-    fs.writeFileSync(requestFile, JSON.stringify(sampleRequest) + '\n');
+    fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
   });
 
   afterEach(() => {
@@ -578,7 +577,7 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
 describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', () => {
   it('writes cancel JSON to QQ_RESULT_FILE on uncaught exception', async () => {
     vi.resetModules();
-    process.env['QQ_RESULT_FILE'] = '/tmp/qq-sess.testXXXXXX/result.json';
+    process.env.QQ_RESULT_FILE = '/tmp/qq-sess.testXXXXXX/result.json';
     const processSpy = vi.spyOn(process, 'on');
     const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('process.exit called');
@@ -588,7 +587,7 @@ describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', (
     await import('../src/cli/main.js');
     const handlerCall = processSpy.mock.calls.find((args) => args[0] === 'uncaughtException');
     expect(handlerCall).toBeDefined();
-    const handler = handlerCall![1] as (err: Error) => void;
+    const handler = handlerCall?.[1] as (err: Error) => void;
     try {
       handler(new Error('test error'));
     } catch {
@@ -598,7 +597,7 @@ describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', (
       '/tmp/qq-sess.testXXXXXX/result.json',
       expect.stringMatching(/"kind":"cancel"/),
     );
-    delete process.env['QQ_RESULT_FILE'];
+    delete process.env.QQ_RESULT_FILE;
     exitSpy.mockRestore();
     processSpy.mockRestore();
   });
@@ -607,7 +606,7 @@ describe('main.ts: uncaughtException handler writes cancel to QQ_RESULT_FILE', (
 describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', () => {
   it('writes cancel JSON to QQ_RESULT_FILE on unhandled rejection', async () => {
     vi.resetModules();
-    process.env['QQ_RESULT_FILE'] = '/tmp/qq-sess.testXXXXXX/result.json';
+    process.env.QQ_RESULT_FILE = '/tmp/qq-sess.testXXXXXX/result.json';
     const processSpy = vi.spyOn(process, 'on');
     const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => {
       throw new Error('process.exit called');
@@ -617,7 +616,7 @@ describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', 
     await import('../src/cli/main.js');
     const handlerCall = processSpy.mock.calls.find((args) => args[0] === 'unhandledRejection');
     expect(handlerCall).toBeDefined();
-    const handler = handlerCall![1] as (reason: unknown) => void;
+    const handler = handlerCall?.[1] as (reason: unknown) => void;
     try {
       handler('test rejection reason');
     } catch {
@@ -627,7 +626,7 @@ describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', 
       '/tmp/qq-sess.testXXXXXX/result.json',
       expect.stringMatching(/"kind":"cancel"/),
     );
-    delete process.env['QQ_RESULT_FILE'];
+    delete process.env.QQ_RESULT_FILE;
     exitSpy.mockRestore();
     processSpy.mockRestore();
   });

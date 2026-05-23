@@ -1,9 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
-import {
-  clearContextProviders,
-  listContextProviders,
-} from '../src/registry/context-providers.js';
+import { clearContextProviders, listContextProviders } from '../src/registry/context-providers.js';
 import { clearProviderBackends } from '../src/registry/provider-backends.js';
 import { clearShellAdapters, listShellAdapters } from '../src/registry/shell-adapters.js';
 import { clearStorageHooks, listStorageHooks } from '../src/registry/storage-hooks.js';
@@ -24,9 +21,7 @@ describe('bootstrapBuiltins()', () => {
 
   it('registers the filesystem-context provider', () => {
     bootstrapBuiltins();
-    expect(listContextProviders().map((provider) => provider.id)).toContain(
-      'filesystem-context',
-    );
+    expect(listContextProviders().map((provider) => provider.id)).toContain('filesystem-context');
   });
 
   it('registers exactly two context providers in Phase 2', () => {

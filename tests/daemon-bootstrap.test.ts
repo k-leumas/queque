@@ -49,7 +49,7 @@ describe('daemon bootstrap', () => {
 
   afterEach(async () => {
     if (testServer) {
-      await new Promise<void>((resolve) => testServer!.close(() => resolve()));
+      await new Promise<void>((resolve) => testServer?.close(() => resolve()));
       testServer = null;
     }
     try {
@@ -63,8 +63,8 @@ describe('daemon bootstrap', () => {
     // Create a real listening socket before calling ensureDaemon
     testServer = net.createServer(() => {});
     await new Promise<void>((resolve, reject) => {
-      testServer!.listen(socketPath, () => resolve());
-      testServer!.once('error', reject);
+      testServer?.listen(socketPath, () => resolve());
+      testServer?.once('error', reject);
     });
 
     const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
@@ -119,7 +119,7 @@ describe('daemon server', () => {
 
   afterEach(async () => {
     if (testServer) {
-      await new Promise<void>((resolve) => testServer!.close(() => resolve()));
+      await new Promise<void>((resolve) => testServer?.close(() => resolve()));
       testServer = null;
     }
     try {

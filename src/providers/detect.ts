@@ -20,10 +20,7 @@ function claudeOnPath(): boolean {
 
 async function claudeAuthFileExists(): Promise<boolean> {
   const home = os.homedir();
-  const candidates = [
-    `${home}/.claude/.credentials.json`,
-    `${home}/.claude/credentials.json`,
-  ];
+  const candidates = [`${home}/.claude/.credentials.json`, `${home}/.claude/credentials.json`];
   for (const p of candidates) {
     try {
       await fsp.stat(p);
@@ -48,7 +45,7 @@ async function ollamaHealthy(): Promise<boolean> {
 
 export async function detectProvider(): Promise<DetectedProvider> {
   // Step 1 — Anthropic key env
-  if (process.env['ANTHROPIC_API_KEY']) {
+  if (process.env.ANTHROPIC_API_KEY) {
     return { kind: 'anthropic-key' };
   }
 
@@ -63,7 +60,7 @@ export async function detectProvider(): Promise<DetectedProvider> {
   }
 
   // Step 4 — OpenAI key env
-  if (process.env['OPENAI_API_KEY']) {
+  if (process.env.OPENAI_API_KEY) {
     return { kind: 'openai-key' };
   }
 

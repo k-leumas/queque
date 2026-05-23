@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T19:26:25.177Z
-> Files: 194 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T19:51:07.695Z
+> Files: 195 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -78,8 +78,9 @@
 
 ## ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/
 
+- `feedback_lint_before_commit.md` (~216 tok)
 - `feedback_no_coauthored.md` (~148 tok)
-- `MEMORY.md` — Memory Index (~33 tok)
+- `MEMORY.md` — Memory Index (~73 tok)
 
 ## ./
 

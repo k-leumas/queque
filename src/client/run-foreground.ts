@@ -71,7 +71,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
   const uid = typeof process.getuid === 'function' ? process.getuid() : 0;
   const socketPath = socketPathForUid(uid);
 
-  const inZellij = process.env['ZELLIJ'] !== undefined;
+  const inZellij = process.env.ZELLIJ !== undefined;
 
   void appendDebugLog('client', 'foreground start', {
     requestFile,
