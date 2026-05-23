@@ -383,6 +383,8 @@ describe('runForegroundClient', () => {
         `source ${widgetPath}
          LBUFFER="old left"
          RBUFFER="old right"
+         QQ_ORIG_LBUFFER="list files in src"
+         QQ_ORIG_RBUFFER=""
          _qq_apply_result "${resultFile}"
          echo "lbuffer=$LBUFFER"
          echo "rbuffer=$RBUFFER"`,
@@ -391,8 +393,10 @@ describe('runForegroundClient', () => {
     );
 
     expect(shellResult.status).toBe(0);
-    expect(shellResult.stdout).toContain('lbuffer=git status');
-    expect(shellResult.stdout).toContain('rbuffer=');
+    // LBUFFER is now the original query (not the selected command)
+    expect(shellResult.stdout).toContain('lbuffer=list files in src');
+    // Summary line with selected command is printed above PS1
+    expect(shellResult.stdout).toContain('git status');
   });
 
   it('writes error ShellResult to FIFO when fetchCandidates rejects', async () => {

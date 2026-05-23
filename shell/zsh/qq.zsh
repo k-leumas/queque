@@ -126,13 +126,17 @@ _qq_apply_result() {
         RBUFFER="$QQ_ORIG_RBUFFER"
         return 1
       fi
-      LBUFFER="$new_lbuffer"
-      RBUFFER="$new_rbuffer"
-      local query
-      query=$(jq -r '.query // empty' "$result_file" 2>/dev/null)
-      if [[ -n "$query" ]]; then
-        print -P "%F{240}que-que: ${query}%f"
-      fi
+      # Print two summary lines above the new PS1:
+      #   que-que › <original-query>
+      #   <selected-command>  # <explanation>
+      local escaped_query="${QQ_ORIG_LBUFFER//\%/%%}"
+      [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}que-que › ${escaped_query}%f"
+      print -r -- "${new_lbuffer}${new_rbuffer}"
+      # Record original query in history so the user can recall and refine it.
+      [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
+      # Leave the original query in LBUFFER as an affordance for re-triggering.
+      LBUFFER="$QQ_ORIG_LBUFFER"
+      RBUFFER=""
       return 0
       ;;
     error)
@@ -257,13 +261,12 @@ JSON
           LBUFFER="$QQ_ORIG_LBUFFER"
           RBUFFER="$QQ_ORIG_RBUFFER"
         else
-          LBUFFER="$new_lbuffer"
-          RBUFFER="$new_rbuffer"
-          local inline_query
-          inline_query=$(printf '%s' "$result" | jq -r '.query // empty' 2>/dev/null)
-          if [[ -n "$inline_query" ]]; then
-            print -P "%F{240}que-que: ${inline_query}%f"
-          fi
+          local escaped_query="${QQ_ORIG_LBUFFER//\%/%%}"
+          [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}que-que › ${escaped_query}%f"
+          print -r -- "${new_lbuffer}${new_rbuffer}"
+          [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
+          LBUFFER="$QQ_ORIG_LBUFFER"
+          RBUFFER=""
         fi
         ;;
       error)

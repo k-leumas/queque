@@ -253,17 +253,21 @@ describe('result application: cancel restores buffers', () => {
 });
 
 describe('result application: replace-buffer writes new buffers', () => {
-  it('replace-buffer sets LBUFFER and RBUFFER to new values', () => {
+  it('sets LBUFFER to original query, prints summary lines, adds query to history', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
       resultFile,
-      JSON.stringify({ kind: 'replace-buffer', lbuffer: 'git status', rbuffer: '' }),
+      JSON.stringify({
+        kind: 'replace-buffer',
+        lbuffer: 'git status',
+        rbuffer: '  # show repo status',
+      }),
     );
     const script = `
       LBUFFER="old left"
       RBUFFER="old right"
-      QQ_ORIG_LBUFFER="orig left"
+      QQ_ORIG_LBUFFER="list changed files"
       QQ_ORIG_RBUFFER="orig right"
       _qq_apply_result "${resultFile}"
       echo "lbuffer=$LBUFFER"
@@ -272,8 +276,14 @@ describe('result application: replace-buffer writes new buffers', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    expect(stdout).toContain('lbuffer=git status');
+    // LBUFFER is set to the original query (not the selected command)
+    expect(stdout).toContain('lbuffer=list changed files');
+    // RBUFFER is cleared
     expect(stdout).toContain('rbuffer=');
+    // Summary line 1: que-que label with original query
+    expect(stdout).toContain('que-que › list changed files');
+    // Summary line 2: selected command + explanation
+    expect(stdout).toContain('git status  # show repo status');
   });
 });
 
@@ -383,7 +393,7 @@ describe('result application: replace-buffer with query context line', () => {
     expect(stdout).toContain('git stat');
   });
 
-  it('sets LBUFFER to command with # explanation appended as a comment', () => {
+  it('sets LBUFFER to original query (not the command) after selection', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -398,7 +408,38 @@ describe('result application: replace-buffer with query context line', () => {
     const script = `
       LBUFFER="old"
       RBUFFER=""
-      QQ_ORIG_LBUFFER="old"
+      QQ_ORIG_LBUFFER="git stat"
+      QQ_ORIG_RBUFFER=""
+      _qq_apply_result "${resultFile}"
+      echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    // LBUFFER holds the original query so the user can refine and re-trigger
+    expect(stdout).toContain('lbuffer=git stat');
+    // RBUFFER is cleared
+    expect(stdout).toContain('rbuffer=');
+    // The selected command is shown as a summary line above PS1
+    expect(stdout).toContain('git status  # show working tree status');
+  });
+
+  it('selected command appears as a summary line printed above PS1', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
+    const resultFile = join(dir, 'result.json');
+    writeFileSync(
+      resultFile,
+      JSON.stringify({
+        kind: 'replace-buffer',
+        lbuffer: 'echo hello',
+        rbuffer: '  # prints hello to stdout',
+      }),
+    );
+    const script = `
+      LBUFFER="old"
+      RBUFFER=""
+      QQ_ORIG_LBUFFER="print hello"
       QQ_ORIG_RBUFFER=""
       _qq_apply_result "${resultFile}"
       echo "lbuffer=$LBUFFER"
@@ -406,39 +447,13 @@ describe('result application: replace-buffer with query context line', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    expect(stdout).toContain('lbuffer=git status  # show working tree status');
+    // The command is shown as a summary line, not executed via LBUFFER
+    expect(stdout).toContain('echo hello  # prints hello to stdout');
+    // LBUFFER has the query, not the command
+    expect(stdout).toContain('lbuffer=print hello');
   });
 
-  it('lbuffer with # explanation is valid shell syntax (comment, not error)', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
-    const resultFile = join(dir, 'result.json');
-    writeFileSync(
-      resultFile,
-      JSON.stringify({
-        kind: 'replace-buffer',
-        lbuffer: 'echo hello  # prints hello to stdout',
-        rbuffer: '',
-      }),
-    );
-    const script = `
-      LBUFFER="old"
-      RBUFFER=""
-      QQ_ORIG_LBUFFER="old"
-      QQ_ORIG_RBUFFER=""
-      _qq_apply_result "${resultFile}"
-      eval_output=$(eval "$LBUFFER")
-      eval_status=$?
-      echo "eval_output=$eval_output"
-      echo "eval_status=$eval_status"
-    `;
-    const { stdout, status } = runZsh(script);
-    rmSync(dir, { recursive: true, force: true });
-    expect(status).toBe(0);
-    expect(stdout).toContain('eval_output=hello');
-    expect(stdout).toContain('eval_status=0');
-  });
-
-  it('context line is omitted when query field is absent (backward compat)', () => {
+  it('que-que label is omitted when original query is empty', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -446,9 +461,9 @@ describe('result application: replace-buffer with query context line', () => {
       JSON.stringify({ kind: 'replace-buffer', lbuffer: 'git status', rbuffer: '' }),
     );
     const script = `
-      LBUFFER="old"
+      LBUFFER=""
       RBUFFER=""
-      QQ_ORIG_LBUFFER="old"
+      QQ_ORIG_LBUFFER=""
       QQ_ORIG_RBUFFER=""
       _qq_apply_result "${resultFile}"
       echo "lbuffer=$LBUFFER"
@@ -456,6 +471,7 @@ describe('result application: replace-buffer with query context line', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
+    // No que-que label when there was no original query
     expect(stdout).not.toMatch(/que-que/i);
   });
 });
