@@ -393,9 +393,11 @@ describe('runForegroundClient', () => {
     );
 
     expect(shellResult.status).toBe(0);
-    // LBUFFER is now the original query (not the selected command)
-    expect(shellResult.stdout).toContain('lbuffer=list files in src');
-    // Summary line with selected command is printed above PS1
+    // LBUFFER is the selected command so it appears in the new PS1
+    expect(shellResult.stdout).toContain('lbuffer=git status');
+    // RBUFFER holds the explanation; cursor sits between command and comment
+    expect(shellResult.stdout).toContain('rbuffer=  # see man git');
+    // Summary line with selected command is also printed above PS1
     expect(shellResult.stdout).toContain('git status');
   });
 

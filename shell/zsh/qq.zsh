@@ -84,10 +84,10 @@ _qq_capture_buffers() {
 }
 
 # ---------------------------------------------------------------------------
-# Result application helper
+# Result application helpers
 # ---------------------------------------------------------------------------
-# Reads a JSON result file and applies it to LBUFFER/RBUFFER.
-# Returns 0 on success (cancel or replace-buffer), nonzero on error.
+# _qq_apply_result_str  — applies a JSON string to LBUFFER/RBUFFER.
+# _qq_apply_result      — reads a JSON file and delegates to the above.
 #
 # Expected shapes:
 #   {"kind":"cancel"}
@@ -95,31 +95,31 @@ _qq_capture_buffers() {
 #
 # On malformed JSON or unrecognised `kind`, original buffers are left intact
 # and the function returns 1 so callers can detect failure.
+#
+# Both the inline (non-Zellij) path and the Zellij FIFO path call
+# _qq_apply_result_str so the post-selection contract is tested once.
 
-_qq_apply_result() {
-  local result_file="$1"
+_qq_apply_result_str() {
+  local json_str="$1"
 
-  # Parse the kind field from the JSON result file
   local kind
-  kind=$(jq -r '.kind // empty' "$result_file" 2>/dev/null)
+  kind=$(printf '%s' "$json_str" | jq -r '.kind // empty' 2>/dev/null)
 
   if [[ $? -ne 0 ]] || [[ -z "$kind" ]]; then
-    # Malformed JSON — leave buffers as-is and return failure
     return 1
   fi
 
   case "$kind" in
     cancel)
-      # Restore to the exact pre-trigger state
       LBUFFER="$QQ_ORIG_LBUFFER"
       RBUFFER="$QQ_ORIG_RBUFFER"
       return 0
       ;;
     replace-buffer)
       local new_lbuffer new_rbuffer _jq_lbuf_status _jq_rbuf_status
-      new_lbuffer=$(jq -r '.lbuffer // empty' "$result_file" 2>/dev/null)
+      new_lbuffer=$(printf '%s' "$json_str" | jq -r '.lbuffer // empty' 2>/dev/null)
       _jq_lbuf_status=$?
-      new_rbuffer=$(jq -r '.rbuffer // ""' "$result_file" 2>/dev/null)
+      new_rbuffer=$(printf '%s' "$json_str" | jq -r '.rbuffer // ""' 2>/dev/null)
       _jq_rbuf_status=$?
       if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]] || [[ -z "$new_lbuffer" ]]; then
         LBUFFER="$QQ_ORIG_LBUFFER"
@@ -134,24 +134,32 @@ _qq_apply_result() {
       print -r -- "${new_lbuffer}${new_rbuffer}"
       # Record original query in history so the user can recall and refine it.
       [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
-      # Leave the original query in LBUFFER as an affordance for re-triggering.
-      LBUFFER="$QQ_ORIG_LBUFFER"
-      RBUFFER=""
+      # Place the selected command in the buffer so the user can execute or edit it.
+      LBUFFER="$new_lbuffer"
+      RBUFFER="$new_rbuffer"
       return 0
       ;;
     error)
-      # Error kind — provider failure; restore original buffers without mutating the shell line (D-11)
       LBUFFER="$QQ_ORIG_LBUFFER"
       RBUFFER="$QQ_ORIG_RBUFFER"
       return 0
       ;;
     *)
-      # Unknown kind — leave buffers untouched and signal failure
       LBUFFER="$QQ_ORIG_LBUFFER"
       RBUFFER="$QQ_ORIG_RBUFFER"
       return 1
       ;;
   esac
+}
+
+_qq_apply_result() {
+  local result_file="$1"
+  local json_str
+  json_str=$(cat "$result_file" 2>/dev/null)
+  if [[ $? -ne 0 ]]; then
+    return 1
+  fi
+  _qq_apply_result_str "$json_str"
 }
 
 # ---------------------------------------------------------------------------
@@ -243,41 +251,7 @@ JSON
     IFS= read -r -t 30 result < "$fifo_path" || true
     _qq_log "fifo read complete result=${result}"
 
-  # Apply result inline via jq (RESEARCH.md §Finding 7, Option B).
-  local kind new_lbuffer new_rbuffer
-    local kind new_lbuffer new_rbuffer
-    kind=$(printf '%s' "$result" | jq -r '.kind // empty' 2>/dev/null)
-    case "$kind" in
-      cancel)
-        LBUFFER="$QQ_ORIG_LBUFFER"
-        RBUFFER="$QQ_ORIG_RBUFFER"
-        ;;
-      replace-buffer)
-        new_lbuffer=$(printf '%s' "$result" | jq -r '.lbuffer // empty' 2>/dev/null)
-        local _jq_lbuf_status=$?
-        new_rbuffer=$(printf '%s' "$result" | jq -r '.rbuffer // ""' 2>/dev/null)
-        local _jq_rbuf_status=$?
-        if [[ $_jq_lbuf_status -ne 0 ]] || [[ $_jq_rbuf_status -ne 0 ]] || [[ -z "$new_lbuffer" ]]; then
-          LBUFFER="$QQ_ORIG_LBUFFER"
-          RBUFFER="$QQ_ORIG_RBUFFER"
-        else
-          local escaped_query="${QQ_ORIG_LBUFFER//\%/%%}"
-          [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}que-que › ${escaped_query}%f"
-          print -r -- "${new_lbuffer}${new_rbuffer}"
-          [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
-          LBUFFER="$QQ_ORIG_LBUFFER"
-          RBUFFER=""
-        fi
-        ;;
-      error)
-        LBUFFER="$QQ_ORIG_LBUFFER"
-        RBUFFER="$QQ_ORIG_RBUFFER"
-        ;;
-      *)
-        LBUFFER="$QQ_ORIG_LBUFFER"
-        RBUFFER="$QQ_ORIG_RBUFFER"
-        ;;
-    esac
+  _qq_apply_result_str "$result"
 
   else
     # ---- Inline path: foreground child writes to a regular temp file ----

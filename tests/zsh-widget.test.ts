@@ -253,7 +253,7 @@ describe('result application: cancel restores buffers', () => {
 });
 
 describe('result application: replace-buffer writes new buffers', () => {
-  it('sets LBUFFER to original query, prints summary lines, adds query to history', () => {
+  it('sets LBUFFER to selected command, prints summary lines, adds query to history', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -276,10 +276,10 @@ describe('result application: replace-buffer writes new buffers', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    // LBUFFER is set to the original query (not the selected command)
-    expect(stdout).toContain('lbuffer=list changed files');
-    // RBUFFER is cleared
-    expect(stdout).toContain('rbuffer=');
+    // LBUFFER is the selected command so it appears in the new PS1 ready to run
+    expect(stdout).toContain('lbuffer=git status');
+    // RBUFFER holds the explanation; cursor sits between command and comment
+    expect(stdout).toContain('rbuffer=  # show repo status');
     // Summary line 1: que-que label with original query
     expect(stdout).toContain('que-que › list changed files');
     // Summary line 2: selected command + explanation
@@ -393,7 +393,7 @@ describe('result application: replace-buffer with query context line', () => {
     expect(stdout).toContain('git stat');
   });
 
-  it('sets LBUFFER to original query (not the command) after selection', () => {
+  it('sets LBUFFER to selected command (original query goes to history, not LBUFFER)', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -417,15 +417,15 @@ describe('result application: replace-buffer with query context line', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    // LBUFFER holds the original query so the user can refine and re-trigger
-    expect(stdout).toContain('lbuffer=git stat');
-    // RBUFFER is cleared
+    // LBUFFER is the selected command so it appears in the new PS1 ready to run
+    expect(stdout).toContain('lbuffer=git status  # show working tree status');
+    // RBUFFER is empty (explanation was folded into lbuffer by the provider here)
     expect(stdout).toContain('rbuffer=');
-    // The selected command is shown as a summary line above PS1
+    // The selected command is also shown as a summary line above PS1
     expect(stdout).toContain('git status  # show working tree status');
   });
 
-  it('selected command appears as a summary line printed above PS1', () => {
+  it('selected command appears in the new PS1 (LBUFFER) and also as a summary line above it', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -443,14 +443,17 @@ describe('result application: replace-buffer with query context line', () => {
       QQ_ORIG_RBUFFER=""
       _qq_apply_result "${resultFile}"
       echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
     `;
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    // The command is shown as a summary line, not executed via LBUFFER
+    // The command + explanation appear as a summary line above the new PS1
     expect(stdout).toContain('echo hello  # prints hello to stdout');
-    // LBUFFER has the query, not the command
-    expect(stdout).toContain('lbuffer=print hello');
+    // LBUFFER is the command — the user can execute it with Enter or edit it
+    expect(stdout).toContain('lbuffer=echo hello');
+    // RBUFFER is the explanation, cursor sits between command and comment
+    expect(stdout).toContain('rbuffer=  # prints hello to stdout');
   });
 
   it('que-que label is omitted when original query is empty', () => {
@@ -524,5 +527,145 @@ describe('Zellij widget static content', () => {
     const result = spawnSync('grep', ['-c', '>/dev/tty', widgetPath], { encoding: 'utf8' });
     const count = parseInt(result.stdout.trim(), 10);
     expect(count).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// _qq_apply_result_str: shared implementation called by BOTH the inline
+// (non-Zellij) path and the Zellij FIFO path.  Testing this function once
+// covers requirement 1–3 for both execution paths.
+// ---------------------------------------------------------------------------
+
+describe('_qq_apply_result_str: LBUFFER is set to selected command (new PS1 content)', () => {
+  it('sets LBUFFER to the selected command — not the original query', () => {
+    // After selection the user should see the command in their shell prompt so
+    // they can inspect, edit, or execute it with Enter.
+    const script = `
+      QQ_ORIG_LBUFFER="list changed files"
+      QQ_ORIG_RBUFFER=""
+      LBUFFER="old"
+      RBUFFER="old right"
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":"  # show working tree status"}'
+      echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    // LBUFFER = selected command (cursor sits after the command, before the comment)
+    expect(stdout).toContain('lbuffer=git status');
+    // RBUFFER = explanation so the comment appears to the right of the cursor
+    expect(stdout).toContain('rbuffer=  # show working tree status');
+    // Original query must NOT end up in LBUFFER
+    expect(stdout).not.toContain('lbuffer=list changed files');
+  });
+
+  it('sets RBUFFER to the explanation so the cursor lands between command and comment', () => {
+    const script = `
+      QQ_ORIG_LBUFFER="find large files"
+      QQ_ORIG_RBUFFER="orig right"
+      LBUFFER="old"
+      RBUFFER="old right"
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"find . -size +100M","rbuffer":"  # files larger than 100 MB"}'
+      echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).toContain('lbuffer=find . -size +100M');
+    expect(stdout).toContain('rbuffer=  # files larger than 100 MB');
+    expect(stdout).not.toContain('rbuffer=orig right');
+  });
+});
+
+describe('_qq_apply_result_str: original query added to zsh history after selection', () => {
+  it('adds QQ_ORIG_LBUFFER to shell history so the user can recall and refine it', () => {
+    const script = `
+      typeset HISTSIZE=100
+      QQ_ORIG_LBUFFER="list changed files"
+      QQ_ORIG_RBUFFER=""
+      LBUFFER="old"
+      RBUFFER=""
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":"  # show working tree status"}' >/dev/null
+      fc -l 1
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).toContain('list changed files');
+  });
+
+  it('does not add anything to history when QQ_ORIG_LBUFFER is empty', () => {
+    const script = `
+      typeset HISTSIZE=100
+      QQ_ORIG_LBUFFER=""
+      QQ_ORIG_RBUFFER=""
+      LBUFFER=""
+      RBUFFER=""
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":""}' >/dev/null
+      fc -l 1 2>/dev/null | wc -l | tr -d ' '
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    // No history entries should be present
+    expect(stdout.trim()).toBe('0');
+  });
+});
+
+describe('_qq_apply_result_str: summary lines printed above the new PS1', () => {
+  it('first summary line shows "que-que ›" prefix followed by the original query', () => {
+    const script = `
+      QQ_ORIG_LBUFFER="list changed files"
+      QQ_ORIG_RBUFFER=""
+      LBUFFER="old"
+      RBUFFER=""
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":"  # show working tree status"}'
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).toContain('que-que');
+    expect(stdout).toContain('list changed files');
+  });
+
+  it('second summary line shows the selected command and explanation verbatim', () => {
+    const script = `
+      QQ_ORIG_LBUFFER="show working tree"
+      QQ_ORIG_RBUFFER=""
+      LBUFFER="old"
+      RBUFFER=""
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":"  # show working tree status"}'
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).toContain('git status  # show working tree status');
+  });
+
+  it('omits the que-que label line when QQ_ORIG_LBUFFER is empty', () => {
+    const script = `
+      QQ_ORIG_LBUFFER=""
+      QQ_ORIG_RBUFFER=""
+      LBUFFER=""
+      RBUFFER=""
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":""}'
+    `;
+    const { stdout, status } = runZsh(script);
+    expect(status).toBe(0);
+    expect(stdout).not.toMatch(/que-que/i);
+  });
+});
+
+describe('coverage: both paths call _qq_apply_result_str', () => {
+  it('_qq_apply_result (inline path) delegates to _qq_apply_result_str', () => {
+    // The delegate call is: _qq_apply_result_str "$json_str"
+    const result = spawnSync('grep', ['-q', '_qq_apply_result_str "\\$json_str"', widgetPath], {
+      encoding: 'utf8',
+    });
+    expect(result.status).toBe(0);
+  });
+
+  it('Zellij branch in qq-question-widget calls _qq_apply_result_str with the FIFO result', () => {
+    // At least 3 occurrences: function definition, _qq_apply_result call site, Zellij call site
+    const result = spawnSync('grep', ['-c', '_qq_apply_result_str', widgetPath], {
+      encoding: 'utf8',
+    });
+    expect(parseInt(result.stdout.trim(), 10)).toBeGreaterThanOrEqual(3);
   });
 });
