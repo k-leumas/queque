@@ -8,6 +8,7 @@ import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { classifyIntent } from '../intent/router.js';
 import { fetchCandidates } from '../providers/claude.js';
+import { detectProvider } from '../providers/detect.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
@@ -92,6 +93,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     const request = shellRequestSchema.parse(JSON.parse(raw.trim()));
 
     void appendDebugLog('client', 'request parsed', request);
+
+    const detectedProvider = await detectProvider();
+    void appendDebugLog('client', 'provider detected', { kind: detectedProvider.kind });
 
     // Ensure the daemon is reachable before we do anything interactive
     await ensureDaemon(socketPath);
