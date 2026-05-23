@@ -1578,6 +1578,246 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-22T18:52:57.020Z"
+    },
+    {
+      "id": "bug-099",
+      "timestamp": "2026-05-22T19:43:09.082Z",
+      "error_message": "Wrong reference: then should be z",
+      "file": "shell/zsh/qq.zsh",
+      "root_cause": "Used \"then\" instead of \"z\"",
+      "fix": "Changed then → z",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "zsh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T19:43:09.082Z"
+    },
+    {
+      "id": "bug-100",
+      "timestamp": "2026-05-22T21:04:08.779Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/ui/SearchInput.tsx",
+      "root_cause": "Had 'SEARCH: '",
+      "fix": "Changed to 'FILTER: '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T21:04:08.779Z"
+    },
+    {
+      "id": "bug-101",
+      "timestamp": "2026-05-22T21:09:53.681Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/STATE.md",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 10→10 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T21:09:53.681Z"
+    },
+    {
+      "id": "bug-102",
+      "timestamp": "2026-05-22T21:26:29.797Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/STATE.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 7→9 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T21:26:29.797Z"
+    },
+    {
+      "id": "bug-103",
+      "timestamp": "2026-05-22T21:43:37.678Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T21:43:37.678Z"
+    },
+    {
+      "id": "bug-104",
+      "timestamp": "2026-05-22T21:57:28.124Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T21:57:28.124Z"
+    },
+    {
+      "id": "bug-105",
+      "timestamp": "2026-05-22T22:09:35.215Z",
+      "error_message": "Type error",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-22T22:09:35.215Z"
+    },
+    {
+      "id": "bug-106",
+      "timestamp": "2026-05-23T01:14:28.832Z",
+      "error_message": "Significant refactor of ",
+      "file": "shell/zsh/qq.zsh",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 20→24 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "zsh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T01:14:28.832Z"
+    },
+    {
+      "id": "bug-107",
+      "timestamp": "2026-05-23T01:14:51.514Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 24→30 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T01:14:51.514Z"
+    },
+    {
+      "id": "bug-108",
+      "timestamp": "2026-05-23T01:15:58.355Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 18→22 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T01:15:58.355Z"
+    },
+    {
+      "id": "bug-109",
+      "timestamp": "2026-05-23T02:07:40.898Z",
+      "error_message": "Incorrect value in code",
+      "file": "tsconfig.json",
+      "root_cause": "Had \"react\"",
+      "fix": "Changed to \"react-jsx\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T02:07:40.898Z"
+    },
+    {
+      "id": "bug-110",
+      "timestamp": "2026-05-23T05:45:08.900Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-af8d008deef4b25ca/src/client/run-foreground.ts",
+      "root_cause": "Had '../shared/debug-log.js'",
+      "fix": "Changed to '../providers/detect.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T05:45:08.900Z"
+    },
+    {
+      "id": "bug-111",
+      "timestamp": "2026-05-23T05:47:33.546Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-af8d008deef4b25ca/.wolf/anatomy.md",
+      "root_cause": "Had `zsh-widget.test.ts`",
+      "fix": "Changed to `provider-detect.test.ts`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T05:47:33.546Z"
+    },
+    {
+      "id": "bug-112",
+      "timestamp": "2026-05-23T19:19:01.959Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 33→40 lines (8 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T19:19:01.959Z"
+    },
+    {
+      "id": "bug-113",
+      "timestamp": "2026-05-23T19:26:25.251Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→7 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-23T19:26:25.251Z"
     }
   ]
 }

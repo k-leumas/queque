@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-22T18:52:56.982Z
-> Files: 177 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T19:26:25.177Z
+> Files: 194 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -84,6 +84,7 @@
 ## ./
 
 - `CLAUDE.md` — OpenWolf (~57 tok)
+- `tsconfig.json` — TypeScript configuration (~172 tok)
 
 ## .claude/
 
@@ -318,15 +319,32 @@
 
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~6651 tok)
 
+## .claude/worktrees/agent-af8d008deef4b25ca/.wolf/
+
+- `anatomy.md` — anatomy.md (~4895 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3336 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/src/providers/
+
+- `detect.ts` — Exports DetectedProvider, detectProvider (~480 tok)
+- `index.ts` (~43 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/tests/
+
+- `provider-detect.test.ts` — --------------------------------------------------------------------------- (~1962 tok)
+
 ## .planning/
 
-- `.continue-here.md` — Session Checkpoint (~879 tok)
+- `.continue-here.md` — Session Checkpoint (~683 tok)
 - `config.json` (~258 tok)
-- `HANDOFF.json` (~692 tok)
+- `HANDOFF.json` (~920 tok)
 - `PROJECT.md` — Que-Que (~1527 tok)
 - `REQUIREMENTS.md` — Requirements: Que-Que (~1242 tok)
-- `ROADMAP.md` — Roadmap: Que-Que (~2705 tok)
-- `STATE.md` — Project State (~387 tok)
+- `ROADMAP.md` — Roadmap: Que-Que (~3799 tok)
+- `STATE.md` — Project State (~1362 tok)
 
 ## .planning/notes/
 
@@ -389,7 +407,7 @@
 
 ## .planning/phases/04-fuzzy-tui-selection-ux/
 
-- `.continue-here.md` — Session Checkpoint (~1201 tok)
+- `.continue-here.md` — Session Checkpoint — Phase 04 UAT Fixes Pending (~1113 tok)
 - `04-01-PLAN.md` — Trust Boundaries (~3163 tok)
 - `04-01-SUMMARY.md` — Phase 04 Plan 01: TDD Test Scaffolding Summary (~1281 tok)
 - `04-02-PLAN.md` — Trust Boundaries (~1718 tok)
@@ -400,10 +418,27 @@
 - `04-REVIEW.md` — Phase 04: Code Review Report (~3376 tok)
 - `04-UAT.md` — Current Test (~1187 tok)
 - `04-VALIDATION.md` — Phase 04 — Validation Strategy (~955 tok)
+- `04-VERIFICATION.md` — Phase 04: Fuzzy TUI Selection UX Verification Report (~4052 tok)
+
+## .planning/quick/20260522-selection-summary-and-history/
+
+- `PLAN.md` — Quick Task: Selection Summary and History (~824 tok)
+- `SUMMARY.md` — Summary: Selection Summary and History (~274 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
 - `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
+
+## .planning/quick/260522-tui-cleanup-on-close/
+
+- `PLAN.md` — Quick Task: TUI Cleanup on Close (~300 tok)
+- `SUMMARY.md` — Summary: TUI Cleanup on Close (~240 tok)
+
+## .planning/quick/260522-vfd-prototype-provider-detection/
+
+- `260522-vfd-PLAN.md` — Trust Boundaries (~2693 tok)
+- `260522-vfd-PLAN.md` — Quick plan: prototype provider detection waterfall (5-step, detect.ts, tests, run-foreground wiring) (~1800 tok)
+- `260522-vfd-SUMMARY.md` — Phase quick Plan 260522-vfd: Prototype Provider Detection Summary (~881 tok)
 
 ## .planning/research/
 
@@ -423,7 +458,11 @@
 
 ## shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2837 tok)
+- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2728 tok)
+
+## src/cli/
+
+- `main.ts` — Exports main (~1180 tok)
 
 ## src/cli/commands/
 
@@ -432,7 +471,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~2942 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3279 tok)
 
 ## src/contracts/
 
@@ -449,12 +488,14 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1472 tok)
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1566 tok)
+- `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `Modal.tsx` — Modal (~98 tok)
+- `SearchInput.tsx` — SearchInput (~112 tok)
 
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4638 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~6808 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6885 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~5328 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~7280 tok)

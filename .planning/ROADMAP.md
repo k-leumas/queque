@@ -20,6 +20,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
 - [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
+- [ ] **Phase 7: Context-Aware Learning and Ambient Suggestions** - Make Que-Que learn from every interaction and act without needing a query.
+- [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make Que-Que work out of the box for anyone who already has Claude Code, Ollama, or an OpenAI key — no manual setup required.
 
 ## Phase Details
 
@@ -149,10 +151,47 @@ Plans:
 - [ ] 06-02: Audit extension seams and convert any direct built-in coupling to registry-backed modules.
 - [ ] 06-03: Package the MVP for daily-driver usage and document the next expansion path.
 
+### Phase 7: Context-Aware Learning and Ambient Suggestions
+**Goal**: Make Que-Que learn from every interaction. Shell history, git state, and accepted-command logs feed a local index in the daemon. Common patterns resolve instantly without a Claude call. Empty-lbuffer `??` uses ambient context (dirty tree, last exit code, project type) instead of requiring a query text.
+**Depends on**: Phase 6
+**Requirements**: EXT-01, RUN-01
+**Success Criteria** (what must be TRUE):
+  1. Every accepted command is logged to a local event store with query, cwd, git branch, and outcome.
+  2. A pattern index in the daemon returns cache hits for frequently-accepted query shapes without calling Claude.
+  3. Typing `??` with an empty lbuffer classifies ambient context (dirty tree, `$? != 0`, project type, unfamiliar cwd) and produces a context-first suggestion instead of an empty result.
+  4. A post-command `precmd` hook surfaces dim, non-blocking suggestions after commands that returned non-zero — users can ignore or accept.
+  5. No personal data leaves the machine — all learning is local to the daemon's data directory.
+**Plans**: 3 plans
+**UI hint**: no
+
+Plans:
+- [ ] 07-01: Daemon event log and SQLite pattern index — write `~/.local/share/qq/events.jsonl` on every accepted selection; build a SQLite index (query hash → accepted command frequency) for cache lookups.
+- [ ] 07-02: Empty-lbuffer ambient context behavior — on `??` with no query text, classify ambient signals (git status, `$?`, `$PWD` project fingerprint) and route to a context-first suggestion path; integrate local cache hits before Claude is called.
+- [ ] 07-03: Proactive post-command suggestions — add `precmd` hook that fires a background Que-Que query after commands that exit non-zero; render dim suggestion line that the user can accept or ignore without interrupting the shell.
+
+### Phase 8: Zero-Config Install and Provider Detection
+**Goal**: Make `qq` work on first run without any manual configuration. Detect Claude Code, Ollama, and OpenAI CLI auth in priority order and use the first available backend. When nothing is detected, guide the user to a working setup in under 60 seconds. The subprocess adapter is the right first implementation — token reuse and native API integration are later optimizations.
+**Depends on**: Phase 6
+**Requirements**: RUN-01, EXT-01
+**Success Criteria** (what must be TRUE):
+  1. A developer who already has Claude Code installed and authenticated gets a working `qq` with zero extra steps.
+  2. A developer with Ollama running locally gets a working `qq` with zero extra steps.
+  3. A developer with `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` set gets the same.
+  4. A developer with none of the above gets a clear, short prompt explaining what to do — not a cryptic error.
+  5. Detection runs in under 200 ms on startup (no blocking network calls except Ollama health check with a 300 ms timeout).
+  6. The detected provider is logged to debug output so users can verify what Que-Que is using.
+**Plans**: 3 plans
+**UI hint**: no
+
+Plans:
+- [ ] 08-01: Provider detection module — `detectProvider()` waterfall: `ANTHROPIC_API_KEY` → claude CLI auth (`~/.claude/`) → Ollama health check (`localhost:11434`) → `OPENAI_API_KEY` / openai CLI → none; returns a typed `DetectedProvider` union consumed by the provider registry.
+- [ ] 08-02: Subprocess provider adapters — `claude -p` and `openai` CLI adapters that shell out, parse conversational output into the existing `CommandCandidate[]` shape, and surface errors cleanly; wire into provider registry alongside the native Anthropic SDK adapter.
+- [ ] 08-03: No-provider setup wizard — when `detectProvider()` returns `none`, print a short interactive prompt: pick Ollama (auto-opens install URL), enter an API key, or open claude.ai; persist the choice to `~/.config/qq/provider.json` so the next run skips detection.
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 5 → 6
+Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -164,3 +203,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 5 → 6
 | 4. Fuzzy TUI Selection UX | 3/3 | Complete | 2026-05-22 |
 | 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |
 | 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | Not started | - |
+| 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
+| 8. Zero-Config Install and Provider Detection | 0/3 | Not started | - |

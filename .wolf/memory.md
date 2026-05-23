@@ -3,6 +3,7 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 | 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
+| 21:29 | added Phase 7 (Context-Aware Learning and Ambient Suggestions) to ROADMAP.md | .planning/ROADMAP.md | phase documented with 3 plans and success criteria | ~300 |
 | 01:30 | UAT session phase 04 — fixed Modal border, Ink stacking (interactive:true), Enter key '\r' bug; wrote 5 regression tests + 4 RED TDD tests for onSelect(explanation) + ZSH context line | src/ui/Modal.tsx, src/ui/CandidateSelect.tsx, src/client/run-foreground.ts, tests/candidate-select.test.tsx, tests/zsh-widget.test.ts | 127 green 4 red; paused for implementation | ~8000 |
 | 20:46 | gsd-plan-phase 3 — research, pattern map, 3 PLAN.md files, verified, committed | .planning/phases/03-claude-fast-path-and-ranked-suggestions/ | PLANNING COMPLETE — 3 plans in 2 waves | ~350k |
 | 00:01 | fixed EPIPE in sendWatchmanCommand — added writable guard + write error callback | scripts/build-dashboard.mjs:541 | EPIPE prevented | ~200 |
@@ -683,3 +684,137 @@
 | 11:52 | Edited tests/zsh-widget.test.ts | modified definition() | ~232 |
 | 11:52 | Edited tests/client-result.test.ts | 6→6 lines | ~54 |
 | 11:52 | Edited tests/client-result.test.ts | 1→2 lines | ~28 |
+| 11:53 | Session end: 18 writes across 6 files (candidate-select.test.tsx, zsh-widget.test.ts, client-result.test.ts, run-foreground.ts, claude.ts) | 5 reads | ~24973 tok |
+| 11:55 | Created .planning/.continue-here.md | — | ~729 |
+| 11:55 | Session end: 19 writes across 7 files (candidate-select.test.tsx, zsh-widget.test.ts, client-result.test.ts, run-foreground.ts, claude.ts) | 6 reads | ~26633 tok |
+
+## Session: 2026-05-22 12:20
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-22 12:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:42 | Edited src/cli/main.ts | modified note() | ~383 |
+| 12:42 | Edited tests/client-result.test.ts | 4→4 lines | ~76 |
+| 12:42 | Edited tests/client-result.test.ts | 14→14 lines | ~156 |
+| 12:42 | Edited tests/client-result.test.ts | 10→10 lines | ~79 |
+| 12:43 | Edited shell/zsh/qq.zsh | 10→11 lines | ~122 |
+| 12:43 | Edited shell/zsh/qq.zsh | inline fix | ~28 |
+| 12:48 | Edited shell/zsh/qq.zsh | 6→7 lines | ~103 |
+| 12:52 | Created .planning/phases/04-fuzzy-tui-selection-ux/04-VERIFICATION.md | — | ~4322 |
+| 12:52 | Session end: 8 writes across 4 files (main.ts, client-result.test.ts, qq.zsh, 04-VERIFICATION.md) | 25 reads | ~52865 tok |
+| 13:23 | Edited shell/zsh/qq.zsh | 1→6 lines | ~68 |
+| 13:23 | Session end: 9 writes across 4 files (main.ts, client-result.test.ts, qq.zsh, 04-VERIFICATION.md) | 29 reads | ~53036 tok |
+| 13:27 | Created .planning/HANDOFF.json | — | ~920 |
+| 13:28 | Created .planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md | — | ~1187 |
+
+## Session: 2026-05-22 13:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:04 | Edited src/ui/SearchInput.tsx | "SEARCH: " → "FILTER: " | ~6 |
+| 14:04 | Edited shell/zsh/qq.zsh | inline fix | ~22 |
+| 14:04 | Edited src/ui/CandidateSelect.tsx | 18→23 lines | ~251 |
+| 14:06 | Edited src/ui/CandidateSelect.tsx | 7→12 lines | ~77 |
+| 14:07 | Edited .planning/ROADMAP.md | inline fix | ~29 |
+| 14:07 | Edited .planning/ROADMAP.md | inline fix | ~16 |
+| 14:09 | Edited .planning/STATE.md | 10→10 lines | ~67 |
+| 14:09 | Edited .planning/STATE.md | 10→10 lines | ~86 |
+| 14:10 | Session end: 8 writes across 5 files (SearchInput.tsx, qq.zsh, CandidateSelect.tsx, ROADMAP.md, STATE.md) | 4 reads | ~9385 tok |
+| 14:25 | Created .planning/quick/260522-tui-cleanup-on-close/PLAN.md | — | ~320 |
+| 14:25 | Edited src/client/run-foreground.ts | expanded (+12 lines) | ~212 |
+| 14:26 | Created .planning/quick/260522-tui-cleanup-on-close/SUMMARY.md | — | ~256 |
+| 14:26 | Edited .planning/STATE.md | 7→9 lines | ~194 |
+| 14:26 | Session end: 12 writes across 8 files (SearchInput.tsx, qq.zsh, CandidateSelect.tsx, ROADMAP.md, STATE.md) | 7 reads | ~14875 tok |
+| 14:35 | Edited src/client/run-foreground.ts | repeat() → exit() | ~378 |
+| 14:43 | Edited src/client/run-foreground.ts | added error handling | ~293 |
+| 14:57 | Edited src/client/run-foreground.ts | added optional chaining | ~160 |
+| 14:57 | Edited src/client/run-foreground.ts | exitAltScreen() → clearScrollReserve() | ~275 |
+
+## Session: 2026-05-22 15:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:09 | Edited src/client/run-foreground.ts | modified if() | ~172 |
+| 15:21 | Session end: 1 writes across 1 files (run-foreground.ts) | 3 reads | ~1836 tok |
+| 16:39 | Edited src/client/run-foreground.ts | modified if() | ~140 |
+| 16:40 | Edited src/client/run-foreground.ts | modified if() | ~139 |
+| 16:43 | Session end: 3 writes across 1 files (run-foreground.ts) | 4 reads | ~5318 tok |
+| 18:14 | Created .planning/quick/20260522-selection-summary-and-history/PLAN.md | — | ~879 |
+| 18:14 | Edited shell/zsh/qq.zsh | 20→24 lines | ~295 |
+| 18:14 | Edited shell/zsh/qq.zsh | 12→11 lines | ~142 |
+| 18:14 | Edited tests/zsh-widget.test.ts | expanded (+6 lines) | ~357 |
+| 18:15 | Edited tests/client-result.test.ts | 18→22 lines | ~213 |
+| 18:16 | Edited tests/zsh-widget.test.ts | expanded (+6 lines) | ~786 |
+| 18:17 | Created .planning/quick/20260522-selection-summary-and-history/SUMMARY.md | — | ~292 |
+| 18:17 | Edited .planning/STATE.md | 1→2 lines | ~112 |
+| 18:17 | Session end: 11 writes across 7 files (run-foreground.ts, PLAN.md, qq.zsh, zsh-widget.test.ts, client-result.test.ts) | 9 reads | ~25312 tok |
+| 19:05 | Edited src/ui/LoadingSpinner.tsx | 2→2 lines | ~28 |
+| 19:07 | Edited tsconfig.json | inline fix | ~7 |
+| 19:07 | Edited src/ui/LoadingSpinner.tsx | inline fix | ~18 |
+| 19:08 | Session end: 14 writes across 9 files (run-foreground.ts, PLAN.md, qq.zsh, zsh-widget.test.ts, client-result.test.ts) | 11 reads | ~25365 tok |
+
+## Session: 2026-05-23 19:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-23 21:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:29 | Edited .planning/ROADMAP.md | 1→2 lines | ~78 |
+| 21:29 | Edited .planning/ROADMAP.md | expanded (+18 lines) | ~523 |
+| 21:29 | Edited .planning/ROADMAP.md | 1→2 lines | ~42 |
+| 21:30 | Session end: 3 writes across 1 files (ROADMAP.md) | 1 reads | ~3395 tok |
+
+## Session: 2026-05-23 21:55
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-23 22:15
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 22:35 | Edited .planning/ROADMAP.md | 1→2 lines | ~89 |
+| 22:37 | Edited .planning/ROADMAP.md | expanded (+19 lines) | ~569 |
+| 22:37 | Edited .planning/ROADMAP.md | 1→2 lines | ~41 |
+| 22:39 | Created .planning/quick/260522-vfd-prototype-provider-detection/260522-vfd-PLAN.md | — | ~2872 |
+| 22:40 | planned provider detection waterfall quick task | .planning/quick/260522-vfd-prototype-provider-detection/260522-vfd-PLAN.md | plan written, 3 tasks | ~3200 |
+| 22:42 | Created .claude/worktrees/agent-af8d008deef4b25ca/src/providers/detect.ts | — | ~480 |
+| 22:42 | Created .claude/worktrees/agent-af8d008deef4b25ca/src/providers/index.ts | — | ~43 |
+| 22:43 | Created .claude/worktrees/agent-af8d008deef4b25ca/tests/provider-detect.test.ts | — | ~1956 |
+| 22:44 | Edited .claude/worktrees/agent-af8d008deef4b25ca/tests/provider-detect.test.ts | 9→7 lines | ~128 |
+| 22:45 | Edited .claude/worktrees/agent-af8d008deef4b25ca/src/client/run-foreground.ts | added 1 import(s) | ~49 |
+| 22:45 | Edited .claude/worktrees/agent-af8d008deef4b25ca/src/client/run-foreground.ts | 4→7 lines | ~90 |
+| 22:46 | Created .planning/quick/260522-vfd-prototype-provider-detection/260522-vfd-SUMMARY.md | — | ~940 |
+| 22:47 | Edited .claude/worktrees/agent-af8d008deef4b25ca/.wolf/anatomy.md | 3→5 lines | ~106 |
+| 22:47 | Edited .claude/worktrees/agent-af8d008deef4b25ca/.wolf/anatomy.md | 2→3 lines | ~98 |
+| 22:49 | Edited .planning/STATE.md | 3→4 lines | ~137 |
+| 22:50 | Edited .planning/STATE.md | 2→4 lines | ~48 |
+| 22:50 | Session end: 15 writes across 9 files (ROADMAP.md, 260522-vfd-PLAN.md, detect.ts, index.ts, provider-detect.test.ts) | 15 reads | ~41544 tok |
+
+## Session: 2026-05-23 11:50
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:03 | Edited shell/zsh/qq.zsh | modified returns() | ~680 |
+| 12:03 | Edited shell/zsh/qq.zsh | removed 35 lines | ~9 |
+| 12:04 | Edited tests/zsh-widget.test.ts | modified once() | ~1581 |
+| 12:04 | Edited tests/zsh-widget.test.ts | toContain() → toBe() | ~94 |
+| 12:05 | extract _qq_apply_result_str helper + 9 new tests covering LBUFFER/history/summary for both paths | shell/zsh/qq.zsh, tests/zsh-widget.test.ts | 148/148 pass | ~2.5k tok |
+| 12:05 | Session end: 4 writes across 2 files (qq.zsh, zsh-widget.test.ts) | 5 reads | ~18955 tok |
+| 12:17 | Edited tests/zsh-widget.test.ts | 34→34 lines | ~388 |
+| 12:18 | Edited tests/zsh-widget.test.ts | 31→31 lines | ~343 |
+| 12:18 | Edited tests/zsh-widget.test.ts | 27→30 lines | ~335 |
+| 12:19 | Edited tests/zsh-widget.test.ts | query() → command() | ~519 |
+| 12:19 | Session end: 8 writes across 2 files (qq.zsh, zsh-widget.test.ts) | 5 reads | ~22000 tok |
+| 12:24 | Edited shell/zsh/qq.zsh | 5→5 lines | ~78 |
+| 12:26 | Edited tests/client-result.test.ts | 5→7 lines | ~127 |
+| 12:26 | Session end: 10 writes across 3 files (qq.zsh, zsh-widget.test.ts, client-result.test.ts) | 5 reads | ~22210 tok |
+| 12:41 | Session end: 10 writes across 3 files (qq.zsh, zsh-widget.test.ts, client-result.test.ts) | 5 reads | ~22210 tok |
+| 12:42 | Session end: 10 writes across 3 files (qq.zsh, zsh-widget.test.ts, client-result.test.ts) | 5 reads | ~22210 tok |

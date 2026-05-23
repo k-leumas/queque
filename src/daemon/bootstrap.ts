@@ -62,11 +62,7 @@ function assertSafeSocketPath(socketPath: string): void {
   const base = path.basename(resolved);
   const dir = path.dirname(resolved);
   const tmpRoots = ['/tmp', '/private/tmp'];
-  if (
-    !tmpRoots.includes(dir) ||
-    !base.startsWith('qq-') ||
-    !base.endsWith('.sock')
-  ) {
+  if (!tmpRoots.includes(dir) || !base.startsWith('qq-') || !base.endsWith('.sock')) {
     throw new Error(`unsafe socket path rejected: ${socketPath}`);
   }
 }
