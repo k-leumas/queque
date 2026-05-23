@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: ~
-last_updated: "2026-05-22T14:10:00.000Z"
-last_activity: 2026-05-22 -- Phase 04 complete (UAT fixes + phase closure)
+status: completed
+stopped_at: context exhaustion at 79% (2026-05-23)
+last_updated: "2026-05-23T03:54:03.746Z"
+last_activity: 2026-05-22 -- Phase 04 UAT fixes applied and phase marked complete
 progress:
   total_phases: 8
-  completed_phases: 7
+  completed_phases: 6
   total_plans: 18
   completed_plans: 18
-  percent: 88
+  percent: 75
 ---
 
 # Project State
@@ -96,9 +96,13 @@ None yet.
 | 260506-pja | make qq initialization feel visually faster; investigate starting work on first question mark and reduce perceived latency | 2026-05-06 | — | [260506-pja-make-qq-initialization-feel-visually-fas](./quick/260506-pja-make-qq-initialization-feel-visually-fas/) |
 | 260522-uat-fixes | phase-04 UAT fixes — two-row layout, FILTER label, zellij --name qq, query context header, setopt interactivecomments | 2026-05-22 | ac90c65 | — |
 | 260522-tui-cleanup | unmount Ink TUI on SIGHUP/SIGTERM to clear terminal artifacts on close | 2026-05-22 | 599bb99 | [260522-tui-cleanup-on-close](./quick/260522-tui-cleanup-on-close/) |
+| 260522-selection-summary | on selection: print summary above PS1, add query to history, restore query to LBUFFER | 2026-05-22 | 563b8a9 | [20260522-selection-summary-and-history](./quick/20260522-selection-summary-and-history/) |
+| 260522-vfd | prototype provider detection: detectProvider() waterfall — ANTHROPIC_API_KEY → claude CLI → ollama → OPENAI_API_KEY → none | 2026-05-23 | a86159d | [260522-vfd-prototype-provider-detection](./quick/260522-vfd-prototype-provider-detection/) |
 
 ## Session Continuity
 
-Last session: 2026-05-22T14:26:00.000Z
-Stopped at: ~
+Last activity: 2026-05-23 — completed quick task 260522-vfd: prototype provider detection
+
+Last session: 2026-05-23T03:54:03.738Z
+Stopped at: context exhaustion at 79% (2026-05-23)
 Resume file: None
