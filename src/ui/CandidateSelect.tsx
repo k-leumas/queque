@@ -1,5 +1,5 @@
 import { Box, Text, useInput } from 'ink';
-import React, { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import type { CandidateList } from '../contracts/candidates.js';
 import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';

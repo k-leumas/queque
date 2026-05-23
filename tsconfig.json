@@ -3,7 +3,7 @@
     "target": "ES2024",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "strict": true,
     "declaration": true,
     "declarationMap": true,
@@ -17,5 +17,12 @@
     "ignoreDeprecations": "6.0",
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts", "tests/**/*.tsx", "tsup.config.ts", "vitest.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "tsup.config.ts",
+    "vitest.config.ts"
+  ]
 }

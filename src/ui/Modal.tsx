@@ -1,5 +1,5 @@
 import { Box } from 'ink';
-import React, { type ReactElement, type ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 interface ModalProps {
   children: ReactNode;
