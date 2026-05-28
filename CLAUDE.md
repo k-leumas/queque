@@ -7,9 +7,9 @@ This project uses OpenWolf for context management. Read and follow .wolf/OPENWOL
 <!-- GSD:project-start source:PROJECT.md -->
 ## Project
 
-**Que-Que**
+**QueQue**
 
-Que-Que is a `zsh`-integrated command-line assistant that opens from a literal `??` trigger while the user is editing the shell command line. It stays inside the terminal workflow, uses the text already typed before the trigger as context, and returns an explainable shell command back into the live buffer instead of pushing the user out to a browser or a prompt-taking CLI.
+QueQue is a `zsh`-integrated command-line assistant that opens from a literal `??` trigger while the user is editing the shell command line. It stays inside the terminal workflow, uses the text already typed before the trigger as context, and returns an explainable shell command back into the live buffer instead of pushing the user out to a browser or a prompt-taking CLI.
 
 The initial product is for developers and terminal users who want faster command recall without giving up control, but it should also make the terminal less intimidating for newer users by showing what suggested commands do.
 

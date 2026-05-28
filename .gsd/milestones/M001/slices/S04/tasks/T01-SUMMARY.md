@@ -35,7 +35,7 @@ Added `tests/**/*.test.tsx` to the `test.include` array. The new `candidate-sele
 
 ### Task 2: client-result.test.ts — ink mock for modal-always path
 
-Added `vi.mock('ink', ...)` that immediately invokes `onSelect` with the first candidate's command via `Promise.resolve().then()`. This prevents the "emits a replace-buffer result in llm mode" test from hanging when Wave 2 removes the single-candidate fast-accept bypass (D-03). The "Que-Que is thinking..." assertion was already absent from the HEAD version.
+Added `vi.mock('ink', ...)` that immediately invokes `onSelect` with the first candidate's command via `Promise.resolve().then()`. This prevents the "emits a replace-buffer result in llm mode" test from hanging when Wave 2 removes the single-candidate fast-accept bypass (D-03). The "QueQue is thinking..." assertion was already absent from the HEAD version.
 
 ### Task 3: tests/candidate-select.test.tsx — Wave 2 contract scaffold
 

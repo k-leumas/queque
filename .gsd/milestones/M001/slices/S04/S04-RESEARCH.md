@@ -15,7 +15,7 @@
 - **D-02:** If `request.lbuffer` is empty, all LLM-returned candidates are shown without filtering. The search box shows the placeholder copy (`type to filter…`).
 - **D-03:** The existing fast-accept bypass (1 candidate → direct buffer write, no modal) is **removed**. The modal always shows regardless of how many candidates the provider returns.
 - **D-04:** The best candidate is first in the list (index 0, preselected on load). Sort order is owned by the provider — `CandidateSelect` renders candidates as received, no UI-side re-ranking.
-- **D-05:** The modal opens **immediately** with a spinner (before `fetchCandidates` returns). The raw ANSI `"Que-Que is thinking..."` pre-modal text in `run-foreground.ts` is removed.
+- **D-05:** The modal opens **immediately** with a spinner (before `fetchCandidates` returns). The raw ANSI `"QueQue is thinking..."` pre-modal text in `run-foreground.ts` is removed.
 - **D-06:** `CandidateSelect` receives `candidates: CandidateList | null`. When `null`, renders the spinner zone. When `CandidateList`, renders candidate rows. Error state per UI-SPEC copywriting contract.
 - **D-07:** `run-foreground.ts` passes `candidates={null}` on first render, then pushes the resolved `CandidateList` into the already-rendered Ink modal via a nullable prop update (`rerender()` — Claude's discretion on exact mechanism).
 
@@ -360,7 +360,7 @@ Or use early return: `if (!candidates) return;` at the top of the key handler fo
 
 ### Pitfall 5: Existing Test `"shows immediate loading feedback"` Expects Raw ANSI
 
-**What goes wrong:** `tests/client-result.test.ts` line 299 asserts `writeStreamWrites.join("").toContain("Que-Que is thinking...")`. After D-05 (remove raw ANSI, use Ink spinner), the raw ANSI write no longer happens. This test will fail.
+**What goes wrong:** `tests/client-result.test.ts` line 299 asserts `writeStreamWrites.join("").toContain("QueQue is thinking...")`. After D-05 (remove raw ANSI, use Ink spinner), the raw ANSI write no longer happens. This test will fail.
 
 **Why it happens:** The test was written to verify the existing `showLoadingIndicator` function. D-05 replaces that function with a modal-first Ink render.
 
@@ -461,7 +461,7 @@ fetchCandidates(envelope, request.rbuffer).then(candidates => {
 | Old Approach | Current Approach | When Changed | Impact |
 |--------------|------------------|--------------|--------|
 | `❯` selection glyph | `┌>` (box-drawing + arrow) | Phase 03.1 | Matches monocle visual language |
-| Raw ANSI loading text (`\r\x1b[2KQue-Que is thinking...`) | Ink spinner inside modal | Phase 03.1 | All terminal output owned by Ink; no pre-modal ANSI writes |
+| Raw ANSI loading text (`\r\x1b[2KQueQue is thinking...`) | Ink spinner inside modal | Phase 03.1 | All terminal output owned by Ink; no pre-modal ANSI writes |
 | Single-candidate fast-accept bypass (D-03 removes) | Modal always shows | Phase 03.1 | Consistent UX regardless of candidate count |
 | `candidates: CandidateList` (non-nullable) | `candidates: CandidateList \| null` | Phase 03.1 | Enables modal-first render before provider responds |
 
@@ -484,7 +484,7 @@ fetchCandidates(envelope, request.rbuffer).then(candidates => {
    - RESOLVED: Use `rerender()` — implemented in Plan 03 Task 2. `rerender()` is simpler and avoids ref leakage. UI-SPEC defers the choice to Claude's discretion; `rerender()` is the default with a thin wrapper-component fallback if test infrastructure requires it.
 
 2. **Test update scope for `"shows immediate loading feedback"` test**
-   - RESOLVED: Replace with modal-result assertion — implemented in Plan 01 Task 2. The raw ANSI assertion (`"Que-Que is thinking..."`) is replaced with a check that the modal renders successfully and resolves to a non-null CandidateList.
+   - RESOLVED: Replace with modal-result assertion — implemented in Plan 01 Task 2. The raw ANSI assertion (`"QueQue is thinking..."`) is replaced with a check that the modal renders successfully and resolves to a non-null CandidateList.
 
 ---
 
@@ -523,7 +523,7 @@ Step 2.6: SKIPPED (no new external dependencies — phase uses only existing ins
 ### Wave 0 Gaps
 
 - [ ] `tests/candidate-select.test.tsx` — unit test for `CandidateSelect` with `candidates=null` (spinner) and `CandidateList` (candidate rows), keyboard nav, filter behavior. Requires Ink test renderer or mock of `render`.
-- [ ] Update `tests/client-result.test.ts` line 299 — replace `"Que-Que is thinking..."` assertion with modal-first behavior assertion.
+- [ ] Update `tests/client-result.test.ts` line 299 — replace `"QueQue is thinking..."` assertion with modal-first behavior assertion.
 - [ ] Update `tests/client-result.test.ts` — remove/update single-candidate fast-accept test (D-03 removes that path).
 
 ---

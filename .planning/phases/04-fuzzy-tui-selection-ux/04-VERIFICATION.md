@@ -143,7 +143,7 @@ No `TBD`, `FIXME`, or `XXX` markers found in any file modified by this phase.
 
 #### 4. TUI opens with focus in the input area (first keystroke goes to search box)
 
-**Test:** Type `??` in a Zellij pane to open Que-Que. Immediately type a character (e.g., `g`). Do not click or press Tab first.
+**Test:** Type `??` in a Zellij pane to open QueQue. Immediately type a character (e.g., `g`). Do not click or press Tab first.
 **Expected:** The character `g` appears in the search box and filters the candidate list — no click or extra keypress needed to activate input.
 **Why human:** Requires live Zellij PTY — cannot mock Ink raw mode and Zellij PTY focus acquisition in vitest. `useInput` is always-active in Ink, but the PTY focus handoff from Zellij to the floating pane is the variable.
 

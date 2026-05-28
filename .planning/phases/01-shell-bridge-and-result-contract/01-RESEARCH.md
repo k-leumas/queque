@@ -24,7 +24,7 @@ None provided in `CONTEXT.md`.
 
 | ID | Description | Research Support |
 |----|-------------|------------------|
-| SHL-01 | Trigger Que-Que from literal `??` while editing a `zsh` command line | Use a custom `?` ZLE widget with look-behind on `LBUFFER`; do not bind `??` directly. |
+| SHL-01 | Trigger QueQue from literal `??` while editing a `zsh` command line | Use a custom `?` ZLE widget with look-behind on `LBUFFER`; do not bind `??` directly. |
 | SHL-02 | Capture text already typed before the trigger | Treat `LBUFFER` without the consumed trigger `?` as canonical pre-trigger context; pass `lbuffer`/`rbuffer` separately. |
 | SHL-03 | Dismiss with `Esc` and return with no buffer changes | Run the foreground client on `/dev/tty`; return a structured `cancel` result that leaves `LBUFFER`/`RBUFFER` untouched. |
 | SHL-04 | Write a chosen command back into the live shell buffer with correct cursor position | Use a shell result contract that returns replacement `lbuffer` and `rbuffer`, not a raw numeric cursor offset. |
@@ -45,7 +45,7 @@ None provided in `CONTEXT.md`.
 
 ## Summary
 
-Phase 1 should lock down three seams and avoid solving anything else yet: the ZLE trigger widget, a UI-neutral shell result contract, and the warm daemon bootstrap path. The correct `zsh` trigger pattern is not a `bindkey '??'` sequence. Because `?` is already bound, binding both `?` and `??` would make single `?` subject to `KEYTIMEOUT`; every literal `?` would feel delayed. The stable pattern is to bind `?` to a custom widget, call `.self-insert` for the first `?`, and on the second `?` detect the trailing `?` in `LBUFFER`, consume it, and launch Que-Que.
+Phase 1 should lock down three seams and avoid solving anything else yet: the ZLE trigger widget, a UI-neutral shell result contract, and the warm daemon bootstrap path. The correct `zsh` trigger pattern is not a `bindkey '??'` sequence. Because `?` is already bound, binding both `?` and `??` would make single `?` subject to `KEYTIMEOUT`; every literal `?` would feel delayed. The stable pattern is to bind `?` to a custom widget, call `.self-insert` for the first `?`, and on the second `?` detect the trailing `?` in `LBUFFER`, consume it, and launch QueQue.
 
 The most important shell/TUI fact is that ZLE widget functions run with stdin redirected from `/dev/null`. A foreground Ink client launched naively from the widget will not receive keyboard input. The widget must therefore spawn the client with `</dev/tty >/dev/tty 2>&1`, while result transport happens out-of-band. For the shell mutation contract, do not send back `buffer + cursor` as the canonical result. `zsh` cursor positions are character-oriented while Node string indexes are UTF-16 code-unit-oriented. Returning `{lbuffer, rbuffer}` avoids cross-runtime cursor math and lets the shell restore the cursor by assigning `LBUFFER` and `RBUFFER`.
 

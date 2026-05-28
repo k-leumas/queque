@@ -1,8 +1,8 @@
-# Research Summary: Que-Que
+# Research Summary: QueQue
 
 ## Recommended Direction
 
-Build Que-Que as a TypeScript/Node LTS product with three runtime layers: `zsh` shell adapter, foreground TUI client, and a per-user background daemon over a Unix socket. Optimize the fast path first: literal `??` invocation, ranked command candidates with explanations, and safe shell-buffer replacement.
+Build QueQue as a TypeScript/Node LTS product with three runtime layers: `zsh` shell adapter, foreground TUI client, and a per-user background daemon over a Unix socket. Optimize the fast path first: literal `??` invocation, ranked command candidates with explanations, and safe shell-buffer replacement.
 
 ## Table Stakes
 
@@ -36,7 +36,7 @@ Build Que-Que as a TypeScript/Node LTS product with three runtime layers: `zsh` 
 5. Clarification chat inside the same TUI
 6. Hardening, privacy defaults, and extension seams
 
-# Architecture Research: Que-Que
+# Architecture Research: QueQue
 
 ## Recommended Component Boundaries
 
@@ -117,7 +117,7 @@ Responsibilities:
 - Keep candidate list and clarification state in one TUI model; avoid separate mini-apps.
 - Put extension registries in place before adding non-default providers or shells.
 
-# Stack Research: Que-Que
+# Stack Research: QueQue
 
 ## Recommended Stack
 
@@ -191,7 +191,7 @@ Responsibilities:
 - **High**: Node LTS, TypeScript, ZLE integration, Unix-socket daemon, Zod, Anthropic SDK, pnpm, tsup, vitest, cac.
 - **Medium**: Ink as the long-term TUI layer; verify raw input and focus ergonomics during Phase 4 and be willing to replace helper components if they constrain the UX.
 
-# Features Research: Que-Que
+# Features Research: QueQue
 
 ## Table Stakes
 
@@ -255,7 +255,7 @@ Responsibilities:
 - Explanation strings must stay concise or the TUI becomes noisy.
 - Dynamic context gathering needs strong guardrails so “more context” does not become “too much context.”
 
-# Pitfalls Research: Que-Que
+# Pitfalls Research: QueQue
 
 ## Pitfall 1: Breaking the Shell Editing Flow
 

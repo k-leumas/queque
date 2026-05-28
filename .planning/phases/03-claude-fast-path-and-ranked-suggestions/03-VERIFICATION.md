@@ -21,11 +21,11 @@ overrides_applied: 0
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | Que-Que can call Claude using `ANTHROPIC_API_KEY` | VERIFIED | `src/providers/claude.ts` reads `process.env.ANTHROPIC_API_KEY` and passes it to `new Anthropic({ apiKey })`. Test in `tests/claude-provider.test.ts` asserts `anthropicCtorMock` called with `{ apiKey: 'test-key' }`. |
+| 1 | QueQue can call Claude using `ANTHROPIC_API_KEY` | VERIFIED | `src/providers/claude.ts` reads `process.env.ANTHROPIC_API_KEY` and passes it to `new Anthropic({ apiKey })`. Test in `tests/claude-provider.test.ts` asserts `anthropicCtorMock` called with `{ apiKey: 'test-key' }`. |
 | 2 | Claude is implemented through the shared LLM adapter contract rather than a special-case code path | VERIFIED | `src/providers/provider.ts` exports `LLMAdapter` interface; `src/providers/claude.ts` imports `type { LLMAdapter }` and exports `export const claudeAdapter: LLMAdapter = { fetchCandidates }`. |
 | 3 | High-confidence requests return ranked command candidates instead of raw model text | VERIFIED | `fetchCandidates` calls `parseCandidates()` which validates through `candidateListSchema.parse()` (Zod, 1–5 items, command+explanation per item) before returning. `ensureSelectableCandidates` pads for selector. |
 | 4 | Every command candidate includes a concise explanation of what it will do | VERIFIED | `candidateListSchema` enforces `{ command: string; explanation: string }` per item. System prompt instructs Claude: "Return ONLY a JSON array of command candidates…". |
-| 5 | Provider or parsing failures surface without mutating the shell buffer | VERIFIED | (a) `run-foreground.ts` inner `.catch()` writes `{ kind: 'error', message: 'Que-Que: … — press any key' }` to FIFO; (b) outer catch does the same; (c) `qq.zsh` `_qq_apply_result error)` and `qq-question-widget error)` both restore `QQ_ORIG_LBUFFER`/`QQ_ORIG_RBUFFER` without mutation, returning 0. |
+| 5 | Provider or parsing failures surface without mutating the shell buffer | VERIFIED | (a) `run-foreground.ts` inner `.catch()` writes `{ kind: 'error', message: 'QueQue: … — press any key' }` to FIFO; (b) outer catch does the same; (c) `qq.zsh` `_qq_apply_result error)` and `qq-question-widget error)` both restore `QQ_ORIG_LBUFFER`/`QQ_ORIG_RBUFFER` without mutation, returning 0. |
 
 **Score:** 5/5 truths verified
 
@@ -39,13 +39,13 @@ overrides_applied: 0
 | `src/providers/claude.ts` | Claude LLMAdapter implementor | VERIFIED | Exports `fetchCandidates` (named) and `claudeAdapter: LLMAdapter`. Uses `resolveModel()` with `claude-haiku-4-5-20251001` default. `suggestShellResult` deleted (0 occurrences confirmed). `CHEAPEST_FIRST` deleted (0 occurrences). |
 | `src/contracts/shell.ts` | shellResultSchema with error variant | VERIFIED | `z.object({ kind: z.literal('error'), message: z.string() })` present as third discriminated union arm. |
 | `src/contracts/request.ts` | normalizedRequestSchema with confidence field | VERIFIED | `shellRequestSchema.extend({ intent: requestIntentSchema, confidence: z.number().min(0).max(1) })` — confidence present. |
-| `src/client/run-foreground.ts` | Error ShellResult on failure, confidence wired | VERIFIED | `confidence: decision.confidence` at NormalizedRequest construction. Inner `.catch()` and outer `catch` both write `{ kind: 'error', message: 'Que-Que: ${message} — press any key' }`. |
+| `src/client/run-foreground.ts` | Error ShellResult on failure, confidence wired | VERIFIED | `confidence: decision.confidence` at NormalizedRequest construction. Inner `.catch()` and outer `catch` both write `{ kind: 'error', message: 'QueQue: ${message} — press any key' }`. |
 | `src/registry/bootstrap.ts` | Claude provider backend descriptor registered | VERIFIED | `registerProviderBackend({ id: 'claude', name: 'Claude (Anthropic)', description: '...' })` called inside `bootstrapBuiltins()`. |
 | `shell/zsh/qq.zsh` | error) case in both case blocks | VERIFIED | `grep -c 'error)'` = 2. `_qq_apply_result error)` returns 0 and restores buffers. `qq-question-widget error)` restores buffers (no return needed in widget block). |
 | `tests/claude-provider.test.ts` | No modelListMock; asserts haiku default | VERIFIED | Zero `modelListMock` references. Test 1 asserts `request.model === 'claude-haiku-4-5-20251001'`. Test 2 asserts `QQ_MODEL` env override. |
 | `tests/shell-contract.test.ts` | Positive test for error ShellResult variant | VERIFIED | Test "accepts {kind: error, message} ShellResult" passes with `safeParse` success. Test "rejects error variant without message field" passes. |
 | `tests/zsh-widget.test.ts` | Test for _qq_apply_result error kind returning 0 | VERIFIED | `describe('result application: error kind restores buffers and returns 0')` — asserts exit=0, lbuffer=original left, rbuffer=original right. |
-| `tests/client-result.test.ts` | Test: error ShellResult when fetchCandidates rejects | VERIFIED | "writes error ShellResult to FIFO when fetchCandidates rejects" — asserts `parsed.kind === 'error'`, message contains 'API timeout' and 'Que-Que:'. |
+| `tests/client-result.test.ts` | Test: error ShellResult when fetchCandidates rejects | VERIFIED | "writes error ShellResult to FIFO when fetchCandidates rejects" — asserts `parsed.kind === 'error'`, message contains 'API timeout' and 'QueQue:'. |
 
 ---
 

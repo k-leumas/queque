@@ -11,7 +11,7 @@
 
 ### Locked Decisions
 
-- **D-01:** Zellij is a **hard requirement**. If `$ZELLIJ` env var is not set, Que-Que prints a clear message and exits without showing a modal. Non-Zellij support deferred to Phase 6.
+- **D-01:** Zellij is a **hard requirement**. If `$ZELLIJ` env var is not set, QueQue prints a clear message and exits without showing a modal. Non-Zellij support deferred to Phase 6.
 - **D-02:** The existing inline TTY rendering path (MODAL_CHROME_LINES scroll hack) is **removed**. No fallback rendering mode in this phase.
 - **D-03:** The ZSH widget creates a named pipe (`mkfifo`) before launching the floating pane. The FIFO path is passed to the client as `--result-file`.
 - **D-04:** The client writes the JSON result directly to the FIFO path using `result-writer.ts` logic. No separate temp result file.
@@ -203,7 +203,7 @@ Inside any Zellij pane, these environment variables are set:
 | `ZELLIJ` | `0` (integer string, not `true`) | Primary detection variable |
 | `ZELLIJ_PANE_ID` | `0`, `1`, etc. | Pane identifier |
 | `ZELLIJ_SESSION_NAME` | session name string | Secondary detection |
-| `ZELLIJ_SOCKET_DIR` | socket directory path | Not needed by Que-Que |
+| `ZELLIJ_SOCKET_DIR` | socket directory path | Not needed by QueQue |
 
 **Detection recommendation:** Use `$ZELLIJ` (not `$ZELLIJ_SESSION_NAME`) for detection. In zsh:
 ```zsh
@@ -361,7 +361,7 @@ Note: ZLE widgets run in the current shell, not a subshell. Trap must be scoped 
 **Zellij detection:**
 ```zsh
 if [[ -z "$ZELLIJ" ]]; then
-  zle -M "Que-Que requires Zellij (https://zellij.dev). See docs for setup."
+  zle -M "QueQue requires Zellij (https://zellij.dev). See docs for setup."
   return 1
 fi
 ```
@@ -436,7 +436,7 @@ qq-question-widget() {
 
   # --- Zellij detection ---
   if [[ -z "$ZELLIJ" ]]; then
-    zle -M "Que-Que requires Zellij — see https://github.com/example/qq#setup"
+    zle -M "QueQue requires Zellij — see https://github.com/example/qq#setup"
     return 1
   fi
 

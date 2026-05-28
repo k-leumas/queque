@@ -1,8 +1,8 @@
-# Roadmap: Que-Que
+# Roadmap: QueQue
 
 ## Overview
 
-Que-Que moves from a shell-bridge prototype to a daily-driver terminal assistant by locking down the shell contract first, then layering in dynamic intent routing, Claude-backed command generation, a fuzzy-finder-style TUI, clarification chat, and hardening/extension seams. The roadmap is ordered to get a usable macOS `zsh` product working quickly while preserving room for cross-OS `zsh`, plugins, additional providers, and local models after the MVP.
+QueQue moves from a shell-bridge prototype to a daily-driver terminal assistant by locking down the shell contract first, then layering in dynamic intent routing, Claude-backed command generation, a fuzzy-finder-style TUI, clarification chat, and hardening/extension seams. The roadmap is ordered to get a usable macOS `zsh` product working quickly while preserving room for cross-OS `zsh`, plugins, additional providers, and local models after the MVP.
 
 ## Phases
 
@@ -13,24 +13,24 @@ Que-Que moves from a shell-bridge prototype to a daily-driver terminal assistant
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
-- [x] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps Que-Que general-purpose instead of repo-centric.
+- [x] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps QueQue general-purpose instead of repo-centric.
 - [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
 - [x] **Phase 3.1: Monocle-style Interface and Interactivity** - Update interface and interactivity to match the monocle terminal UI model. (INSERTED)
 - [x] **Phase 3.2: Zellij floating pane integration for best UX** - Reduce scope to Zellij floating panes for best UX. (INSERTED)
 - [x] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
 - [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
-- [ ] **Phase 7: Context-Aware Learning and Ambient Suggestions** - Make Que-Que learn from every interaction and act without needing a query.
-- [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make Que-Que work out of the box for anyone who already has Claude Code, Ollama, or an OpenAI key — no manual setup required.
+- [ ] **Phase 7: Context-Aware Learning and Ambient Suggestions** - Make QueQue learn from every interaction and act without needing a query.
+- [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make QueQue work out of the box for anyone who already has Claude Code, Ollama, or an OpenAI key — no manual setup required.
 
 ## Phase Details
 
 ### Phase 1: Shell Bridge and Result Contract
-**Goal**: Deliver a working `zsh` loop where literal `??` opens Que-Que, `Esc` cancels safely, and a chosen command comes back into the live shell buffer.
+**Goal**: Deliver a working `zsh` loop where literal `??` opens QueQue, `Esc` cancels safely, and a chosen command comes back into the live shell buffer.
 **Depends on**: Nothing (first phase)
 **Requirements**: SHL-01, SHL-02, SHL-03, SHL-04, RUN-01
 **Success Criteria** (what must be TRUE):
-  1. User can type `??` in `zsh` and open Que-Que without leaving the shell editing session.
+  1. User can type `??` in `zsh` and open QueQue without leaving the shell editing session.
   2. Text already typed before the trigger is captured and available to the client request.
   3. Cancel returns the user to the shell with no buffer changes.
   4. Accepting a result writes a command and cursor position back into the shell buffer reliably.
@@ -43,7 +43,7 @@ Plans:
 - [x] 01-03-PLAN.md — Stand up the daemon bootstrap path and basic client invocation loop.
 
 ### Phase 2: Intent Router and Context Pipeline
-**Goal**: Make Que-Que general-purpose by separating base context from intent-specific context and by registering context sources behind clean interfaces.
+**Goal**: Make QueQue general-purpose by separating base context from intent-specific context and by registering context sources behind clean interfaces.
 **Depends on**: Phase 1
 **Requirements**: INT-01, INT-02, INT-03, EXT-01
 **Success Criteria** (what must be TRUE):
@@ -64,7 +64,7 @@ Plans:
 **Depends on**: Phase 2
 **Requirements**: PRV-01, PRV-02, PRV-03, CMD-01, CMD-02, SAFE-01
 **Success Criteria** (what must be TRUE):
-  1. Que-Que can call Claude using `ANTHROPIC_API_KEY`.
+  1. QueQue can call Claude using `ANTHROPIC_API_KEY`.
   2. Claude is implemented through the shared LLM adapter contract rather than a special-case code path.
   3. High-confidence requests return ranked command candidates instead of raw model text.
   4. Every command candidate includes a concise explanation of what it will do.
@@ -135,11 +135,11 @@ Plans:
 - [ ] 05-03: Return refined command suggestions from clarification back into the existing selection UX.
 
 ### Phase 6: Hardening, Privacy Defaults, and Extension Seams
-**Goal**: Make Que-Que safe for daily use while preserving the extension architecture needed for cross-OS `zsh`, plugins, new providers, and local history.
+**Goal**: Make QueQue safe for daily use while preserving the extension architecture needed for cross-OS `zsh`, plugins, new providers, and local history.
 **Depends on**: Phase 5
 **Requirements**: CMD-04
 **Success Criteria** (what must be TRUE):
-  1. Que-Que remains insertion-only and never auto-executes commands.
+  1. QueQue remains insertion-only and never auto-executes commands.
   2. Privacy-sensitive defaults are documented and enforced in base request/context handling.
   3. Built-in modules use extension registries consistently instead of bypassing them.
   4. The codebase is ready for cross-OS `zsh` as the next delivery step and plugin work immediately after.
@@ -152,7 +152,7 @@ Plans:
 - [ ] 06-03: Package the MVP for daily-driver usage and document the next expansion path.
 
 ### Phase 7: Context-Aware Learning and Ambient Suggestions
-**Goal**: Make Que-Que learn from every interaction. Shell history, git state, and accepted-command logs feed a local index in the daemon. Common patterns resolve instantly without a Claude call. Empty-lbuffer `??` uses ambient context (dirty tree, last exit code, project type) instead of requiring a query text.
+**Goal**: Make QueQue learn from every interaction. Shell history, git state, and accepted-command logs feed a local index in the daemon. Common patterns resolve instantly without a Claude call. Empty-lbuffer `??` uses ambient context (dirty tree, last exit code, project type) instead of requiring a query text.
 **Depends on**: Phase 6
 **Requirements**: EXT-01, RUN-01
 **Success Criteria** (what must be TRUE):
@@ -167,7 +167,7 @@ Plans:
 Plans:
 - [ ] 07-01: Daemon event log and SQLite pattern index — write `~/.local/share/qq/events.jsonl` on every accepted selection; build a SQLite index (query hash → accepted command frequency) for cache lookups.
 - [ ] 07-02: Empty-lbuffer ambient context behavior — on `??` with no query text, classify ambient signals (git status, `$?`, `$PWD` project fingerprint) and route to a context-first suggestion path; integrate local cache hits before Claude is called.
-- [ ] 07-03: Proactive post-command suggestions — add `precmd` hook that fires a background Que-Que query after commands that exit non-zero; render dim suggestion line that the user can accept or ignore without interrupting the shell.
+- [ ] 07-03: Proactive post-command suggestions — add `precmd` hook that fires a background QueQue query after commands that exit non-zero; render dim suggestion line that the user can accept or ignore without interrupting the shell.
 
 ### Phase 8: Zero-Config Install and Provider Detection
 **Goal**: Make `qq` work on first run without any manual configuration. Detect Claude Code, Ollama, and OpenAI CLI auth in priority order and use the first available backend. When nothing is detected, guide the user to a working setup in under 60 seconds. The subprocess adapter is the right first implementation — token reuse and native API integration are later optimizations.
@@ -179,7 +179,7 @@ Plans:
   3. A developer with `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` set gets the same.
   4. A developer with none of the above gets a clear, short prompt explaining what to do — not a cryptic error.
   5. Detection runs in under 200 ms on startup (no blocking network calls except Ollama health check with a 300 ms timeout).
-  6. The detected provider is logged to debug output so users can verify what Que-Que is using.
+  6. The detected provider is logged to debug output so users can verify what QueQue is using.
 **Plans**: 3 plans
 **UI hint**: no
 

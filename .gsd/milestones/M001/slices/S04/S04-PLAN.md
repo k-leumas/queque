@@ -13,7 +13,7 @@
 
 Three gaps block the phase from being verifiable:
 1. vitest.config.ts only matches `.test.ts` — a new `.test.tsx` file won't be discovered.
-2. `tests/client-result.test.ts` line 299 asserts `"Que-Que is thinking..."` which D-05 removes.
+2. `tests/client-result.test.ts` line 299 asserts `"QueQue is thinking..."` which D-05 removes.
 3. `tests/client-result.test.ts` has a single-candidate test that assumes the fast-accept bypass (D-03 removes it).
 
 This plan closes all three gaps before any implementation work begins, so subsequent waves have green baselines.

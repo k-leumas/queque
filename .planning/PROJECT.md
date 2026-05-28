@@ -1,8 +1,8 @@
-# Que-Que
+# QueQue
 
 ## What This Is
 
-Que-Que is a `zsh`-integrated command-line assistant that opens from a literal `??` trigger while the user is editing the shell command line. It stays inside the terminal workflow, uses the text already typed before the trigger as context, and returns an explainable shell command back into the live buffer instead of pushing the user out to a browser or a prompt-taking CLI.
+QueQue is a `zsh`-integrated command-line assistant that opens from a literal `??` trigger while the user is editing the shell command line. It stays inside the terminal workflow, uses the text already typed before the trigger as context, and returns an explainable shell command back into the live buffer instead of pushing the user out to a browser or a prompt-taking CLI.
 
 The initial product is for developers and terminal users who want faster command recall without giving up control, but it should also make the terminal less intimidating for newer users by showing what suggested commands do.
 
@@ -34,9 +34,9 @@ Turn natural-language intent into a shell command that feels native to the termi
 
 ## Context
 
-The product exists because current AI command-line helpers still feel like strangers in the normal terminal flow. Browser-based chat requires copy-paste, and many CLI tools either take over the prompt, feel constraining, or do not expose enough levers to tune their behavior. Que-Que should feel more seamless: invoked inline from the current shell edit session, dismissible with `Esc`, and capable of writing the final command back into the same buffer.
+The product exists because current AI command-line helpers still feel like strangers in the normal terminal flow. Browser-based chat requires copy-paste, and many CLI tools either take over the prompt, feel constraining, or do not expose enough levers to tune their behavior. QueQue should feel more seamless: invoked inline from the current shell edit session, dismissible with `Esc`, and capable of writing the final command back into the same buffer.
 
-The intended audience spans advanced shell users and newer users. Advanced users should reach for Que-Que when they know what they want but do not want to recall exact syntax, quoting, or flag combinations. Newer users should benefit from short command explanations attached to each result so the tool teaches while it assists.
+The intended audience spans advanced shell users and newer users. Advanced users should reach for QueQue when they know what they want but do not want to recall exact syntax, quoting, or flag combinations. Newer users should benefit from short command explanations attached to each result so the tool teaches while it assists.
 
 The product is meant to be used during development of the product itself. Daily-driver usage on the local machine is part of the feedback loop for bug fixing and UX refinement.
 

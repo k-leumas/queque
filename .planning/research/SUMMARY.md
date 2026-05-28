@@ -1,8 +1,8 @@
-# Research Summary: Que-Que
+# Research Summary: QueQue
 
 ## Recommended Direction
 
-Build Que-Que as a TypeScript/Node LTS product with three runtime layers: `zsh` shell adapter, foreground TUI client, and a per-user background daemon over a Unix socket. Optimize the fast path first: literal `??` invocation, ranked command candidates with explanations, and safe shell-buffer replacement.
+Build QueQue as a TypeScript/Node LTS product with three runtime layers: `zsh` shell adapter, foreground TUI client, and a per-user background daemon over a Unix socket. Optimize the fast path first: literal `??` invocation, ranked command candidates with explanations, and safe shell-buffer replacement.
 
 ## Table Stakes
 

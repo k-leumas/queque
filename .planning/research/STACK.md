@@ -1,4 +1,4 @@
-# Stack Research: Que-Que
+# Stack Research: QueQue
 
 ## Recommended Stack
 

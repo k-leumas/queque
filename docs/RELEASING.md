@@ -2,7 +2,7 @@
 
 ## Overview
 
-Que-Que uses **semantic-release** to automate versioning, tagging, changelog generation, and GitHub releases. This ensures consistent, predictable releases following Semantic Versioning.
+QueQue uses **semantic-release** to automate versioning, tagging, changelog generation, and GitHub releases. This ensures consistent, predictable releases following Semantic Versioning.
 
 ## CI/CD Pipeline
 

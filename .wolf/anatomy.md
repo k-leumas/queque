@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-23T20:04:41.333Z
-> Files: 197 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-28T23:23:21.616Z
+> Files: 209 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -10,7 +10,7 @@
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2448 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2448 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/src/client/
 
@@ -26,7 +26,7 @@
 
 ## ../../../../tmp/sv-03-reviewfix-B78We4/shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2291 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2291 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-B78We4/src/cli/
 
@@ -80,11 +80,15 @@
 
 - `feedback_lint_before_commit.md` (~216 tok)
 - `feedback_no_coauthored.md` (~148 tok)
-- `MEMORY.md` — Memory Index (~73 tok)
+- `MEMORY.md` — Memory Index (~105 tok)
+- `project_target_audience.md` (~202 tok)
 
 ## ./
 
-- `CLAUDE.md` — OpenWolf (~57 tok)
+- `.releaserc.json` (~146 tok)
+- `CLAUDE.md` — OpenWolf (~1634 tok)
+- `package.json` — Node.js package manifest (name: queque) (~503 tok)
+- `README.md` — Project documentation (~1144 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 
 ## .claude/
@@ -121,7 +125,7 @@
 
 ## .claude/worktrees/agent-a1a70f3e84a5ede72/shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2387 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2387 tok)
 
 ## .claude/worktrees/agent-a1a70f3e84a5ede72/tests/
 
@@ -285,7 +289,7 @@
 
 ## .claude/worktrees/agent-accab398/shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~1407 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~1407 tok)
 
 ## .claude/worktrees/agent-accab398/tests/
 
@@ -297,7 +301,7 @@
 
 ## .claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2159 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2159 tok)
 
 ## .claude/worktrees/agent-ae3ff4eb91307526b/.planning/phases/04-fuzzy-tui-selection-ux/
 
@@ -310,7 +314,7 @@
 
 ## .claude/worktrees/agent-ae3ff4eb91307526b/shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2709 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2709 tok)
 
 ## .claude/worktrees/agent-ae3ff4eb91307526b/src/cli/
 
@@ -337,14 +341,23 @@
 
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~1962 tok)
 
+## .github/workflows/
+
+- `release.yaml` — CI: Release (~455 tok)
+
+## .gsd/
+
+- `PROJECT.md` — QueQue (~1526 tok)
+- `REQUIREMENTS.md` — Requirements (~1662 tok)
+
 ## .planning/
 
 - `.continue-here.md` — Session Checkpoint (~683 tok)
 - `config.json` (~258 tok)
 - `HANDOFF.json` (~920 tok)
-- `PROJECT.md` — Que-Que (~1527 tok)
-- `REQUIREMENTS.md` — Requirements: Que-Que (~1242 tok)
-- `ROADMAP.md` — Roadmap: Que-Que (~3799 tok)
+- `PROJECT.md` — QueQue (~1526 tok)
+- `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
 - `STATE.md` — Project State (~1362 tok)
 
 ## .planning/notes/
@@ -391,7 +404,9 @@
 ## .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/
 
 - `03.1-03-SUMMARY.md` — Phase 03.1 Plan 03: Wave 2 Core Implementation Summary (~2166 tok)
+- `03.1-PATTERNS.md` — Phase 03.1: Monocle-style Interface and Interactivity — Pattern Map (~5392 tok)
 - `03.1-REVIEW.md` — Phase 03.1: Code Review Report (~3497 tok)
+- `03.1-UI-SPEC.md` — Phase 03.1 — UI Design Contract: Monocle-style Interface and Interactivity (~3007 tok)
 - `03.1-VERIFICATION.md` — Phase 03.1: Monocle-style Interface and Interactivity — Verification Report (~4216 tok)
 
 ## .planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
@@ -408,7 +423,7 @@
 
 ## .planning/phases/04-fuzzy-tui-selection-ux/
 
-- `.continue-here.md` — Session Checkpoint — Phase 04 UAT Fixes Pending (~1113 tok)
+- `.continue-here.md` — Session Checkpoint — Phase 04 UAT Fixes Pending (~1112 tok)
 - `04-01-PLAN.md` — Trust Boundaries (~3163 tok)
 - `04-01-SUMMARY.md` — Phase 04 Plan 01: TDD Test Scaffolding Summary (~1281 tok)
 - `04-02-PLAN.md` — Trust Boundaries (~1718 tok)
@@ -441,17 +456,22 @@
 - `260522-vfd-PLAN.md` — Quick plan: prototype provider detection waterfall (5-step, detect.ts, tests, run-foreground wiring) (~1800 tok)
 - `260522-vfd-SUMMARY.md` — Phase quick Plan 260522-vfd: Prototype Provider Detection Summary (~881 tok)
 
+## .planning/quick/260528-mk1-rename-queque-to-queque-in-prose-write-/
+
+- `260528-mk1-PLAN.md` — Declares names (~2959 tok)
+
 ## .planning/research/
 
-- `ARCHITECTURE.md` — Architecture Research: Que-Que (~624 tok)
-- `FEATURES.md` — Features Research: Que-Que (~558 tok)
-- `PITFALLS.md` — Pitfalls Research: Que-Que (~736 tok)
-- `STACK.md` — Stack Research: Que-Que (~670 tok)
-- `SUMMARY.md` — Research Summary: Que-Que (~336 tok)
+- `ARCHITECTURE.md` — Architecture Research: QueQue (~667 tok)
+- `FEATURES.md` — Features Research: QueQue (~558 tok)
+- `PITFALLS.md` — Pitfalls Research: QueQue (~736 tok)
+- `STACK.md` — Stack Research: QueQue (~870 tok)
+- `SUMMARY.md` — Research Summary: QueQue (~335 tok)
 
 ## docs/
 
-- `SYSTEM_DESGN.md` — System Design (~3531 tok)
+- `RELEASING.md` — Release Process (~1183 tok)
+- `SYSTEM_DESGN.md` — System Design (~3530 tok)
 
 ## scripts/
 
@@ -459,7 +479,7 @@
 
 ## shell/zsh/
 
-- `qq.zsh` — qq.zsh — Que-Que ZLE widget and shell-side result contract (~2728 tok)
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
 
 ## src/cli/
 
@@ -472,7 +492,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3279 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3334 tok)
 
 ## src/contracts/
 
@@ -489,7 +509,7 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1566 tok)
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1563 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `Modal.tsx` — Modal (~98 tok)
 - `SearchInput.tsx` — SearchInput (~112 tok)
@@ -497,8 +517,9 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4638 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~6858 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6861 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1224 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~7280 tok)
+- `shell-contract.test.ts` — Declares validCancel (~804 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~7276 tok)

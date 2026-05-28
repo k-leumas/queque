@@ -1,9 +1,9 @@
 {
-  "name": "que-que",
+  "name": "queque",
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/k-leumas/que-que.git"
+    "url": "https://github.com/k-leumas/queque.git"
   },
   "type": "module",
   "bin": {

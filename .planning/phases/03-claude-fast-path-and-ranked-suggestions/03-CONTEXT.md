@@ -31,7 +31,7 @@ Introduce the formal LLM adapter contract, implement Claude behind it, extract a
 ### Error Handling (SAFE-01)
 - **D-10:** On Claude failure (API error, bad JSON, timeout): render a short error message in the Zellij pane, then write an `{ kind: 'error', message: string }` `ShellResult` to the FIFO. The ZSH widget reads it and returns to the shell buffer unchanged.
 - **D-11:** Extend `shellResultSchema` in `src/contracts/shell.ts` with an `error` variant: `z.object({ kind: z.literal('error'), message: z.string() })`. The widget's `_qq_apply_result` function must handle this kind and no-op on buffer mutation.
-- **D-12:** Error message shown in pane should be concise: `"Que-Que: <reason> — press any key"` then the pane closes.
+- **D-12:** Error message shown in pane should be concise: `"QueQue: <reason> — press any key"` then the pane closes.
 
 ### Prompt Contract (CMD-01, CMD-02)
 - **D-13:** The existing prompt structure (JSON array of `{ command, explanation }`) is kept. No changes to the response schema — `candidateListSchema` already covers 1–5 candidates.

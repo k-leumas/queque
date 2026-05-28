@@ -1,4 +1,4 @@
-# Requirements: Que-Que
+# Requirements: QueQue
 
 **Defined:** 2026-04-30
 **Core Value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
@@ -7,9 +7,9 @@
 
 ### Shell Integration
 
-- [ ] **SHL-01**: User can trigger Que-Que by typing a literal `??` while editing a `zsh` command line.
+- [ ] **SHL-01**: User can trigger QueQue by typing a literal `??` while editing a `zsh` command line.
 - [ ] **SHL-02**: Text already typed before the `??` trigger is captured as request context.
-- [ ] **SHL-03**: User can dismiss Que-Que with `Esc` and return to the shell with no buffer changes.
+- [ ] **SHL-03**: User can dismiss QueQue with `Esc` and return to the shell with no buffer changes.
 - [ ] **SHL-04**: User can confirm a suggested command and have it written back into the live shell buffer with a correct cursor position.
 
 ### Intent and Context
@@ -49,8 +49,8 @@
 
 ### Shell Expansion
 
-- **BASH-01**: User can invoke Que-Que from `bash` with equivalent buffer-replacement behavior.
-- **ZSHX-01**: User can use Que-Que on non-macOS `zsh` environments.
+- **BASH-01**: User can invoke QueQue from `bash` with equivalent buffer-replacement behavior.
+- **ZSHX-01**: User can use QueQue on non-macOS `zsh` environments.
 
 ### History and Personalization
 

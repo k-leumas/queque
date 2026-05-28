@@ -161,7 +161,7 @@ export function CandidateSelect({
     <Modal>
       {initialQuery && initialQuery.length > 0 && (
         <Box>
-          <Text dimColor>{`que-que › ${initialQuery}`}</Text>
+          <Text dimColor>{`queque › ${initialQuery}`}</Text>
         </Box>
       )}
       <SearchInput query={query} />

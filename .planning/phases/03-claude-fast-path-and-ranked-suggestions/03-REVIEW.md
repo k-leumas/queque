@@ -108,7 +108,7 @@ The outer `catch` block at line 190 correctly `await`s the same call, making the
   try {
     await writeShellResult(resultFile, {
       kind: 'error',
-      message: `Que-Que: ${message} — press any key`,
+      message: `QueQue: ${message} — press any key`,
     });
   } finally {
     unmount?.();
@@ -140,7 +140,7 @@ function parseCandidates(text: string): CandidateList {
   try {
     return candidateListSchema.parse(parsed);
   } catch {
-    return [{ command: 'echo ""', explanation: 'Que-Que: unexpected response format' }];
+    return [{ command: 'echo ""', explanation: 'QueQue: unexpected response format' }];
   }
 }
 ```

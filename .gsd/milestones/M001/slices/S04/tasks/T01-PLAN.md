@@ -8,7 +8,7 @@ Wave 0: Establish test infrastructure for Phase 03.1.
 
 Three gaps block the phase from being verifiable:
 1. vitest.config.ts only matches `.test.ts` — a new `.test.tsx` file won't be discovered.
-2. `tests/client-result.test.ts` line 299 asserts `"Que-Que is thinking..."` which D-05 removes.
+2. `tests/client-result.test.ts` line 299 asserts `"QueQue is thinking..."` which D-05 removes.
 3. `tests/client-result.test.ts` has a single-candidate test that assumes the fast-accept bypass (D-03 removes it).
 
 This plan closes all three gaps before any implementation work begins, so subsequent waves have green baselines.
@@ -20,7 +20,7 @@ Output: vitest.config.ts (updated), tests/client-result.test.ts (updated), tests
 
 - [ ] "pnpm test:run exits 0 after Wave 0 changes (no failing pre-existing assertions)"
 - [ ] "tests/candidate-select.test.tsx is discovered by vitest and runs"
-- [ ] "The raw ANSI assertion 'Que-Que is thinking...' is gone from client-result.test.ts"
+- [ ] "The raw ANSI assertion 'QueQue is thinking...' is gone from client-result.test.ts"
 - [ ] "The single-candidate fast-accept test is updated to reflect modal-always behavior"
 
 ## Files

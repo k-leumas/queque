@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# qq.zsh — Que-Que ZLE widget and shell-side result contract
+# qq.zsh — QueQue ZLE widget and shell-side result contract
 #
 # Source this file from .zshrc to enable the ?? trigger:
 #   source /path/to/shell/zsh/qq.zsh
@@ -127,10 +127,10 @@ _qq_apply_result_str() {
         return 1
       fi
       # Print two summary lines above the new PS1:
-      #   que-que › <original-query>
+      #   queque › <original-query>
       #   <selected-command>  # <explanation>
       local escaped_query="${QQ_ORIG_LBUFFER//\%/%%}"
-      [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}que-que › ${escaped_query}%f"
+      [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}queque › ${escaped_query}%f"
       print -r -- "${new_lbuffer}${new_rbuffer}"
       # Record original query in history so the user can recall and refine it.
       [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
@@ -167,7 +167,7 @@ _qq_apply_result() {
 # ---------------------------------------------------------------------------
 # Registered as the `?` key binding. On the first `?` it simply inserts the
 # character. On the second `?` (trailing `?` already in LBUFFER) it triggers
-# Que-Que using the Zellij floating pane IPC pattern:
+# QueQue using the Zellij floating pane IPC pattern:
 #   1. Guard: exits with message if not inside a Zellij session (D-01).
 #   2. Creates a named FIFO via mkfifo (D-03) and a request JSON temp file (D-07).
 #   3. Backgrounds zellij run --floating --close-on-exit with &! (D-06).

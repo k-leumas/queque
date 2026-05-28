@@ -1,6 +1,6 @@
 # M001: Migration
 
-**Vision:** Que-Que is a `zsh`-integrated command-line assistant that opens from a literal `?
+**Vision:** QueQue is a `zsh`-integrated command-line assistant that opens from a literal `?
 
 ## Success Criteria
 

@@ -1536,8 +1536,8 @@
       "timestamp": "2026-05-22T18:51:21.338Z",
       "error_message": "Incorrect value in code",
       "file": "src/providers/claude.ts",
-      "root_cause": "Had 'You are Que-Que, a terminal shell assistant. Retu",
-      "fix": "Changed to 'You are Que-Que, a terminal shell assistant. Retu",
+      "root_cause": "Had 'You are QueQue, a terminal shell assistant. Retu",
+      "fix": "Changed to 'You are QueQue, a terminal shell assistant. Retu",
       "tags": [
         "auto-detected",
         "wrong-value",
@@ -1866,6 +1866,438 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-23T20:03:26.071Z"
+    },
+    {
+      "id": "bug-117",
+      "timestamp": "2026-05-28T07:43:10.574Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"private\"",
+      "fix": "Changed to \"repository\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T07:43:10.574Z"
+    },
+    {
+      "id": "bug-118",
+      "timestamp": "2026-05-28T07:43:13.626Z",
+      "error_message": "Incorrect value in code",
+      "file": ".releaserc.json",
+      "root_cause": "Had \"@semantic-release/github\"",
+      "fix": "Changed to \"@semantic-release/npm\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T07:43:13.626Z"
+    },
+    {
+      "id": "bug-119",
+      "timestamp": "2026-05-28T23:18:30.589Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"queque\"",
+      "fix": "Changed to \"queque\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-28T23:18:33.801Z"
+    },
+    {
+      "id": "bug-120",
+      "timestamp": "2026-05-28T23:18:49.433Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had \"$HOME/dev/queque\"",
+      "fix": "Changed to \"$HOME/dev/queque\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:18:49.433Z"
+    },
+    {
+      "id": "bug-121",
+      "timestamp": "2026-05-28T23:19:12.345Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "docs/SYSTEM_DESGN.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:12.345Z"
+    },
+    {
+      "id": "bug-122",
+      "timestamp": "2026-05-28T23:19:14.983Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "docs/RELEASING.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:14.983Z"
+    },
+    {
+      "id": "bug-123",
+      "timestamp": "2026-05-28T23:19:22.750Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/PROJECT.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-28T23:23:19.097Z"
+    },
+    {
+      "id": "bug-124",
+      "timestamp": "2026-05-28T23:19:29.475Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/ROADMAP.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:29.475Z"
+    },
+    {
+      "id": "bug-125",
+      "timestamp": "2026-05-28T23:19:37.194Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/REQUIREMENTS.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-28T23:23:21.636Z"
+    },
+    {
+      "id": "bug-126",
+      "timestamp": "2026-05-28T23:19:45.944Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/research/ARCHITECTURE.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:45.944Z"
+    },
+    {
+      "id": "bug-127",
+      "timestamp": "2026-05-28T23:19:49.042Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/research/FEATURES.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:49.042Z"
+    },
+    {
+      "id": "bug-128",
+      "timestamp": "2026-05-28T23:19:52.642Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/research/PITFALLS.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:52.643Z"
+    },
+    {
+      "id": "bug-129",
+      "timestamp": "2026-05-28T23:19:56.054Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/research/STACK.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:56.054Z"
+    },
+    {
+      "id": "bug-130",
+      "timestamp": "2026-05-28T23:19:58.812Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/research/SUMMARY.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:19:58.812Z"
+    },
+    {
+      "id": "bug-131",
+      "timestamp": "2026-05-28T23:20:18.003Z",
+      "error_message": "Wrong reference: que should be queque",
+      "file": ".planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md",
+      "root_cause": "Used \"que\" instead of \"queque\"",
+      "fix": "Changed que → queque",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:20:18.003Z"
+    },
+    {
+      "id": "bug-132",
+      "timestamp": "2026-05-28T23:20:42.137Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md",
+      "root_cause": "Had `queque`",
+      "fix": "Changed to `queque`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:20:42.137Z"
+    },
+    {
+      "id": "bug-133",
+      "timestamp": "2026-05-28T23:20:56.559Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-PATTERNS.md",
+      "root_cause": "Had \"queque\"",
+      "fix": "Changed to \"queque\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:20:56.559Z"
+    },
+    {
+      "id": "bug-134",
+      "timestamp": "2026-05-28T23:21:10.586Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": ".planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-PATTERNS.md",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:21:10.586Z"
+    },
+    {
+      "id": "bug-135",
+      "timestamp": "2026-05-28T23:21:17.951Z",
+      "error_message": "Wrong reference: que should be queque",
+      "file": ".planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md",
+      "root_cause": "Used \"que\" instead of \"queque\"",
+      "fix": "Changed que → queque",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:21:17.951Z"
+    },
+    {
+      "id": "bug-136",
+      "timestamp": "2026-05-28T23:21:38.730Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "shell/zsh/qq.zsh",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "zsh"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-28T23:21:41.703Z"
+    },
+    {
+      "id": "bug-137",
+      "timestamp": "2026-05-28T23:21:48.471Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "Had `queque › ${initialQuery}`",
+      "fix": "Changed to `queque › ${initialQuery}`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:21:48.471Z"
+    },
+    {
+      "id": "bug-138",
+      "timestamp": "2026-05-28T23:21:54.209Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "src/providers/claude.ts",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:21:54.209Z"
+    },
+    {
+      "id": "bug-139",
+      "timestamp": "2026-05-28T23:22:00.413Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:22:00.413Z"
+    },
+    {
+      "id": "bug-140",
+      "timestamp": "2026-05-28T23:22:07.761Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "src/cli/main.ts",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:22:07.761Z"
+    },
+    {
+      "id": "bug-141",
+      "timestamp": "2026-05-28T23:22:18.178Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-28T23:22:21.502Z"
+    },
+    {
+      "id": "bug-142",
+      "timestamp": "2026-05-28T23:22:27.537Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:22:27.537Z"
+    },
+    {
+      "id": "bug-143",
+      "timestamp": "2026-05-28T23:22:33.181Z",
+      "error_message": "Wrong reference: Que should be QueQue",
+      "file": "tests/shell-contract.test.ts",
+      "root_cause": "Used \"Que\" instead of \"QueQue\"",
+      "fix": "Changed Que → QueQue",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-28T23:22:33.181Z"
     }
   ]
 }

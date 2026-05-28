@@ -106,7 +106,7 @@ grep -c '┌>' src/ui/CandidateSelect.tsx: 1 — PASS
 grep -c 'showLoadingIndicator' src/client/run-foreground.ts: 0 — PASS
 grep -c 'MODAL_CHROME_LINES = 9' src/client/run-foreground.ts: 1 — PASS
 grep -c 'candidates.length === 1' src/client/run-foreground.ts: 0 — PASS
-grep -v '^//' tests/client-result.test.ts | grep -c 'Que-Que is thinking': 0 — PASS
+grep -v '^//' tests/client-result.test.ts | grep -c 'QueQue is thinking': 0 — PASS
 ```
 
 ## Known Stubs

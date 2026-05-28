@@ -12,7 +12,7 @@ On successful candidate selection, three things must happen:
 
 1. **History**: ZSH history gains the original query (lbuffer before `??`) via `print -s`
 2. **Summary lines above PS1**: Two lines printed before `zle reset-prompt`:
-   - `que-que › <original-query>` (dim gray)
+   - `queque › <original-query>` (dim gray)
    - `<selected-command>  # <explanation>` (default color)
 3. **LBUFFER set to original query**: LBUFFER is left with the query text (not the command) so the user can refine and re-trigger with `??`
 
@@ -45,7 +45,7 @@ replace-buffer)
   fi
   # Print summary above PS1
   local escaped_query="${QQ_ORIG_LBUFFER//\%/%%}"
-  [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}que-que › ${escaped_query}%f"
+  [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}queque › ${escaped_query}%f"
   print -r -- "${new_lbuffer}${new_rbuffer}"
   # Add original query to history
   [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
@@ -69,7 +69,7 @@ replace-buffer)
     LBUFFER="$QQ_ORIG_LBUFFER"; RBUFFER="$QQ_ORIG_RBUFFER"
   else
     local escaped_query="${QQ_ORIG_LBUFFER//\%/%%}"
-    [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}que-que › ${escaped_query}%f"
+    [[ -n "$QQ_ORIG_LBUFFER" ]] && print -P "%F{240}queque › ${escaped_query}%f"
     print -r -- "${new_lbuffer}${new_rbuffer}"
     [[ -n "$QQ_ORIG_LBUFFER" ]] && print -s -- "$QQ_ORIG_LBUFFER"
     LBUFFER="$QQ_ORIG_LBUFFER"
@@ -85,7 +85,7 @@ In `tests/zsh-widget.test.ts`, update the `replace-buffer sets LBUFFER and RBUFF
 - `QQ_ORIG_LBUFFER` is set to `"orig left"` in the test
 - After the call, `LBUFFER` should be `"orig left"` (QQ_ORIG_LBUFFER), not `"git status"`
 - `RBUFFER` should be `""` (empty)
-- The summary lines (`que-que › orig left` and `git status`) should appear in stdout
+- The summary lines (`queque › orig left` and `git status`) should appear in stdout
 
 ### Task 4: Commit
 

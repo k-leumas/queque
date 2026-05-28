@@ -1,4 +1,4 @@
-# Features Research: Que-Que
+# Features Research: QueQue
 
 ## Table Stakes
 

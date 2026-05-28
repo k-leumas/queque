@@ -47,7 +47,7 @@ function requiredOption(name: string, value: string | undefined): string {
 const QQ_RESULT_FILE_PATTERN = /^\/tmp\/qq-sess\.[A-Za-z0-9]+\//;
 
 process.on('uncaughtException', (err: Error) => {
-  console.error('Que-Que: uncaught exception:', err.message);
+  console.error('QueQue: uncaught exception:', err.message);
   const resultFile = process.env.QQ_RESULT_FILE;
   if (resultFile && QQ_RESULT_FILE_PATTERN.test(resultFile)) {
     try {
@@ -61,7 +61,7 @@ process.on('uncaughtException', (err: Error) => {
 
 process.on('unhandledRejection', (reason: unknown) => {
   const message = reason instanceof Error ? reason.message : String(reason);
-  console.error('Que-Que: unhandled rejection:', message);
+  console.error('QueQue: unhandled rejection:', message);
   const resultFile = process.env.QQ_RESULT_FILE;
   if (resultFile && QQ_RESULT_FILE_PATTERN.test(resultFile)) {
     try {

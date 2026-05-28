@@ -22,7 +22,7 @@
 - **D-09:** Remove `CHEAPEST_FIRST_MODEL_IDS` and `listAvailableModelIds`. Replace with: use `QQ_MODEL` if set, else `DEFAULT_MODEL = 'claude-haiku-4-5-20251001'`.
 - **D-10:** On Claude failure: render short error in pane, write `{ kind: 'error', message: string }` ShellResult to FIFO.
 - **D-11:** Extend `shellResultSchema` in `src/contracts/shell.ts` with `error` variant using `z.discriminatedUnion`. ZSH widget's `_qq_apply_result` must handle `error` kind with no buffer mutation.
-- **D-12:** Error message in pane: `"Que-Que: <reason> — press any key"` then pane closes.
+- **D-12:** Error message in pane: `"QueQue: <reason> — press any key"` then pane closes.
 - **D-13:** Existing prompt structure `{ command, explanation }` JSON array is kept. `candidateListSchema` unchanged.
 - **D-14:** Claude's discretion on prompt tuning for better ranking (most-likely-correct first).
 
@@ -374,11 +374,11 @@ Phase 3 changes the fallback from `cancel` to `error`:
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error);
   void appendDebugLog('client', 'llm request failed', { message });
-  await writeShellResult(resultFile, { kind: 'error', message: `Que-Que: ${message} — press any key` });
+  await writeShellResult(resultFile, { kind: 'error', message: `QueQue: ${message} — press any key` });
 }
 ```
 
-The inner `.catch()` block on `fetchCandidates` (lines 171–174) renders an error state in the Ink UI (`app.rerender(buildCandidateElement(null, true))`). The outer catch covers cases where the request setup itself fails (before Ink is rendered). D-12 requires the error message format `"Que-Que: <reason> — press any key"` — apply this consistently in both error paths.
+The inner `.catch()` block on `fetchCandidates` (lines 171–174) renders an error state in the Ink UI (`app.rerender(buildCandidateElement(null, true))`). The outer catch covers cases where the request setup itself fails (before Ink is rendered). D-12 requires the error message format `"QueQue: <reason> — press any key"` — apply this consistently in both error paths.
 
 ### Model selection simplification
 
@@ -398,14 +398,14 @@ Replace the `models` loop (lines 152–183) with a single `client.messages.creat
 
 ### Prompt ranking nudge (D-14)
 
-Current system prompt: `"You are Que-Que, a terminal assistant. Return only JSON matching {"command":"..."} and nothing else."`
+Current system prompt: `"You are QueQue, a terminal assistant. Return only JSON matching {"command":"..."} and nothing else."`
 
 Current user prompt ends with: `"Return ONLY a JSON array of 1-3 shell command candidates, most likely first."`
 
 The ranking instruction ("most likely first") is already present. To strengthen it, the system prompt can be updated to reinforce ranking explicitly. Example improvement:
 
 ```
-System: You are Que-Que, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences.
+System: You are QueQue, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences.
 ```
 
 ---

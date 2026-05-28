@@ -2,14 +2,14 @@
 
 ## Active
 
-### SHL-01 — User can trigger Que-Que by typing a literal `??` while editing a `zsh` command line.
+### SHL-01 — User can trigger QueQue by typing a literal `??` while editing a `zsh` command line.
 
 - Status: active
 - Class: core-capability
 - Source: inferred
 - Primary Slice: none yet
 
-User can trigger Que-Que by typing a literal `??` while editing a `zsh` command line.
+User can trigger QueQue by typing a literal `??` while editing a `zsh` command line.
 
 ### SHL-02 — Text already typed before the `??` trigger is captured as request context.
 
@@ -20,14 +20,14 @@ User can trigger Que-Que by typing a literal `??` while editing a `zsh` command 
 
 Text already typed before the `??` trigger is captured as request context.
 
-### SHL-03 — User can dismiss Que-Que with `Esc` and return to the shell with no buffer changes.
+### SHL-03 — User can dismiss QueQue with `Esc` and return to the shell with no buffer changes.
 
 - Status: active
 - Class: core-capability
 - Source: inferred
 - Primary Slice: none yet
 
-User can dismiss Que-Que with `Esc` and return to the shell with no buffer changes.
+User can dismiss QueQue with `Esc` and return to the shell with no buffer changes.
 
 ### SHL-04 — User can confirm a suggested command and have it written back into the live shell buffer with a correct cursor position.
 

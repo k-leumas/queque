@@ -16,7 +16,7 @@ Output: Installable project scaffold, `qq` CLI skeleton, shell/IPC zod schemas, 
 - [x] **T02: 01-shell-bridge-and-result-contract 02**
   - Implement the real `zsh` bridge: intercept `??` through a `?` widget, preserve shell state on cancel, and apply split-buffer results on accept.
 
-Purpose: This is the user-visible shell seam that makes Que-Que feel native instead of acting like a separate prompt-taking CLI.
+Purpose: This is the user-visible shell seam that makes QueQue feel native instead of acting like a separate prompt-taking CLI.
 Output: A sourceable `zsh` integration script and a smoke test that locks the trigger/cancel/apply behavior.
 - [x] **T03: 01-shell-bridge-and-result-contract 03**
   - Stand up the daemon bootstrap path and a minimal foreground client loop behind the CLI surface defined in Plan 01.

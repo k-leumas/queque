@@ -411,7 +411,7 @@ describe('runForegroundClient', () => {
     const parsed = JSON.parse(resultContent.trim());
     expect(parsed.kind).toBe('error');
     expect(parsed.message).toContain('API timeout');
-    expect(parsed.message).toContain('Que-Que:');
+    expect(parsed.message).toContain('QueQue:');
   });
 });
 

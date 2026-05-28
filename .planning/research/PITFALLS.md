@@ -1,4 +1,4 @@
-# Pitfalls Research: Que-Que
+# Pitfalls Research: QueQue
 
 ## Pitfall 1: Breaking the Shell Editing Flow
 

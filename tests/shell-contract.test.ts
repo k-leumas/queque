@@ -51,12 +51,12 @@ describe('shellResultSchema', () => {
   it('accepts {kind: error, message} ShellResult', () => {
     const validError = shellResultSchema.safeParse({
       kind: 'error',
-      message: 'Que-Que: API timeout — press any key',
+      message: 'QueQue: API timeout — press any key',
     });
     expect(validError.success).toBe(true);
     expect(validError.data).toEqual({
       kind: 'error',
-      message: 'Que-Que: API timeout — press any key',
+      message: 'QueQue: API timeout — press any key',
     });
   });
 

@@ -61,7 +61,7 @@ created: 2026-05-14
 
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
-| Error message appears in Zellij pane as `"Que-Que: <reason> — press any key"` | SAFE-01, D-12 | Requires live Zellij session | (1) Invoke `??` with `ANTHROPIC_API_KEY` unset. (2) Observe error message in floating pane. (3) Press any key — pane closes, buffer unchanged. |
+| Error message appears in Zellij pane as `"QueQue: <reason> — press any key"` | SAFE-01, D-12 | Requires live Zellij session | (1) Invoke `??` with `ANTHROPIC_API_KEY` unset. (2) Observe error message in floating pane. (3) Press any key — pane closes, buffer unchanged. |
 
 ---
 

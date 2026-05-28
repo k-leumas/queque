@@ -280,8 +280,8 @@ describe('result application: replace-buffer writes new buffers', () => {
     expect(stdout).toContain('lbuffer=git status');
     // RBUFFER holds the explanation; cursor sits between command and comment
     expect(stdout).toContain('rbuffer=  # show repo status');
-    // Summary line 1: que-que label with original query
-    expect(stdout).toContain('que-que › list changed files');
+    // Summary line 1: queque label with original query
+    expect(stdout).toContain('queque › list changed files');
     // Summary line 2: selected command + explanation
     expect(stdout).toContain('git status  # show repo status');
   });
@@ -293,7 +293,7 @@ describe('result application: error kind restores buffers and returns 0', () => 
     const resultFile = join(dir, 'result.json');
     writeFileSync(
       resultFile,
-      JSON.stringify({ kind: 'error', message: 'Que-Que: API timeout — press any key' }),
+      JSON.stringify({ kind: 'error', message: 'QueQue: API timeout — press any key' }),
     );
     const script = `
       LBUFFER="mutated"
@@ -366,7 +366,7 @@ describe('result application: malformed JSON leaves buffers intact', () => {
 // ---------------------------------------------------------------------------
 
 describe('result application: replace-buffer with query context line', () => {
-  it('prints a dimmed que-que context line to stdout when query field is present', () => {
+  it('prints a dimmed queque context line to stdout when query field is present', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -389,7 +389,7 @@ describe('result application: replace-buffer with query context line', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    expect(stdout).toMatch(/que-que/i);
+    expect(stdout).toMatch(/queque/i);
     expect(stdout).toContain('git stat');
   });
 
@@ -456,7 +456,7 @@ describe('result application: replace-buffer with query context line', () => {
     expect(stdout).toContain('rbuffer=  # prints hello to stdout');
   });
 
-  it('que-que label is omitted when original query is empty', () => {
+  it('queque label is omitted when original query is empty', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-test-'));
     const resultFile = join(dir, 'result.json');
     writeFileSync(
@@ -474,8 +474,8 @@ describe('result application: replace-buffer with query context line', () => {
     const { stdout, status } = runZsh(script);
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
-    // No que-que label when there was no original query
-    expect(stdout).not.toMatch(/que-que/i);
+    // No queque label when there was no original query
+    expect(stdout).not.toMatch(/queque/i);
   });
 });
 
@@ -486,9 +486,9 @@ describe('result application: replace-buffer with query context line', () => {
 
 describe('Zellij detection: inline path used when ZELLIJ is unset', () => {
   it('widget source no longer contains a hard-exit Zellij error message', () => {
-    // The old guard hard-exited with "Que-Que requires Zellij".
+    // The old guard hard-exited with "QueQue requires Zellij".
     // Now the widget uses the inline foreground path when ZELLIJ is absent.
-    const result = spawnSync('grep', ['-q', 'Que-Que requires Zellij', widgetPath], {
+    const result = spawnSync('grep', ['-q', 'QueQue requires Zellij', widgetPath], {
       encoding: 'utf8',
     });
     expect(result.status).not.toBe(0);
@@ -611,7 +611,7 @@ describe('_qq_apply_result_str: original query added to zsh history after select
 });
 
 describe('_qq_apply_result_str: summary lines printed above the new PS1', () => {
-  it('first summary line shows "que-que ›" prefix followed by the original query', () => {
+  it('first summary line shows "queque ›" prefix followed by the original query', () => {
     const script = `
       QQ_ORIG_LBUFFER="list changed files"
       QQ_ORIG_RBUFFER=""
@@ -621,7 +621,7 @@ describe('_qq_apply_result_str: summary lines printed above the new PS1', () => 
     `;
     const { stdout, status } = runZsh(script);
     expect(status).toBe(0);
-    expect(stdout).toContain('que-que');
+    expect(stdout).toContain('queque');
     expect(stdout).toContain('list changed files');
   });
 
@@ -638,7 +638,7 @@ describe('_qq_apply_result_str: summary lines printed above the new PS1', () => 
     expect(stdout).toContain('git status  # show working tree status');
   });
 
-  it('omits the que-que label line when QQ_ORIG_LBUFFER is empty', () => {
+  it('omits the queque label line when QQ_ORIG_LBUFFER is empty', () => {
     const script = `
       QQ_ORIG_LBUFFER=""
       QQ_ORIG_RBUFFER=""
@@ -648,7 +648,7 @@ describe('_qq_apply_result_str: summary lines printed above the new PS1', () => 
     `;
     const { stdout, status } = runZsh(script);
     expect(status).toBe(0);
-    expect(stdout).not.toMatch(/que-que/i);
+    expect(stdout).not.toMatch(/queque/i);
   });
 });
 

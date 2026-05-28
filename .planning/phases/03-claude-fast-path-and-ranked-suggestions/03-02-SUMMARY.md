@@ -60,8 +60,8 @@ JWT-style confidence field wired from classifyIntent into NormalizedRequest; typ
 
 **src/client/run-foreground.ts**
 - Line ~96: NormalizedRequest construction updated to `{ ...request, intent: decision.intent, confidence: decision.confidence }`
-- Inner `.catch()` for `fetchCandidates`: writes `{ kind: 'error', message: 'Que-Que: ... — press any key' }` to resultFile and unmounts the Ink UI; `resolved` guard prevents double-write
-- Outer `catch`: changed from `{ kind: 'cancel' }` to `{ kind: 'error', message: 'Que-Que: ... — press any key' }` for broader failure cases
+- Inner `.catch()` for `fetchCandidates`: writes `{ kind: 'error', message: 'QueQue: ... — press any key' }` to resultFile and unmounts the Ink UI; `resolved` guard prevents double-write
+- Outer `catch`: changed from `{ kind: 'cancel' }` to `{ kind: 'error', message: 'QueQue: ... — press any key' }` for broader failure cases
 
 **src/registry/bootstrap.ts**
 - Added import: `import { registerProviderBackend } from './provider-backends.js'`
@@ -91,7 +91,7 @@ JWT-style confidence field wired from classifyIntent into NormalizedRequest; typ
 - `pnpm build` (via npx tsup): ESM build success, DTS build success
 - `grep -c "confidence: decision.confidence" src/client/run-foreground.ts` → 1
 - `grep -c "kind: 'error'" src/client/run-foreground.ts` → 2 (inner catch + outer catch)
-- `grep -c "Que-Que:" src/client/run-foreground.ts` → 2
+- `grep -c "QueQue:" src/client/run-foreground.ts` → 2
 - `grep -c "registerProviderBackend" src/registry/bootstrap.ts` → 2 (import + call)
 - `grep -c "confidence: z.number" src/contracts/request.ts` → 2 (schema + IntentDecision)
 

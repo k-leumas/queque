@@ -1,10 +1,10 @@
 # System Design
 
-This document describes how Que-Que is structured today, how the major pieces interact, and where the current implementation stops versus the intended end-state.
+This document describes how QueQue is structured today, how the major pieces interact, and where the current implementation stops versus the intended end-state.
 
 ## Purpose
 
-Que-Que is a `zsh`-integrated command helper. The intended user flow is:
+QueQue is a `zsh`-integrated command helper. The intended user flow is:
 
 1. The user types `??` inside an active shell buffer.
 2. A `zsh` widget captures the shell context around the cursor.

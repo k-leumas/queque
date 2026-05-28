@@ -1,4 +1,4 @@
-# Architecture Research: Que-Que
+# Architecture Research: QueQue
 
 ## Recommended Component Boundaries
 

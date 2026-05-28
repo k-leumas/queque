@@ -828,3 +828,76 @@
 | 13:03 | Edited tests/intent-router.test.ts | 2→3 lines | ~18 |
 | 13:04 | Edited tests/zsh-widget.test.ts | 2→2 lines | ~28 |
 | 13:06 | Session end: 17 writes across 7 files (qq.zsh, zsh-widget.test.ts, client-result.test.ts, feedback_lint_before_commit.md, MEMORY.md) | 6 reads | ~22974 tok |
+
+## Session: 2026-05-28 00:24
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:30 | Edited package.json | 4→8 lines | ~46 |
+| 00:31 | Edited README.md | modified qq() | ~33 |
+| 00:31 | Edited README.md | modified qq() | ~50 |
+| 00:31 | Session end: 3 writes across 2 files (package.json, README.md) | 2 reads | ~135 tok |
+| 00:35 | Session end: 3 writes across 2 files (package.json, README.md) | 2 reads | ~135 tok |
+| 00:36 | Session end: 3 writes across 2 files (package.json, README.md) | 2 reads | ~135 tok |
+| 00:37 | Session end: 3 writes across 2 files (package.json, README.md) | 2 reads | ~135 tok |
+| 00:39 | Created .releaserc.json | — | ~138 |
+| 00:39 | Edited .github/workflows/release.yaml | 7→9 lines | ~60 |
+| 00:43 | Edited package.json | 2→1 lines | ~5 |
+| 00:43 | Edited .releaserc.json | 1→2 lines | ~18 |
+| 00:43 | Edited .github/workflows/release.yaml | 4→5 lines | ~48 |
+
+## Session: 2026-05-28 01:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-28 01:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-05-28 15:44
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:50 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/project_target_audience.md | — | ~195 |
+| 15:50 | Edited ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md | 1→2 lines | ~77 |
+| 15:51 | Session end: 2 writes across 2 files (project_target_audience.md, MEMORY.md) | 1 reads | ~291 tok |
+| 16:16 | Created .planning/quick/260528-mk1-rename-queque-to-queque-in-prose-write-/260528-mk1-PLAN.md | — | ~3156 |
+| 22:55 | Planned rename of project from queque to queque (prose: QueQue, pkg name: queque, display: queque) | .planning/quick/260528-mk1-rename-queque-to-queque-in-prose-write-/260528-mk1-PLAN.md | Plan written | ~800 |
+| 16:18 | Edited package.json | inline fix | ~6 |
+| 16:18 | Edited package.json | inline fix | ~15 |
+| 16:18 | Edited README.md | 3→3 lines | ~70 |
+| 16:18 | Edited README.md | "$HOME/dev/queque" → "$HOME/dev/queque" | ~10 |
+| 16:19 | Edited CLAUDE.md | 3→3 lines | ~103 |
+| 16:19 | Edited docs/SYSTEM_DESGN.md | inline fix | ~2 |
+| 16:19 | Edited docs/RELEASING.md | inline fix | ~2 |
+| 16:19 | Edited .planning/PROJECT.md | inline fix | ~2 |
+| 16:19 | Edited .planning/ROADMAP.md | inline fix | ~2 |
+| 16:19 | Edited .planning/REQUIREMENTS.md | inline fix | ~2 |
+| 16:19 | Edited .planning/research/ARCHITECTURE.md | inline fix | ~2 |
+| 16:19 | Edited .planning/research/FEATURES.md | inline fix | ~2 |
+| 16:19 | Edited .planning/research/PITFALLS.md | inline fix | ~2 |
+| 16:19 | Edited .planning/research/STACK.md | inline fix | ~2 |
+| 16:19 | Edited .planning/research/SUMMARY.md | inline fix | ~2 |
+| 16:20 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md | inline fix | ~17 |
+| 16:20 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md | inline fix | ~27 |
+| 16:20 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md | inline fix | ~23 |
+| 16:20 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md | "queque" → "queque" | ~10 |
+| 16:20 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md | inline fix | ~23 |
+| 16:20 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-PATTERNS.md | "queque" → "queque" | ~6 |
+| 16:21 | Edited .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-PATTERNS.md | inline fix | ~2 |
+| 16:21 | Edited .planning/phases/04-fuzzy-tui-selection-ux/.continue-here.md | inline fix | ~2 |
+| 16:21 | Edited shell/zsh/qq.zsh | inline fix | ~2 |
+| 16:21 | Edited shell/zsh/qq.zsh | inline fix | ~2 |
+| 16:21 | Edited src/ui/CandidateSelect.tsx | "queque › ${initialQuery}" → "queque › ${initialQuery}" | ~18 |
+| 16:21 | Edited src/providers/claude.ts | inline fix | ~2 |
+| 16:22 | Edited src/client/run-foreground.ts | inline fix | ~2 |
+| 16:22 | Edited src/cli/main.ts | inline fix | ~2 |
+| 16:22 | Edited tests/zsh-widget.test.ts | inline fix | ~2 |
+| 16:22 | Edited tests/zsh-widget.test.ts | inline fix | ~2 |
+| 16:22 | Edited tests/client-result.test.ts | inline fix | ~2 |
+| 16:22 | Edited tests/shell-contract.test.ts | inline fix | ~2 |
+| 16:23 | Edited .gsd/PROJECT.md | inline fix | ~2 |
+| 16:23 | Edited .gsd/REQUIREMENTS.md | inline fix | ~2 |
+| 16:28 | Renamed project from queque to queque everywhere (prose: QueQue, package name: queque, display label: queque) | package.json, README.md, CLAUDE.md, src/, tests/, shell/, docs/, .planning/, .gsd/, .wolf/ | Done | ~3000 |

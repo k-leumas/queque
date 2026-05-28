@@ -50,7 +50,7 @@
       "phase": "04"
     },
     {
-      "decision": "Query context header shows dim 'que-que › [initialQuery]' above filter when initialQuery is non-empty",
+      "decision": "Query context header shows dim 'queque › [initialQuery]' above filter when initialQuery is non-empty",
       "rationale": "User selected 'Show the query context' option during UAT feedback session",
       "phase": "04"
     },
@@ -61,6 +61,6 @@
     }
   ],
   "uncommitted_files": ["shell/zsh/qq.zsh"],
-  "next_action": "Run /gsd:quick to implement quick task 260522-iln-phase-04-uat-fixes. The qq.zsh setopt change is already applied (stage it in the first commit). Remaining 4 changes: (1) CandidateSelect.tsx: two-row layout — command+glyph row 1, explanation row 2 (3-char indent), marginBottom=1 between items; (2) SearchInput.tsx: SEARCH → FILTER label; (3) qq.zsh zellij run: add --name 'qq' before the -- separator; (4) CandidateSelect.tsx: add dim 'que-que › [initialQuery]' header above <SearchInput> when initialQuery is non-empty. After quick task: mark phase 04 complete in ROADMAP/STATE.",
+  "next_action": "Run /gsd:quick to implement quick task 260522-iln-phase-04-uat-fixes. The qq.zsh setopt change is already applied (stage it in the first commit). Remaining 4 changes: (1) CandidateSelect.tsx: two-row layout — command+glyph row 1, explanation row 2 (3-char indent), marginBottom=1 between items; (2) SearchInput.tsx: SEARCH → FILTER label; (3) qq.zsh zellij run: add --name 'qq' before the -- separator; (4) CandidateSelect.tsx: add dim 'queque › [initialQuery]' header above <SearchInput> when initialQuery is non-empty. After quick task: mark phase 04 complete in ROADMAP/STATE.",
   "context_notes": "Phase 04 is functionally complete: all 3 plans executed, 132/132 tests pass, CR-01+CR-02 fixed (b87a0fc), verification report written (da3a5a0). Only blocking phase closure: (1) the 5 UAT fix changes and (2) the ROADMAP/STATE mark-complete step. Quick task slug pre-assigned by gsd-sdk: 260522-iln-phase-04-uat-fixes."
 }

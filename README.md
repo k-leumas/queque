@@ -1,6 +1,6 @@
-# Que-Que
+# QueQue
 
-Que-Que is a `zsh`-integrated command helper that is intended to open from a literal `??` trigger in your live shell buffer, gather the text around the cursor, and return an explainable shell command back into the buffer instead of executing it for you.
+QueQue is a `zsh`-integrated command helper that is intended to open from a literal `??` trigger in your live shell buffer, gather the text around the cursor, and return an explainable shell command back into the buffer instead of executing it for you.
 
 ## Current Status
 
@@ -60,7 +60,7 @@ Because the project already defines a `qq` bin that points at `dist/cli/main.js`
 Add this to `~/.zshrc`:
 
 ```bash
-export QQ_DEV_ROOT="$HOME/dev/que-que"
+export QQ_DEV_ROOT="$HOME/dev/queque"
 
 qq() {
   node "$QQ_DEV_ROOT/dist/cli/main.js" "$@"
@@ -164,7 +164,7 @@ chore: add biome and commit hooks
 Once the repo adds `shell/zsh/qq.zsh`, the shell wiring will look more like this:
 
 ```bash
-export QQ_DEV_ROOT="$HOME/dev/que-que"
+export QQ_DEV_ROOT="$HOME/dev/queque"
 
 qq() {
   node "$QQ_DEV_ROOT/dist/cli/main.js" "$@"

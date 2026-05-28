@@ -12,7 +12,7 @@ Output: Updated request.ts, run-foreground.ts, bootstrap.ts, and client-result t
 ## Must-Haves
 
 - [ ] "NormalizedRequest carries a confidence field (number 0–1) sourced from classifyIntent() IntentDecision"
-- [ ] "run-foreground.ts outer catch writes { kind: 'error', message: 'Que-Que: <reason> — press any key' } instead of { kind: 'cancel' }"
+- [ ] "run-foreground.ts outer catch writes { kind: 'error', message: 'QueQue: <reason> — press any key' } instead of { kind: 'cancel' }"
 - [ ] "run-foreground.ts inner fetchCandidates .catch() calls appendDebugLog with the error message"
 - [ ] "bootstrapBuiltins() registers a provider backend descriptor for claude"
 - [ ] "tests/client-result.test.ts has a test proving error ShellResult is written when fetchCandidates rejects"

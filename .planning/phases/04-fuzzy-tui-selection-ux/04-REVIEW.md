@@ -42,7 +42,7 @@ Reviewed the Phase 04 fuzzy TUI selection UX implementation: the zsh ZLE widget,
 
 ```typescript
 process.on('uncaughtException', (err: Error) => {
-  console.error('Que-Que: uncaught exception:', err.message);
+  console.error('QueQue: uncaught exception:', err.message);
   const resultFile = process.env.QQ_RESULT_FILE;
   // Guard: only write to paths that look like our session tmpdirs
   if (resultFile && /^\/tmp\/qq-sess\.[A-Za-z0-9]+\//.test(resultFile)) {

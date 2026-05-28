@@ -331,7 +331,7 @@ Both `onSelect` and `onCancel` callbacks check `if (resolved) return` before wri
   void appendDebugLog('client', 'llm request failed', { message });
   await writeShellResult(resultFile, {
     kind: 'error',
-    message: `Que-Que: ${message} — press any key`,
+    message: `QueQue: ${message} — press any key`,
   });
 }
 ```

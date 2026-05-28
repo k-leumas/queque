@@ -124,7 +124,7 @@ try {
     max_tokens: 256,
     temperature: 0,
     system:
-      'You are Que-Que, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences.',
+      'You are QueQue, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences.',
     messages: [{ role: 'user', content: prompt }],
   });
   const text = extractText(response.content);
@@ -446,12 +446,12 @@ it('accepts {kind: cancel} and rejects buffer fields on cancel', () => {
 it('accepts {kind: error, message} ShellResult', () => {
   const validError = shellResultSchema.safeParse({
     kind: 'error',
-    message: 'Que-Que: API unreachable — press any key',
+    message: 'QueQue: API unreachable — press any key',
   });
   expect(validError.success).toBe(true);
   expect(validError.data).toEqual({
     kind: 'error',
-    message: 'Que-Que: API unreachable — press any key',
+    message: 'QueQue: API unreachable — press any key',
   });
 });
 
@@ -502,7 +502,7 @@ it('writes error ShellResult to FIFO when fetchCandidates rejects', async () => 
   const parsed = JSON.parse(resultContent.trim());
   expect(parsed.kind).toBe('error');
   expect(parsed.message).toContain('API timeout');
-  expect(parsed.message).toContain('Que-Que:');
+  expect(parsed.message).toContain('QueQue:');
 });
 ```
 
@@ -539,7 +539,7 @@ Always `void`-prefix the call (fire-and-forget). Use category strings `'provider
 **Apply to:** `src/client/run-foreground.ts` outer catch, inner `.catch()` error render
 
 ```typescript
-`Que-Que: ${message} — press any key`
+`QueQue: ${message} — press any key`
 ```
 
 Apply consistently in both the outer catch (FIFO write) and the inner `.catch()` (Ink rerender with error state).

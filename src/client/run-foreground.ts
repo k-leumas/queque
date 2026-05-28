@@ -253,7 +253,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               try {
                 await writeShellResult(resultFile, {
                   kind: 'error',
-                  message: `Que-Que: ${message} — press any key`,
+                  message: `QueQue: ${message} — press any key`,
                 });
               } finally {
                 unmount?.();
@@ -269,7 +269,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         });
         await writeShellResult(resultFile, {
           kind: 'error',
-          message: `Que-Que: ${message} — press any key`,
+          message: `QueQue: ${message} — press any key`,
         });
       }
     } else {

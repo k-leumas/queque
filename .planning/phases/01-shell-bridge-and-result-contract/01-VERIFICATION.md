@@ -6,7 +6,7 @@ score: 8/9
 overrides_applied: 0
 human_verification:
   - test: "Source shell/zsh/qq.zsh in an interactive zsh session, type a word then type ??"
-    expected: "The trigger is consumed, Que-Que launches via qq client, and after completion the shell buffer is restored or replaced without leaving a dangling ? in the line"
+    expected: "The trigger is consumed, QueQue launches via qq client, and after completion the shell buffer is restored or replaced without leaving a dangling ? in the line"
     why_human: "ZLE widget execution and real TTY reattachment cannot be confirmed programmatically without a live interactive shell — vitest spawn harness verifies structure, not live key input"
   - test: "While editing a command, type a single ? and verify no visible pause"
     expected: "The ? character appears immediately with no KEYTIMEOUT delay"
@@ -26,7 +26,7 @@ human_verification:
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | User can type `??` in `zsh` and open Que-Que without leaving the shell editing session | VERIFIED (code) / NEEDS HUMAN (live TTY) | `shell/zsh/qq.zsh` binds `?` as a ZLE widget; second `?` is detected via `LBUFFER` trailing-`?` check; `qq client --request-file ... --result-file ... </dev/tty >/dev/tty 2>&1` launches client reattached to live TTY; 10/10 zsh-widget smoke tests pass |
+| 1 | User can type `??` in `zsh` and open QueQue without leaving the shell editing session | VERIFIED (code) / NEEDS HUMAN (live TTY) | `shell/zsh/qq.zsh` binds `?` as a ZLE widget; second `?` is detected via `LBUFFER` trailing-`?` check; `qq client --request-file ... --result-file ... </dev/tty >/dev/tty 2>&1` launches client reattached to live TTY; 10/10 zsh-widget smoke tests pass |
 | 2 | Text already typed before the trigger is captured and available to the client request | VERIFIED | `_qq_capture_buffers` strips the trailing `?` and exports `QQ_LBUFFER`/`QQ_RBUFFER` pre-trigger state; JSON request built with `lbuffer`/`rbuffer` fields; `shellRequestSchema` enforces both fields; tests confirm split-buffer capture |
 | 3 | Cancel returns the user to the shell with no buffer changes | VERIFIED (code) / NEEDS HUMAN (live TTY) | `_qq_apply_result` restores `LBUFFER=$QQ_ORIG_LBUFFER` and `RBUFFER=$QQ_ORIG_RBUFFER` on `cancel` kind; empty/missing result file also triggers restore; `runForegroundClient` emits `{kind:'cancel'}` in cancel mode; test coverage confirmed |
 | 4 | Accepting a result writes a command and cursor position back into the shell buffer reliably | VERIFIED (code) / NEEDS HUMAN (live TTY) | `_qq_apply_result` writes `LBUFFER` and `RBUFFER` directly on `replace-buffer` kind; no numeric cursor index used (confirmed: 0 matches for `cursor` in `qq.zsh`); `writeShellResult` validates against `shellResultSchema` before write; `runForegroundClient` emits `{kind:'replace-buffer', lbuffer, rbuffer}` in fixture mode |
@@ -46,7 +46,7 @@ human_verification:
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
 | 1 | Typing a single `?` still inserts immediately without a visible KEYTIMEOUT pause | NEEDS HUMAN | Code path is correct (`zle .self-insert` on first `?`); no `KEYTIMEOUT` setting in widget; cannot time-verify programmatically |
-| 2 | Typing `??` captures the pre-trigger shell buffers and invokes Que-Que | VERIFIED | Widget detects trailing `?` via `[[ "$LBUFFER" == *\? ]]`; calls `_qq_capture_buffers`; launches `qq client --request-file ... --result-file ...`; test `Test 2` in zsh-widget.test.ts confirms buffer capture |
+| 2 | Typing `??` captures the pre-trigger shell buffers and invokes QueQue | VERIFIED | Widget detects trailing `?` via `[[ "$LBUFFER" == *\? ]]`; calls `_qq_capture_buffers`; launches `qq client --request-file ... --result-file ...`; test `Test 2` in zsh-widget.test.ts confirms buffer capture |
 | 3 | Cancel restores the original shell buffers exactly | VERIFIED | `_qq_apply_result` restores `QQ_ORIG_LBUFFER`/`QQ_ORIG_RBUFFER` on cancel; lossless path also activated for empty result file; test confirms restore behavior |
 | 4 | Accepted results write `lbuffer` and `rbuffer` back into the live shell line | VERIFIED | `_qq_apply_result` assigns `LBUFFER="$new_lbuffer"` and `RBUFFER="$new_rbuffer"` on `replace-buffer` kind; no cursor arithmetic; test confirms round-trip |
 
@@ -115,9 +115,9 @@ Not applicable — this phase produces contracts, CLI scaffolding, a shell scrip
 
 | Requirement | Source Plan | Description | Status | Evidence |
 |-------------|------------|-------------|--------|----------|
-| SHL-01 | 01-02 | User can trigger Que-Que by typing `??` while editing a `zsh` command line | VERIFIED (code) / NEEDS HUMAN (live test) | ZLE widget binds `?`, detects `??` via trailing-`?` check, launches `qq client`; 10 smoke tests pass |
+| SHL-01 | 01-02 | User can trigger QueQue by typing `??` while editing a `zsh` command line | VERIFIED (code) / NEEDS HUMAN (live test) | ZLE widget binds `?`, detects `??` via trailing-`?` check, launches `qq client`; 10 smoke tests pass |
 | SHL-02 | 01-01, 01-02 | Text already typed before the `??` trigger is captured as request context | VERIFIED | `_qq_capture_buffers` strips trigger from `LBUFFER`; `shellRequestSchema` enforces `lbuffer`/`rbuffer` fields; request JSON written with pre-trigger buffers |
-| SHL-03 | 01-02, 01-03 | User can dismiss Que-Que with `Esc` and return to the shell with no buffer changes | VERIFIED (code) / NEEDS HUMAN (Esc key) | `cancel` result kind restores `QQ_ORIG_LBUFFER`/`QQ_ORIG_RBUFFER`; empty result file also triggers restore; `runForegroundClient` cancel mode emits `{kind:'cancel'}` |
+| SHL-03 | 01-02, 01-03 | User can dismiss QueQue with `Esc` and return to the shell with no buffer changes | VERIFIED (code) / NEEDS HUMAN (Esc key) | `cancel` result kind restores `QQ_ORIG_LBUFFER`/`QQ_ORIG_RBUFFER`; empty result file also triggers restore; `runForegroundClient` cancel mode emits `{kind:'cancel'}` |
 | SHL-04 | 01-01, 01-02, 01-03 | User can confirm a suggested command and have it written back into the live shell buffer with a correct cursor position | VERIFIED (code) / NEEDS HUMAN (live flow) | `replace-buffer` kind writes `LBUFFER`/`RBUFFER` directly; no cursor integer — split-buffer is the cursor contract; `writeShellResult` validates before write |
 | RUN-01 | 01-03 | A background daemon keeps repeat invocations fast and avoids paying full startup cost on every use | VERIFIED | `ensureDaemon` fast-paths on existing connection; detached Unix-socket daemon spawned on first use; daemon persists across `qq client` invocations |
 
