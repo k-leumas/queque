@@ -1,7 +1,6 @@
 {
   "name": "que-que",
   "version": "0.1.0",
-  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/k-leumas/que-que.git"
