@@ -1,7 +1,7 @@
 # Codebase Map
 
-Generated: 2026-05-21T18:46:37Z | Files: 81 | Described: 0/81
-<!-- gsd:codebase-meta {"generatedAt":"2026-05-21T18:46:37Z","fingerprint":"d509f1cca903261e4809ddb39941397778ed86b6","fileCount":81,"truncated":false} -->
+Generated: 2026-05-28T07:23:17Z | Files: 84 | Described: 0/84
+<!-- gsd:codebase-meta {"generatedAt":"2026-05-28T07:23:17Z","fingerprint":"7918bd0178919999e7ea98fb6a2a64090a29eb0d","fileCount":84,"truncated":false} -->
 
 ### (root)/
 - `.gitignore`
@@ -88,6 +88,8 @@ Generated: 2026-05-21T18:46:37Z | Files: 81 | Described: 0/81
 
 ### src/providers/
 - `src/providers/claude.ts`
+- `src/providers/detect.ts`
+- `src/providers/index.ts`
 - `src/providers/provider.ts`
 
 ### src/registry/
@@ -119,6 +121,7 @@ Generated: 2026-05-21T18:46:37Z | Files: 81 | Described: 0/81
 - `tests/env-file.test.ts`
 - `tests/intent-router.test.ts`
 - `tests/porcelain-parser.test.ts`
+- `tests/provider-detect.test.ts`
 - `tests/registry-bootstrap.test.ts`
 - `tests/registry.test.ts`
 - `tests/shell-contract.test.ts`

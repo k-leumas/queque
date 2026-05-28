@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-28T23:23:21.616Z
-> Files: 209 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-28T23:27:09.593Z
+> Files: 210 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -358,7 +358,7 @@
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
-- `STATE.md` — Project State (~1362 tok)
+- `STATE.md` — Project State (~1424 tok)
 
 ## .planning/notes/
 
@@ -455,6 +455,10 @@
 - `260522-vfd-PLAN.md` — Trust Boundaries (~2693 tok)
 - `260522-vfd-PLAN.md` — Quick plan: prototype provider detection waterfall (5-step, detect.ts, tests, run-foreground wiring) (~1800 tok)
 - `260522-vfd-SUMMARY.md` — Phase quick Plan 260522-vfd: Prototype Provider Detection Summary (~881 tok)
+
+## .planning/quick/260528-mk1-rename-que-que-to-queque-in-prose-write-/
+
+- `260528-mk1-SUMMARY.md` — Phase quick Plan 260528-mk1: Rename que-que to queque Summary (~1192 tok)
 
 ## .planning/quick/260528-mk1-rename-queque-to-queque-in-prose-write-/
 
