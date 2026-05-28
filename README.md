@@ -60,7 +60,7 @@ Because the project already defines a `qq` bin that points at `dist/cli/main.js`
 Add this to `~/.zshrc`:
 
 ```bash
-export QQ_DEV_ROOT="$HOME/dev/tui-llm"
+export QQ_DEV_ROOT="$HOME/dev/que-que"
 
 qq() {
   node "$QQ_DEV_ROOT/dist/cli/main.js" "$@"
@@ -164,7 +164,7 @@ chore: add biome and commit hooks
 Once the repo adds `shell/zsh/qq.zsh`, the shell wiring will look more like this:
 
 ```bash
-export QQ_DEV_ROOT="$HOME/dev/tui-llm"
+export QQ_DEV_ROOT="$HOME/dev/que-que"
 
 qq() {
   node "$QQ_DEV_ROOT/dist/cli/main.js" "$@"
