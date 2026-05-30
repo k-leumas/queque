@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T19:18:41.734Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T19:40:21.450Z
 > Files: 220 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -349,7 +349,7 @@
 
 ## .github/workflows/
 
-- `homebrew.yml` — CI: Update Homebrew Tap (~490 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~504 tok)
 - `release.yaml` — CI: Release (~552 tok)
 
 ## .gsd/
