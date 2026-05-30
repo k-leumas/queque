@@ -2394,6 +2394,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T17:38:50.887Z"
+    },
+    {
+      "id": "bug-150",
+      "timestamp": "2026-05-30T17:58:23.397Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../.zshrc",
+      "root_cause": "Had \"$(qq_mode)\"",
+      "fix": "Changed to '$(qq_mode)'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "unknown"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T17:58:23.397Z"
     }
   ]
 }

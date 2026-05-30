@@ -32,4 +32,5 @@ jobs:
           test: |
             assert_match "queque", shell_output("#{bin}/qq --version")
           depends_on: '"node", "jq"'
+          formula_folder: Formula
           skip_commit: false
