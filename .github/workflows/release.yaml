@@ -77,10 +77,9 @@ jobs:
         run: pnpm build
 
       - name: Release
-        # Required secrets (set in repo Settings → Secrets → Actions):
-        # NPM_TOKEN — npmjs.com Automation token (Tokens → Generate New Token → Automation)
-        # GITHUB_TOKEN — auto-provided by GitHub Actions; no manual setup needed
+        # Auth: OIDC Trusted Publishing — no NPM_TOKEN secret needed.
+        # Configure at npmjs.com → @k-leumas/queque-cli → Settings → Trusted Publishing:
+        #   owner: k-leumas  repo: queque  workflow: release.yaml  environment: (blank)
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: pnpm exec semantic-release
