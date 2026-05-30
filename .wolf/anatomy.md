@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T00:00:59.610Z
-> Files: 213 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T01:26:37.430Z
+> Files: 217 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -80,14 +80,15 @@
 
 - `feedback_lint_before_commit.md` (~216 tok)
 - `feedback_no_coauthored.md` (~148 tok)
-- `MEMORY.md` — Memory Index (~105 tok)
+- `feedback_terminology.md` (~163 tok)
+- `MEMORY.md` — Memory Index (~133 tok)
 - `project_target_audience.md` (~202 tok)
 
 ## ./
 
-- `.releaserc.json` (~146 tok)
+- `.releaserc.json` (~152 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `package.json` — Node.js package manifest (name: queque) (~503 tok)
+- `package.json` — Node.js package manifest (~542 tok)
 - `README.md` — Project documentation (~1144 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 
@@ -343,7 +344,8 @@
 
 ## .github/workflows/
 
-- `release.yaml` — CI: Release (~455 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~265 tok)
+- `release.yaml` — CI: Release (~552 tok)
 
 ## .gsd/
 
@@ -358,7 +360,7 @@
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
-- `STATE.md` — Project State (~1503 tok)
+- `STATE.md` — Project State (~1572 tok)
 
 ## .planning/notes/
 
@@ -469,6 +471,11 @@
 - `260529-ney-PLAN.md` (~2158 tok)
 - `260529-ney-SUMMARY.md` — Phase quick Plan 260529-ney: Beta Release Requirements Research Summary (~814 tok)
 - `BETA-RELEASE-REQUIREMENTS.md` — QueQue Beta Release Requirements (~6318 tok)
+
+## .planning/quick/260529-ntf-implement-release-automation-workflows-a/
+
+- `260529-ntf-PLAN.md` — Trust Boundaries (~2719 tok)
+- `260529-ntf-SUMMARY.md` — Phase quick-260529-ntf Plan 01: Release Automation Workflows Summary (~821 tok)
 
 ## .planning/research/
 

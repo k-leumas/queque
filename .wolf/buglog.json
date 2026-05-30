@@ -2330,6 +2330,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T00:00:39.673Z"
+    },
+    {
+      "id": "bug-146",
+      "timestamp": "2026-05-30T00:33:22.901Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"queque\"",
+      "fix": "Changed to \"queque-cli\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T00:33:22.901Z"
+    },
+    {
+      "id": "bug-147",
+      "timestamp": "2026-05-30T01:07:08.094Z",
+      "error_message": "Incorrect value in code",
+      "file": ".releaserc.json",
+      "root_cause": "Had \"@semantic-release/npm\"",
+      "fix": "Changed to \"@semantic-release/github\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T01:07:08.094Z"
+    },
+    {
+      "id": "bug-148",
+      "timestamp": "2026-05-30T01:07:27.303Z",
+      "error_message": "Significant refactor of ",
+      "file": ".github/workflows/release.yaml",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 20→26 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "yaml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T01:07:27.303Z"
     }
   ]
 }

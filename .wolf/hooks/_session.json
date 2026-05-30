@@ -1,112 +1,46 @@
 {
-  "session_id": "session-2026-05-29-1643",
-  "started": "2026-05-29T23:43:00.561Z",
+  "session_id": "session-2026-05-30-1817",
+  "started": "2026-05-30T01:17:02.204Z",
   "files_read": {
-    "/Users/samuel/.claude/get-shit-done/workflows/progress.md": {
+    "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-05-29T23:48:00.658Z"
+      "first_read": "2026-05-30T01:17:06.702Z"
     },
-    "/Users/samuel/.claude/get-shit-done/references/ui-brand.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-29T23:48:00.842Z"
-    },
-    "/Users/samuel/.claude/get-shit-done/workflows/quick.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-29T23:51:17.549Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 4,
-      "tokens": 1484,
-      "first_read": "2026-05-29T23:52:09.377Z"
-    },
-    "/Users/samuel/dev/tui-llm/package.json": {
+    "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml": {
       "count": 2,
-      "tokens": 503,
-      "first_read": "2026-05-29T23:52:09.707Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-PLAN.md": {
-      "count": 1,
-      "tokens": 2158,
-      "first_read": "2026-05-29T23:53:55.513Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md": {
-      "count": 1,
-      "tokens": 4065,
-      "first_read": "2026-05-29T23:59:10.003Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-SUMMARY.md": {
-      "count": 1,
-      "tokens": 814,
-      "first_read": "2026-05-29T23:59:22.909Z"
-    },
-    "/Users/samuel/dev/tui-llm/.releaserc.json": {
-      "count": 1,
-      "tokens": 146,
-      "first_read": "2026-05-29T23:59:29.535Z"
+      "tokens": 581,
+      "first_read": "2026-05-30T01:22:30.161Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-PLAN.md",
+      "file": "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_terminology.md",
       "action": "create",
-      "tokens": 2466,
-      "at": "2026-05-29T23:52:58.513Z"
+      "tokens": 162,
+      "at": "2026-05-30T01:17:11.961Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md",
-      "action": "create",
-      "tokens": 4645,
-      "at": "2026-05-29T23:56:58.693Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-SUMMARY.md",
-      "action": "create",
-      "tokens": 931,
-      "at": "2026-05-29T23:57:29.573Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
+      "file": "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md",
       "action": "edit",
-      "tokens": 190,
-      "at": "2026-05-29T23:58:08.191Z"
+      "tokens": 69,
+      "at": "2026-05-30T01:17:16.059Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md",
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml",
       "action": "edit",
-      "tokens": 2463,
-      "at": "2026-05-30T00:00:26.331Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md",
-      "action": "edit",
-      "tokens": 308,
-      "at": "2026-05-30T00:00:39.670Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
-      "action": "edit",
-      "tokens": 50,
-      "at": "2026-05-30T00:00:56.382Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
-      "action": "edit",
-      "tokens": 17,
-      "at": "2026-05-30T00:00:59.626Z"
+      "tokens": 228,
+      "at": "2026-05-30T01:26:37.472Z"
     }
   ],
   "edit_counts": {
-    ".planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-PLAN.md": 1,
-    ".planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md": 3,
-    ".planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-SUMMARY.md": 1,
-    ".planning/STATE.md": 3
+    "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_terminology.md": 1,
+    "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1,
+    ".github/workflows/release.yaml": 1
   },
-  "anatomy_hits": 6,
-  "anatomy_misses": 2,
-  "repeated_reads_warned": 4,
+  "anatomy_hits": 1,
+  "anatomy_misses": 1,
+  "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
   "stop_count": 2
 }

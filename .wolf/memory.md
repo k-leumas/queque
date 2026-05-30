@@ -920,3 +920,44 @@
 | 17:00 | Edited .planning/STATE.md | inline fix | ~46 |
 | 17:00 | Edited .planning/STATE.md | 3→3 lines | ~16 |
 | 17:01 | Session end: 8 writes across 4 files (260529-ney-PLAN.md, BETA-RELEASE-REQUIREMENTS.md, 260529-ney-SUMMARY.md, STATE.md) | 9 reads | ~20240 tok |
+| 17:10 | Created .planning/quick/260529-ntf-implement-release-automation-workflows-a/260529-ntf-PLAN.md | — | ~2900 |
+| 17:11 | Edited .github/workflows/release.yaml | 4→5 lines | ~15 |
+| 17:11 | Edited .github/workflows/release.yaml | 10→10 lines | ~65 |
+| 17:11 | Edited .github/workflows/release.yaml | 10→10 lines | ~64 |
+| 17:11 | Edited .github/workflows/release.yaml | modified secrets() | ~119 |
+| 17:12 | Created .github/workflows/homebrew.yml | — | ~265 |
+| 17:12 | Edited .releaserc.json | 1→4 lines | ~22 |
+| 17:13 | Created .planning/quick/260529-ntf-implement-release-automation-workflows-a/260529-ntf-SUMMARY.md | — | ~876 |
+| 17:13 | Edited .planning/STATE.md | inline fix | ~43 |
+| 17:13 | Edited .planning/STATE.md | 1→2 lines | ~151 |
+| 17:14 | Session end: 18 writes across 9 files (260529-ney-PLAN.md, BETA-RELEASE-REQUIREMENTS.md, 260529-ney-SUMMARY.md, STATE.md, 260529-ntf-PLAN.md) | 11 reads | ~30470 tok |
+| 17:23 | Session end: 18 writes across 9 files (260529-ney-PLAN.md, BETA-RELEASE-REQUIREMENTS.md, 260529-ney-SUMMARY.md, STATE.md, 260529-ntf-PLAN.md) | 11 reads | ~30470 tok |
+
+## Session: 2026-05-30 17:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:33 | Edited package.json | inline fix | ~7 |
+| 17:34 | Session end: 1 writes across 1 files (package.json) | 1 reads | ~510 tok |
+| 17:42 | Session end: 1 writes across 1 files (package.json) | 1 reads | ~510 tok |
+| 17:55 | Session end: 1 writes across 1 files (package.json) | 1 reads | ~510 tok |
+| 17:58 | Edited .github/workflows/release.yaml | 8→7 lines | ~107 |
+| 17:58 | Edited package.json | 1→4 lines | ~24 |
+| 17:58 | Session end: 3 writes across 2 files (package.json, release.yaml) | 2 reads | ~1171 tok |
+| 18:06 | Session end: 3 writes across 2 files (package.json, release.yaml) | 2 reads | ~1171 tok |
+| 18:07 | Edited .releaserc.json | 2→1 lines | ~9 |
+| 18:07 | Edited .github/workflows/release.yaml | expanded (+6 lines) | ~257 |
+| 18:07 | Session end: 5 writes across 3 files (package.json, release.yaml, .releaserc.json) | 3 reads | ~1598 tok |
+| 18:09 | Session end: 5 writes across 3 files (package.json, release.yaml, .releaserc.json) | 3 reads | ~1598 tok |
+| 18:13 | Session end: 5 writes across 3 files (package.json, release.yaml, .releaserc.json) | 3 reads | ~1616 tok |
+| 18:13 | Edited package.json | expanded (+6 lines) | ~27 |
+
+## Session: 2026-05-30 18:17
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:17 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_terminology.md | — | ~151 |
+| 18:17 | Edited ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md | 1→2 lines | ~64 |
+| 18:19 | Session end: 2 writes across 2 files (feedback_terminology.md, MEMORY.md) | 1 reads | ~231 tok |
+| 18:26 | Edited .github/workflows/release.yaml | 26→23 lines | ~228 |
+| 18:27 | Session end: 3 writes across 3 files (feedback_terminology.md, MEMORY.md, release.yaml) | 2 reads | ~1040 tok |
