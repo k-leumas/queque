@@ -7,14 +7,14 @@ QueQue is a `zsh`-integrated command helper triggered by typing `??` in your liv
 ### Homebrew (recommended)
 
 ```bash
-brew tap k-leumas/queque
-brew install k-leumas/queque/queque
+brew tap k-leumas/tap
+brew install queque
 ```
 
 After install, Homebrew will print a caveats block with the exact path to source. Add the following to your `~/.zshrc`:
 
 ```zsh
-source $(brew --prefix k-leumas/queque/queque)/libexec/shell/zsh/qq.zsh
+source $(brew --prefix k-leumas/tap/queque)/libexec/shell/zsh/qq.zsh
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
