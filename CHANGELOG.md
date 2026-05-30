@@ -1,3 +1,10 @@
+# [0.2.0](https://github.com/k-leumas/queque/compare/v0.1.0...v0.2.0) (2026-05-30)
+
+
+### Features
+
+* add qq init command and rename shell script to queque.zsh ([c7a1b56](https://github.com/k-leumas/queque/commit/c7a1b560e50cd14e18f4380758406ecc1699c0e9))
+
 # 1.0.0 (2026-05-23)
 
 
