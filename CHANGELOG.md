@@ -1,3 +1,11 @@
+# [0.2.0-beta.1](https://github.com/k-leumas/queque/compare/v0.1.1-beta.1...v0.2.0-beta.1) (2026-05-30)
+
+
+### Features
+
+* add qq init zsh command and rename shell file to queque.zsh ([cc3d6cb](https://github.com/k-leumas/queque/commit/cc3d6cb25fe3e30805426da09df4f9f41e3ec5e5))
+* add qq init zsh command and rename shell file to queque.zsh ([95d97e3](https://github.com/k-leumas/queque/commit/95d97e39037df1e071f651ebc956563267a833e9))
+
 ## [0.1.1-beta.1](https://github.com/k-leumas/queque/compare/v0.1.0...v0.1.1-beta.1) (2026-05-30)
 
 
