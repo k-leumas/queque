@@ -95,11 +95,17 @@
       "action": "edit",
       "tokens": 68,
       "at": "2026-05-30T19:40:21.469Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml",
+      "action": "edit",
+      "tokens": 91,
+      "at": "2026-05-30T20:01:18.319Z"
     }
   ],
   "edit_counts": {
     "../../.zshrc": 3,
-    ".github/workflows/homebrew.yml": 6,
+    ".github/workflows/homebrew.yml": 7,
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_wolf_commit.md": 2,
     "shell/zsh/queque.zsh": 1
   },
@@ -107,5 +113,5 @@
   "anatomy_misses": 3,
   "repeated_reads_warned": 6,
   "cerebrum_warnings": 0,
-  "stop_count": 21
+  "stop_count": 23
 }
