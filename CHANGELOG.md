@@ -1,3 +1,10 @@
+## [0.1.1-beta.1](https://github.com/k-leumas/queque/compare/v0.1.0...v0.1.1-beta.1) (2026-05-30)
+
+
+### Bug Fixes
+
+* normalize repository url to git+ scheme ([57bcf09](https://github.com/k-leumas/queque/commit/57bcf092ea6825e31991a82f32987fb5cba17860))
+
 # 1.0.0 (2026-05-23)
 
 
