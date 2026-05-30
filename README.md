@@ -11,10 +11,18 @@ brew tap k-leumas/tap
 brew install queque
 ```
 
-After install, Homebrew will print a caveats block with the exact paths. Add the following to your `~/.zshrc`:
+### npm
+
+```bash
+npm install -g @k-leumas/queque-cli
+```
+
+## Configuration
+
+Add to `~/.zshrc`:
 
 ```zsh
-source $(brew --prefix k-leumas/tap/queque)/libexec/shell/zsh/qq.zsh
+eval "$(qq init zsh)"
 export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
@@ -22,19 +30,6 @@ Then reload:
 
 ```bash
 source ~/.zshrc
-```
-
-### npm
-
-```bash
-npm install -g @k-leumas/queque-cli
-```
-
-Add to `~/.zshrc`:
-
-```zsh
-source $(npm root -g)/@k-leumas/queque-cli/shell/zsh/qq.zsh
-export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
 ## Requirements
