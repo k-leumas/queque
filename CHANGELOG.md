@@ -1,3 +1,10 @@
+## [0.2.11](https://github.com/k-leumas/queque/compare/v0.2.10...v0.2.11) (2026-05-30)
+
+
+### Bug Fixes
+
+* skip lefthook install when not in a git repo ([8035e23](https://github.com/k-leumas/queque/commit/8035e23b03b463adf61f230baa128ffba79dfa29))
+
 ## [0.2.10](https://github.com/k-leumas/queque/compare/v0.2.9...v0.2.10) (2026-05-30)
 
 
