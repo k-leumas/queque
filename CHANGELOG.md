@@ -1,3 +1,17 @@
+# [0.2.0-beta.1](https://github.com/k-leumas/queque/compare/v0.1.0...v0.2.0-beta.1) (2026-05-30)
+
+
+### Bug Fixes
+
+* add semantic-release npm plugin to bump package.json version ([d377a17](https://github.com/k-leumas/queque/commit/d377a171649b0739c5e7d872dbfd060974d3adc4))
+* add semantic-release npm plugin to bump package.json version ([af19ebf](https://github.com/k-leumas/queque/commit/af19ebf7b3f15efacf67ba82205c190d200cd874))
+
+
+### Features
+
+* add qq init zsh command and rename shell file to queque.zsh ([5177106](https://github.com/k-leumas/queque/commit/51771062547524c70216edead6e00eabc56dfd24))
+* add qq init zsh command and rename shell file to queque.zsh ([9855fc7](https://github.com/k-leumas/queque/commit/9855fc7e31b84a71bcaeaa560cedb7535da09591))
+
 # [0.2.0-beta.4](https://github.com/k-leumas/queque/compare/v0.2.0-beta.3...v0.2.0-beta.4) (2026-05-30)
 
 
