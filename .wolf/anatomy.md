@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T18:07:26.430Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T18:38:39.950Z
 > Files: 219 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -85,7 +85,7 @@
 - `feedback_lint_before_commit.md` (~216 tok)
 - `feedback_no_coauthored.md` (~148 tok)
 - `feedback_terminology.md` (~163 tok)
-- `feedback_wolf_commit.md` (~215 tok)
+- `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~133 tok)
 - `project_target_audience.md` (~202 tok)
 
@@ -349,7 +349,7 @@
 
 ## .github/workflows/
 
-- `homebrew.yml` — CI: Update Homebrew Tap (~370 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~376 tok)
 - `release.yaml` — CI: Release (~552 tok)
 
 ## .gsd/

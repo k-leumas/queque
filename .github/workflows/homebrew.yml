@@ -5,6 +5,7 @@ on:
     workflows: ["Release"]
     types: [completed]
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   # Required secret: HOMEBREW_TAP_TOKEN
