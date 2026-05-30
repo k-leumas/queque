@@ -964,3 +964,10 @@
 | 10:24 | Session end: 3 writes across 3 files (feedback_terminology.md, MEMORY.md, release.yaml) | 2 reads | ~1040 tok |
 | 10:26 | Created .planning/HANDOFF.json | — | ~1406 |
 | 10:26 | Created .planning/.continue-here.md | — | ~1178 |
+| 10:27 | Session end: 5 writes across 5 files (feedback_terminology.md, MEMORY.md, release.yaml, HANDOFF.json, .continue-here.md) | 5 reads | ~5311 tok |
+| 10:38 | Edited .github/workflows/homebrew.yml | expanded (+6 lines) | ~154 |
+
+## Session: 2026-05-30 10:41
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
