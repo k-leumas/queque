@@ -2426,6 +2426,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T18:07:26.453Z"
+    },
+    {
+      "id": "bug-152",
+      "timestamp": "2026-05-30T18:53:19.612Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../.zshrc",
+      "root_cause": "Had \"$QQ_DEV_ROOT/shell/zsh/qq.zsh\"",
+      "fix": "Changed to \"$QQ_DEV_ROOT/shell/zsh/queque.zsh\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "unknown"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T18:53:19.612Z"
+    },
+    {
+      "id": "bug-153",
+      "timestamp": "2026-05-30T19:00:01.397Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".github/workflows/homebrew.yml",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T19:00:01.397Z"
     }
   ]
 }

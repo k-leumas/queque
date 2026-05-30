@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T18:45:08.213Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T19:00:01.376Z
 > Files: 219 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
-- `.zshrc` — Declares d (~4845 tok)
+- `.zshrc` — Declares d (~4856 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -349,7 +349,7 @@
 
 ## .github/workflows/
 
-- `homebrew.yml` — CI: Update Homebrew Tap (~383 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~459 tok)
 - `release.yaml` — CI: Release (~552 tok)
 
 ## .gsd/

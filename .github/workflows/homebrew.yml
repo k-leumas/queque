@@ -35,5 +35,11 @@ jobs:
           depends_on: |
             "node"
             "jq"
+          caveats: |
+            To enable the ?? trigger, add the shell integration to your .zshrc:
+              qq init zsh >> ~/.zshrc
+              source ~/.zshrc
+            Then set your Anthropic API key:
+              export ANTHROPIC_API_KEY="sk-ant-..."
           formula_folder: Formula
           skip_commit: false
