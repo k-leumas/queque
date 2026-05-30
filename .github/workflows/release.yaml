@@ -85,4 +85,10 @@ jobs:
         # Uses OIDC Trusted Publishing — no NPM_TOKEN secret needed.
         # Prerequisite: configure at npmjs.com → @k-leumas org → queque-cli → Settings → Trusted Publishing:
         #   owner: k-leumas  repo: queque  workflow: release.yaml  environment: (blank)
-        run: npm publish --provenance --access public
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if npm view @k-leumas/queque-cli@$VERSION version 2>/dev/null | grep -q "$VERSION"; then
+            echo "Version $VERSION already published, skipping."
+          else
+            npm publish --provenance --access public
+          fi
