@@ -1,5 +1,5 @@
 /**
- * Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`).
+ * Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`).
  *
  * Strategy: spawn a real zsh process with the widget sourced and exercise
  * single-`?` insertion, `??`-trigger capture, and result application through
@@ -26,7 +26,7 @@ import { describe, expect, it } from 'vitest';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const widgetPath = join(__dirname, '..', 'shell', 'zsh', 'qq.zsh');
+const widgetPath = join(__dirname, '..', 'shell', 'zsh', 'queque.zsh');
 
 /**
  * Run a zsh script that sources the widget and calls shell functions.
