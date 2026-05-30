@@ -1,3 +1,10 @@
+## [0.2.8](https://github.com/k-leumas/queque/compare/v0.2.7...v0.2.8) (2026-05-30)
+
+
+### Bug Fixes
+
+* use whence -p in widget to bypass qq shell function when resolving binary ([dcc1623](https://github.com/k-leumas/queque/commit/dcc1623e4f70651b6a6bd0231686d5207a2f936b))
+
 ## [0.2.7](https://github.com/k-leumas/queque/compare/v0.2.6...v0.2.7) (2026-05-30)
 
 ## [0.2.6](https://github.com/k-leumas/queque/compare/v0.2.5...v0.2.6) (2026-05-30)
