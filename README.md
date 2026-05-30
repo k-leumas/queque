@@ -36,7 +36,6 @@ source ~/.zshrc
 
 - `zsh`
 - Node 24+
-- [Zellij](https://zellij.dev) >= 0.38 (`brew install zellij`)
 - `ANTHROPIC_API_KEY` from [console.anthropic.com](https://console.anthropic.com)
 
 ## Usage
@@ -47,7 +46,7 @@ Type a partial command or a natural-language description, then type `??`:
 list all running docker containers ??
 ```
 
-QueQue opens a floating pane, shows ranked command suggestions, and writes the selected command back into your shell buffer. Press `Enter` to run it or edit it first.
+QueQue opens a selection UI inline. When running inside a [Zellij](https://zellij.dev) session, the UI renders as a floating modal pane. Press `Enter` to accept a suggestion or edit it before running.
 
 ## Contributing
 
