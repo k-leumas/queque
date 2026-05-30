@@ -1,3 +1,10 @@
+# [0.2.0-beta.3](https://github.com/k-leumas/queque/compare/v0.2.0-beta.2...v0.2.0-beta.3) (2026-05-30)
+
+
+### Bug Fixes
+
+* add semantic-release npm plugin to bump package.json version ([5cd21a2](https://github.com/k-leumas/queque/commit/5cd21a24956de7df8dc29583f015a043d7e057ec))
+
 # [0.2.0-beta.2](https://github.com/k-leumas/queque/compare/v0.2.0-beta.1...v0.2.0-beta.2) (2026-05-30)
 
 # [0.2.0-beta.1](https://github.com/k-leumas/queque/compare/v0.1.1-beta.1...v0.2.0-beta.1) (2026-05-30)
