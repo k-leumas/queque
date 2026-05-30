@@ -1,66 +1,116 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-22T20:26:49.452Z",
-  "phase": "04",
-  "phase_name": "fuzzy-tui-selection-ux",
-  "phase_dir": ".planning/phases/04-fuzzy-tui-selection-ux",
+  "timestamp": "2026-05-30T17:25:11.000Z",
+  "phase": null,
+  "phase_name": "homebrew-install-fix-and-main-sync",
+  "phase_dir": null,
   "plan": null,
   "task": null,
   "total_tasks": null,
   "status": "paused",
   "completed_tasks": [
     {
-      "id": "cr-fix",
-      "name": "Fix CR-01 (QQ_RESULT_FILE path validation) + CR-02 (empty lbuffer guard)",
+      "id": 1,
+      "name": "Fix homebrew.yml install block — add (share/queque).install line",
       "status": "done",
-      "commit": "b87a0fc"
+      "commit": "e8598f0"
     },
     {
-      "id": "verify",
-      "name": "Phase 04 verification report (04-VERIFICATION.md)",
+      "id": 2,
+      "name": "Add npm stable/beta/release badges to README",
       "status": "done",
-      "commit": "da3a5a0"
+      "commit": "e8598f0"
+    },
+    {
+      "id": 3,
+      "name": "Diagnose brew install failure — wrong shell file name in formula (queque.zsh vs qq.zsh in v0.1.0 tarball)",
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "name": "Cherry-pick install flow changes from beta to main (qq init, shell rename, homebrew.yml, release.yaml, releaserc, README)",
+      "status": "done",
+      "commit": "c7a1b56"
+    },
+    {
+      "id": 5,
+      "name": "Push main — CI will cut v0.2.0 release via semantic-release",
+      "status": "done"
     }
   ],
   "remaining_tasks": [
     {
-      "id": "uat-fixes",
-      "name": "Quick task 260522-iln-phase-04-uat-fixes: 5 UAT fixes from live testing",
-      "status": "in_progress",
-      "progress": "setopt interactivecomments added to shell/zsh/qq.zsh (uncommitted); 4 of 5 changes still pending"
+      "id": 6,
+      "name": "Verify CI release ran and v0.2.0 was published (npm + GitHub Release + Homebrew formula update)",
+      "status": "not_started"
     },
     {
-      "id": "complete",
-      "name": "Mark phase 04 complete in ROADMAP.md and STATE.md after UAT fixes ship",
+      "id": 7,
+      "name": "Test brew install k-leumas/tap/queque after new formula is published by homebrew-releaser",
+      "status": "not_started"
+    },
+    {
+      "id": 8,
+      "name": "Pop beta stash (wolf files stashed before branch switch to main)",
+      "status": "not_started"
+    },
+    {
+      "id": 9,
+      "name": "Delete chore/sync-install-flow-to-main branch (no longer needed)",
+      "status": "not_started"
+    },
+    {
+      "id": 10,
+      "name": "Record demo gif of ?? trigger (manual — user task)",
+      "status": "not_started"
+    },
+    {
+      "id": 11,
+      "name": "Draft and submit awesome-zsh-plugins PR to unixorn/awesome-zsh-plugins",
       "status": "not_started"
     }
   ],
   "blockers": [],
   "human_actions_pending": [
     {
-      "action": "Live UAT retest after UAT fixes are applied",
-      "context": "User found 5 issues during live testing. After the quick task is done, user should retrigger ?? and verify: # comments execute cleanly, two-row layout, FILTER label, Zellij frame says qq, context header shows query.",
+      "action": "Check CI release workflow ran after main push — confirm v0.2.0 published to npm and GitHub Releases",
+      "context": "semantic-release triggers on feat: commit and bumps minor → v0.2.0. Verify at github.com/k-leumas/queque/actions",
+      "blocking": false
+    },
+    {
+      "action": "After v0.2.0 formula is published by homebrew-releaser, test: brew upgrade queque (or fresh install). The v0.2.0 tarball has shell/zsh/queque.zsh so the ENOENT error should be gone.",
+      "context": "homebrew-releaser fires after the GitHub Release is published. HOMEBREW_TAP_TOKEN is confirmed set.",
+      "blocking": false
+    },
+    {
+      "action": "Record demo gif of ?? trigger in action",
+      "context": "README has a <!-- demo gif goes here --> placeholder",
       "blocking": false
     }
   ],
   "decisions": [
     {
-      "decision": "setopt interactivecomments applied globally (at qq.zsh source time)",
-      "rationale": "User confirmed: ensures # comments always work in the session with no per-invocation overhead",
-      "phase": "04"
+      "decision": "Cherry-pick approach: applied files from beta directly (git checkout beta -- <file>) rather than cherry-picking individual commits",
+      "rationale": "Many beta commits had wolf files mixed in. Direct file apply avoids cherry-pick conflicts and wolf-file bleed."
     },
     {
-      "decision": "Query context header shows dim 'queque › [initialQuery]' above filter when initialQuery is non-empty",
-      "rationale": "User selected 'Show the query context' option during UAT feedback session",
-      "phase": "04"
+      "decision": "Used rebase/cherry-pick workflow to keep main history linear, not merge",
+      "rationale": "User preference for smooth linear history on main."
     },
     {
-      "decision": "Two-row candidate layout: command + glyph on row 1, explanation on row 2 indented 3 chars; marginBottom=1 between items",
-      "rationale": "User requested stacked layout for command + explanation",
-      "phase": "04"
+      "decision": "Kept beta README over remote main's 7 docs commits (--theirs during cherry-pick conflict)",
+      "rationale": "Beta README is canonical — correct install instructions, badges, no eval pattern. Remote docs had wrong install pattern (eval qq init zsh instead of >>)."
+    },
+    {
+      "decision": "Version bumped to v0.2.0, not v0.1.1",
+      "rationale": "feat: commit type correctly triggers minor bump. qq init is a new command, not a bugfix. v0.2.0 is semantically accurate."
+    },
+    {
+      "decision": "Dev vs Homebrew distinction via QQ_DEV_ROOT env var",
+      "rationale": "Shell widget checks QQ_DEV_ROOT at trigger time — if set, uses local node build; if unset, uses installed qq binary. Toggle per session, no reinstall needed."
     }
   ],
-  "uncommitted_files": ["shell/zsh/qq.zsh"],
-  "next_action": "Run /gsd:quick to implement quick task 260522-iln-phase-04-uat-fixes. The qq.zsh setopt change is already applied (stage it in the first commit). Remaining 4 changes: (1) CandidateSelect.tsx: two-row layout — command+glyph row 1, explanation row 2 (3-char indent), marginBottom=1 between items; (2) SearchInput.tsx: SEARCH → FILTER label; (3) qq.zsh zellij run: add --name 'qq' before the -- separator; (4) CandidateSelect.tsx: add dim 'queque › [initialQuery]' header above <SearchInput> when initialQuery is non-empty. After quick task: mark phase 04 complete in ROADMAP/STATE.",
-  "context_notes": "Phase 04 is functionally complete: all 3 plans executed, 132/132 tests pass, CR-01+CR-02 fixed (b87a0fc), verification report written (da3a5a0). Only blocking phase closure: (1) the 5 UAT fix changes and (2) the ROADMAP/STATE mark-complete step. Quick task slug pre-assigned by gsd-sdk: 260522-iln-phase-04-uat-fixes."
+  "uncommitted_files": [".wolf/hooks/_session.json", ".wolf/memory.md"],
+  "next_action": "Check CI at github.com/k-leumas/queque/actions — confirm semantic-release triggered and v0.2.0 was published. Then wait for homebrew-releaser to update the formula. Then test brew install/upgrade.",
+  "context_notes": "main is at c7a1b56. semantic-release should fire and publish v0.2.0. homebrew-releaser will update Formula/queque.rb in k-leumas/homebrew-tap to point at the v0.2.0 tarball (which has shell/zsh/queque.zsh — the correct filename). HOMEBREW_TAP_TOKEN is confirmed set (checked via gh secret list). Beta stash has wolf files from before the branch switch — pop it when back on beta. Branch chore/sync-install-flow-to-main is still live locally and on remote — delete it."
 }

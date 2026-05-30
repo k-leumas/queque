@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T01:26:37.430Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T17:26:51.353Z
 > Files: 217 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
@@ -354,9 +354,9 @@
 
 ## .planning/
 
-- `.continue-here.md` — Session Checkpoint (~683 tok)
+- `.continue-here.md` — Session Handoff — Homebrew Install Fix & Main Sync (~1104 tok)
 - `config.json` (~258 tok)
-- `HANDOFF.json` (~920 tok)
+- `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
