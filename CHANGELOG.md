@@ -1,3 +1,10 @@
+# [0.2.0-beta.5](https://github.com/k-leumas/queque/compare/v0.2.0-beta.4...v0.2.0-beta.5) (2026-05-30)
+
+
+### Bug Fixes
+
+* qq init zsh outputs source line instead of inlining script ([3ec5c12](https://github.com/k-leumas/queque/commit/3ec5c123431771eb5ab0ee3f6865d43459e1aea2))
+
 # [0.2.0-beta.4](https://github.com/k-leumas/queque/compare/v0.2.0-beta.3...v0.2.0-beta.4) (2026-05-30)
 
 # [0.2.0-beta.3](https://github.com/k-leumas/queque/compare/v0.2.0-beta.2...v0.2.0-beta.3) (2026-05-30)
