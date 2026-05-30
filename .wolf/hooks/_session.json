@@ -11,6 +11,16 @@
       "count": 1,
       "tokens": 492,
       "first_read": "2026-05-30T16:12:13.419Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-05-30T16:26:12.489Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/main.ts": {
+      "count": 1,
+      "tokens": 1180,
+      "first_read": "2026-05-30T16:29:28.585Z"
     }
   },
   "files_written": [
@@ -25,15 +35,35 @@
       "action": "edit",
       "tokens": 43,
       "at": "2026-05-30T16:16:00.284Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts",
+      "action": "edit",
+      "tokens": 21,
+      "at": "2026-05-30T16:29:08.703Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts",
+      "action": "edit",
+      "tokens": 12,
+      "at": "2026-05-30T16:29:18.468Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/cli/main.ts",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-05-30T16:30:23.825Z"
     }
   ],
   "edit_counts": {
     "CHANGELOG.md": 1,
-    "README.md": 1
+    "README.md": 1,
+    "src/cli/commands/init.ts": 2,
+    "src/cli/main.ts": 1
   },
-  "anatomy_hits": 1,
-  "anatomy_misses": 1,
+  "anatomy_hits": 2,
+  "anatomy_misses": 2,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 2
+  "stop_count": 3
 }

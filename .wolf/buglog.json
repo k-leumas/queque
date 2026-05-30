@@ -2410,6 +2410,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T16:16:00.288Z"
+    },
+    {
+      "id": "bug-151",
+      "timestamp": "2026-05-30T16:29:08.705Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/cli/commands/init.ts",
+      "root_cause": "Had 'utf8'",
+      "fix": "Changed to `source \"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-05-30T16:29:18.470Z"
+    },
+    {
+      "id": "bug-152",
+      "timestamp": "2026-05-30T16:30:23.827Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/cli/main.ts",
+      "root_cause": "Had 'Print shell integration script (add `",
+      "fix": "Changed to 'Print a source line for shell integration (append",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T16:30:23.827Z"
     }
   ]
 }

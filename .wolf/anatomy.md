@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T16:16:00.266Z
-> Files: 218 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T16:30:23.806Z
+> Files: 219 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -501,11 +501,12 @@
 
 ## src/cli/
 
-- `main.ts` — Exports main (~1180 tok)
+- `main.ts` — Exports main (~1256 tok)
 
 ## src/cli/commands/
 
 - `client.ts` — Real client command handler. (~394 tok)
+- `init.ts` — Exports initCommand (~186 tok)
 
 ## src/client/
 

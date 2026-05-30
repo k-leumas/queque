@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,5 +15,5 @@ export function initCommand(shell: string): void {
     console.error(`Unsupported shell: '${shell}'. Supported: ${SUPPORTED_SHELLS.join(', ')}`);
     process.exit(1);
   }
-  process.stdout.write(readFileSync(shellScriptPath(shell as Shell), 'utf8'));
+  process.stdout.write(`source "${shellScriptPath(shell as Shell)}"\n`);
 }
