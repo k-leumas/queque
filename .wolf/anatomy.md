@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T16:47:50.787Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T16:51:23.900Z
 > Files: 219 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
@@ -90,7 +90,7 @@
 - `CHANGELOG.md` — [0.2.0-beta.2](https://github.com/k-leumas/queque/compare/v0.2.0-beta.1...v0.2.0-beta.2) (2026-05-30 (~236 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
 - `package.json` — Node.js package manifest (~543 tok)
-- `README.md` — Project documentation (~507 tok)
+- `README.md` — Project documentation (~616 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 
 ## .claude/
@@ -345,7 +345,7 @@
 
 ## .github/workflows/
 
-- `homebrew.yml` — CI: Update Homebrew Tap (~265 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~282 tok)
 - `release.yaml` — CI: Release (~552 tok)
 
 ## .gsd/

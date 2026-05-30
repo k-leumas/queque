@@ -1,88 +1,34 @@
 {
-  "session_id": "session-2026-05-30-0806",
-  "started": "2026-05-30T15:06:38.048Z",
+  "session_id": "session-2026-05-30-0950",
+  "started": "2026-05-30T16:50:31.421Z",
   "files_read": {
-    "/Users/samuel/dev/tui-llm/CHANGELOG.md": {
+    "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml": {
       "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-30T15:07:27.862Z"
-    },
-    "/Users/samuel/dev/tui-llm/README.md": {
-      "count": 1,
-      "tokens": 492,
-      "first_read": "2026-05-30T16:12:13.419Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-30T16:26:12.489Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/cli/main.ts": {
-      "count": 1,
-      "tokens": 1180,
-      "first_read": "2026-05-30T16:29:28.585Z"
-    },
-    "/Users/samuel/.claude/get-shit-done/workflows/pause-work.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-05-30T16:46:48.913Z"
+      "tokens": 265,
+      "first_read": "2026-05-30T16:50:35.696Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/samuel/dev/tui-llm/CHANGELOG.md",
-      "action": "create",
-      "tokens": 270,
-      "at": "2026-05-30T15:10:38.792Z"
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml",
+      "action": "edit",
+      "tokens": 54,
+      "at": "2026-05-30T16:50:59.377Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/README.md",
       "action": "edit",
-      "tokens": 43,
-      "at": "2026-05-30T16:16:00.284Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts",
-      "action": "edit",
-      "tokens": 21,
-      "at": "2026-05-30T16:29:08.703Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts",
-      "action": "edit",
-      "tokens": 12,
-      "at": "2026-05-30T16:29:18.468Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/cli/main.ts",
-      "action": "edit",
-      "tokens": 28,
-      "at": "2026-05-30T16:30:23.825Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/HANDOFF.json",
-      "action": "create",
-      "tokens": 1237,
-      "at": "2026-05-30T16:47:23.447Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/.continue-here.md",
-      "action": "create",
-      "tokens": 1282,
-      "at": "2026-05-30T16:47:50.850Z"
+      "tokens": 150,
+      "at": "2026-05-30T16:51:23.920Z"
     }
   ],
   "edit_counts": {
-    "CHANGELOG.md": 1,
-    "README.md": 1,
-    "src/cli/commands/init.ts": 2,
-    "src/cli/main.ts": 1,
-    ".planning/HANDOFF.json": 1,
-    ".planning/.continue-here.md": 1
+    ".github/workflows/homebrew.yml": 1,
+    "README.md": 1
   },
-  "anatomy_hits": 2,
-  "anatomy_misses": 3,
+  "anatomy_hits": 1,
+  "anatomy_misses": 0,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 4
+  "stop_count": 0
 }

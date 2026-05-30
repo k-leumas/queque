@@ -992,3 +992,10 @@
 | 09:43 | Session end: 5 writes across 4 files (CHANGELOG.md, README.md, init.ts, main.ts) | 4 reads | ~2046 tok |
 | 09:47 | Created .planning/HANDOFF.json | — | ~1237 |
 | 09:47 | Created .planning/.continue-here.md | — | ~1197 |
+
+## Session: 2026-05-30 09:50
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 09:50 | Edited .github/workflows/homebrew.yml | 3→4 lines | ~54 |
+| 09:51 | Edited README.md | 1→5 lines | ~140 |

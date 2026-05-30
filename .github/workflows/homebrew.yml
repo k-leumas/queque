@@ -22,6 +22,7 @@ jobs:
           install: |
             system "npm", "install", *std_npm_args
             bin.install_symlink Dir["#{libexec}/bin/*"]
+            (share/"queque").install "shell/zsh/queque.zsh"
           test: |
             assert_match "queque", shell_output("#{bin}/qq --version")
           depends_on: '"node", "jq"'
