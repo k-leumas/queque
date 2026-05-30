@@ -2378,6 +2378,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T01:07:27.303Z"
+    },
+    {
+      "id": "bug-149",
+      "timestamp": "2026-05-30T02:33:29.080Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"https://github.com/k-leumas/queque.git\"",
+      "fix": "Changed to \"git+https://github.com/k-leumas/queque.git\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T02:33:29.080Z"
     }
   ]
 }

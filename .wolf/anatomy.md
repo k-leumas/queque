@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T01:26:37.430Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T02:33:29.058Z
 > Files: 217 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
@@ -88,7 +88,7 @@
 
 - `.releaserc.json` (~152 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `package.json` — Node.js package manifest (~542 tok)
+- `package.json` — Node.js package manifest (~543 tok)
 - `README.md` — Project documentation (~1144 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 
