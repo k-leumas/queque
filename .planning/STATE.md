@@ -5,7 +5,7 @@ milestone_name: milestone
 status: completed
 stopped_at: None
 last_updated: "2026-05-29T23:57:55.176Z"
-last_activity: 2026-05-29 -- Quick task 260529-ney: explored beta release requirements (Homebrew tap, awesome-zsh-plugins, OMZ plugin, Zellij community, release automation)
+last_activity: 2026-05-30 -- Quick task 260529-ntf: implemented release automation (release.yaml fixed, homebrew.yml added, .releaserc.json beta branch added)
 progress:
   total_phases: 10
   completed_phases: 6
@@ -99,7 +99,8 @@ None yet.
 | 260522-selection-summary | on selection: print summary above PS1, add query to history, restore query to LBUFFER | 2026-05-22 | 563b8a9 | [20260522-selection-summary-and-history](./quick/20260522-selection-summary-and-history/) |
 | 260522-vfd | prototype provider detection: detectProvider() waterfall — ANTHROPIC_API_KEY → claude CLI → ollama → OPENAI_API_KEY → none | 2026-05-23 | a86159d | [260522-vfd-prototype-provider-detection](./quick/260522-vfd-prototype-provider-detection/) |
 | 260528-mk1 | rename project from que-que to queque in all prose, package.json, shell/TUI display labels, and test assertions | 2026-05-28 | 492f2f6 | [260528-mk1-rename-que-que-to-queque-in-prose-write-](./quick/260528-mk1-rename-que-que-to-queque-in-prose-write-/) |
-| 260529-ney | research beta release requirements: Homebrew tap formula, awesome-zsh-plugins, Zellij community (Integrations not plugin) | 2026-05-29 | — | [260529-ney-explore-beta-release-requirements-for-ho](./quick/260529-ney-explore-beta-release-requirements-for-ho/) |
+| 260529-ney | research beta release requirements: Homebrew tap formula, awesome-zsh-plugins, Zellij community (Integrations not plugin) | 2026-05-29 | f608787 | [260529-ney-explore-beta-release-requirements-for-ho](./quick/260529-ney-explore-beta-release-requirements-for-ho/) |
+| 260529-ntf | implement release automation: release.yaml (beta branch + pnpm/action-setup@v4), homebrew.yml, .releaserc.json beta prerelease | 2026-05-30 | 1c0e36d | [260529-ntf-implement-release-automation-workflows-a](./quick/260529-ntf-implement-release-automation-workflows-a/) |
 
 ## Session Continuity
 
