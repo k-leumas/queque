@@ -1,8 +1,8 @@
 {
   "version": "1.0",
-  "timestamp": "2026-05-30T15:02:44.962Z",
+  "timestamp": "2026-05-30T16:46:54.934Z",
   "phase": null,
-  "phase_name": "release-pipeline-stabilization",
+  "phase_name": "release-pipeline-stabilization-and-install-flow",
   "phase_dir": null,
   "plan": null,
   "task": null,
@@ -11,92 +11,98 @@
   "completed_tasks": [
     {
       "id": 1,
-      "name": "Add releaseRules to commit-analyzer for all commit types",
+      "name": "Rewrite CHANGELOG.md — remove duplicates and old que-que era content",
       "status": "done",
-      "commit": "a41da8f"
+      "commit": "a6ffbd5"
+    },
+    { "id": 2, "name": "Create published GitHub Release for v0.1.0", "status": "done" },
+    {
+      "id": 3,
+      "name": "Delete 3 orphaned draft GitHub Releases (v1.0.0 x2, v1.1.0)",
+      "status": "done"
     },
     {
-      "id": 2,
-      "name": "Add @semantic-release/npm plugin to bump package.json",
+      "id": 4,
+      "name": "Fix Homebrew install conflict (homebrew-queque vs homebrew-tap same repo)",
       "status": "done",
-      "commit": "ee19626"
+      "commit": "dca64f4"
     },
-    { "id": 3, "name": "Fix npm publish --tag for prerelease versions", "status": "done" },
-    { "id": 4, "name": "Make GitHub repo public for provenance support", "status": "done" },
-    { "id": 5, "name": "Rebase beta onto main", "status": "done" },
+    {
+      "id": 5,
+      "name": "Restore formula to homebrew-tap with jq dependency and npm install method",
+      "status": "done"
+    },
     {
       "id": 6,
-      "name": "Rewrite README (user-facing, install/setup/usage)",
+      "name": "Fix qq init zsh — outputs source line instead of inlining script",
       "status": "done",
-      "commit": "ca0a0fb"
+      "commit": "346d2a4"
     },
-    { "id": 7, "name": "Add jq to homebrew depends_on", "status": "done", "commit": "ca0a0fb" },
+    {
+      "id": 7,
+      "name": "Homebrew: install queque.zsh to share/queque/ for stable path across upgrades",
+      "status": "done"
+    },
     {
       "id": 8,
-      "name": "Fix orphaned tags/releases after rebase by aligning with npm",
-      "status": "done"
-    },
-    {
-      "id": 9,
-      "name": "Release pipeline now succeeds end-to-end (v0.2.0-beta.3 published)",
-      "status": "done"
+      "name": "init.ts: prefer Homebrew share path, fall back to __dirname-relative for npm",
+      "status": "done",
+      "commit": "346d2a4"
     }
   ],
   "remaining_tasks": [
     {
+      "id": 9,
+      "name": "Add npm beta badge and GitHub release badge to README",
+      "status": "not_started"
+    },
+    {
       "id": 10,
-      "name": "Create published GitHub Release for v0.1.0 (git tag exists, no GH release)",
+      "name": "Record demo gif of ?? trigger (manual — user task)",
       "status": "not_started"
     },
     {
       "id": 11,
-      "name": "Delete 3 orphaned draft GitHub Releases (v1.0.0 x2, v1.1.0 from old que-que era)",
+      "name": "Draft and submit awesome-zsh-plugins PR to unixorn/awesome-zsh-plugins",
       "status": "not_started"
-    },
-    {
-      "id": 12,
-      "name": "Rewrite CHANGELOG.md — duplicated entries, orphaned beta versions, old que-que era content",
-      "status": "not_started"
-    },
-    { "id": 13, "name": "Add npm/GitHub release badge to README", "status": "not_started" },
-    { "id": 14, "name": "Record demo gif of ?? trigger for README", "status": "not_started" },
-    { "id": 15, "name": "Draft and submit awesome-zsh-plugins PR", "status": "not_started" }
+    }
   ],
   "blockers": [],
   "human_actions_pending": [
     {
+      "action": "Verify Homebrew install flow end-to-end after formula is updated by homebrew-releaser",
+      "context": "Formula in homebrew-tap now has (share/queque).install but homebrew-releaser will overwrite it on next release — need to confirm HOMEBREW_TAP_TOKEN secret is set and workflow fires correctly",
+      "blocking": false
+    },
+    {
       "action": "Record demo gif of ?? trigger in action",
-      "context": "README has a placeholder comment where the gif goes",
+      "context": "README has a <!-- demo gif goes here --> placeholder",
       "blocking": false
     }
   ],
   "decisions": [
     {
-      "decision": "Release on all conventional commit types (chore, docs, build, etc.)",
-      "rationale": "User wants version to track all code changes, not just feat/fix"
+      "decision": "Use k-leumas/homebrew-tap (tap name: k-leumas/tap) as the single canonical tap for all tools",
+      "rationale": "homebrew-queque was a renamed version of homebrew-tap — same repo, two names, caused brew install conflict. General tap scales better for future tools."
     },
     {
-      "decision": "Use @semantic-release/npm with npmPublish:false to bump package.json without double-publishing",
-      "rationale": "Custom npm publish step handles publishing with correct --tag"
+      "decision": "qq init zsh outputs source line instead of inlining full script",
+      "rationale": "Inlining 200+ lines into .zshrc is hostile UX. Source line is one line, stays current when file is updated."
     },
     {
-      "decision": "npm publish uses --tag derived from prerelease identifier (beta from 0.2.0-beta.x)",
-      "rationale": "npm requires explicit --tag for prerelease versions or it refuses to publish"
+      "decision": "Homebrew install copies queque.zsh to $(brew --prefix)/share/queque/ — init.ts checks this path first",
+      "rationale": "Homebrew Cellar paths include version number and go stale after brew upgrade. share/ is stable and version-agnostic."
     },
     {
-      "decision": "Wolf file conflicts during rebase: always take --ours (local is most recent)",
-      "rationale": "Wolf files track current session state; remote version is always stale after rebase"
+      "decision": "init.ts detects Homebrew by checking known prefixes (/opt/homebrew, /usr/local, /home/linuxbrew/.linuxbrew) — no subprocess",
+      "rationale": "Zero-cost detection at init time. brew --prefix spawn would be slower and less portable."
     },
     {
-      "decision": "Source of truth for version baseline is npm, not git tags",
-      "rationale": "After rebase orphaned git tags, npm had the correct last-published version (0.2.0-beta.2)"
-    },
-    {
-      "decision": "When deleting orphaned tags after a force-push rebase, also delete the GitHub Releases",
-      "rationale": "Semantic-release checks GitHub Release existence, not just git tags"
+      "decision": "Wolf files always committed via --amend --no-edit when they are the only change",
+      "rationale": "Wolf files mirror their corresponding code changes and must never be a separate commit."
     }
   ],
-  "uncommitted_files": [".planning/STATE.md", ".wolf/hooks/_session.json", ".wolf/memory.md"],
-  "next_action": "gh release create v0.1.0 with stable tag; delete 3 draft releases; then rewrite CHANGELOG.md from scratch using git log",
-  "context_notes": "Release pipeline is working end-to-end. beta is rebased onto main. v0.2.0-beta.2 is the last published npm beta (git tag correct). v0.2.0-beta.3 was cut this session successfully. CHANGELOG.md has duplicated entries from multiple failed semantic-release runs during the rebase saga, plus old que-que era v1.0.0/v1.1.0 content at the bottom. README is rewritten clean. awesome-zsh-plugins PR is next after demo gif is recorded."
+  "uncommitted_files": [".wolf/hooks/_session.json", ".wolf/memory.md"],
+  "next_action": "Add npm beta badge and GitHub release badge to README, then record demo gif, then submit awesome-zsh-plugins PR",
+  "context_notes": "Release pipeline is clean. beta is at v0.2.0-beta.6. Homebrew tap conflict resolved. init flow fixed. Formula updated to copy shell script to share/queque/. homebrew-releaser may overwrite formula on next release — need to verify HOMEBREW_TAP_TOKEN secret is set so the workflow actually fires and picks up the (share/queque).install line from homebrew.yml. The homebrew.yml install: block currently says 'system npm install + bin.install_symlink' but does NOT include the share install — that was added directly to the formula file. Need to reconcile homebrew.yml with the formula."
 }

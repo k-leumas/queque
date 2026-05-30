@@ -989,3 +989,6 @@
 | 09:29 | Edited src/cli/commands/init.ts | "utf8" → "source " | ~21 |
 | 09:29 | Edited src/cli/commands/init.ts | 2→1 lines | ~12 |
 | 09:30 | Edited src/cli/main.ts | "Print shell integration s" → "Print a source line for s" | ~28 |
+| 09:43 | Session end: 5 writes across 4 files (CHANGELOG.md, README.md, init.ts, main.ts) | 4 reads | ~2046 tok |
+| 09:47 | Created .planning/HANDOFF.json | — | ~1237 |
+| 09:47 | Created .planning/.continue-here.md | — | ~1197 |

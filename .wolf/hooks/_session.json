@@ -21,6 +21,11 @@
       "count": 1,
       "tokens": 1180,
       "first_read": "2026-05-30T16:29:28.585Z"
+    },
+    "/Users/samuel/.claude/get-shit-done/workflows/pause-work.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-05-30T16:46:48.913Z"
     }
   },
   "files_written": [
@@ -53,17 +58,31 @@
       "action": "edit",
       "tokens": 28,
       "at": "2026-05-30T16:30:23.825Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/HANDOFF.json",
+      "action": "create",
+      "tokens": 1237,
+      "at": "2026-05-30T16:47:23.447Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/.continue-here.md",
+      "action": "create",
+      "tokens": 1282,
+      "at": "2026-05-30T16:47:50.850Z"
     }
   ],
   "edit_counts": {
     "CHANGELOG.md": 1,
     "README.md": 1,
     "src/cli/commands/init.ts": 2,
-    "src/cli/main.ts": 1
+    "src/cli/main.ts": 1,
+    ".planning/HANDOFF.json": 1,
+    ".planning/.continue-here.md": 1
   },
   "anatomy_hits": 2,
-  "anatomy_misses": 2,
+  "anatomy_misses": 3,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 4
 }
