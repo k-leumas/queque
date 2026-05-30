@@ -991,3 +991,5 @@
 | 11:53 | Session end: 7 writes across 3 files (.zshrc, homebrew.yml, feedback_wolf_commit.md) | 3 reads | ~850 tok |
 | 11:59 | Session end: 7 writes across 3 files (.zshrc, homebrew.yml, feedback_wolf_commit.md) | 3 reads | ~850 tok |
 | 12:00 | Edited .github/workflows/homebrew.yml | added nullish coalescing | ~111 |
+| 12:01 | Session end: 8 writes across 3 files (.zshrc, homebrew.yml, feedback_wolf_commit.md) | 3 reads | ~961 tok |
+| 12:08 | Edited .github/workflows/homebrew.yml | modified caveats() | ~134 |
