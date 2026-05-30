@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-28T23:27:09.593Z
-> Files: 210 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T00:00:59.610Z
+> Files: 213 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -358,7 +358,7 @@
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
-- `STATE.md` — Project State (~1424 tok)
+- `STATE.md` — Project State (~1503 tok)
 
 ## .planning/notes/
 
@@ -463,6 +463,12 @@
 ## .planning/quick/260528-mk1-rename-queque-to-queque-in-prose-write-/
 
 - `260528-mk1-PLAN.md` — Declares names (~2959 tok)
+
+## .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/
+
+- `260529-ney-PLAN.md` (~2158 tok)
+- `260529-ney-SUMMARY.md` — Phase quick Plan 260529-ney: Beta Release Requirements Research Summary (~814 tok)
+- `BETA-RELEASE-REQUIREMENTS.md` — QueQue Beta Release Requirements (~6318 tok)
 
 ## .planning/research/
 

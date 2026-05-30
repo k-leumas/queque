@@ -2314,6 +2314,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-28T23:27:09.612Z"
+    },
+    {
+      "id": "bug-145",
+      "timestamp": "2026-05-30T00:00:39.673Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→7 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T00:00:39.673Z"
     }
   ]
 }

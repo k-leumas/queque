@@ -3,6 +3,7 @@
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
 | 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
+| 23:57 | researched beta distribution channels — Homebrew tap formula skeleton, awesome-zsh-plugins PR process, Zellij community (not plugin) venues | .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md | document created | ~3500 |
 | 16:28 | gsd-quick 260528-mk1: renamed project brand from que-que to queque (QueQue in prose) | 79 files, package.json, src/, tests/, shell/, .planning/ | 148/148 tests pass, committed 492f2f6 | ~107k |
 | 21:29 | added Phase 7 (Context-Aware Learning and Ambient Suggestions) to ROADMAP.md | .planning/ROADMAP.md | phase documented with 3 plans and success criteria | ~300 |
 | 01:30 | UAT session phase 04 — fixed Modal border, Ink stacking (interactive:true), Enter key '\r' bug; wrote 5 regression tests + 4 RED TDD tests for onSelect(explanation) + ZSH context line | src/ui/Modal.tsx, src/ui/CandidateSelect.tsx, src/client/run-foreground.ts, tests/candidate-select.test.tsx, tests/zsh-widget.test.ts | 127 green 4 red; paused for implementation | ~8000 |
@@ -905,3 +906,17 @@
 | 16:26 | Created .planning/quick/260528-mk1-rename-que-que-to-queque-in-prose-write-/260528-mk1-SUMMARY.md | — | ~1272 |
 | 16:27 | Edited .planning/STATE.md | 9→10 lines | ~194 |
 | 16:28 | Session end: 40 writes across 29 files (project_target_audience.md, MEMORY.md, 260528-mk1-PLAN.md, package.json, README.md) | 32 reads | ~59858 tok |
+
+## Session: 2026-05-29 16:43
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:52 | Created .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-PLAN.md | — | ~2302 |
+| 16:56 | Created .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md | — | ~4336 |
+| 16:57 | Created .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/260529-ney-SUMMARY.md | — | ~869 |
+| 16:58 | Edited .planning/STATE.md | 5→6 lines | ~178 |
+| 17:00 | Edited .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md | modified method() | ~2299 |
+| 17:00 | Edited .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md | 5→7 lines | ~288 |
+| 17:00 | Edited .planning/STATE.md | inline fix | ~46 |
+| 17:00 | Edited .planning/STATE.md | 3→3 lines | ~16 |
+| 17:01 | Session end: 8 writes across 4 files (260529-ney-PLAN.md, BETA-RELEASE-REQUIREMENTS.md, 260529-ney-SUMMARY.md, STATE.md) | 9 reads | ~20240 tok |
