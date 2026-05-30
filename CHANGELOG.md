@@ -1,3 +1,10 @@
+## [0.2.9](https://github.com/k-leumas/queque/compare/v0.2.8...v0.2.9) (2026-05-30)
+
+
+### Bug Fixes
+
+* symlink qq binary directly from npm libexec path in homebrew formula ([3736a05](https://github.com/k-leumas/queque/commit/3736a05228d69378a5a307b1a40befb758e657f1))
+
 ## [0.2.8](https://github.com/k-leumas/queque/compare/v0.2.7...v0.2.8) (2026-05-30)
 
 
