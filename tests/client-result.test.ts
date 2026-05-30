@@ -144,7 +144,7 @@ vi.mock('ink', () => ({
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const widgetPath = path.join(__dirname, '..', 'shell', 'zsh', 'qq.zsh');
+const widgetPath = path.join(__dirname, '..', 'shell', 'zsh', 'queque.zsh');
 
 describe('writeShellResult', () => {
   let tmpDir: string;

@@ -3,6 +3,7 @@ import { cac } from 'cac';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { clientCommand } from './commands/client.js';
 import { daemonCommand } from './commands/daemon.js';
+import { initCommand } from './commands/init.js';
 
 type ClientOptions = {
   requestFile?: string;
@@ -87,6 +88,15 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
       const resultFile = requiredOption('--result-file', options.resultFile);
 
       await clientCommand({ requestFile, resultFile, resultMode: options.resultMode });
+    });
+
+  cli
+    .command(
+      'init <shell>',
+      'Print a source line for shell integration (append to ~/.zshrc with `qq init zsh >> ~/.zshrc`)',
+    )
+    .action((shell: string) => {
+      initCommand(shell);
     });
 
   cli
