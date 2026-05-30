@@ -1,11 +1,11 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T19:08:35.988Z
-> Files: 219 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T19:18:41.734Z
+> Files: 220 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
-- `.zshrc` — Declares d (~4856 tok)
+- `.zshrc` — Declares d (~4862 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -502,6 +502,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2821 tok)
 
 ## src/cli/
 

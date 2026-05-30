@@ -227,7 +227,15 @@ JSON
   if [[ -n "${QQ_DEV_ROOT:-}" && -f "${QQ_DEV_ROOT}/dist/cli/main.js" ]]; then
     qq_cmd=("node" "${QQ_DEV_ROOT}/dist/cli/main.js")
   else
-    qq_cmd=("qq")
+    # whence -p searches PATH only, bypassing shell functions — prevents the dev
+    # qq() function from shadowing the installed Homebrew binary.
+    local _qq_bin
+    _qq_bin=$(whence -p qq 2>/dev/null)
+    if [[ -z "$_qq_bin" ]]; then
+      zle -M "queque: qq not found — run: qq init zsh >> ~/.zshrc && source ~/.zshrc"
+      return 0
+    fi
+    qq_cmd=("$_qq_bin")
   fi
   _qq_log "qq_cmd=${qq_cmd[*]}"
 
