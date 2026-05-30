@@ -1,3 +1,10 @@
+## [0.2.10](https://github.com/k-leumas/queque/compare/v0.2.9...v0.2.10) (2026-05-30)
+
+
+### Bug Fixes
+
+* build dist before npm global install in homebrew formula ([6a4b60d](https://github.com/k-leumas/queque/commit/6a4b60d3c4bce091990a382e8128fcb975ca3fa5))
+
 ## [0.2.9](https://github.com/k-leumas/queque/compare/v0.2.8...v0.2.9) (2026-05-30)
 
 
