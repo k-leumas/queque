@@ -1,0 +1,28 @@
+name: Update Homebrew Tap
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  # Required secret: HOMEBREW_TAP_TOKEN
+  # Create a GitHub Personal Access Token with `repo` scope on k-leumas/homebrew-queque.
+  # Add it to this repo: Settings → Secrets → Actions → New repository secret.
+  homebrew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Release to Homebrew tap
+        uses: Justintime50/homebrew-releaser@v1
+        with:
+          homebrew_owner: k-leumas
+          homebrew_tap: homebrew-queque
+          github_token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          commit_owner: k-leumas
+          commit_email: samuelkimama@protonmail.com
+          install: |
+            system "npm", "install", *std_npm_args
+            bin.install_symlink Dir["#{libexec}/bin/*"]
+          test: |
+            assert_match "queque", shell_output("#{bin}/qq --version")
+          depends_on: '"node"'
+          skip_commit: false
