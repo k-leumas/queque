@@ -1006,3 +1006,12 @@
 | 12:40 | Session end: 12 writes across 4 files (.zshrc, homebrew.yml, feedback_wolf_commit.md, queque.zsh) | 4 reads | ~1514 tok |
 | 12:46 | Session end: 12 writes across 4 files (.zshrc, homebrew.yml, feedback_wolf_commit.md, queque.zsh) | 4 reads | ~1514 tok |
 | 13:01 | Edited .github/workflows/homebrew.yml | 4→6 lines | ~91 |
+| 13:02 | Session end: 13 writes across 4 files (.zshrc, homebrew.yml, feedback_wolf_commit.md, queque.zsh) | 4 reads | ~1605 tok |
+| 13:04 | Session end: 13 writes across 4 files (.zshrc, homebrew.yml, feedback_wolf_commit.md, queque.zsh) | 4 reads | ~1605 tok |
+
+## Session: 2026-05-30 13:12
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:20 | Edited package.json | inline fix | ~16 |
+| 20:22 | fixed brew install npm failure — prepare script ran lefthook install in non-git Homebrew sandbox; made conditional on .git dir | package.json, .wolf/buglog.json | fix committed to main; CI will publish new stable and update homebrew tap | ~500 |

@@ -2458,6 +2458,18 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T19:00:01.397Z"
+    },
+    {
+      "id": "bug-154",
+      "timestamp": "2026-05-30T20:20:01.760Z",
+      "error_message": "npm error code 1 — npm error command failed — npm error command sh -c lefthook install — fatal: not a git repository",
+      "file": "package.json",
+      "root_cause": "prepare script runs 'lefthook install' unconditionally; Homebrew build sandbox is not a git repo so lefthook exits 128, aborting npm install before tsup can run",
+      "fix": "Changed prepare to '[ -d .git ] && lefthook install || true' so it only runs in git repos and exits 0 otherwise",
+      "tags": ["homebrew", "npm-install", "lefthook", "prepare-script", "sandbox"],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T20:20:01.760Z"
     }
   ]
 }

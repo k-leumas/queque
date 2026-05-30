@@ -29,7 +29,7 @@
     "lint:fix": "biome check --write src package.json tsconfig.json tsup.config.ts vitest.config.ts commitlint.config.js biome.json lefthook.yml",
     "format": "biome format --write src package.json tsconfig.json tsup.config.ts vitest.config.ts commitlint.config.js biome.json lefthook.yml",
     "commitlint": "commitlint --edit",
-    "prepare": "lefthook install"
+    "prepare": "[ -d .git ] && lefthook install || true"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.92.0",
