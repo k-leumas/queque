@@ -11,9 +11,10 @@ Type your intent, hit `??`, pick a command. It lands in your buffer ready to run
 **Homebrew (recommended)**
 
 ```zsh
-brew tap k-leumas/queque
-brew install queque-cli
+brew install k-leumas/tap/queque
 ```
+
+This auto-taps `k-leumas/tap` so future updates arrive with `brew upgrade`.
 
 **npm**
 
