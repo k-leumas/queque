@@ -1,3 +1,5 @@
+# [0.2.0-beta.2](https://github.com/k-leumas/queque/compare/v0.2.0-beta.1...v0.2.0-beta.2) (2026-05-30)
+
 # [0.2.0-beta.1](https://github.com/k-leumas/queque/compare/v0.1.0...v0.2.0-beta.1) (2026-05-30)
 
 
