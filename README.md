@@ -1,178 +1,92 @@
 # QueQue
 
-QueQue is a `zsh`-integrated command helper that is intended to open from a literal `??` trigger in your live shell buffer, gather the text around the cursor, and return an explainable shell command back into the buffer instead of executing it for you.
+**Turn natural-language intent into a shell command — without leaving the terminal.**
 
-## Current Status
+Type your intent, hit `??`, pick a command. It lands in your buffer ready to run or edit. No browser, no prompt takeover, no clipboard gymnastics.
 
-This repository is still in early Phase 1.
+<!-- demo gif goes here -->
 
-- The TypeScript CLI scaffold exists.
-- The `qq client` and `qq daemon` command surfaces exist.
-- The real `zsh` widget and shell sourcing script do **not** exist yet.
+## Install
 
-That means you can wire up the CLI for active development today, but you cannot yet source a finished `??` shell integration from this repo.
+**Homebrew (recommended)**
 
-## Prerequisites
-
-- `zsh`
-- Node `24.14.1`
-- `pnpm`
-
-If you use `nvm`:
-
-```bash
-nvm use
-corepack enable
-pnpm install
+```zsh
+brew tap k-leumas/queque
+brew install queque-cli
 ```
 
-## Local Development
+**npm**
 
-Install dependencies and start the watch build in one terminal:
-
-```bash
-pnpm install
-pnpm dev
+```zsh
+npm install -g @k-leumas/queque-cli
 ```
 
-That keeps `dist/cli/main.js` rebuilt as you edit `src/cli/main.ts`.
+## Setup
 
-If you want a simple restart wrapper that logs when it reacts to file changes, run:
+Add the shell integration to your `.zshrc`:
 
-```bash
-pnpm dev:restart
-```
-
-It rebuilds first, then starts the dev command, and logs when it sees a change and restarts.
-
-In another terminal, use the current checks:
-
-```bash
-pnpm typecheck
-pnpm test:run
-pnpm build
-```
-
-## Load The CLI In Your Shell Today
-
-Because the project already defines a `qq` bin that points at `dist/cli/main.js`, the simplest development setup is to add a shell function that executes the built file from your checkout.
-
-Add this to `~/.zshrc`:
-
-```bash
-export QQ_DEV_ROOT="$HOME/dev/queque"
-
-qq() {
-  node "$QQ_DEV_ROOT/dist/cli/main.js" "$@"
-}
-```
-
-Then reload your shell:
-
-```bash
+```zsh
+qq init zsh >> ~/.zshrc
 source ~/.zshrc
 ```
 
-With `pnpm dev` running, every rebuild updates the code behind `qq` immediately.
+Set your Anthropic API key:
 
-## Live Debug Log
-
-For shell/widget debugging, you can opt into a plain-text log by setting:
-
-```bash
-export QQ_DEBUG_LOG_FILE=/tmp/qq-debug.log
+```zsh
+export ANTHROPIC_API_KEY="sk-ant-..."
 ```
 
-When enabled, the repo writes to:
+That's it.
 
-```bash
-/tmp/qq-debug.log
+## Usage
+
+Type anything before `??` and QueQue turns it into a shell command:
+
+```
+list files by size??
+find docker containers using port 3000??
+git undo last commit but keep changes??
 ```
 
-You can watch it live with:
+A selection UI opens in-terminal. Pick a command with arrow keys or fuzzy search, press `Enter`, and the command lands in your buffer — ready to run or edit before you commit.
 
-```bash
-tail -f /tmp/qq-debug.log
+Press `Esc` to cancel and return to what you were typing.
+
+### Inside Zellij
+
+QueQue detects Zellij automatically and opens in a floating pane instead of inline. Same trigger, same result, better layout.
+
+## Requirements
+
+- zsh
+- Node.js ≥ 20
+- [jq](https://jqlang.github.io/jq/)
+- `ANTHROPIC_API_KEY`
+
+## Configuration
+
+| Variable | Default | Description |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | — | Required. Your Anthropic API key. |
+| `QQ_MODEL` | auto | Override the Claude model (e.g. `claude-haiku-4-5-20251001`). |
+| `QQ_DEBUG_LOG_FILE` | — | Path to write a debug log (e.g. `/tmp/qq.log`). |
+
+## Contributing
+
+```zsh
+git clone https://github.com/k-leumas/queque
+cd queque
+pnpm install
+pnpm dev        # watch build
+pnpm test:run   # run tests
 ```
 
-If you want to change the location, point `QQ_DEBUG_LOG_FILE` somewhere else before sourcing your shell config.
+To wire up the dev build as the live `??` trigger:
 
-The interactive shell hook also prewarms the daemon once per shell session, so the first `??` does not pay the full startup cost.
-
-## Claude Provider
-
-The foreground client can now ask Claude for a strict JSON command suggestion.
-
-Set these environment variables before running the client:
-
-```bash
-# read from .env.local in the repo root, or export directly
-ANTHROPIC_API_KEY="..."
-# optional
-QQ_MODEL="claude-3-haiku-20240307"
+```zsh
+export QQ_DEV_ROOT="$PWD"
+qq init zsh >> ~/.zshrc
+source ~/.zshrc
 ```
 
-If `QQ_MODEL` is omitted, the provider asks Anthropic for the available models and picks the cheapest one it can see. You can still force a specific model with `QQ_MODEL` if you need to.
-
-The LLM mode is selected with:
-
-```bash
-qq client --request-file /tmp/request.json --result-file /tmp/result.json --result-mode llm
-```
-
-When the current directory is inside a git repository, the prompt includes the repo root, branch, and dirty state as extra context.
-
-## Smoke-Test The Current CLI
-
-Right now the commands are scaffolds and intentionally fail with explicit `not implemented` errors. That is still useful for verifying your shell wiring.
-
-```bash
-qq --help
-qq client --request-file /tmp/request.json --result-file /tmp/result.json
-qq daemon --socket /tmp/qq-test.sock
-qq daemon --ensure --socket /tmp/qq-test.sock
-```
-
-Expected result today: help output works, and the command handlers exit with `not implemented` messages instead of performing real work.
-
-## Commit Workflow
-
-This repo now uses:
-
-- `commitlint` to enforce Conventional Commits
-- `lefthook` to run Git hooks locally
-- `biome` for formatting and linting
-
-After `pnpm install`, Lefthook installs automatically through the `prepare` script.
-
-Current hook behavior:
-
-- `pre-commit`: runs `biome check --write --staged` and `pnpm test:run`
-- `commit-msg`: runs `commitlint --edit`
-
-Examples of valid commit messages:
-
-```text
-feat: add daemon bootstrap
-fix: handle missing request file
-docs: document shell wiring
-chore: add biome and commit hooks
-```
-
-## Future `zsh` Integration
-
-Once the repo adds `shell/zsh/qq.zsh`, the shell wiring will look more like this:
-
-```bash
-export QQ_DEV_ROOT="$HOME/dev/queque"
-
-qq() {
-  node "$QQ_DEV_ROOT/dist/cli/main.js" "$@"
-}
-
-if [[ -f "$QQ_DEV_ROOT/shell/zsh/qq.zsh" ]]; then
-  source "$QQ_DEV_ROOT/shell/zsh/qq.zsh"
-fi
-```
-
-At that point, `qq` will still resolve to your local checkout, and the sourced widget file can register the `??` trigger against the same development build.
+Changes to `src/` rebuild automatically and the widget picks them up immediately.

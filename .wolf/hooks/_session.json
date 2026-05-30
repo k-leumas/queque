@@ -16,6 +16,21 @@
       "count": 1,
       "tokens": 542,
       "first_read": "2026-05-30T02:33:22.188Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-05-30T14:27:14.853Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-05-30T14:27:26.291Z"
+    },
+    "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml": {
+      "count": 1,
+      "tokens": 265,
+      "first_read": "2026-05-30T14:32:08.674Z"
     }
   },
   "files_written": [
@@ -42,17 +57,31 @@
       "action": "edit",
       "tokens": 16,
       "at": "2026-05-30T02:33:29.076Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "create",
+      "tokens": 562,
+      "at": "2026-05-30T14:28:09.954Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml",
+      "action": "edit",
+      "tokens": 11,
+      "at": "2026-05-30T14:32:15.050Z"
     }
   ],
   "edit_counts": {
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_terminology.md": 1,
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1,
     ".github/workflows/release.yaml": 1,
-    "package.json": 1
+    "package.json": 1,
+    "README.md": 1,
+    ".github/workflows/homebrew.yml": 1
   },
-  "anatomy_hits": 2,
-  "anatomy_misses": 1,
+  "anatomy_hits": 3,
+  "anatomy_misses": 3,
   "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 6
+  "stop_count": 9
 }
