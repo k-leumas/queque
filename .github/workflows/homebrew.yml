@@ -6,7 +6,7 @@ on:
 
 jobs:
   # Required secret: HOMEBREW_TAP_TOKEN
-  # Create a GitHub Personal Access Token with `repo` scope on k-leumas/homebrew-queque.
+  # Create a GitHub Personal Access Token with `repo` scope on k-leumas/homebrew-tap.
   # Add it to this repo: Settings → Secrets → Actions → New repository secret.
   homebrew:
     runs-on: ubuntu-latest
@@ -15,7 +15,7 @@ jobs:
         uses: Justintime50/homebrew-releaser@v1
         with:
           homebrew_owner: k-leumas
-          homebrew_tap: homebrew-queque
+          homebrew_tap: homebrew-tap
           github_token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
           commit_owner: k-leumas
           commit_email: samuelkimama@protonmail.com
