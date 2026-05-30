@@ -8,6 +8,12 @@
     "type": "git",
     "url": "https://github.com/k-leumas/queque.git"
   },
+  "files": [
+    "dist",
+    "shell",
+    "README.md",
+    "LICENSE"
+  ],
   "type": "module",
   "bin": {
     "qq": "dist/cli/main.js"
