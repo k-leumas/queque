@@ -2410,6 +2410,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T17:58:23.397Z"
+    },
+    {
+      "id": "bug-151",
+      "timestamp": "2026-05-30T18:07:26.453Z",
+      "error_message": "Significant refactor of ",
+      "file": "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_wolf_commit.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→5 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-05-30T18:07:26.453Z"
     }
   ]
 }
