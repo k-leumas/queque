@@ -66,6 +66,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: lts/*
+          registry-url: 'https://registry.npmjs.org'
           cache: pnpm
 
       - name: Install release dependencies
@@ -76,10 +77,15 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Release
-        # Auth: OIDC Trusted Publishing — no NPM_TOKEN secret needed.
-        # Configure at npmjs.com → @k-leumas/queque-cli → Settings → Trusted Publishing:
-        #   owner: k-leumas  repo: queque  workflow: release.yaml  environment: (blank)
+      - name: Version & GitHub Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm exec semantic-release
+
+      - name: Publish to npm
+        # Uses OIDC Trusted Publishing — no NPM_TOKEN secret needed.
+        # Configure at npmjs.com → @k-leumas/queque-cli → Settings → Trusted Publishing:
+        #   owner: k-leumas  repo: queque  workflow: release.yaml  environment: (blank)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm publish --provenance --access public
