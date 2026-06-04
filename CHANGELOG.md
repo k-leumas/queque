@@ -1,3 +1,11 @@
+## [0.2.12](https://github.com/k-leumas/queque/compare/v0.2.11...v0.2.12) (2026-06-04)
+
+
+### Bug Fixes
+
+* err only logs in prod + add guard for zsh install script append zhrc ([ef82529](https://github.com/k-leumas/queque/commit/ef825293f2aa6123d65d89b8e575b616f255244b))
+* resolve biome lint errors and tighten lefthook to staged files ([9f926c6](https://github.com/k-leumas/queque/commit/9f926c66bde83c5348bc9b4bb55d3134ed328ede))
+
 ## [0.2.11](https://github.com/k-leumas/queque/compare/v0.2.10...v0.2.11) (2026-05-30)
 
 
