@@ -25,6 +25,7 @@ vi.mock('ink', () => ({
     .mockImplementation((handler: (input: string, key: Record<string, boolean>) => void) => {
       capturedInputHandler = handler;
     }),
+  useStdin: vi.fn().mockReturnValue({ isRawModeSupported: true }),
   useApp: vi.fn().mockReturnValue({ exit: vi.fn() }),
   render: vi.fn().mockReturnValue({ unmount: vi.fn(), rerender: vi.fn() }),
 }));
@@ -225,7 +226,8 @@ describe('CandidateSelect — selectedIndex reset on query change', () => {
     });
     // useEffect must be called twice: once for useEffect([candidates]) and
     // once for useEffect([query]) — the latter added by Plan 04-02.
-    expect(useEffect).toHaveBeenCalledTimes(2);
+    // +1 for the isRawModeSupported cancel guard added in the prod-tui-crash fix.
+    expect(useEffect).toHaveBeenCalledTimes(3);
   });
 });
 

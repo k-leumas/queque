@@ -1,6 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 function findUp(startDir: string, filename: string): string | null {
   let current = startDir;
@@ -55,10 +54,7 @@ function parseEnvFile(content: string): Map<string, string> {
 // the entry has not been populated yet (Map.get returns undefined for missing keys).
 const envCache = new Map<string, string | null>();
 
-export function readEnvValueFromDotEnvLocal(
-  key: string,
-  startDir = dirname(fileURLToPath(import.meta.url)),
-): string | null {
+export function readEnvValueFromDotEnvLocal(key: string, startDir = process.cwd()): string | null {
   const cacheKey = `${key}\0${startDir}`;
   if (envCache.has(cacheKey)) {
     return envCache.get(cacheKey) ?? null;

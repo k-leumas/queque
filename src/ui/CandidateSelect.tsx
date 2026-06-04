@@ -1,4 +1,4 @@
-import { Box, Text, useInput } from 'ink';
+import { Box, Text, useInput, useStdin } from 'ink';
 import { type ReactElement, useEffect, useState } from 'react';
 import type { CandidateList } from '../contracts/candidates.js';
 import { ControlsLine } from './ControlsLine.js';
@@ -46,8 +46,17 @@ export function CandidateSelect({
   onCancel,
   error,
 }: Props): ReactElement {
+  const { isRawModeSupported } = useStdin();
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [query, setQuery] = useState(initialQuery ?? '');
+
+  // If the TTY doesn't support raw mode we can't accept keyboard input — cancel
+  // immediately rather than leaving the user with an unresponsive TUI.
+  useEffect(() => {
+    if (!isRawModeSupported) {
+      onCancel();
+    }
+  }, [isRawModeSupported, onCancel]);
 
   // Reset selectedIndex when candidates arrive (Pitfall 2 fix).
   // Also clear initialQuery pre-filter if it produces zero matches — the lbuffer
@@ -66,48 +75,53 @@ export function CandidateSelect({
     setSelectedIndex(0);
   }, [query]);
 
-  // Single useInput handler with null-guards (Pitfall 3 fix)
-  useInput((input, key) => {
-    if (key.escape) {
-      onCancel();
-      return;
-    }
+  // Single useInput handler with null-guards (Pitfall 3 fix).
+  // isActive:false when raw mode is unavailable — prevents Ink from throwing
+  // "Raw mode is not supported" as an uncaughtException (production ZLE crash fix).
+  useInput(
+    (input, key) => {
+      if (key.escape) {
+        onCancel();
+        return;
+      }
 
-    if (key.backspace) {
-      setQuery((q) => q.slice(0, -1));
-      return;
-    }
+      if (key.backspace) {
+        setQuery((q) => q.slice(0, -1));
+        return;
+      }
 
-    // key.return must be checked before the generic input handler — in raw mode
-    // Enter sends '\r' as `input` (truthy), which would otherwise be consumed by
-    // setQuery and prevent the accept action from firing.
-    if (key.return && candidates) {
-      const visible = filterCandidates(candidates, query);
-      if (visible.length === 0) return;
-      const selected = visible[selectedIndex] ?? visible[0];
-      const explanation = selected.explanation || `see man ${selected.command.split(' ')[0]}`;
-      onSelect(selected.command, explanation);
-      return;
-    }
+      // key.return must be checked before the generic input handler — in raw mode
+      // Enter sends '\r' as `input` (truthy), which would otherwise be consumed by
+      // setQuery and prevent the accept action from firing.
+      if (key.return && candidates) {
+        const visible = filterCandidates(candidates, query);
+        if (visible.length === 0) return;
+        const selected = visible[selectedIndex] ?? visible[0];
+        const explanation = selected.explanation || `see man ${selected.command.split(' ')[0]}`;
+        onSelect(selected.command, explanation);
+        return;
+      }
 
-    if (input && !key.ctrl && !key.meta) {
-      setQuery((q) => q + input);
-      return;
-    }
+      if (input && !key.ctrl && !key.meta) {
+        setQuery((q) => q + input);
+        return;
+      }
 
-    // Navigation: guard against null candidates
-    if (key.upArrow && candidates) {
-      const visible = filterCandidates(candidates, query);
-      setSelectedIndex((i) => (i === 0 ? visible.length - 1 : i - 1));
-      return;
-    }
+      // Navigation: guard against null candidates
+      if (key.upArrow && candidates) {
+        const visible = filterCandidates(candidates, query);
+        setSelectedIndex((i) => (i === 0 ? visible.length - 1 : i - 1));
+        return;
+      }
 
-    if (key.downArrow && candidates) {
-      const visible = filterCandidates(candidates, query);
-      setSelectedIndex((i) => (i + 1) % visible.length);
-      return;
-    }
-  });
+      if (key.downArrow && candidates) {
+        const visible = filterCandidates(candidates, query);
+        setSelectedIndex((i) => (i + 1) % visible.length);
+        return;
+      }
+    },
+    { isActive: isRawModeSupported },
+  );
 
   let content: ReactElement;
   if (error === true) {
