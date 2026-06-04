@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T20:01:18.300Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T20:20:01.740Z
 > Files: 220 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -93,7 +93,7 @@
 
 - `.releaserc.json` (~152 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `package.json` — Node.js package manifest (~542 tok)
+- `package.json` — Node.js package manifest (~561 tok)
 - `README.md` — Project documentation (~1144 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 

@@ -1015,3 +1015,4 @@
 |------|--------|---------|---------|--------|
 | 13:20 | Edited package.json | inline fix | ~16 |
 | 20:22 | fixed brew install npm failure — prepare script ran lefthook install in non-git Homebrew sandbox; made conditional on .git dir | package.json, .wolf/buglog.json | fix committed to main; CI will publish new stable and update homebrew tap | ~500 |
+| 13:23 | Session end: 1 writes across 1 files (package.json) | 2 reads | ~1085 tok |

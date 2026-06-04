@@ -26,5 +26,18 @@ export function initCommand(shell: string): void {
     console.error(`Unsupported shell: '${shell}'. Supported: ${SUPPORTED_SHELLS.join(', ')}`);
     process.exit(1);
   }
-  process.stdout.write(`source "${resolveScriptPath(shell as Shell)}"\n`);
+
+  // ensure we only append the queque script once
+  const zshrc = path.join(os.homedir(), '.zshrc');
+  const marker = /\bqueque\b/;
+
+  const existing = fs.existsSync(zshrc) ? fs.readFileSync(zshrc, 'utf8') : '';
+
+  if (existing.search(marker)) {
+    console.error('queque: shell integration already present in ~/.zshrc');
+    process.exit(0);
+  }
+
+  fs.appendFileSync(zshrc, `\n# queque shell integration\n${snippet}\n`);
+  console.log('queque: added shell integration to ~/.zshrc — run: source ~/.zshrc');
 }

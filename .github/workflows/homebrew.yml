@@ -27,9 +27,9 @@ jobs:
           commit_owner: k-leumas
           commit_email: samuelkimama@protonmail.com
           install: |
-            system "npm", "install"
+            system "npm", "install", "--ignore-scripts", "--loglevel=error"
             system "node_modules/.bin/tsup"
-            system "npm", "install", *std_npm_args
+            system "npm", "install", *std_npm_args, "--loglevel=error"
             bin.install_symlink libexec/"lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" => "qq"
             (share/"queque").install "shell/zsh/queque.zsh"
           test: |
