@@ -25,9 +25,9 @@
     "test": "vitest --passWithNoTests",
     "test:run": "vitest run --passWithNoTests",
     "typecheck": "tsc --noEmit",
-    "lint": "biome check src package.json tsconfig.json tsup.config.ts vitest.config.ts commitlint.config.js biome.json lefthook.yml",
-    "lint:fix": "biome check --write src package.json tsconfig.json tsup.config.ts vitest.config.ts commitlint.config.js biome.json lefthook.yml",
-    "format": "biome format --write src package.json tsconfig.json tsup.config.ts vitest.config.ts commitlint.config.js biome.json lefthook.yml",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
     "commitlint": "commitlint --edit",
     "prepare": "[ -d .git ] && lefthook install || true"
   },

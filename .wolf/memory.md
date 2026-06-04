@@ -1016,3 +1016,16 @@
 | 13:20 | Edited package.json | inline fix | ~16 |
 | 20:22 | fixed brew install npm failure — prepare script ran lefthook install in non-git Homebrew sandbox; made conditional on .git dir | package.json, .wolf/buglog.json | fix committed to main; CI will publish new stable and update homebrew tap | ~500 |
 | 13:23 | Session end: 1 writes across 1 files (package.json) | 2 reads | ~1085 tok |
+| 09:47 | Created src/cli/commands/init.ts | — | ~373 |
+| 09:48 | Created src/cli/commands/init.ts | — | ~520 |
+| 10:02 | Session end: 3 writes across 2 files (package.json, init.ts) | 3 reads | ~1978 tok |
+| 10:04 | Edited biome.json | inline fix | ~24 |
+| 10:04 | Session end: 4 writes across 3 files (package.json, init.ts, biome.json) | 4 reads | ~2002 tok |
+| 10:05 | Edited lefthook.yml | 1→2 lines | ~48 |
+| 10:05 | Session end: 5 writes across 4 files (package.json, init.ts, biome.json, lefthook.yml) | 5 reads | ~2050 tok |
+| 10:10 | Created lefthook.yml | — | ~207 |
+| 10:10 | Session end: 6 writes across 4 files (package.json, init.ts, biome.json, lefthook.yml) | 5 reads | ~2399 tok |
+| 10:12 | Edited package.json | 3→3 lines | ~32 |
+| 10:12 | Session end: 7 writes across 4 files (package.json, init.ts, biome.json, lefthook.yml) | 5 reads | ~2450 tok |
+| 10:14 | Session end: 7 writes across 4 files (package.json, init.ts, biome.json, lefthook.yml) | 5 reads | ~2450 tok |
+| 10:17 | Session end: 7 writes across 4 files (package.json, init.ts, biome.json, lefthook.yml) | 5 reads | ~2450 tok |

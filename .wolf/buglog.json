@@ -2466,10 +2466,32 @@
       "file": "package.json",
       "root_cause": "prepare script runs 'lefthook install' unconditionally; Homebrew build sandbox is not a git repo so lefthook exits 128, aborting npm install before tsup can run",
       "fix": "Changed prepare to '[ -d .git ] && lefthook install || true' so it only runs in git repos and exits 0 otherwise",
-      "tags": ["homebrew", "npm-install", "lefthook", "prepare-script", "sandbox"],
+      "tags": [
+        "homebrew",
+        "npm-install",
+        "lefthook",
+        "prepare-script",
+        "sandbox"
+      ],
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-05-30T20:20:01.760Z"
+    },
+    {
+      "id": "bug-155",
+      "timestamp": "2026-06-04T17:12:09.210Z",
+      "error_message": "Incorrect value in code",
+      "file": "package.json",
+      "root_cause": "Had \"biome check src package.json tsconfig.json tsup.c",
+      "fix": "Changed to \"biome check .\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T17:12:09.210Z"
     }
   ]
 }

@@ -1,10 +1,16 @@
 pre-commit:
   jobs:
-    - glob: '**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml}'
-      run: pnpm exec biome check --write --no-errors-on-unmatched {staged_files}
+    - name: typecheck
+      glob: '**/*.{js,cjs,mjs,ts,tsx}'
+      run: output=$(pnpm exec tsc --noEmit 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
+    - name: lint
+      glob: '**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml}'
+      run: output=$(pnpm exec biome check --write --no-errors-on-unmatched {staged_files} 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
       stage_fixed: true
-    - run: pnpm test:run
+    - name: test
+      run: output=$(pnpm test:run 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
 
 commit-msg:
   jobs:
-    - run: pnpm commitlint --edit {1}
+    - name: commitlint
+      run: output=$(pnpm commitlint --edit {1} 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc

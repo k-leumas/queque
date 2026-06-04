@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-05-30T20:20:01.740Z
-> Files: 220 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-04T17:12:09.189Z
+> Files: 223 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -92,8 +92,10 @@
 ## ./
 
 - `.releaserc.json` (~152 tok)
+- `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `package.json` — Node.js package manifest (~561 tok)
+- `lefthook.yml` (~207 tok)
+- `package.json` — Node.js package manifest (~470 tok)
 - `README.md` — Project documentation (~1144 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 
@@ -511,6 +513,7 @@
 ## src/cli/commands/
 
 - `client.ts` — Real client command handler. (~394 tok)
+- `init.ts` — Exports initCommand (~520 tok)
 
 ## src/client/
 
