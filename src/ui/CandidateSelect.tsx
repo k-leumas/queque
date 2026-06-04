@@ -84,7 +84,7 @@ export function CandidateSelect({
     if (key.return && candidates) {
       const visible = filterCandidates(candidates, query);
       if (visible.length === 0) return;
-      const selected = visible[selectedIndex] ?? visible[0]!;
+      const selected = visible[selectedIndex] ?? visible[0];
       const explanation = selected.explanation || `see man ${selected.command.split(' ')[0]}`;
       onSelect(selected.command, explanation);
       return;

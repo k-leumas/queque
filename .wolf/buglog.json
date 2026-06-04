@@ -2492,6 +2492,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-04T17:12:09.210Z"
+    },
+    {
+      "id": "bug-156",
+      "timestamp": "2026-06-04T20:30:35.123Z",
+      "error_message": "Incorrect value in code",
+      "file": "lefthook.yml",
+      "root_cause": "Had '**/*.{js,cjs,mjs,ts,tsx}'",
+      "fix": "Changed to '**/*.{ts,tsx}'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T20:30:35.123Z"
+    },
+    {
+      "id": "bug-157",
+      "timestamp": "2026-06-04T20:32:19.183Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: realFsp.rename?.(...args),",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-04T20:32:19.779Z"
+    },
+    {
+      "id": "bug-158",
+      "timestamp": "2026-06-04T20:38:37.828Z",
+      "error_message": "Incorrect value in code",
+      "file": "lefthook.yml",
+      "root_cause": "Had '**/*.{ts,tsx}'",
+      "fix": "Changed to '%s\\n'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T20:38:37.828Z"
     }
   ]
 }

@@ -23,9 +23,24 @@
       "first_read": "2026-06-04T17:04:18.146Z"
     },
     "/Users/samuel/dev/tui-llm/lefthook.yml": {
-      "count": 2,
-      "tokens": 142,
+      "count": 3,
+      "tokens": 217,
       "first_read": "2026-06-04T17:05:31.863Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
+      "count": 1,
+      "tokens": 1563,
+      "first_read": "2026-06-04T20:32:11.600Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/client-result.test.ts": {
+      "count": 2,
+      "tokens": 6862,
+      "first_read": "2026-06-04T20:32:12.135Z"
+    },
+    "/Users/samuel/dev/tui-llm/.releaserc.json": {
+      "count": 2,
+      "tokens": 343,
+      "first_read": "2026-06-04T20:32:12.507Z"
     }
   },
   "files_written": [
@@ -70,17 +85,80 @@
       "action": "edit",
       "tokens": 32,
       "at": "2026-06-04T17:12:09.208Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/lefthook.yml",
+      "action": "edit",
+      "tokens": 46,
+      "at": "2026-06-04T20:30:28.669Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/lefthook.yml",
+      "action": "edit",
+      "tokens": 50,
+      "at": "2026-06-04T20:30:35.120Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-06-04T20:32:18.025Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-06-04T20:32:19.181Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 10,
+      "at": "2026-06-04T20:32:19.777Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.releaserc.json",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-06-04T20:32:23.705Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/lefthook.yml",
+      "action": "edit",
+      "tokens": 37,
+      "at": "2026-06-04T20:38:37.825Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 121,
+      "at": "2026-06-04T20:41:10.092Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/lefthook.yml",
+      "action": "edit",
+      "tokens": 41,
+      "at": "2026-06-04T20:41:15.003Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.releaserc.json",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-06-04T20:42:01.069Z"
     }
   ],
   "edit_counts": {
     "package.json": 2,
     "src/cli/commands/init.ts": 2,
     "biome.json": 1,
-    "lefthook.yml": 2
+    "lefthook.yml": 6,
+    "src/ui/CandidateSelect.tsx": 1,
+    "tests/client-result.test.ts": 3,
+    ".releaserc.json": 2
   },
-  "anatomy_hits": 2,
+  "anatomy_hits": 5,
   "anatomy_misses": 3,
-  "repeated_reads_warned": 2,
+  "repeated_reads_warned": 5,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 13
 }

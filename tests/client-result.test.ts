@@ -214,13 +214,15 @@ describe('writeShellResult — FIFO path', () => {
     // the vi.mock factory before the mock was installed.
     const fspMock = await import('node:fs/promises');
     if (realFsp.writeFile) {
+      const writeFn = realFsp.writeFile;
       vi.mocked(fspMock.writeFile).mockImplementation(
-        (...args: Parameters<typeof fspMock.writeFile>) => realFsp.writeFile!(...args),
+        (...args: Parameters<typeof fspMock.writeFile>) => writeFn(...args),
       );
     }
     if (realFsp.rename) {
+      const renameFn = realFsp.rename;
       vi.mocked(fspMock.rename).mockImplementation((...args: Parameters<typeof fspMock.rename>) =>
-        realFsp.rename!(...args),
+        renameFn(...args),
       );
     }
     try {

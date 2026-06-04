@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-04T17:12:09.189Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-04T20:42:01.051Z
 > Files: 223 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -91,10 +91,10 @@
 
 ## ./
 
-- `.releaserc.json` (~152 tok)
+- `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `lefthook.yml` (~207 tok)
+- `lefthook.yml` (~200 tok)
 - `package.json` — Node.js package manifest (~470 tok)
 - `README.md` — Project documentation (~1144 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
@@ -543,7 +543,7 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4638 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~6861 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6880 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1224 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
