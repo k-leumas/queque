@@ -1,3 +1,10 @@
+## [0.2.13](https://github.com/k-leumas/queque/compare/v0.2.12...v0.2.13) (2026-06-04)
+
+
+### Bug Fixes
+
+* resolve symlink in isDirectRun check so Homebrew binary invokes main ([a46d7a5](https://github.com/k-leumas/queque/commit/a46d7a5a52087a7532a2e1c096430a30319b4231))
+
 ## [0.2.12](https://github.com/k-leumas/queque/compare/v0.2.11...v0.2.12) (2026-06-04)
 
 
