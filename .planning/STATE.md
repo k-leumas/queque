@@ -101,6 +101,7 @@ None yet.
 | 260528-mk1 | rename project from que-que to queque in all prose, package.json, shell/TUI display labels, and test assertions | 2026-05-28 | 492f2f6 | [260528-mk1-rename-que-que-to-queque-in-prose-write-](./quick/260528-mk1-rename-que-que-to-queque-in-prose-write-/) |
 | 260529-ney | research beta release requirements: Homebrew tap formula, awesome-zsh-plugins, Zellij community (Integrations not plugin) | 2026-05-29 | f608787 | [260529-ney-explore-beta-release-requirements-for-ho](./quick/260529-ney-explore-beta-release-requirements-for-ho/) |
 | 260529-ntf | implement release automation: release.yaml (beta branch + pnpm/action-setup@v4), homebrew.yml, .releaserc.json beta prerelease | 2026-05-30 | 1c0e36d | [260529-ntf-implement-release-automation-workflows-a](./quick/260529-ntf-implement-release-automation-workflows-a/) |
+| 20260604-isdr | regression tests for isDirectRun symlink mismatch (bug-159): process.argv[1] realpathSync fix prevents main() being skipped on Homebrew installs | 2026-06-04 | ba24b04 | [20260604-isDirectRun-symlink-regression](./quick/20260604-isDirectRun-symlink-regression/) |
 
 ## Session Continuity
 

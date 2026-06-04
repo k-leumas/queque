@@ -1053,3 +1053,20 @@
 | 16:02 | Edited src/cli/main.ts | 3→3 lines | ~37 |
 | 16:02 | Session end: 21 writes across 9 files (package.json, init.ts, biome.json, lefthook.yml, CandidateSelect.tsx) | 12 reads | ~17760 tok |
 | 16:14 | Created .planning/.continue-here.md | — | ~1220 |
+| 16:15 | Edited tests/client-result.test.ts | 2→3 lines | ~25 |
+| 16:15 | Session end: 23 writes across 10 files (package.json, init.ts, biome.json, lefthook.yml, CandidateSelect.tsx) | 13 reads | ~19093 tok |
+
+## Session: 2026-06-04 16:21
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-04 16:27
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:29 | Created .planning/quick/20260604-isDirectRun-symlink-regression/PLAN.md | — | ~273 |
+| 16:29 | Created tests/main-direct-run.test.ts | — | ~710 |
+| 16:30 | Created .planning/quick/20260604-isDirectRun-symlink-regression/SUMMARY.md | — | ~148 |
+| 16:30 | Edited .planning/STATE.md | modified mismatch() | ~151 |
+| 16:29 | Added regression tests for isDirectRun symlink mismatch (bug-159) | tests/main-direct-run.test.ts | 5 tests pass |
