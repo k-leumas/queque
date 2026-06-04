@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-04T20:42:01.051Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-04T23:14:42.434Z
 > Files: 223 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -96,7 +96,7 @@
 - `CLAUDE.md` — OpenWolf (~1634 tok)
 - `lefthook.yml` (~200 tok)
 - `package.json` — Node.js package manifest (~470 tok)
-- `README.md` — Project documentation (~1144 tok)
+- `README.md` — Project documentation (~767 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 
 ## .claude/
@@ -361,7 +361,7 @@
 
 ## .planning/
 
-- `.continue-here.md` — Session Handoff — Homebrew Install Fix & Main Sync (~1104 tok)
+- `.continue-here.md` — Session Handoff — Homebrew Binary Fix + Tooling Cleanup (~1144 tok)
 - `config.json` (~258 tok)
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1526 tok)
@@ -508,7 +508,7 @@
 
 ## src/cli/
 
-- `main.ts` — Exports main (~1180 tok)
+- `main.ts` — Exports main (~1261 tok)
 
 ## src/cli/commands/
 

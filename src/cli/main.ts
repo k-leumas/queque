@@ -114,7 +114,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
 }
 
 const isDirectRun = process.argv[1]
-  ? import.meta.url === new URL(`file://${process.argv[1]}`).href
+  ? import.meta.url === new URL(`file://${fs.realpathSync(process.argv[1])}`).href
   : false;
 
 if (isDirectRun) {

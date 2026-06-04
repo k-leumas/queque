@@ -12,36 +12,35 @@ Type your intent, hit `??`, pick a command. It lands in your buffer ready to run
 
 ## Install
 
-**Homebrew (recommended)**
-
 ```zsh
 brew install k-leumas/tap/queque
 ```
 
-This auto-taps `k-leumas/tap` so future updates arrive with `brew upgrade`.
+> [!NOTE]
+> The homebrew script automagically appends the shell-integration command and sources your `.zshrc`, which is shown during install.
 
-**npm**
+
+<details>
+<summary>Install via npm or source</summary>
 
 ```zsh
 npm install -g @k-leumas/queque-cli
+qq init zsh >> ~/.zshrc && source ~/.zshrc
 ```
 
-## Setup
+</details>
 
-Add the shell integration to your `.zshrc`:
+## Expose API Key
 
-```zsh
-qq init zsh >> ~/.zshrc
-source ~/.zshrc
-```
+QueQue resolves `ANTHROPIC_API_KEY` in order:
 
-Set your Anthropic API key:
+1. **Environment variable** — `export ANTHROPIC_API_KEY="sk-ant-..."` in your shell or `.zshrc`
+2. **`.env.local` file** — place a `.env.local` in your project directory (or any parent). QueQue searches upward from the current working directory:
+   ```
+   ANTHROPIC_API_KEY=sk-ant-...
+   ```
 
-```zsh
-export ANTHROPIC_API_KEY="sk-ant-..."
-```
-
-That's it.
+The `.env.local` option is useful for project-specific keys or keeping the key out of your shell profile.
 
 ## Usage
 
@@ -73,8 +72,10 @@ QueQue detects Zellij automatically and opens in a floating pane instead of inli
 | Variable | Default | Description |
 |---|---|---|
 | `ANTHROPIC_API_KEY` | — | Required. Your Anthropic API key. |
-| `QQ_MODEL` | auto | Override the Claude model (e.g. `claude-haiku-4-5-20251001`). |
+| `QQ_MODEL` | `claude-haiku-4-5-20251001` | Override the Claude model. |
 | `QQ_DEBUG_LOG_FILE` | — | Path to write a debug log (e.g. `/tmp/qq.log`). |
+
+Both env vars and `.env.local` are supported for all variables.
 
 ## Contributing
 

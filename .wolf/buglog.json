@@ -2540,6 +2540,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-04T20:38:37.828Z"
+    },
+    {
+      "id": "bug-159",
+      "timestamp": "2026-06-04T23:02:23.639Z",
+      "error_message": "Incorrect value in code",
+      "file": "src/cli/main.ts",
+      "root_cause": "Had `file://${process.argv[1]}`",
+      "fix": "Changed to `file://${fs.realpathSync(process.argv[1])}`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-04T23:02:23.639Z"
     }
   ]
 }
