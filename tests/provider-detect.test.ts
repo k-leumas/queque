@@ -3,10 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // ---------------------------------------------------------------------------
 // Stable mock references hoisted before vi.mock factories run
 // ---------------------------------------------------------------------------
-const { execSyncMock, statMock, fetchMock } = vi.hoisted(() => ({
+const { execSyncMock, statMock, fetchMock, readEnvValueFromDotEnvLocalMock } = vi.hoisted(() => ({
   execSyncMock: vi.fn(),
   statMock: vi.fn(),
   fetchMock: vi.fn(),
+  readEnvValueFromDotEnvLocalMock: vi.fn<(key: string, startDir?: string) => string | null>(),
 }));
 
 // ---------------------------------------------------------------------------
@@ -35,6 +36,13 @@ vi.mock('node:fs/promises', async (importOriginal) => {
 // Stub global fetch for Ollama health check
 // ---------------------------------------------------------------------------
 vi.stubGlobal('fetch', fetchMock);
+
+// ---------------------------------------------------------------------------
+// Mock env-file so .env.local reads are controlled per-test
+// ---------------------------------------------------------------------------
+vi.mock('../src/shared/env-file.js', () => ({
+  readEnvValueFromDotEnvLocal: readEnvValueFromDotEnvLocalMock,
+}));
 
 // ---------------------------------------------------------------------------
 // Helper: make execSync succeed (claude found on PATH)
@@ -89,6 +97,8 @@ describe('detectProvider()', () => {
     execSyncMock.mockReset();
     statMock.mockReset();
     fetchMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
   });
 
   afterEach(() => {
@@ -152,7 +162,20 @@ describe('detectProvider()', () => {
     const { detectProvider } = await import('../src/providers/detect.js');
     const result = await detectProvider();
 
-    expect(result).toEqual({ kind: 'none' });
+    expect(result.kind).toBe('none');
+    expect((result as { kind: 'none'; message: string }).message).toMatch(/no AI provider/);
+  });
+
+  it('Branch 1b: returns anthropic-key when ANTHROPIC_API_KEY is in .env.local', async () => {
+    vi.stubEnv('ANTHROPIC_API_KEY', '');
+    readEnvValueFromDotEnvLocalMock.mockReturnValue('sk-ant-from-env-local');
+    claudeNotOnPath();
+    ollamaDown();
+
+    const { detectProvider } = await import('../src/providers/detect.js');
+    const result = await detectProvider();
+
+    expect(result).toEqual({ kind: 'anthropic-key' });
   });
 
   it('fetch AbortError falls through to next branch (same as fetch throwing)', async () => {

@@ -97,6 +97,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     const detectedProvider = await detectProvider();
     void appendDebugLog('client', 'provider detected', { kind: detectedProvider.kind });
 
+    if (detectedProvider.kind === 'none') {
+      await writeShellResult(resultFile, { kind: 'error', message: detectedProvider.message });
+      return;
+    }
+
     // Ensure the daemon is reachable before we do anything interactive
     await ensureDaemon(socketPath);
     void appendDebugLog('client', 'daemon ensured', { socketPath });

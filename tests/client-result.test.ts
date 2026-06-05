@@ -14,6 +14,14 @@ vi.mock('../src/daemon/bootstrap.js', () => ({
 }));
 
 // ---------------------------------------------------------------------------
+// Mock detectProvider so runForegroundClient tests don't depend on real
+// provider detection (env vars, fs access, network)
+// ---------------------------------------------------------------------------
+vi.mock('../src/providers/detect.js', () => ({
+  detectProvider: vi.fn().mockResolvedValue({ kind: 'anthropic-key' }),
+}));
+
+// ---------------------------------------------------------------------------
 // Mock socket-path to return a predictable path
 // ---------------------------------------------------------------------------
 vi.mock('../src/shared/socket-path.js', () => ({

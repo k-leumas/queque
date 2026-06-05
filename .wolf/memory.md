@@ -1070,3 +1070,34 @@
 | 16:30 | Created .planning/quick/20260604-isDirectRun-symlink-regression/SUMMARY.md | — | ~148 |
 | 16:30 | Edited .planning/STATE.md | modified mismatch() | ~151 |
 | 16:29 | Added regression tests for isDirectRun symlink mismatch (bug-159) | tests/main-direct-run.test.ts | 5 tests pass |
+| 16:30 | Session end: 4 writes across 4 files (PLAN.md, main-direct-run.test.ts, SUMMARY.md, STATE.md) | 3 reads | ~11045 tok |
+| 16:52 | Created .planning/quick/20260604-prod-tui-crash-fix/PLAN.md | — | ~458 |
+| 16:52 | Edited src/shared/env-file.ts | modified readEnvValueFromDotEnvLocal() | ~31 |
+| 16:52 | Edited src/shared/env-file.ts | 3→2 lines | ~25 |
+| 16:52 | Edited src/ui/CandidateSelect.tsx | 2→2 lines | ~34 |
+| 16:52 | Edited src/ui/CandidateSelect.tsx | added 1 condition(s) | ~122 |
+| 16:52 | Edited src/ui/CandidateSelect.tsx | CSS: isActive | ~73 |
+| 16:52 | Edited src/ui/CandidateSelect.tsx | CSS: isActive | ~62 |
+| 16:53 | Edited tests/env-file.test.ts | expanded (+35 lines) | ~714 |
+| 16:53 | Edited src/shared/env-file.ts | 2→2 lines | ~27 |
+| 16:53 | Edited tests/candidate-select.test.tsx | CSS: useStdin, isRawModeSupported | ~146 |
+| 16:54 | Edited tests/candidate-select.test.tsx | 2→3 lines | ~57 |
+| 16:54 | Session end: 15 writes across 8 files (PLAN.md, main-direct-run.test.ts, SUMMARY.md, STATE.md, env-file.ts) | 13 reads | ~21238 tok |
+| 16:56 | Session end: 15 writes across 8 files (PLAN.md, main-direct-run.test.ts, SUMMARY.md, STATE.md, env-file.ts) | 13 reads | ~21238 tok |
+| 17:06 | Edited src/providers/detect.ts | added 1 import(s) | ~54 |
+| 17:06 | Edited src/providers/detect.ts | modified detectProvider() | ~81 |
+
+## Session: 2026-06-05 17:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 17:11 | Edited src/client/run-foreground.ts | added 1 condition(s) | ~145 |
+| 17:13 | Edited shell/zsh/queque.zsh | 5→8 lines | ~72 |
+| 17:15 | Edited src/providers/detect.ts | 6→6 lines | ~56 |
+| 17:15 | Edited src/providers/detect.ts | modified Checked() | ~134 |
+| 17:16 | Edited src/client/run-foreground.ts | modified if() | ~46 |
+| 17:16 | Edited tests/provider-detect.test.ts | 10→11 lines | ~161 |
+| 17:16 | Edited tests/provider-detect.test.ts | expanded (+7 lines) | ~164 |
+| 17:17 | Edited tests/provider-detect.test.ts | 5→7 lines | ~62 |
+| 17:17 | Edited tests/provider-detect.test.ts | expanded (+13 lines) | ~253 |
+| 17:19 | Edited tests/client-result.test.ts | expanded (+8 lines) | ~210 |

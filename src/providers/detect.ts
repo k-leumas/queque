@@ -1,13 +1,14 @@
 import { execSync } from 'node:child_process';
 import * as fsp from 'node:fs/promises';
 import * as os from 'node:os';
+import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
 
 export type DetectedProvider =
   | { kind: 'anthropic-key' }
   | { kind: 'claude-cli' }
   | { kind: 'ollama'; baseUrl: string }
   | { kind: 'openai-key' }
-  | { kind: 'none' };
+  | { kind: 'none'; message: string };
 
 function claudeOnPath(): boolean {
   try {
@@ -44,8 +45,8 @@ async function ollamaHealthy(): Promise<boolean> {
 }
 
 export async function detectProvider(): Promise<DetectedProvider> {
-  // Step 1 — Anthropic key env
-  if (process.env.ANTHROPIC_API_KEY) {
+  // Step 1 — Anthropic key: env var OR .env.local (searched from process.cwd())
+  if (process.env.ANTHROPIC_API_KEY || readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY')) {
     return { kind: 'anthropic-key' };
   }
 
@@ -64,6 +65,16 @@ export async function detectProvider(): Promise<DetectedProvider> {
     return { kind: 'openai-key' };
   }
 
-  // Step 5 — nothing found
-  return { kind: 'none' };
+  // Step 5 — nothing found; message lists every checked source so the fix is obvious
+  return {
+    kind: 'none',
+    message:
+      'queque: no AI provider configured\n' +
+      'Checked (in order):\n' +
+      '  1. ANTHROPIC_API_KEY env var or .env.local\n' +
+      '  2. Claude CLI (claude on PATH + credentials file)\n' +
+      '  3. Ollama at http://localhost:11434\n' +
+      '  4. OPENAI_API_KEY env var\n' +
+      'Set one of the above and re-trigger ??',
+  };
 }
