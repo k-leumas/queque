@@ -98,6 +98,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     void appendDebugLog('client', 'provider detected', { kind: detectedProvider.kind });
 
     if (detectedProvider.kind === 'none') {
+      if (ttyHandle && !inZellij) {
+        try {
+          await ttyHandle.write(`\r\n${detectedProvider.message}\r\n`);
+        } catch {}
+      }
       await writeShellResult(resultFile, { kind: 'error', message: detectedProvider.message });
       return;
     }
@@ -122,6 +127,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         rbuffer: request.rbuffer,
       });
     } else if (resultMode === 'llm') {
+      // Declared here so the catch block can also write errors to the TTY.
+      let ttyReadStream: tty.ReadStream | undefined;
+      let ttyWriteStream: tty.WriteStream | undefined;
       try {
         const decision = classifyIntent({ ...request, intent: 'unknown' as const, confidence: 0 });
         void appendDebugLog('client', 'intent classified', {
@@ -146,8 +154,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // Try to create TTY streams from /dev/tty for Ink.
         // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
         // Falls back to process.stdin/stdout if /dev/tty was unavailable (e.g. tests).
-        let ttyReadStream: tty.ReadStream | undefined;
-        let ttyWriteStream: tty.WriteStream | undefined;
         if (ttyHandle) {
           try {
             ttyReadStream = new tty.ReadStream(ttyHandle.fd);
@@ -155,6 +161,34 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           } catch {
             // Synthetic fd (e.g. tests) — Ink will use process.stdin/stdout
           }
+        }
+
+        // If TTY streams couldn't be created, or raw mode isn't supported,
+        // the TUI can't accept input. Write a visible error and exit early —
+        // avoids the silent cancel from the isRawModeSupported guard.
+        if (!ttyReadStream || !ttyWriteStream) {
+          const msg = '\r\nqueque: could not open terminal for interactive input\r\n';
+          if (ttyHandle) {
+            try {
+              await ttyHandle.write(msg);
+            } catch {}
+          }
+          await writeShellResult(resultFile, { kind: 'error', message: msg.trim() });
+          return;
+        }
+        try {
+          ttyReadStream.setRawMode(true);
+          ttyReadStream.setRawMode(false);
+        } catch {
+          const msg =
+            '\r\nqueque: terminal does not support interactive mode\r\nRun ?? from an interactive ZSH session.\r\n';
+          ttyWriteStream.write(msg);
+          await writeShellResult(resultFile, {
+            kind: 'error',
+            message:
+              'queque: terminal does not support interactive mode — run ?? from an interactive shell',
+          });
+          return;
         }
 
         // Reserve exactly as many lines as the TUI needs (header + filter + up to 3
@@ -255,13 +289,19 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;
               resolved = true;
+              const errorMsg = `QueQue: ${message}`;
               try {
-                await writeShellResult(resultFile, {
-                  kind: 'error',
-                  message: `QueQue: ${message} — press any key`,
-                });
+                await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
               } finally {
                 unmount?.();
+                // Write directly to TTY after the TUI area is cleared so the
+                // error is visible regardless of ZSH-side print behaviour.
+                // Skip in Zellij: the floating pane closes immediately.
+                if (!inZellij && ttyWriteStream) {
+                  try {
+                    ttyWriteStream.write(`\r\n${errorMsg}\r\n`);
+                  } catch {}
+                }
               }
             });
         });
@@ -269,13 +309,14 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         void appendDebugLog('client', 'wrote llm result', { resultFile });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        void appendDebugLog('client', 'llm request failed', {
-          message,
-        });
-        await writeShellResult(resultFile, {
-          kind: 'error',
-          message: `QueQue: ${message} — press any key`,
-        });
+        void appendDebugLog('client', 'llm request failed', { message });
+        const errorMsg = `QueQue: ${message}`;
+        if (!inZellij && ttyWriteStream) {
+          try {
+            ttyWriteStream.write(`\r\n${errorMsg}\r\n`);
+          } catch {}
+        }
+        await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });

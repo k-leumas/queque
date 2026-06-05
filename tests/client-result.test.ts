@@ -96,6 +96,35 @@ vi.mock('node:fs', () => ({
 }));
 
 // ---------------------------------------------------------------------------
+// Mock node:tty so fake TTY streams (fd=999) pass the raw-mode pre-check.
+// ---------------------------------------------------------------------------
+vi.mock('node:tty', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:tty')>();
+  const FakeReadStream = class {
+    isTTY = true;
+    setRawMode = vi.fn();
+    setEncoding = vi.fn();
+    ref = vi.fn();
+    unref = vi.fn();
+    resume = vi.fn();
+    on = vi.fn();
+    removeListener = vi.fn();
+    read = vi.fn().mockReturnValue(null);
+  };
+  const FakeWriteStream = class {
+    isTTY = true;
+    write = vi.fn();
+    cursorTo = vi.fn();
+    clearScreenDown = vi.fn();
+  };
+  return {
+    ...actual,
+    ReadStream: FakeReadStream,
+    WriteStream: FakeWriteStream,
+  };
+});
+
+// ---------------------------------------------------------------------------
 // Mock ink so modal renders don't hang waiting for user input.
 // After D-03 the modal always opens regardless of candidate count; the mock
 // immediately invokes onSelect with the first candidate's command so the

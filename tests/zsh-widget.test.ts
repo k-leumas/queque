@@ -520,13 +520,12 @@ describe('Zellij widget static content', () => {
     expect(result.status).toBe(0);
   });
 
-  it('widget does not contain /dev/tty redirect per D-02 (inline TTY path removed)', () => {
-    // RED until Plan 03 removes the inline /dev/tty redirect.
-    // grep -c counts matching lines; exit 0 with output "0" means pattern absent.
-    // Using grep -c (not -qL) because macOS grep -qL has non-standard exit code behavior.
+  it('error handler writes to /dev/tty so message is visible in Zellij path', () => {
+    // The error case in _qq_apply_result_str uses >/dev/tty to ensure the
+    // message is visible in ZLE context regardless of cursor position.
     const result = spawnSync('grep', ['-c', '>/dev/tty', widgetPath], { encoding: 'utf8' });
     const count = parseInt(result.stdout.trim(), 10);
-    expect(count).toBe(0);
+    expect(count).toBeGreaterThanOrEqual(1);
   });
 });
 

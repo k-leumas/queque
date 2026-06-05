@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T00:19:48.844Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T01:08:13.705Z
 > Files: 231 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -513,7 +513,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2866 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2868 tok)
 
 ## src/cli/
 
@@ -527,7 +527,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3380 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3911 tok)
 
 ## src/contracts/
 
@@ -557,7 +557,7 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4681 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~7006 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~7248 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1224 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
 - `env-file.test.ts` — Declares root (~715 tok)
@@ -565,4 +565,4 @@
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~7276 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7256 tok)

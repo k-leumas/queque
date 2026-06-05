@@ -2636,6 +2636,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-05T00:17:30.418Z"
+    },
+    {
+      "id": "bug-165",
+      "timestamp": "2026-06-05T00:44:36.148Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:44:36.148Z"
+    },
+    {
+      "id": "bug-166",
+      "timestamp": "2026-06-05T00:44:51.526Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:44:51.526Z"
+    },
+    {
+      "id": "bug-167",
+      "timestamp": "2026-06-05T00:46:06.260Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 14→18 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T00:46:06.260Z"
+    },
+    {
+      "id": "bug-168",
+      "timestamp": "2026-06-05T01:04:43.792Z",
+      "error_message": "Missing await",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T01:04:43.792Z"
+    },
+    {
+      "id": "bug-169",
+      "timestamp": "2026-06-05T01:07:38.613Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T01:07:38.613Z"
+    },
+    {
+      "id": "bug-170",
+      "timestamp": "2026-06-05T01:08:13.728Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Condition was: if (!inZellij)",
+      "fix": "Changed to: if (!inZellij && ttyWriteStream)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-05T01:08:13.728Z"
     }
   ]
 }
