@@ -1115,3 +1115,15 @@
 | 18:04 | Edited tests/client-result.test.ts | expanded (+29 lines) | ~378 |
 | 18:07 | Edited src/client/run-foreground.ts | added error handling | ~383 |
 | 18:08 | Edited src/client/run-foreground.ts | modified if() | ~54 |
+| 18:08 | Session end: 21 writes across 6 files (run-foreground.ts, queque.zsh, detect.ts, provider-detect.test.ts, client-result.test.ts) | 5 reads | ~24317 tok |
+| 18:09 | Session end: 21 writes across 6 files (run-foreground.ts, queque.zsh, detect.ts, provider-detect.test.ts, client-result.test.ts) | 5 reads | ~24317 tok |
+
+## Session: 2026-06-05 18:19
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:34 | Edited tsup.config.ts | added error handling | ~215 |
+| 18:34 | Edited tsup.config.ts | reduced (-6 lines) | ~21 |
+| 18:40 | Edited src/ui/CandidateSelect.tsx | 4→9 lines | ~82 |
+| 18:42 | Created src/env.d.ts | — | ~24 |
+| 18:42 | Edited vitest.config.ts | 8→12 lines | ~87 |

@@ -181,6 +181,11 @@ export function CandidateSelect({
       <SearchInput query={query} />
       {content}
       <ControlsLine />
+      {process.env.QQ_DEV_ROOT != null && (
+        <Box justifyContent="flex-end">
+          <Text color="yellow">{`dev v${__QUEQUE_VERSION__} ${__QUEQUE_COMMIT__}`}</Text>
+        </Box>
+      )}
     </Modal>
   );
 }

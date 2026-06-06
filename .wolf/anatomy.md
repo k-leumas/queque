@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-05T01:08:13.705Z
-> Files: 231 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T01:42:53.043Z
+> Files: 234 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -98,6 +98,8 @@
 - `package.json` — Node.js package manifest (~470 tok)
 - `README.md` — Project documentation (~767 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
+- `tsup.config.ts` — Declares commit (~195 tok)
+- `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
 
 ## .claude/
 
@@ -515,6 +517,10 @@
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
 - `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2868 tok)
 
+## src/
+
+- `env.d.ts` — Declares __QUEQUE_COMMIT__ (~24 tok)
+
 ## src/cli/
 
 - `main.ts` — Exports main (~1261 tok)
@@ -549,7 +555,7 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1712 tok)
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1792 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `Modal.tsx` — Modal (~98 tok)
 - `SearchInput.tsx` — SearchInput (~112 tok)
