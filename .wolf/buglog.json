@@ -2908,6 +2908,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-09T05:49:33.303Z"
+    },
+    {
+      "id": "bug-182",
+      "timestamp": "2026-06-09T19:53:37.768Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had `.zshrc`",
+      "fix": "Changed to `qq init zsh`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-06-09T19:55:18.209Z"
+    },
+    {
+      "id": "bug-183",
+      "timestamp": "2026-06-09T20:14:02.648Z",
+      "error_message": "Significant refactor of ",
+      "file": "README.md",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 21→12 lines (9 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T20:14:02.648Z"
     }
   ]
 }

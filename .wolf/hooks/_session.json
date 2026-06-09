@@ -1,21 +1,85 @@
 {
   "session_id": "session-2026-06-09-1223",
   "started": "2026-06-09T19:23:34.309Z",
-  "files_read": {},
+  "files_read": {
+    "/Users/samuel/dev/tui-llm/README.md": {
+      "count": 2,
+      "tokens": 518,
+      "first_read": "2026-06-09T19:50:11.967Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts": {
+      "count": 1,
+      "tokens": 520,
+      "first_read": "2026-06-09T19:53:44.534Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
+      "count": 1,
+      "tokens": 2866,
+      "first_read": "2026-06-09T19:53:47.986Z"
+    },
+    "/Users/samuel/dev/tui-llm/CONTRIBUTING.md": {
+      "count": 1,
+      "tokens": 814,
+      "first_read": "2026-06-09T20:19:45.808Z"
+    }
+  },
   "files_written": [
     {
       "file": "/Users/samuel/dev/tui-llm/CONTRIBUTING.md",
       "action": "edit",
       "tokens": 148,
       "at": "2026-06-09T19:31:57.364Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 41,
+      "at": "2026-06-09T19:53:37.764Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 31,
+      "at": "2026-06-09T19:55:18.206Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 0,
+      "at": "2026-06-09T20:03:25.753Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 92,
+      "at": "2026-06-09T20:14:02.645Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 0,
+      "at": "2026-06-09T20:20:55.058Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/CONTRIBUTING.md",
+      "action": "edit",
+      "tokens": 155,
+      "at": "2026-06-09T20:22:12.912Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/CONTRIBUTING.md",
+      "action": "edit",
+      "tokens": 41,
+      "at": "2026-06-09T20:22:29.601Z"
     }
   ],
   "edit_counts": {
-    "CONTRIBUTING.md": 1
+    "CONTRIBUTING.md": 3,
+    "README.md": 5
   },
-  "anatomy_hits": 0,
+  "anatomy_hits": 4,
   "anatomy_misses": 0,
-  "repeated_reads_warned": 0,
+  "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 7
+  "stop_count": 21
 }

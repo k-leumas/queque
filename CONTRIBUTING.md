@@ -84,16 +84,13 @@ The interactive shell hook also prewarms the daemon once per shell session, so t
 
 The foreground client asks Claude for a strict JSON command suggestion.
 
-Set these environment variables before running the client:
+Set these environment variables before running the client (or place them in `.env.local` in the repo root):
 
-```bash
-# read from .env.local in the repo root, or export directly
-ANTHROPIC_API_KEY="..."
-# optional
-QQ_MODEL="claude-haiku-4-5"
-```
-
-If `QQ_MODEL` is omitted, the provider uses a default model. You can override it with `QQ_MODEL` if needed.
+| Variable | Default | Description |
+|---|---|---|
+| `ANTHROPIC_API_KEY` | — | Required. Your Anthropic API key. |
+| `QQ_MODEL` | `claude-haiku-4-5-20251001` | Override the Claude model used for suggestions. If omitted, the provider uses the default model. |
+| `QQ_DEBUG_LOG_FILE` | — | Path to write a plain-text debug log (e.g. `/tmp/qq.log`). |
 
 When the current directory is inside a git repository, the prompt includes the repo root, branch, and dirty state as extra context.
 

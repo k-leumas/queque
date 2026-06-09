@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T19:31:57.344Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T20:22:29.582Z
 > Files: 241 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -96,11 +96,11 @@
 - `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `CONTRIBUTING.md` — Contributing (~814 tok)
+- `CONTRIBUTING.md` — Contributing (~853 tok)
 - `lefthook.yml` (~200 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~470 tok)
-- `README.md` — Project documentation (~733 tok)
+- `README.md` — Project documentation (~449 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 - `tsup.config.ts` — Declares commit (~195 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
