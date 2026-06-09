@@ -1,8 +1,4 @@
-# QueQue
-
-[![npm (latest)](https://img.shields.io/npm/v/%40k-leumas%2Fqueque-cli/latest?label=npm%20stable)](https://www.npmjs.com/package/@k-leumas/queque-cli)
-[![npm (beta)](https://img.shields.io/npm/v/%40k-leumas%2Fqueque-cli/beta?label=npm%20beta)](https://www.npmjs.com/package/@k-leumas/queque-cli?activeTab=versions)
-[![GitHub release](https://img.shields.io/github/v/release/k-leumas/queque)](https://github.com/k-leumas/queque/releases)
+# QueQue - your inline AI terminal helper
 
 **Turn natural-language intent into a shell command — without leaving the terminal.**
 
