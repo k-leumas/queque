@@ -1,5 +1,5 @@
-import { readFileSync } from 'node:fs';
 import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
 const commit = execSync('git rev-parse --short HEAD').toString().trim();
