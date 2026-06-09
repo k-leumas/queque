@@ -2,7 +2,12 @@ import { execSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
-const commit = execSync('git rev-parse --short HEAD').toString().trim();
+let commit = 'unknown';
+try {
+  commit = execSync('git rev-parse --short HEAD').toString().trim();
+} catch {
+  // non-git environment (e.g. Homebrew build)
+}
 const version = (JSON.parse(readFileSync('package.json', 'utf-8')) as { version: string }).version;
 
 export default defineConfig({

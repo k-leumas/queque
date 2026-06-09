@@ -1,49 +1,12 @@
 {
-  "session_id": "session-2026-06-09-1907",
-  "started": "2026-06-09T02:07:48.532Z",
-  "files_read": {
-    "/Users/samuel/dev/tui-llm/src/shared/debug-log.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-09T02:11:22.684Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
-      "count": 2,
-      "tokens": 3949,
-      "first_read": "2026-06-09T02:19:12.352Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/ui/Modal.tsx": {
-      "count": 1,
-      "tokens": 98,
-      "first_read": "2026-06-09T02:31:23.553Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/ui/LoadingSpinner.tsx": {
-      "count": 1,
-      "tokens": 134,
-      "first_read": "2026-06-09T02:36:47.909Z"
-    }
-  },
-  "files_written": [
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts",
-      "action": "edit",
-      "tokens": 403,
-      "at": "2026-06-09T02:20:31.845Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/ui/Modal.tsx",
-      "action": "edit",
-      "tokens": 223,
-      "at": "2026-06-09T02:47:21.500Z"
-    }
-  ],
-  "edit_counts": {
-    "src/client/run-foreground.ts": 1,
-    "src/ui/Modal.tsx": 1
-  },
-  "anatomy_hits": 3,
-  "anatomy_misses": 1,
-  "repeated_reads_warned": 1,
+  "session_id": "session-2026-06-09-2138",
+  "started": "2026-06-09T04:38:36.110Z",
+  "files_read": {},
+  "files_written": [],
+  "edit_counts": {},
+  "anatomy_hits": 0,
+  "anatomy_misses": 0,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 6
+  "stop_count": 0
 }
