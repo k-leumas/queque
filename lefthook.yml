@@ -6,8 +6,15 @@ pre-commit:
       glob: '**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml}'
       run: output=$(pnpm exec biome check --write --no-errors-on-unmatched {staged_files} 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
       stage_fixed: true
-    - name: test
-      run: output=$(pnpm test:run -- --related {staged_files} 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
+
+pre-push:
+  jobs:
+    - name: typecheck
+      run: output=$(pnpm exec tsc --noEmit 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
+    - name: lint changed from base
+      run: output=$(node scripts/biome-check-changed.mjs 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
+    - name: test affected from base
+      run: output=$(node scripts/vitest-changed-from-base.mjs 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
 
 commit-msg:
   jobs:
