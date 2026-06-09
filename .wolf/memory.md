@@ -2,6 +2,7 @@
 
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
+| 18:33 | fixed repeating zellij modal title: added flexGrow={0} to title Box; fixed pre-existing unmount type decl | src/ui/CandidateSelect.tsx, src/client/run-foreground.ts | commit d3fb5ad | ~300 |
 | 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
 | 23:57 | researched beta distribution channels — Homebrew tap formula skeleton, awesome-zsh-plugins PR process, Zellij community (not plugin) venues | .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md | document created | ~3500 |
 | 16:28 | gsd-quick 260528-mk1: renamed project brand from que-que to queque (QueQue in prose) | 79 files, package.json, src/, tests/, shell/, .planning/ | 148/148 tests pass, committed 492f2f6 | ~107k |
@@ -1127,3 +1128,49 @@
 | 18:40 | Edited src/ui/CandidateSelect.tsx | 4→9 lines | ~82 |
 | 18:42 | Created src/env.d.ts | — | ~24 |
 | 18:42 | Edited vitest.config.ts | 8→12 lines | ~87 |
+| 18:45 | Session end: 5 writes across 4 files (tsup.config.ts, CandidateSelect.tsx, env.d.ts, vitest.config.ts) | 4 reads | ~2313 tok |
+| 19:02 | Edited shell/zsh/queque.zsh | inline fix | ~16 |
+| 19:03 | Edited src/client/run-foreground.ts | added 1 condition(s) | ~75 |
+| 19:04 | Edited src/client/run-foreground.ts | reduced (-8 lines) | ~196 |
+| 19:04 | Edited src/client/run-foreground.ts | modified catch() | ~90 |
+| 19:06 | Edited tests/zsh-widget.test.ts | 7→11 lines | ~196 |
+
+## Session: 2026-06-07 18:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-07 19:45
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:23 | Created marketing-post.md | — | ~658 |
+
+## Session: 2026-06-09 18:23
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 18:31 | Created .planning/quick/20260608-zellij-title-repeat/PLAN.md | — | ~401 |
+| 18:31 | Edited src/ui/CandidateSelect.tsx | 5→5 lines | ~47 |
+| 18:31 | Created .planning/quick/20260608-zellij-title-repeat/SUMMARY.md | — | ~132 |
+| 18:32 | Edited .planning/STATE.md | modified mismatch() | ~134 |
+| 18:32 | Edited src/client/run-foreground.ts | inline fix | ~20 |
+| 18:33 | Session end: 5 writes across 5 files (PLAN.md, CandidateSelect.tsx, SUMMARY.md, STATE.md, run-foreground.ts) | 6 reads | ~8237 tok |
+| 18:35 | Session end: 5 writes across 5 files (PLAN.md, CandidateSelect.tsx, SUMMARY.md, STATE.md, run-foreground.ts) | 6 reads | ~8237 tok |
+| 18:46 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_no_autocommit.md | — | ~135 |
+| 18:56 | Edited src/client/run-foreground.ts | 4→9 lines | ~191 |
+| 18:57 | Edited scripts/build-dashboard.mjs | added 1 condition(s) | ~45 |
+| 18:57 | Session end: 8 writes across 7 files (PLAN.md, CandidateSelect.tsx, SUMMARY.md, STATE.md, run-foreground.ts) | 11 reads | ~11626 tok |
+| 19:02 | Edited src/ui/CandidateSelect.tsx | 3→3 lines | ~37 |
+| 19:03 | Session end: 9 writes across 7 files (PLAN.md, CandidateSelect.tsx, SUMMARY.md, STATE.md, run-foreground.ts) | 11 reads | ~11667 tok |
+
+## Session: 2026-06-09 19:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 19:20 | Edited src/client/run-foreground.ts | added 1 condition(s) | ~403 |
+| 19:22 | Session end: 1 writes across 1 files (run-foreground.ts) | 2 reads | ~4352 tok |
+| 19:47 | Edited src/ui/Modal.tsx | modified Modal() | ~223 |
+| 19:52 | Session end: 2 writes across 2 files (run-foreground.ts, Modal.tsx) | 4 reads | ~4807 tok |
+| 19:54 | Session end: 2 writes across 2 files (run-foreground.ts, Modal.tsx) | 4 reads | ~4807 tok |
+| 20:06 | Session end: 2 writes across 2 files (run-foreground.ts, Modal.tsx) | 4 reads | ~4807 tok |

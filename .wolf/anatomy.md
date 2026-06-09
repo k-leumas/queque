@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-06T01:42:53.043Z
-> Files: 234 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T02:47:21.479Z
+> Files: 238 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -83,6 +83,7 @@
 ## ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/
 
 - `feedback_lint_before_commit.md` (~216 tok)
+- `feedback_no_autocommit.md` (~146 tok)
 - `feedback_no_coauthored.md` (~148 tok)
 - `feedback_terminology.md` (~163 tok)
 - `feedback_wolf_commit.md` (~221 tok)
@@ -95,6 +96,7 @@
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
 - `lefthook.yml` (~200 tok)
+- `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~470 tok)
 - `README.md` — Project documentation (~767 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
@@ -369,7 +371,7 @@
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
-- `STATE.md` — Project State (~1644 tok)
+- `STATE.md` — Project State (~1699 tok)
 
 ## .planning/notes/
 
@@ -461,6 +463,11 @@
 
 - `PLAN.md` — Quick Task: Fix production TUI crash on Homebrew binary (~429 tok)
 
+## .planning/quick/20260608-zellij-title-repeat/
+
+- `PLAN.md` — Quick Task: Fix repeating title in Zellij modal (~376 tok)
+- `SUMMARY.md` — Summary: Fix repeating title in Zellij modal (~124 tok)
+
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
 - `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
@@ -510,12 +517,12 @@
 
 ## scripts/
 
-- `build-dashboard.mjs` — `, 'wholename']], (~6945 tok)
+- `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
 
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2868 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2866 tok)
 
 ## src/
 
@@ -533,7 +540,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3911 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~4059 tok)
 
 ## src/contracts/
 
@@ -555,9 +562,9 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1792 tok)
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1803 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
-- `Modal.tsx` — Modal (~98 tok)
+- `Modal.tsx` — Modal (~223 tok)
 - `SearchInput.tsx` — SearchInput (~112 tok)
 
 ## tests/
@@ -571,4 +578,4 @@
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7256 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7329 tok)
