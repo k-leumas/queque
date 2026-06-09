@@ -68,11 +68,16 @@ jobs:
           formula_includes: |
             def caveats
               <<~EOS
-                To enable the ?? trigger, add the shell integration to your .zshrc:
-                  qq init zsh >> ~/.zshrc
-                  source ~/.zshrc
-                Then set your Anthropic API key:
-                  export ANTHROPIC_API_KEY="sk-ant-..."
+                ==> Get started with queque
+
+                  Step 1 — activate the ?? trigger:
+                    qq init zsh >> ~/.zshrc && source ~/.zshrc
+
+                  Step 2 — add your Anthropic API key to ~/.zshrc:
+                    export ANTHROPIC_API_KEY="sk-ant-..."
+
+                  Then open a new terminal and try:
+                    git log??
               EOS
             end
           formula_folder: Formula

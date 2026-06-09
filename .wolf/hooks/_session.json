@@ -8,7 +8,7 @@
       "first_read": "2026-06-09T04:42:54.432Z"
     },
     "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml": {
-      "count": 1,
+      "count": 2,
       "tokens": 552,
       "first_read": "2026-06-09T04:42:54.487Z"
     },
@@ -47,16 +47,30 @@
       "action": "edit",
       "tokens": 23,
       "at": "2026-06-09T04:48:44.726Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml",
+      "action": "edit",
+      "tokens": 137,
+      "at": "2026-06-09T05:35:50.488Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml",
+      "action": "edit",
+      "tokens": 137,
+      "at": "2026-06-09T05:36:05.511Z"
     }
   ],
   "edit_counts": {
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_no_stub_in_smoke_tests.md": 1,
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1,
-    "scripts/smoke-homebrew-docker.sh": 2
+    "scripts/smoke-homebrew-docker.sh": 2,
+    ".github/workflows/release.yaml": 1,
+    ".github/workflows/homebrew.yml": 1
   },
   "anatomy_hits": 2,
   "anatomy_misses": 2,
-  "repeated_reads_warned": 0,
+  "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 8
 }
