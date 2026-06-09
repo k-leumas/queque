@@ -174,8 +174,8 @@ export function CandidateSelect({
   return (
     <Modal>
       {initialQuery && initialQuery.length > 0 && (
-        <Box flexGrow={0}>
-          <Text dimColor>{`queque › ${initialQuery}`}</Text>
+        <Box flexGrow={0} height={1}>
+          <Text dimColor wrap="truncate">{`queque › ${initialQuery}`}</Text>
         </Box>
       )}
       <SearchInput query={query} />
