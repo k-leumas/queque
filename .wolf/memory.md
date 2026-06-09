@@ -1181,3 +1181,8 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+| 21:45 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_no_stub_in_smoke_tests.md | — | ~264 |
+| 21:45 | Edited ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md | 1→2 lines | ~88 |
+| 21:45 | Session end: 2 writes across 2 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md) | 3 reads | ~1456 tok |
+| 21:48 | Edited scripts/smoke-homebrew-docker.sh | 7→4 lines | ~33 |
+| 21:48 | Edited scripts/smoke-homebrew-docker.sh | 5→2 lines | ~22 |

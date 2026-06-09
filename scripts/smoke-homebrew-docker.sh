@@ -72,12 +72,9 @@ fi
 
 cd "$ROOT_DIR"
 
-QUEQUE_COMMIT="$(git rev-parse --short HEAD 2>/dev/null || printf 'local')"
-
-docker build --build-arg "QUEQUE_COMMIT=$QUEQUE_COMMIT" -t "$IMAGE_NAME" -f - . <<'DOCKERFILE'
+docker build -t "$IMAGE_NAME" -f - . <<'DOCKERFILE'
 FROM node:22-bookworm
 
-ARG QUEQUE_COMMIT=local
 ENV HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
@@ -93,10 +90,7 @@ COPY shell ./shell
 COPY scripts/docker-homebrew-smoke-runner.sh /usr/local/bin/run-queque-homebrew-smoke
 
 RUN npm install --ignore-scripts --loglevel=error \
-  && printf '#!/usr/bin/env sh\nif [ "$1" = "rev-parse" ]; then echo "%s"; exit 0; fi\necho "unsupported git command: $*" >&2\nexit 1\n' "$QUEQUE_COMMIT" > /usr/local/bin/git \
-  && chmod +x /usr/local/bin/git \
-  && node_modules/.bin/tsup \
-  && rm -f /usr/local/bin/git
+  && node_modules/.bin/tsup
 
 # Local equivalent of the Homebrew formula install block from
 # .github/workflows/homebrew.yml:

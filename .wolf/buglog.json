@@ -2860,6 +2860,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-09T02:47:21.503Z"
+    },
+    {
+      "id": "bug-179",
+      "timestamp": "2026-06-09T04:48:14.582Z",
+      "error_message": "Significant refactor of ",
+      "file": "scripts/smoke-homebrew-docker.sh",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 7→4 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-06-09T04:48:14.582Z"
     }
   ]
 }

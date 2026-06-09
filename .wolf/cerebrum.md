@@ -21,6 +21,7 @@
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
 - [2026-05-01] When planning shell-bridge phases, do not stop at cancel-only seams or placeholder CLI stubs; Phase 1 plans must include a deterministic accepted `replace-buffer` round trip and real `main.ts` handler wiring, plus executable install/build verification for toolchain claims.
 - [2026-05-14] In ES modules, `const` declarations at module level are in the temporal dead zone until their line executes. If the file has a top-level `await` call (e.g. `await main()`), any `const` placed after that line will throw a TDZ ReferenceError at runtime. Always place module-level constants before the first top-level `await`. Biome and vitest will not catch this — only manual inspection or running the script will.
+- [2026-06-08] Never stub or fake a dependency (e.g. injecting a fake `git` binary) in a smoke/integration test just to make the build succeed. Stubbing hides the exact failure mode real users will hit. If a dependency is unavailable in the test environment, the test must either (a) remove/skip it so the code path exercises the real fallback, or (b) fail loudly so the underlying code is fixed. A test that passes by construction rather than by correctness is worse than no test.
 
 ## Decision Log
 

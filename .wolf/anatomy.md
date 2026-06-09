@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T02:47:21.479Z
-> Files: 238 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T04:48:44.706Z
+> Files: 240 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -85,9 +85,10 @@
 - `feedback_lint_before_commit.md` (~216 tok)
 - `feedback_no_autocommit.md` (~146 tok)
 - `feedback_no_coauthored.md` (~148 tok)
+- `feedback_no_stub_in_smoke_tests.md` (~267 tok)
 - `feedback_terminology.md` (~163 tok)
 - `feedback_wolf_commit.md` (~221 tok)
-- `MEMORY.md` — Memory Index (~133 tok)
+- `MEMORY.md` — Memory Index (~247 tok)
 - `project_target_audience.md` (~202 tok)
 
 ## ./
@@ -518,6 +519,7 @@
 ## scripts/
 
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
+- `smoke-homebrew-docker.sh` (~953 tok)
 
 ## shell/zsh/
 
