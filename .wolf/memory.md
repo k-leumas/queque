@@ -1197,3 +1197,14 @@
 | 22:41 | Edited .github/workflows/release.yaml | 6→3 lines | ~24 |
 | 22:43 | Edited .github/workflows/release.yaml | 4→1 lines | ~13 |
 | 22:43 | Session end: 8 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 5 reads | ~3494 tok |
+| 22:48 | Session end: 8 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 5 reads | ~3494 tok |
+| 22:48 | Edited .github/workflows/release.yaml | 2→2 lines | ~11 |
+| 22:49 | Edited .github/workflows/release.yaml | inline fix | ~7 |
+| 22:49 | Edited .github/workflows/release.yaml | inline fix | ~9 |
+| 22:50 | Session end: 11 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 5 reads | ~3521 tok |
+| 22:52 | Edited .github/workflows/release.yaml | 5→7 lines | ~37 |
+| 22:53 | Session end: 12 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 6 reads | ~3758 tok |
+| 22:54 | Session end: 12 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 7 reads | ~11087 tok |
+| 22:56 | Session end: 12 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 7 reads | ~11087 tok |
+| 22:57 | Session end: 12 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 7 reads | ~11087 tok |
+| 22:57 | Session end: 12 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 7 reads | ~11087 tok |
