@@ -544,6 +544,7 @@ function shouldWatchFile(relPath) {
 
   if (normalized.startsWith('project-files/docs/')) return false;
   if (normalized.startsWith('scripts/')) return true;
+  if (normalized.startsWith('src/')) return true;
   if (normalized.startsWith('project-files/src/')) return true;
   if (normalized.startsWith('project-files/icons/')) return true;
   if (normalized === 'project-files/domains.json') return true;
