@@ -10,4 +10,4 @@ dist/
 .wolf/token-ledger.json
 .env.local
 
-assets/.DS_Store/
+**/.DS_Store
