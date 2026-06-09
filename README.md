@@ -8,7 +8,7 @@
 
 Type your intent, hit `??`, pick a command. It lands in your buffer ready to run or edit. No browser, no prompt takeover, no clipboard gymnastics.
 
-<!-- demo gif goes here -->
+![QueQue demo](assets/demo.gif)
 
 ## Install
 
