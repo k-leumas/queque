@@ -36,6 +36,11 @@
       "count": 1,
       "tokens": 7329,
       "first_read": "2026-06-09T05:53:31.406Z"
+    },
+    "/Users/samuel/dev/tui-llm/README.md": {
+      "count": 1,
+      "tokens": 767,
+      "first_read": "2026-06-09T07:23:08.710Z"
     }
   },
   "files_written": [
@@ -110,6 +115,12 @@
       "action": "edit",
       "tokens": 37,
       "at": "2026-06-09T05:52:47.085Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 9,
+      "at": "2026-06-09T07:23:16.721Z"
     }
   ],
   "edit_counts": {
@@ -117,11 +128,12 @@
     "../../.claude/projects/-Users-samuel-dev-tui-llm/memory/MEMORY.md": 1,
     "scripts/smoke-homebrew-docker.sh": 2,
     ".github/workflows/release.yaml": 7,
-    ".github/workflows/homebrew.yml": 1
+    ".github/workflows/homebrew.yml": 1,
+    "README.md": 1
   },
-  "anatomy_hits": 5,
+  "anatomy_hits": 6,
   "anatomy_misses": 2,
   "repeated_reads_warned": 2,
   "cerebrum_warnings": 0,
-  "stop_count": 17
+  "stop_count": 23
 }
