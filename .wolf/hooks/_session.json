@@ -21,6 +21,11 @@
       "count": 1,
       "tokens": 814,
       "first_read": "2026-06-09T20:19:45.808Z"
+    },
+    "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml": {
+      "count": 1,
+      "tokens": 1856,
+      "first_read": "2026-06-09T20:42:57.114Z"
     }
   },
   "files_written": [
@@ -71,15 +76,22 @@
       "action": "edit",
       "tokens": 41,
       "at": "2026-06-09T20:22:29.601Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml",
+      "action": "edit",
+      "tokens": 40,
+      "at": "2026-06-09T20:44:39.378Z"
     }
   ],
   "edit_counts": {
     "CONTRIBUTING.md": 3,
-    "README.md": 5
+    "README.md": 5,
+    ".github/workflows/release.yaml": 1
   },
-  "anatomy_hits": 4,
+  "anatomy_hits": 5,
   "anatomy_misses": 0,
   "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 21
+  "stop_count": 26
 }

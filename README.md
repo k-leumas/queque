@@ -1,17 +1,19 @@
-# QueQue — your terminal prompt's future
+# QueQue — copy-pasting shell commands is dead
 
 **Before:** Google it → copy → paste → tweak → pray.
+
 **Now:** Type your intent, hit `??`, pick a command — it lands in your buffer, ready to tweak and run.
 
-Copy-pasting commands from the browser is dead.
 
-Welcome to the **future**.
+#### Copy-pasting commands from the browser is dead.
+
+Welcome to the **future** –
+`
+ brew install k-leumas/tap/queque
+`
+
 
 ![QueQue demo](assets/demo.gif)
-
-```shell
-brew install k-leumas/tap/queque
-```
 
 > [!NOTE]
 > After install, run `qq init zsh >> ~/.zshrc && source ~/.zshrc` to wire up the `??` keybinding.
