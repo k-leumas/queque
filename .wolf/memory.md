@@ -1193,3 +1193,7 @@
 | 22:35 | Edited .github/workflows/release.yaml | modified caveats() | ~137 |
 | 22:36 | Edited .github/workflows/homebrew.yml | modified caveats() | ~137 |
 | 22:36 | Session end: 6 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 4 reads | ~1788 tok |
+| 22:39 | Session end: 6 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 4 reads | ~3114 tok |
+| 22:41 | Edited .github/workflows/release.yaml | 6→3 lines | ~24 |
+| 22:43 | Edited .github/workflows/release.yaml | 4→1 lines | ~13 |
+| 22:43 | Session end: 8 writes across 5 files (feedback_no_stub_in_smoke_tests.md, MEMORY.md, smoke-homebrew-docker.sh, release.yaml, homebrew.yml) | 5 reads | ~3494 tok |

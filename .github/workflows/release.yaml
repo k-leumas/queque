@@ -83,13 +83,7 @@ jobs:
           node-version: lts/*
           cache: pnpm
 
-      - name: Install release dependencies
-        run: sudo apt-get update && sudo apt-get install -y zsh jq
-
       - run: pnpm install --frozen-lockfile
-
-      - name: Build
-        run: pnpm build
 
       - name: Version & GitHub Release
         env:
