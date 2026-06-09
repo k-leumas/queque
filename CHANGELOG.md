@@ -1,3 +1,21 @@
+# [0.3.0](https://github.com/k-leumas/queque/compare/v0.2.13...v0.3.0) (2026-06-09)
+
+
+### Bug Fixes
+
+* **build:** add src/ path to paths watched by the build dashboard script ([1e59602](https://github.com/k-leumas/queque/commit/1e59602c84ced74cb2b54058b9f99b557c7fec34))
+* cap modal width at terminal columns to fix title stacking in zellij ([58a1b96](https://github.com/k-leumas/queque/commit/58a1b969198078dd4f890eb6bd32c0b38179cc54))
+* prevent Ink raw mode crash and fix env-file CWD search in production ([c34d242](https://github.com/k-leumas/queque/commit/c34d242bd854d95ffc882776c41593073972f2a2))
+* prevent title repeat in zellij modal by setting flexGrow={0} ([0807ead](https://github.com/k-leumas/queque/commit/0807ead047f09aea602be50510afaf9700fedb3c))
+* surface provider errors visibly in terminal on ?? ([dae2aba](https://github.com/k-leumas/queque/commit/dae2abab6f5d35dd8b3f3eac1949b7ac51ef33df))
+* use plain print for error so ZLE positions error message above next prompt ([b3fbb85](https://github.com/k-leumas/queque/commit/b3fbb8584c231530fda216a5ac8747faa91fd473))
+* write errors to TTY directly so they are always visible ([8fee954](https://github.com/k-leumas/queque/commit/8fee954423c014229c87bd7928fa2a8c71f11bd8))
+
+
+### Features
+
+* embed git SHA + version in bundle; show dev badge in TUI ([e8d94bb](https://github.com/k-leumas/queque/commit/e8d94bb8298bffd385533e97f9c19a8258f26222))
+
 ## [0.2.13](https://github.com/k-leumas/queque/compare/v0.2.12...v0.2.13) (2026-06-04)
 
 
