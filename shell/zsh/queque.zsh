@@ -142,7 +142,7 @@ _qq_apply_result_str() {
     error)
       local err_message
       err_message=$(printf '%s' "$json_str" | jq -r '.message // empty' 2>/dev/null)
-      [[ -n "$err_message" ]] && print -r -- "$err_message" >/dev/tty
+      [[ -n "$err_message" ]] && print -r -- "$err_message"
       LBUFFER="$QQ_ORIG_LBUFFER"
       RBUFFER="$QQ_ORIG_RBUFFER"
       return 0

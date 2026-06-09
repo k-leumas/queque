@@ -520,12 +520,16 @@ describe('Zellij widget static content', () => {
     expect(result.status).toBe(0);
   });
 
-  it('error handler writes to /dev/tty so message is visible in Zellij path', () => {
-    // The error case in _qq_apply_result_str uses >/dev/tty to ensure the
-    // message is visible in ZLE context regardless of cursor position.
-    const result = spawnSync('grep', ['-c', '>/dev/tty', widgetPath], { encoding: 'utf8' });
-    const count = parseInt(result.stdout.trim(), 10);
-    expect(count).toBeGreaterThanOrEqual(1);
+  it('error handler uses plain print (no >/dev/tty) so ZLE positions the message above the next prompt', () => {
+    // >/dev/tty bypasses ZLE's output tracking — zle reset-prompt then draws
+    // from its saved start position right over the raw write, causing a flash.
+    // Plain print goes through ZLE's I/O so reset-prompt draws below it.
+    const ttyCount = spawnSync('grep', ['-c', '>/dev/tty', widgetPath], { encoding: 'utf8' });
+    expect(parseInt(ttyCount.stdout.trim(), 10)).toBe(0);
+    const printLine = spawnSync('grep', ['print -r.*err_message', widgetPath], {
+      encoding: 'utf8',
+    });
+    expect(printLine.stdout).toContain('print -r -- "$err_message"');
   });
 });
 
