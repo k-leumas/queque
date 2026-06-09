@@ -58,6 +58,9 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    outputs:
+      version: ${{ steps.release-version.outputs.version }}
+      tag: ${{ steps.release-version.outputs.tag }}
 
     permissions:
       contents: write
@@ -93,15 +96,119 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: pnpm exec semantic-release
 
+      - name: Resolve release version
+        id: release-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+  publish-npm:
+    needs: release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.33.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
       - name: Publish to npm
         # Uses OIDC Trusted Publishing — no NPM_TOKEN secret needed.
         # Prerequisite: configure at npmjs.com → @k-leumas org → queque-cli → Settings → Trusted Publishing:
         #   owner: k-leumas  repo: queque  workflow: release.yaml  environment: (blank)
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
         run: |
-          VERSION=$(node -p "require('./package.json').version")
           if npm view "@k-leumas/queque-cli@$VERSION" version 2>/dev/null | grep -q "$VERSION"; then
-            echo "Version $VERSION already published, skipping."
+            echo "::notice::npm package @k-leumas/queque-cli@$VERSION already exists; treating as idempotent success."
           else
             TAG=$(node -p "require('./package.json').version.includes('-') ? require('./package.json').version.split('-')[1].split('.')[0] : 'latest'")
             npm publish --provenance --access public --tag "$TAG"
           fi
+
+  publish-homebrew:
+    needs: release
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Check existing Homebrew formula
+        id: formula
+        env:
+          VERSION: ${{ needs.release.outputs.version }}
+        run: |
+          FORMULA_URL="https://raw.githubusercontent.com/k-leumas/homebrew-tap/main/Formula/queque.rb"
+          if ! FORMULA="$(curl -fsSL "$FORMULA_URL")"; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Homebrew formula not found or unavailable; publishing queque $VERSION."
+            exit 0
+          fi
+
+          if printf '%s\n' "$FORMULA" | grep -F "v$VERSION" >/dev/null \
+            || printf '%s\n' "$FORMULA" | grep -F "version \"$VERSION\"" >/dev/null \
+            || printf '%s\n' "$FORMULA" | grep -F "version '$VERSION'" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Homebrew formula already references queque $VERSION; treating as idempotent success."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Homebrew formula exists but does not reference queque $VERSION; publishing update."
+          fi
+
+      - name: Release to Homebrew tap
+        if: steps.formula.outputs.exists != 'true'
+        uses: Justintime50/homebrew-releaser@v1
+        with:
+          homebrew_owner: k-leumas
+          homebrew_tap: homebrew-tap
+          github_token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+          commit_owner: k-leumas
+          commit_email: samuelkimama@protonmail.com
+          install: |
+            system "npm", "install", "--ignore-scripts", "--loglevel=error"
+            system "node_modules/.bin/tsup"
+            system "npm", "install", *std_npm_args, "--loglevel=error"
+            bin.install_symlink libexec/"lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" => "qq"
+            (share/"queque").install "shell/zsh/queque.zsh"
+          test: |
+            assert_match "queque", shell_output("#{bin}/qq --version")
+          depends_on: |
+            "node"
+            "jq"
+          formula_includes: |
+            def caveats
+              <<~EOS
+                To enable the ?? trigger, add the shell integration to your .zshrc:
+                  qq init zsh >> ~/.zshrc
+                  source ~/.zshrc
+                Then set your Anthropic API key:
+                  export ANTHROPIC_API_KEY="sk-ant-..."
+              EOS
+            end
+          formula_folder: Formula
+          skip_commit: false

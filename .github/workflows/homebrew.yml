@@ -1,10 +1,6 @@
 name: Update Homebrew Tap
 
 on:
-  workflow_run:
-    workflows: ["Release"]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -12,13 +8,45 @@ jobs:
   # Create a GitHub Personal Access Token with `repo` scope on k-leumas/homebrew-tap.
   # Add it to this repo: Settings → Secrets → Actions → New repository secret.
   #
-  # Triggered via workflow_run (not release: published) because GitHub blocks
-  # release events from firing when the release is created by GITHUB_TOKEN.
+  # Manual fallback. Normal release publishing runs in release.yaml so npm and
+  # Homebrew can publish in parallel after semantic-release.
   homebrew:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve package version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check existing Homebrew formula
+        id: formula
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          FORMULA_URL="https://raw.githubusercontent.com/k-leumas/homebrew-tap/main/Formula/queque.rb"
+          if ! FORMULA="$(curl -fsSL "$FORMULA_URL")"; then
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Homebrew formula not found or unavailable; publishing queque $VERSION."
+            exit 0
+          fi
+
+          if printf '%s\n' "$FORMULA" | grep -F "v$VERSION" >/dev/null \
+            || printf '%s\n' "$FORMULA" | grep -F "version \"$VERSION\"" >/dev/null \
+            || printf '%s\n' "$FORMULA" | grep -F "version '$VERSION'" >/dev/null; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Homebrew formula already references queque $VERSION; treating as idempotent success."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Homebrew formula exists but does not reference queque $VERSION; publishing update."
+          fi
+
       - name: Release to Homebrew tap
+        if: steps.formula.outputs.exists != 'true'
         uses: Justintime50/homebrew-releaser@v1
         with:
           homebrew_owner: k-leumas
