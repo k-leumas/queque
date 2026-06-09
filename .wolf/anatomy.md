@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T07:23:16.699Z
-> Files: 240 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T19:31:57.344Z
+> Files: 241 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -96,6 +96,7 @@
 - `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
+- `CONTRIBUTING.md` — Contributing (~814 tok)
 - `lefthook.yml` (~200 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~470 tok)

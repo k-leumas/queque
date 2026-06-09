@@ -97,6 +97,18 @@ If `QQ_MODEL` is omitted, the provider uses a default model. You can override it
 
 When the current directory is inside a git repository, the prompt includes the repo root, branch, and dirty state as extra context.
 
+## How to Contribute
+
+1. Fork the repo on GitHub
+2. Create a branch off `main` — name it something descriptive (`feat/my-thing`, `fix/bug-name`)
+3. Make your changes, run the checks (`typecheck`, `test:run`, `build`)
+4. Open a PR against `main` on this repo — keep it focused and link any related issue
+5. Direct pushes to `main` are blocked; all changes go through PRs
+
+## Code of Conduct
+
+Be respectful. Critique code, not people. If something is unwelcoming or hostile, it doesn't belong here.
+
 ## Commit Workflow
 
 This repo uses:
