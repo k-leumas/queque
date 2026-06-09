@@ -54,7 +54,7 @@ jobs:
         run: |
           echo "::notice::Skipping Homebrew install smoke because ANTHROPIC_API_KEY is not configured for this repository."
 
-  release:
+  tag-and-changelog:
     needs: test
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -98,7 +98,7 @@ jobs:
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
   publish-npm:
-    needs: release
+    needs: tag-and-changelog
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -131,7 +131,7 @@ jobs:
         # Prerequisite: configure at npmjs.com → @k-leumas org → queque-cli → Settings → Trusted Publishing:
         #   owner: k-leumas  repo: queque  workflow: release.yaml  environment: (blank)
         env:
-          VERSION: ${{ needs.release.outputs.version }}
+          VERSION: ${{ needs.tag-and-changelog.outputs.version }}
         run: |
           if npm view "@k-leumas/queque-cli@$VERSION" version 2>/dev/null | grep -q "$VERSION"; then
             echo "::notice::npm package @k-leumas/queque-cli@$VERSION already exists; treating as idempotent success."
@@ -141,7 +141,7 @@ jobs:
           fi
 
   publish-homebrew:
-    needs: release
+    needs: tag-and-changelog
     if: github.ref_name == 'main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -155,7 +155,7 @@ jobs:
       - name: Check existing Homebrew formula
         id: formula
         env:
-          VERSION: ${{ needs.release.outputs.version }}
+          VERSION: ${{ needs.tag-and-changelog.outputs.version }}
         run: |
           FORMULA_URL="https://raw.githubusercontent.com/k-leumas/homebrew-tap/main/Formula/queque.rb"
           if ! FORMULA="$(curl -fsSL "$FORMULA_URL")"; then
