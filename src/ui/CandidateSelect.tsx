@@ -174,7 +174,7 @@ export function CandidateSelect({
   return (
     <Modal>
       {initialQuery && initialQuery.length > 0 && (
-        <Box>
+        <Box flexGrow={0}>
           <Text dimColor>{`queque › ${initialQuery}`}</Text>
         </Box>
       )}

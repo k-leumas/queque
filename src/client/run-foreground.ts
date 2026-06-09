@@ -207,7 +207,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         }
 
         await new Promise<void>((resolve) => {
-          let unmount: (() => void) | undefined;
+          let unmount: ((skipClear?: boolean) => void) | undefined;
           let resolved = false;
 
           // Build initial element with null candidates (D-06 loading state)
@@ -270,11 +270,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           process.once('SIGHUP', cleanupOnSignal);
           process.once('SIGTERM', cleanupOnSignal);
 
-          unmount = () => {
+          unmount = (skipClear = false) => {
             process.off('SIGHUP', cleanupOnSignal);
             process.off('SIGTERM', cleanupOnSignal);
             app.unmount();
-            clearScrollReserve();
+            if (!skipClear) clearScrollReserve();
             resolve();
           };
 
@@ -290,19 +290,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               if (resolved) return;
               resolved = true;
               const errorMsg = `QueQue: ${message}`;
-              try {
-                await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
-              } finally {
-                unmount?.();
-                // Write directly to TTY after the TUI area is cleared so the
-                // error is visible regardless of ZSH-side print behaviour.
-                // Skip in Zellij: the floating pane closes immediately.
-                if (!inZellij && ttyWriteStream) {
-                  try {
-                    ttyWriteStream.write(`\r\n${errorMsg}\r\n`);
-                  } catch {}
-                }
-              }
+              await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
+              // skipClear=true: don't restore cursor to ZLE's saved start position —
+              // doing so would cause zle reset-prompt to draw the next prompt right
+              // over the error line that ZSH is about to print.
+              unmount?.(true);
             });
         });
 
@@ -311,11 +303,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         const message = error instanceof Error ? error.message : String(error);
         void appendDebugLog('client', 'llm request failed', { message });
         const errorMsg = `QueQue: ${message}`;
-        if (!inZellij && ttyWriteStream) {
-          try {
-            ttyWriteStream.write(`\r\n${errorMsg}\r\n`);
-          } catch {}
-        }
         await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
       }
     } else {
