@@ -1275,3 +1275,88 @@
 | 18:59 | Created .planning/REQUIREMENTS.md | — | ~1400 |
 | 18:59 | Created .planning/PROJECT.md | — | ~1627 |
 | 19:02 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-PATTERNS.md | — | ~6854 |
+| 19:02 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-RESEARCH.md | — | ~7095 |
+| 19:06 | Session end: 17 writes across 6 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 66 reads | ~142568 tok |
+| 14:47 | Created src/shared/privacy-filter.ts | — | ~757 |
+| 14:47 | Created src/providers/resolver.ts | — | ~361 |
+| 14:47 | Created tests/privacy-filter.test.ts | — | ~656 |
+| 14:47 | Created src/registry/provider-backends.ts | — | ~357 |
+| 14:47 | Created src/registry/bootstrap.ts | — | ~455 |
+| 14:47 | Created src/shared/debug-log.ts | — | ~225 |
+| 14:47 | Created src/registry/bootstrap.ts | — | ~463 |
+| 14:47 | Created src/context/pipeline.ts | — | ~514 |
+| 14:47 | Created src/shared/debug-log.ts | — | ~229 |
+| 14:47 | Created src/context/pipeline.ts | — | ~517 |
+| 14:47 | Created src/context/pipeline.ts | — | ~524 |
+| 14:47 | Created src/providers/claude.ts | — | ~1563 |
+| 14:47 | Created src/client/run-foreground.ts | — | ~3832 |
+| 14:47 | Created src/client/run-foreground.ts | — | ~3879 |
+| 14:47 | Created src/client/run-foreground.ts | — | ~3924 |
+| 14:48 | Created src/client/run-foreground.ts | — | ~3927 |
+| 14:48 | Created src/cli/commands/init.ts | — | ~559 |
+| 14:48 | Created src/cli/commands/init.ts | — | ~585 |
+| 14:48 | Created src/ui/CandidateSelect.tsx | — | ~1823 |
+| 14:48 | Created src/ui/CandidateSelect.tsx | — | ~1872 |
+| 14:48 | Created src/ui/CandidateSelect.tsx | — | ~1924 |
+| 14:48 | Created src/ui/CandidateSelect.tsx | — | ~1935 |
+| 14:48 | Created src/ui/CandidateSelect.tsx | — | ~1933 |
+| 14:48 | Created tests/provider-resolver.test.ts | — | ~283 |
+| 14:48 | Created tests/registry-bootstrap.test.ts | — | ~525 |
+| 14:48 | Created tests/registry-bootstrap.test.ts | — | ~604 |
+| 14:48 | Created tests/client-result.test.ts | — | ~7280 |
+| 14:48 | Created tests/client-result.test.ts | — | ~7256 |
+| 14:48 | Created tests/client-result.test.ts | — | ~7233 |
+| 14:48 | Created tests/client-result.test.ts | — | ~7209 |
+| 14:48 | Created tests/context-pipeline.test.ts | — | ~1415 |
+| 14:48 | Created tests/zsh-widget.test.ts | — | ~7415 |
+| 14:48 | Created src/providers/index.ts | — | ~56 |
+| 14:49 | Created README.md | — | ~728 |
+| 14:49 | Created docs/EXTENSIONS.md | — | ~632 |
+| 14:52 | Created tests/provider-resolver.test.ts | — | ~369 |
+| 14:52 | Created tests/context-pipeline.test.ts | — | ~1224 |
+| 14:52 | Created tests/zsh-widget.test.ts | — | ~7412 |
+| 14:52 | Created tests/provider-resolver.test.ts | — | ~368 |
+| 14:52 | Session end: 56 writes across 25 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 76 reads | ~241191 tok |
+| 14:52 | Session end: 56 writes across 25 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 76 reads | ~241191 tok |
+| 14:57 | Session end: 56 writes across 25 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 76 reads | ~241191 tok |
+| 15:03 | Created src/shared/qq-config.ts | — | ~1140 |
+| 15:03 | Created src/shared/privacy-filter.ts | — | ~717 |
+| 15:03 | Created docs/config.example.json | — | ~79 |
+| 15:04 | Created tests/privacy-filter.test.ts | — | ~1617 |
+| 15:04 | Created tests/qq-config.test.ts | — | ~189 |
+| 15:04 | Created README.md | — | ~811 |
+| 15:04 | Created docs/EXTENSIONS.md | — | ~833 |
+| 15:04 | Created docs/EXTENSIONS.md | — | ~854 |
+| 15:04 | Created .planning/quick/20260617-privacy-config-file/PLAN.md | — | ~182 |
+| 15:04 | Created src/shared/qq-config.ts | — | ~1137 |
+| 15:04 | Created src/shared/qq-config.ts | — | ~1119 |
+| 15:04 | Created .planning/quick/20260617-privacy-config-file/SUMMARY.md | — | ~323 |
+| 15:04 | Created .planning/STATE.md | — | ~1947 |
+| 15:05 | Session end: 69 writes across 30 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 82 reads | ~252944 tok |
+| 15:09 | Session end: 69 writes across 30 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 82 reads | ~252944 tok |
+| 15:10 | Session end: 69 writes across 30 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 82 reads | ~252944 tok |
+| 15:17 | Created .planning/quick/20260617-privacy-config-file/REVIEW.md | — | ~2228 |
+| 15:17 | Session end: 70 writes across 31 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 85 reads | ~256965 tok |
+| 15:22 | Created src/shared/qq-config.ts | — | ~1185 |
+| 15:22 | Created src/cli/commands/init.ts | — | ~585 |
+| 15:22 | Created src/shared/qq-config.ts | — | ~1276 |
+| 15:22 | Created src/client/run-foreground.ts | — | ~3910 |
+| 15:22 | Created src/client/run-foreground.ts | — | ~3906 |
+| 15:22 | Created src/client/run-foreground.ts | — | ~3913 |
+| 15:22 | Created tests/privacy-filter.test.ts | — | ~1618 |
+| 15:22 | Created tests/privacy-filter.test.ts | — | ~1625 |
+| 15:23 | Created tests/privacy-filter.test.ts | — | ~1812 |
+| 15:23 | Created tests/init-command.test.ts | — | ~163 |
+| 15:23 | Created src/client/run-foreground.ts | — | ~3908 |
+| 15:23 | Session end: 81 writes across 32 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 86 reads | ~280866 tok |
+| 15:28 | Session end: 81 writes across 32 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 86 reads | ~280866 tok |
+| 15:30 | Session end: 81 writes across 32 files (ROADMAP.md, STATE.md, REQUIREMENTS.md, PROJECT.md, 06-PATTERNS.md) | 87 reads | ~285547 tok |
+
+## Session: 2026-06-18 15:30
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 15:32 | Created .local-bin/pnpm | — | ~118 |
+| 15:33 | Created tests/privacy-filter.test.ts | — | ~1831 |
+| 15:33 | Created tests/registry.test.ts | — | ~1463 |
+| 15:33 | Created tests/registry.test.ts | — | ~1515 |

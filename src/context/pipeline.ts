@@ -2,11 +2,12 @@ import type { ContextEnvelope, NormalizedRequest } from '../contracts/request.js
 import { classifyIntent } from '../intent/router.js';
 import { listContextProviders } from '../registry/context-providers.js';
 import { appendDebugLog } from '../shared/debug-log.js';
+import { filterContextEnvelope } from '../shared/privacy-filter.js';
 import { buildBaseContext } from './base-context.js';
 
 export async function gatherContext(request: NormalizedRequest): Promise<ContextEnvelope> {
   void appendDebugLog('context', 'pipeline start', {
-    lbuffer: request.lbuffer,
+    queryLength: request.lbuffer.length,
     intent: request.intent,
   });
 
@@ -46,7 +47,7 @@ export async function gatherContext(request: NormalizedRequest): Promise<Context
     }
   }
 
-  const envelope: ContextEnvelope = { base, extras };
+  const envelope: ContextEnvelope = filterContextEnvelope({ base, extras });
 
   void appendDebugLog('context', 'envelope assembled', { extraCount: extras.length });
 

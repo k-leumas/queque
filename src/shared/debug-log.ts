@@ -1,4 +1,5 @@
 import * as fsp from 'node:fs/promises';
+import { redactForLog } from './privacy-filter.js';
 
 export const debugLogPath =
   process.env.QQ_DEBUG_LOG_FILE ?? `/tmp/qq-${process.getuid?.() ?? 'unknown'}-debug.log`;
@@ -17,7 +18,7 @@ export async function appendDebugLog(
   message: string,
   details?: unknown,
 ): Promise<void> {
-  const line = `${new Date().toISOString()} [${scope}] ${message}${formatDetails(details)}\n`;
+  const line = `${new Date().toISOString()} [${scope}] ${message}${formatDetails(redactForLog(details))}\n`;
 
   try {
     await fsp.appendFile(debugLogPath, line, { encoding: 'utf-8', mode: 0o600 });

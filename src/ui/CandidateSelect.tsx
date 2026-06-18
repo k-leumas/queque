@@ -1,6 +1,7 @@
 import { Box, Text, useInput, useStdin } from 'ink';
 import { type ReactElement, useEffect, useState } from 'react';
 import type { CandidateList } from '../contracts/candidates.js';
+import { isDestructiveCommand } from '../shared/privacy-filter.js';
 import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { Modal } from './Modal.js';
@@ -124,6 +125,7 @@ export function CandidateSelect({
   );
 
   let content: ReactElement;
+  let showDestructiveWarning = false;
   if (error === true) {
     content = (
       <Box marginTop={1}>
@@ -138,6 +140,8 @@ export function CandidateSelect({
     );
   } else {
     const visible = filterCandidates(candidates, query);
+    const selectedCommand = visible[selectedIndex]?.command;
+    showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
     if (visible.length === 0) {
       content = (
         <Box marginTop={1}>
@@ -180,6 +184,11 @@ export function CandidateSelect({
       )}
       <SearchInput query={query} />
       {content}
+      {showDestructiveWarning && (
+        <Box marginTop={1}>
+          <Text color="yellow">{'review carefully — this command may be destructive'}</Text>
+        </Box>
+      )}
       <ControlsLine />
       {process.env.QQ_DEV_ROOT != null && (
         <Box justifyContent="flex-end">

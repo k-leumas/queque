@@ -672,3 +672,12 @@ describe('coverage: both paths call _qq_apply_result_str', () => {
     expect(parseInt(result.stdout.trim(), 10)).toBeGreaterThanOrEqual(3);
   });
 });
+
+describe('CMD-04: insertion-only shell contract', () => {
+  it('widget does not eval or zle-push selected commands', () => {
+    const evalHits = spawnSync('grep', ['-E', '\\beval\\b|zle -s', widgetPath], {
+      encoding: 'utf8',
+    });
+    expect(evalHits.status).not.toBe(0);
+  });
+});
