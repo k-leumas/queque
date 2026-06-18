@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:20:44.664Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:30:07.419Z
 > Files: 269 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -365,10 +365,6 @@
 
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements (~1662 tok)
-
-## .local-bin/
-
-- `pnpm` (~126 tok)
 
 ## .planning/
 

@@ -1411,3 +1411,9 @@
 | 16:20 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md | — | ~3241 |
 | 16:20 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md | — | ~2957 |
 | 16:21 | Session end: 4 writes across 4 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md) | 12 reads | ~28885 tok |
+| 16:27 | Session end: 4 writes across 4 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md) | 14 reads | ~29609 tok |
+| 16:29 | Session end: 4 writes across 4 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md) | 14 reads | ~29609 tok |
+| 16:30 | Created .local-bin/pnpm | — | ~94 |
+| 16:30 | Session end: 5 writes across 5 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md, pnpm) | 14 reads | ~29710 tok |
+| 16:33 | Session end: 5 writes across 5 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md, pnpm) | 14 reads | ~29710 tok |
+| 16:34 | Session end: 5 writes across 5 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md, pnpm) | 14 reads | ~29710 tok |
