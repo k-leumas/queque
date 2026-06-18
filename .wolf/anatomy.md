@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:33:12.287Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:33:44.123Z
 > Files: 263 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -377,7 +377,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3853 tok)
-- `STATE.md` — Project State (~1826 tok)
+- `STATE.md` — Project State (~1827 tok)
 
 ## .planning/notes/
 
@@ -481,9 +481,9 @@
 
 ## .planning/quick/20260617-privacy-config-file/
 
-- `PLAN.md` — Quick Task: User privacy config file (~171 tok)
+- `PLAN.md` — Quick Task: User privacy config file (~170 tok)
 - `REVIEW.md` — Phase 20260617-privacy-config-file: Code Review Report (~2089 tok)
-- `SUMMARY.md` — Quick Task: User privacy config file (~303 tok)
+- `SUMMARY.md` — Quick Task: User privacy config file (~313 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 

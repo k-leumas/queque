@@ -62,12 +62,33 @@
       "action": "create",
       "tokens": 1515,
       "at": "2026-06-18T22:33:12.307Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
+      "action": "create",
+      "tokens": 2088,
+      "at": "2026-06-18T22:33:41.214Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260617-privacy-config-file/SUMMARY.md",
+      "action": "create",
+      "tokens": 357,
+      "at": "2026-06-18T22:33:41.706Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260617-privacy-config-file/PLAN.md",
+      "action": "create",
+      "tokens": 194,
+      "at": "2026-06-18T22:33:44.143Z"
     }
   ],
   "edit_counts": {
     ".local-bin/pnpm": 1,
     "tests/privacy-filter.test.ts": 1,
-    "tests/registry.test.ts": 2
+    "tests/registry.test.ts": 2,
+    ".planning/STATE.md": 1,
+    ".planning/quick/20260617-privacy-config-file/SUMMARY.md": 1,
+    ".planning/quick/20260617-privacy-config-file/PLAN.md": 1
   },
   "anatomy_hits": 2,
   "anatomy_misses": 5,
