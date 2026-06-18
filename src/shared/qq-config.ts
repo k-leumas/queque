@@ -19,7 +19,7 @@ export const DEFAULT_REDACT_LOG_KEYS = ['lbuffer', 'rbuffer', 'queryText', 'requ
 
 /** Destructive command patterns for warn-only UI badges. */
 export const DEFAULT_DESTRUCTIVE_COMMAND_PATTERNS = [
-  '\\brm\\s+-r(f)?\\b',
+  '\\brm\\s+(-(r|rf))?\\b',
   '\\bsudo\\b',
   '\\bchmod\\s+-R\\b',
   '>\\s*/dev/',

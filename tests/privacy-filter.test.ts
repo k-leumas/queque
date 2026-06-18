@@ -206,6 +206,8 @@ describe('isDestructiveCommand', () => {
 
   it('flags destructive patterns', () => {
     expect(isDestructiveCommand('rm -rf /tmp/foo')).toBe(true);
+    expect(isDestructiveCommand('rm -r /tmp/foo')).toBe(true);
+    expect(isDestructiveCommand('rm foo.txt')).toBe(true);
     expect(isDestructiveCommand('git status')).toBe(false);
   });
 });

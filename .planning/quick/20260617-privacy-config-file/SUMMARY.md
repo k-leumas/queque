@@ -36,4 +36,4 @@ Privacy filter settings now load from `~/.config/qq/config.json` (or `QQ_CONFIG_
 
 ## Verification
 
-- `pnpm test:run` — 174/174 tests pass
+- `pnpm test:run` — 177/177 tests pass (post-review remediation)

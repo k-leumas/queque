@@ -30,7 +30,9 @@ findings:
   warning: 4
   info: 3
   total: 8
-status: issues_found
+status: resolved
+remediated: 2026-06-18T22:45:00Z
+remediation_commit: pending
 ---
 
 # Phase 20260617-privacy-config-file: Code Review Report
@@ -38,7 +40,9 @@ status: issues_found
 **Reviewed:** 2026-06-18T15:17:00Z  
 **Depth:** standard  
 **Files Reviewed:** 21  
-**Status:** issues_found
+**Status:** resolved (2026-06-18)
+
+All critical and warning findings remediated in follow-up commits. Info items (IN-01–IN-03) remain intentional deferrals documented in EXTENSIONS.md.
 
 ## Summary
 

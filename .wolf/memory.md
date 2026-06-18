@@ -1363,3 +1363,10 @@
 | 15:33 | Created .planning/STATE.md | — | ~1949 |
 | 15:33 | Created .planning/quick/20260617-privacy-config-file/SUMMARY.md | — | ~334 |
 | 15:33 | Created .planning/quick/20260617-privacy-config-file/PLAN.md | — | ~181 |
+| 15:34 | Created .local-bin/pnpm | — | ~80 |
+| 15:34 | Session end: 8 writes across 6 files (pnpm, privacy-filter.test.ts, registry.test.ts, STATE.md, SUMMARY.md) | 8 reads | ~8330 tok |
+| 15:37 | Session end: 8 writes across 6 files (pnpm, privacy-filter.test.ts, registry.test.ts, STATE.md, SUMMARY.md) | 8 reads | ~8330 tok |
+| 15:43 | Created tests/privacy-filter.test.ts | — | ~1866 |
+| 15:43 | Created .planning/quick/20260617-privacy-config-file/REVIEW.md | — | ~2243 |
+| 15:43 | Created .planning/quick/20260617-privacy-config-file/REVIEW.md | — | ~2286 |
+| 15:43 | Created .planning/quick/20260617-privacy-config-file/SUMMARY.md | — | ~340 |

@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:33:44.123Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:43:04.739Z
 > Files: 263 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -367,7 +367,7 @@
 
 ## .local-bin/
 
-- `pnpm` — Temporary shim so lefthook can run when pnpm is not on PATH. (~118 tok)
+- `pnpm` (~80 tok)
 
 ## .planning/
 
@@ -482,8 +482,8 @@
 ## .planning/quick/20260617-privacy-config-file/
 
 - `PLAN.md` — Quick Task: User privacy config file (~170 tok)
-- `REVIEW.md` — Phase 20260617-privacy-config-file: Code Review Report (~2089 tok)
-- `SUMMARY.md` — Quick Task: User privacy config file (~313 tok)
+- `REVIEW.md` — Phase 20260617-privacy-config-file: Code Review Report (~2143 tok)
+- `SUMMARY.md` — Quick Task: User privacy config file (~319 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
@@ -611,7 +611,7 @@
 - `init-command.test.ts` — Declares marker (~163 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
-- `privacy-filter.test.ts` — Declares config (~1831 tok)
+- `privacy-filter.test.ts` — Declares config (~1866 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
 - `provider-resolver.test.ts` — Declares adapter (~368 tok)
 - `qq-config.test.ts` — Declares parsed (~189 tok)
