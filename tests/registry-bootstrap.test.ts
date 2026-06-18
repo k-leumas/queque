@@ -1,7 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import { clearContextProviders, listContextProviders } from '../src/registry/context-providers.js';
-import { clearProviderBackends } from '../src/registry/provider-backends.js';
+import {
+  clearProviderBackends,
+  getProviderAdapter,
+  listProviderBackends,
+} from '../src/registry/provider-backends.js';
 import { clearShellAdapters, listShellAdapters } from '../src/registry/shell-adapters.js';
 import { clearStorageHooks, listStorageHooks } from '../src/registry/storage-hooks.js';
 
@@ -39,6 +43,12 @@ describe('bootstrapBuiltins()', () => {
     const hookIds = listStorageHooks().map((hook) => hook.id);
     expect(hookIds).toContain('noop');
     expect(hookIds).toContain('memory');
+  });
+
+  it('registers the claude provider backend with an adapter instance', () => {
+    bootstrapBuiltins();
+    expect(listProviderBackends().map((backend) => backend.id)).toContain('claude');
+    expect(getProviderAdapter('claude')?.fetchCandidates).toBeTypeOf('function');
   });
 
   it('is idempotent', () => {

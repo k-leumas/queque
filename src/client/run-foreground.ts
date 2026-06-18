@@ -7,8 +7,8 @@ import type { NormalizedRequest } from '../contracts/request.js';
 import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { classifyIntent } from '../intent/router.js';
-import { fetchCandidates } from '../providers/claude.js';
 import { detectProvider } from '../providers/detect.js';
+import { resolveAdapter } from '../providers/resolver.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
@@ -92,7 +92,12 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     const raw = await fsp.readFile(requestFile, 'utf-8');
     const request = shellRequestSchema.parse(JSON.parse(raw.trim()));
 
-    void appendDebugLog('client', 'request parsed', request);
+    void appendDebugLog('client', 'request parsed', {
+      lbufferLength: request.lbuffer.length,
+      rbufferLength: request.rbuffer.length,
+      cwd: request.cwd,
+      shellPid: request.shellPid,
+    });
 
     const detectedProvider = await detectProvider();
     void appendDebugLog('client', 'provider detected', { kind: detectedProvider.kind });
@@ -123,8 +128,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       });
       void appendDebugLog('client', 'wrote replace-buffer result', {
         resultFile,
-        lbuffer: fixtureLbuffer,
-        rbuffer: request.rbuffer,
+        lbufferLength: fixtureLbuffer.length,
+        rbufferLength: request.rbuffer.length,
       });
     } else if (resultMode === 'llm') {
       // Declared here so the catch block can also write errors to the TTY.
@@ -146,6 +151,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         void appendDebugLog('client', 'context gathered', {
           extraCount: envelope.extras.length,
         });
+
+        const adapter = resolveAdapter(detectedProvider);
+        void appendDebugLog('client', 'provider adapter resolved', { kind: detectedProvider.kind });
 
         // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
@@ -279,7 +287,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           };
 
           // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
-          fetchCandidates(envelope, request.rbuffer)
+          adapter
+            .fetchCandidates(envelope)
             .then((candidates) => {
               void appendDebugLog('client', 'candidates received', { count: candidates.length });
               app.rerender(buildCandidateElement(candidates));

@@ -68,6 +68,7 @@ function ensureSelectableCandidates(candidates: CandidateList): CandidateList {
 
 function buildPrompt(envelope: ContextEnvelope): string {
   const gitChunk = envelope.extras.find((chunk) => chunk.kind === 'git');
+  const filesystemChunk = envelope.extras.find((chunk) => chunk.kind === 'filesystem');
 
   return [
     'Return ONLY a JSON array of 1-3 shell command candidates, most likely first.',
@@ -84,6 +85,7 @@ function buildPrompt(envelope: ContextEnvelope): string {
         platform: envelope.base.platform,
         shellName: envelope.base.shellName,
         ...(gitChunk ? { versionControl: gitChunk.payload } : {}),
+        ...(filesystemChunk ? { filesystem: filesystemChunk.payload } : {}),
       },
       null,
       2,

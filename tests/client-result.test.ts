@@ -30,10 +30,14 @@ vi.mock('../src/shared/socket-path.js', () => ({
 }));
 
 // ---------------------------------------------------------------------------
-// Mock Claude provider so llm mode stays deterministic in tests
+// Mock provider resolver so llm mode stays deterministic in tests
 // ---------------------------------------------------------------------------
-vi.mock('../src/providers/claude.js', () => ({
-  fetchCandidates: vi.fn(),
+const fetchCandidatesMock = vi.hoisted(() => vi.fn());
+
+vi.mock('../src/providers/resolver.js', () => ({
+  resolveAdapter: vi.fn(() => ({
+    fetchCandidates: fetchCandidatesMock,
+  })),
 }));
 
 // ---------------------------------------------------------------------------
@@ -394,8 +398,7 @@ describe('runForegroundClient', () => {
   });
 
   it('emits a replace-buffer result in llm mode and the shell applies it', async () => {
-    const { fetchCandidates } = await import('../src/providers/claude.js');
-    const mockedFetchCandidates = vi.mocked(fetchCandidates);
+    const mockedFetchCandidates = fetchCandidatesMock;
     mockedFetchCandidates.mockResolvedValue([{ command: 'git status', explanation: '' }]);
 
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
@@ -441,8 +444,7 @@ describe('runForegroundClient', () => {
   });
 
   it('writes error ShellResult to FIFO when fetchCandidates rejects', async () => {
-    const { fetchCandidates } = await import('../src/providers/claude.js');
-    vi.mocked(fetchCandidates).mockRejectedValue(new Error('API timeout'));
+    fetchCandidatesMock.mockRejectedValue(new Error('API timeout'));
 
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
     await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
@@ -554,8 +556,7 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
   });
 
   it('writes replace-buffer result and never writes cancel after selection', async () => {
-    const { fetchCandidates } = await import('../src/providers/claude.js');
-    vi.mocked(fetchCandidates).mockResolvedValue([{ command: 'git status', explanation: '' }]);
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: '' }]);
 
     const fspMock = await import('node:fs/promises');
     const writeFileSpy = vi.spyOn(fspMock, 'writeFile');

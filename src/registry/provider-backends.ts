@@ -1,28 +1,37 @@
-/**
- * PHASE 2 STUB — Provider Backends Registry
- *
- * This seam exists before the runtime uses it so provider registration can
- * move through one internal path instead of hardcoding Claude first and
- * refactoring later. Example future use: register an OpenAI backend alongside Claude.
- */
+import type { LLMAdapter } from '../providers/provider.js';
+
 export interface ProviderBackendDescriptor {
   id: string;
   name: string;
   description: string;
 }
 
-const registry = new Map<string, ProviderBackendDescriptor>();
+export interface RegisteredProviderBackend extends ProviderBackendDescriptor {
+  adapter: LLMAdapter;
+}
 
-export function registerProviderBackend(descriptor: ProviderBackendDescriptor): void {
-  if (registry.has(descriptor.id)) {
-    throw new Error(`Provider backend already registered: "${descriptor.id}"`);
+const registry = new Map<string, RegisteredProviderBackend>();
+
+/**
+ * Registers a provider backend descriptor and its LLMAdapter instance.
+ */
+export function registerProviderBackend(registration: RegisteredProviderBackend): void {
+  if (registry.has(registration.id)) {
+    throw new Error(`Provider backend already registered: "${registration.id}"`);
   }
 
-  registry.set(descriptor.id, descriptor);
+  registry.set(registration.id, registration);
 }
 
 export function getProviderBackend(id: string): ProviderBackendDescriptor | undefined {
   return registry.get(id);
+}
+
+/**
+ * Returns the LLMAdapter instance for a registered provider backend.
+ */
+export function getProviderAdapter(id: string): LLMAdapter | undefined {
+  return registry.get(id)?.adapter;
 }
 
 export function listProviderBackends(): ProviderBackendDescriptor[] {

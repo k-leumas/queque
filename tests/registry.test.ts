@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextProvider } from '../src/context/provider.js';
+import type { LLMAdapter } from '../src/providers/provider.js';
 import {
   clearContextProviders,
   getContextProvider,
@@ -62,23 +63,30 @@ describe('context-providers registry', () => {
 });
 
 describe('provider-backends registry (Phase 2 stub)', () => {
+  const stubAdapter: LLMAdapter = { fetchCandidates: vi.fn() };
+
   beforeEach(() => {
     clearProviderBackends();
   });
 
   it('registers and retrieves a provider backend by id', () => {
-    const stub = { id: 'claude', name: 'Claude', description: 'Anthropic Claude backend' };
+    const stub = {
+      id: 'claude',
+      name: 'Claude',
+      description: 'Anthropic Claude backend',
+      adapter: stubAdapter,
+    };
     registerProviderBackend(stub);
     expect(getProviderBackend('claude')).toBe(stub);
   });
 
   it('lists all registered provider backends', () => {
-    registerProviderBackend({ id: 'b1', name: 'B1', description: '' });
+    registerProviderBackend({ id: 'b1', name: 'B1', description: '', adapter: stubAdapter });
     expect(listProviderBackends()).toHaveLength(1);
   });
 
   it('throws on duplicate id registration with id in message', () => {
-    const stub = { id: 'dup-backend', name: 'Dup', description: '' };
+    const stub = { id: 'dup-backend', name: 'Dup', description: '', adapter: stubAdapter };
     registerProviderBackend(stub);
     expect(() => registerProviderBackend(stub)).toThrow(
       'Provider backend already registered: "dup-backend"',
@@ -86,7 +94,7 @@ describe('provider-backends registry (Phase 2 stub)', () => {
   });
 
   it('clear() empties the registry', () => {
-    registerProviderBackend({ id: 'to-clear', name: 'X', description: '' });
+    registerProviderBackend({ id: 'to-clear', name: 'X', description: '', adapter: stubAdapter });
     clearProviderBackends();
     expect(listProviderBackends()).toHaveLength(0);
   });

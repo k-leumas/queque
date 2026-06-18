@@ -3,6 +3,9 @@ import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { bootstrapBuiltins } from '../../registry/bootstrap.js';
+import { listShellAdapters } from '../../registry/shell-adapters.js';
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const SUPPORTED_SHELLS = ['zsh'] as const;
@@ -23,8 +26,11 @@ function _resolveScriptPath(shell: Shell): string {
 }
 
 export function initCommand(shell: string): void {
-  if (!SUPPORTED_SHELLS.includes(shell as Shell)) {
-    console.error(`Unsupported shell: '${shell}'. Supported: ${SUPPORTED_SHELLS.join(', ')}`);
+  bootstrapBuiltins();
+  const supportedShells = listShellAdapters().map((adapter) => adapter.shell);
+
+  if (!supportedShells.includes(shell)) {
+    console.error(`Unsupported shell: '${shell}'. Supported: ${supportedShells.join(', ')}`);
     process.exit(1);
   }
 
@@ -35,7 +41,7 @@ export function initCommand(shell: string): void {
 
   const existing = existsSync(zshrc) ? readFileSync(zshrc, 'utf8') : '';
 
-  if (existing.search(marker)) {
+  if (marker.test(existing)) {
     console.error('queque: shell integration already present in ~/.zshrc');
     process.exit(0);
   }
