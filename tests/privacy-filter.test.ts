@@ -119,9 +119,12 @@ describe('qq-config', () => {
     writeFileSync(configFilePath(), '{ not json');
     resetQqConfigCache();
 
-    loadQqConfig();
+    const config = loadQqConfig();
 
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ignoring invalid config'));
+    expect(config.allowFileRead).toBe(false);
+    expect(config.redactLogKeys.has('lbuffer')).toBe(true);
+    expect(isSensitivePath('.env')).toBe(true);
     warnSpy.mockRestore();
   });
 });
@@ -132,8 +135,13 @@ describe('isSensitivePath', () => {
 
   it('flags .env and credential paths', () => {
     expect(isSensitivePath('.env')).toBe(true);
+    expect(isSensitivePath('.env.local')).toBe(true);
     expect(isSensitivePath('config/.env.local')).toBe(true);
+    expect(isSensitivePath('credentials.json')).toBe(true);
     expect(isSensitivePath('.credentials.json')).toBe(true);
+    expect(isSensitivePath('certs/foo.pem')).toBe(true);
+    expect(isSensitivePath('.ssh/id_rsa')).toBe(true);
+    expect(isSensitivePath('secrets/foo')).toBe(true);
     expect(isSensitivePath('src/index.ts')).toBe(false);
   });
 });
@@ -189,6 +197,51 @@ describe('redactForLog', () => {
     expect(redacted.rbuffer).toBe('[redacted:7chars]');
     expect(redacted.cwd).toBe('/tmp');
   });
+
+  it('redacts nested request objects containing lbuffer', () => {
+    const redacted = redactForLog({
+      request: {
+        lbuffer: 'nested secret',
+        cwd: '/repo',
+      },
+    }) as Record<string, unknown>;
+
+    const request = redacted.request as Record<string, unknown>;
+    expect(request.lbuffer).toBe('[redacted:13chars]');
+    expect(request.cwd).toBe('/repo');
+  });
+
+  it('redacts arrays and error-shaped objects', () => {
+    const redacted = redactForLog([{ lbuffer: 'first' }, { lbuffer: 'second' }]) as Array<
+      Record<string, unknown>
+    >;
+
+    expect(redacted[0]?.lbuffer).toBe('[redacted:5chars]');
+    expect(redacted[1]?.lbuffer).toBe('[redacted:6chars]');
+
+    const errorRedacted = redactForLog({
+      name: 'ProviderError',
+      message: 'request failed',
+      request: { lbuffer: 'leaked query' },
+    }) as Record<string, unknown>;
+
+    const nestedRequest = errorRedacted.request as Record<string, unknown>;
+    expect(errorRedacted.message).toBe('request failed');
+    expect(nestedRequest.lbuffer).toBe('[redacted:12chars]');
+  });
+
+  it('preserves lbuffer when QQ_DEBUG_VERBOSE=1', () => {
+    const previous = process.env.QQ_DEBUG_VERBOSE;
+    process.env.QQ_DEBUG_VERBOSE = '1';
+
+    const redacted = redactForLog({
+      lbuffer: 'verbose query',
+      cwd: '/tmp',
+    }) as Record<string, unknown>;
+
+    expect(redacted.lbuffer).toBe('verbose query');
+    process.env.QQ_DEBUG_VERBOSE = previous;
+  });
 });
 
 describe('isFileReadAllowed', () => {
@@ -212,5 +265,6 @@ describe('isDestructiveCommand', () => {
     expect(isDestructiveCommand('rm -r /tmp/foo')).toBe(true);
     expect(isDestructiveCommand('rm foo.txt')).toBe(true);
     expect(isDestructiveCommand('git status')).toBe(false);
+    expect(isDestructiveCommand('echo rm')).toBe(false);
   });
 });

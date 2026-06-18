@@ -24,7 +24,7 @@
 - [ ] **CMD-01**: Tool returns a ranked list of command candidates for requests with confidence at or above `0.8`.
 - [ ] **CMD-02**: Each command candidate includes a short explanation of what the command will do.
 - [ ] **CMD-03**: User can navigate command candidates with keyboard-only controls and confirm a selection.
-- [ ] **CMD-04**: Tool never auto-executes commands in v1; it only returns them to the shell buffer.
+- [x] **CMD-04**: Tool never auto-executes commands in v1; it only returns them to the shell buffer.
 
 ### TUI Experience
 
@@ -43,7 +43,7 @@
 ### Safety and Extensibility
 
 - [ ] **SAFE-01**: Errors and provider failures surface cleanly without mutating the shell buffer.
-- [ ] **EXT-01**: Internal registries exist for shell adapters, context providers, provider backends, and storage/extension hooks.
+- [x] **EXT-01**: Internal registries exist for shell adapters, context providers, provider backends, and storage/extension hooks.
 
 ## v2 Requirements
 
@@ -98,7 +98,7 @@
 | INT-04 | Phase 5 | Deferred |
 | TUI-02 | Phase 5 | Deferred |
 | TUI-03 | Phase 5 | Deferred |
-| CMD-04 | Phase 6 | Pending |
+| CMD-04 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 22 total

@@ -252,8 +252,12 @@ JSON
     # can write a cancel result even if the error escapes the Promise block.
     export QQ_RESULT_FILE="$fifo_path"
 
+    # Pane dimensions — override with QQ_PANE_WIDTH / QQ_PANE_HEIGHT (defaults 80×24).
+    local qq_pane_width="${QQ_PANE_WIDTH:-80}"
+    local qq_pane_height="${QQ_PANE_HEIGHT:-24}"
+
     # Launch the floating pane backgrounded+disowned (D-06).
-    zellij run --floating --close-on-exit --width 80 --height 24 --name "qq" -- \
+    zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" --name "qq" -- \
       "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
       2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
 

@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: context exhaustion at 75% (2026-06-09)
-last_updated: "2026-06-18T23:20:50.968Z"
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-06-18T23:41:48.531Z"
 last_activity: 2026-06-18 -- Phase 06 plan-phase complete (06-01, 06-02, 06-03)
 progress:
   total_phases: 10
   completed_phases: 6
-  total_plans: 18
-  completed_plans: 18
-  percent: 60
+  total_plans: 21
+  completed_plans: 20
+  percent: 0
 ---
 
 # Project State
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0% (Phase 06 execution not started)
 | Phase 02-intent-router-and-context-pipeline P01 | 7 | 2 tasks | 3 files |
 | Phase 02-intent-router-and-context-pipeline P02 | 26 | 3 tasks | 13 files |
 | Phase 02-intent-router-and-context-pipeline P03 | 11 | 2 tasks | 8 files |
+| Phase 06-hardening-privacy-defaults-and-extension-seams P02 | 20min | 3 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 - [Phase 02-intent-router-and-context-pipeline]: Context providers now gather extras only for matching intents, preventing filesystem requests from inheriting git state.
 - [Phase 02-intent-router-and-context-pipeline]: Claude prompt assembly now depends on ContextEnvelope instead of direct VCS detection in the provider.
 - [Phase 02-intent-router-and-context-pipeline]: Built-in context providers now register through explicit registries and bootstrap instead of a hardcoded array.
+- [Phase 06]: buildPrompt calls filterContextEnvelope before chunk extraction (defense-in-depth)
+- [Phase 06]: resolveAdapter missing-adapter error references bootstrapBuiltins() for clarity
 
 ### Pending Todos
 
@@ -110,6 +113,6 @@ None yet.
 
 Last activity: 2026-05-29 — completed quick task 260529-ney: research beta distribution channels
 
-Last session: 2026-06-09T01:54:10.443Z
-Stopped at: context exhaustion at 75% (2026-06-09)
+Last session: 2026-06-18T23:41:48.525Z
+Stopped at: Completed 06-02-PLAN.md
 Resume file: None

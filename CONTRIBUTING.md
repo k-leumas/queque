@@ -42,6 +42,37 @@ pnpm test:run
 pnpm build
 ```
 
+## Daily driver / dev workflow
+
+Use this loop when developing against your checkout:
+
+```bash
+pnpm build && pnpm test:run
+```
+
+If `pnpm` is not on your PATH, use `corepack pnpm` instead.
+
+Point the widget at your checkout:
+
+```bash
+export QQ_DEV_ROOT="$HOME/dev/tui-llm"
+source "$QQ_DEV_ROOT/shell/zsh/queque.zsh"
+```
+
+Then reload your shell (`source ~/.zshrc`) and trigger `??` — rebuilds from `pnpm dev` or `pnpm build` pick up immediately.
+
+### Privacy and config env vars
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `QQ_ALLOW_FILE_READ` | off | Gate for any future file-content context (no reads in v1) |
+| `QQ_DEBUG_VERBOSE` | off | Log full buffer text in debug logs |
+| `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path |
+| `QQ_PANE_WIDTH` | `80` | Zellij floating pane width |
+| `QQ_PANE_HEIGHT` | `24` | Zellij floating pane height |
+
+Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` for extra sensitive path patterns and destructive-command warnings. See [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) and [docs/EXTENSIONS.md](docs/EXTENSIONS.md) for architecture and expansion path.
+
 ## Load The CLI In Your Shell During Development
 
 Because the project already defines a `qq` bin that points at `dist/cli/main.js`, the simplest development setup is to source the widget directly from your checkout.
@@ -49,9 +80,9 @@ Because the project already defines a `qq` bin that points at `dist/cli/main.js`
 Add this to `~/.zshrc`:
 
 ```bash
-export QQ_DEV_ROOT="$HOME/dev/queque"
+export QQ_DEV_ROOT="$HOME/dev/tui-llm"
 
-source "$QQ_DEV_ROOT/shell/zsh/qq.zsh"
+source "$QQ_DEV_ROOT/shell/zsh/queque.zsh"
 ```
 
 Then reload your shell:

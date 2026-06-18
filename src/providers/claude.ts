@@ -3,6 +3,7 @@ import { type CandidateList, candidateListSchema } from '../contracts/candidates
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
+import { filterContextEnvelope } from '../shared/privacy-filter.js';
 import type { LLMAdapter } from './provider.js';
 
 const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
@@ -67,8 +68,9 @@ function ensureSelectableCandidates(candidates: CandidateList): CandidateList {
 }
 
 function buildPrompt(envelope: ContextEnvelope): string {
-  const gitChunk = envelope.extras.find((chunk) => chunk.kind === 'git');
-  const filesystemChunk = envelope.extras.find((chunk) => chunk.kind === 'filesystem');
+  const filtered = filterContextEnvelope(envelope);
+  const gitChunk = filtered.extras.find((chunk) => chunk.kind === 'git');
+  const filesystemChunk = filtered.extras.find((chunk) => chunk.kind === 'filesystem');
 
   return [
     'Return ONLY a JSON array of 1-3 shell command candidates, most likely first.',
@@ -80,10 +82,10 @@ function buildPrompt(envelope: ContextEnvelope): string {
     'Shell context:',
     JSON.stringify(
       {
-        cwd: envelope.base.cwd,
-        queryText: envelope.base.queryText,
-        platform: envelope.base.platform,
-        shellName: envelope.base.shellName,
+        cwd: filtered.base.cwd,
+        queryText: filtered.base.queryText,
+        platform: filtered.base.platform,
+        shellName: filtered.base.shellName,
         ...(gitChunk ? { versionControl: gitChunk.payload } : {}),
         ...(filesystemChunk ? { filesystem: filesystemChunk.payload } : {}),
       },

@@ -11,7 +11,9 @@ export function resolveAdapter(detected: DetectedProvider): LLMAdapter {
     case 'anthropic-key': {
       const adapter = getProviderAdapter('claude');
       if (!adapter) {
-        throw new Error('QueQue: Claude provider is not registered — run qq daemon restart');
+        throw new Error(
+          'QueQue: Claude provider is not registered — was bootstrapBuiltins() called?',
+        );
       }
       return adapter;
     }

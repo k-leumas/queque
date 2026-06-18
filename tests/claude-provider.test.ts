@@ -127,6 +127,67 @@ describe('fetchCandidates', () => {
     expect(createMock).toHaveBeenCalledTimes(1);
   });
 
+  it('includes filesystem apparentFilename in the prompt when present', async () => {
+    createMock.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '[{"command":"cat README.md","explanation":"Show file"}]',
+        },
+      ],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(
+      buildEnvelope([
+        {
+          kind: 'filesystem',
+          payload: {
+            cwd: '/repo',
+            apparentFilename: 'README.md',
+          },
+        },
+      ]),
+      '',
+    );
+
+    const request = createMock.mock.calls[0][0];
+    expect(request.messages[0].content).toContain('"filesystem"');
+    expect(request.messages[0].content).toContain('"apparentFilename": "README.md"');
+  });
+
+  it('strips sensitive git paths from the prompt JSON (defense-in-depth)', async () => {
+    createMock.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '[{"command":"git status","explanation":""}]',
+        },
+      ],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(
+      buildEnvelope([
+        {
+          kind: 'git',
+          payload: {
+            cwd: '/repo',
+            root: '/repo',
+            branch: 'main',
+            dirty: true,
+            changedFiles: ['.env', 'src/index.ts'],
+          },
+        },
+      ]),
+      '',
+    );
+
+    const prompt = createMock.mock.calls[0][0].messages[0].content as string;
+    expect(prompt).toContain('src/index.ts');
+    expect(prompt).not.toContain('.env');
+  });
+
   it('pads a single candidate to two when QQ_FORCE_SELECTOR is enabled', async () => {
     process.env.QQ_FORCE_SELECTOR = 'true';
     createMock.mockResolvedValue({

@@ -680,4 +680,28 @@ describe('CMD-04: insertion-only shell contract', () => {
     });
     expect(evalHits.status).not.toBe(0);
   });
+
+  it('widget does not auto-execute selected commands via zle accept-line', () => {
+    const acceptLineHits = spawnSync('grep', ['-E', 'zle accept-line|\\beval\\b', widgetPath], {
+      encoding: 'utf8',
+    });
+    expect(acceptLineHits.status).not.toBe(0);
+  });
+
+  it('replace-buffer sets LBUFFER without executing the command', () => {
+    const script = `
+      source "${widgetPath}"
+      QQ_ORIG_LBUFFER="list changed files"
+      QQ_ORIG_RBUFFER=""
+      LBUFFER="old"
+      RBUFFER=""
+      _qq_apply_result_str '{"kind":"replace-buffer","lbuffer":"git status","rbuffer":"  # show working tree status"}'
+      echo "lbuffer=$LBUFFER"
+      echo "rbuffer=$RBUFFER"
+    `;
+    const result = runZsh(script);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('lbuffer=git status');
+    expect(result.stdout).toContain('rbuffer=  # show working tree status');
+  });
 });

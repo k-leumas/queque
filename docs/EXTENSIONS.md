@@ -57,7 +57,7 @@ QueQue loads `~/.config/qq/config.json` (override with `QQ_CONFIG_FILE`). See [c
 | `privacy.sensitivePathPatterns` | Extra regex patterns merged onto built-in defaults (`.env`, credentials, keys, etc.) |
 | `privacy.redactLogKeys` | Extra JSON keys to redact in debug logs |
 | `privacy.allowFileRead` | Opt-in for future file-content context (D-06); env `QQ_ALLOW_FILE_READ` wins |
-| `privacy.useGitignore` | Reserved — not implemented; filtering does not read `.gitignore` today |
+| `privacy.useGitignore` | Reserved for future gitignore-based filtering; ignored today |
 | `safety.destructiveCommandPatterns` | Extra warn-only UI patterns merged onto built-in defaults |
 
 Built-in sensitive patterns are never removed by user config.

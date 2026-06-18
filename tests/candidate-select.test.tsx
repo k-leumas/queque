@@ -379,6 +379,75 @@ describe('CandidateSelect — Enter key raw-mode regression', () => {
   });
 });
 
+describe('CandidateSelect — destructive command warning', () => {
+  beforeEach(resetState);
+
+  /** Collects string leaves from a React element tree returned by the component. */
+  function collectText(node: unknown): string[] {
+    if (node == null || typeof node === 'boolean') {
+      return [];
+    }
+    if (typeof node === 'string' || typeof node === 'number') {
+      return [String(node)];
+    }
+    if (Array.isArray(node)) {
+      return node.flatMap(collectText);
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const props = (node as { props: { children?: unknown } }).props;
+      return collectText(props.children);
+    }
+    return [];
+  }
+
+  it('shows destructive warning below selected candidate for rm -rf commands', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const tree = CandidateSelect({
+      candidates: [{ command: 'rm -rf /tmp/foo', explanation: 'remove temp files' }],
+      onSelect,
+      onCancel,
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toContain('review carefully — this command may be destructive');
+    expect(text).toContain('rm -rf /tmp/foo');
+  });
+
+  it('does not show destructive warning for safe commands', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const tree = CandidateSelect({
+      candidates: [{ command: 'git status', explanation: 'show working tree status' }],
+      onSelect,
+      onCancel,
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).not.toContain('review carefully — this command may be destructive');
+  });
+
+  it('still calls onSelect for destructive commands (warn-only, not blocked)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    CandidateSelect({
+      candidates: [{ command: 'rm -rf /tmp/foo', explanation: 'remove temp files' }],
+      onSelect,
+      onCancel,
+    });
+
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('rm -rf /tmp/foo', 'remove temp files');
+  });
+});
+
 describe('CandidateSelect — wrapping navigation', () => {
   beforeEach(resetState);
 

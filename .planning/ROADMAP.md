@@ -175,8 +175,8 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 06-01: Implement safety guards and privacy-aware context filtering.
-- [ ] 06-02: Audit extension seams and convert any direct built-in coupling to registry-backed modules.
+- [x] 06-01: Implement safety guards and privacy-aware context filtering.
+- [x] 06-02: Audit extension seams and convert any direct built-in coupling to registry-backed modules.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 

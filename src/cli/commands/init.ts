@@ -26,6 +26,7 @@ function _resolveScriptPath(shell: Shell): string {
 }
 
 export function initCommand(shell: string): void {
+  // Defensive bootstrap — main.ts also registers built-ins at startup.
   bootstrapBuiltins();
   const supportedShells = listShellAdapters().map((adapter) => adapter.shell);
 

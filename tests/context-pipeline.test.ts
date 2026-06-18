@@ -45,9 +45,9 @@ describe('gatherContext', () => {
         _command: string,
         _args: string[],
         _options: unknown,
-        callback: (error: null, result: { stdout: string }) => void,
+        callback: (error: null, stdout: string, stderr: string) => void,
       ) => {
-        callback(null, { stdout: '' });
+        callback(null, '', '');
       },
     );
     // bootstrapBuiltins is no longer called inside gatherContext (WR-002 fix).
@@ -139,5 +139,37 @@ describe('gatherContext', () => {
     expect(gitChunk?.payload).not.toHaveProperty('bytes');
     expect(gitChunk?.payload).not.toHaveProperty('text');
     expect(gitChunk?.payload).not.toHaveProperty('lines');
+  });
+
+  it('filters sensitive paths from git changedFiles in gatherContext output', async () => {
+    vi.resetModules();
+    const { resetBootstrap } = await import('../src/registry/bootstrap.js');
+    const { clearContextProviders, registerContextProvider, listContextProviders } = await import(
+      '../src/registry/context-providers.js'
+    );
+    resetBootstrap();
+    clearContextProviders();
+    registerContextProvider({
+      id: 'git-mock',
+      intents: ['codebase', 'shell-command'],
+      gather: async () => ({
+        kind: 'git',
+        payload: {
+          cwd: '/repo',
+          root: '/repo',
+          branch: 'main',
+          dirty: true,
+          changedFiles: ['src/index.ts', '.env'],
+        },
+      }),
+    });
+    expect(listContextProviders()).toHaveLength(1);
+
+    const { gatherContext } = await import('../src/context/pipeline.js');
+    const envelope = await gatherContext(buildRequest());
+    const gitChunk = envelope.extras.find((chunk) => chunk.kind === 'git');
+
+    expect(gitChunk?.payload.changedFiles).toEqual(['src/index.ts']);
+    expect(gitChunk?.payload.changedFiles).not.toContain('.env');
   });
 });

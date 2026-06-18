@@ -1,9 +1,8 @@
 {
   "privacy": {
     "sensitivePathPatterns": ["internal/secrets", "\\.key$"],
-    "redactLogKeys": ["apiToken"],
-    "allowFileRead": false,
-    "useGitignore": false
+    "redactLogKeys": ["lbuffer", "rbuffer"],
+    "allowFileRead": false
   },
   "safety": {
     "destructiveCommandPatterns": ["\\bdd\\s+if="]

@@ -330,12 +330,20 @@ describe('runForegroundClient', () => {
     rbuffer: '',
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-fg-test-'));
     requestFile = path.join(tmpDir, 'request.json');
     resultFile = path.join(tmpDir, 'result.json');
     // Write a sample shell request
     fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
+
+    const { resolveAdapter } = await import('../src/providers/resolver.js');
+    const { detectProvider } = await import('../src/providers/detect.js');
+    vi.mocked(resolveAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    vi.mocked(detectProvider).mockResolvedValue({ kind: 'anthropic-key' });
+    fetchCandidatesMock.mockReset();
   });
 
   afterEach(() => {
@@ -455,6 +463,47 @@ describe('runForegroundClient', () => {
     expect(parsed.message).toContain('API timeout');
     expect(parsed.message).toContain('QueQue:');
   });
+
+  it('writes error ShellResult when resolveAdapter throws', async () => {
+    const { resolveAdapter } = await import('../src/providers/resolver.js');
+    vi.mocked(resolveAdapter).mockImplementation(() => {
+      throw new Error(
+        'QueQue: Claude provider is not registered — was bootstrapBuiltins() called?',
+      );
+    });
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const parsed = JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim());
+    expect(parsed.kind).toBe('error');
+    expect(parsed.message).toContain('bootstrapBuiltins');
+    expect(parsed.message).toContain('QueQue:');
+    expect(fetchCandidatesMock).not.toHaveBeenCalled();
+  });
+
+  it('writes error ShellResult when ollama provider is not wired', async () => {
+    const { detectProvider } = await import('../src/providers/detect.js');
+    const { resolveAdapter } = await import('../src/providers/resolver.js');
+
+    vi.mocked(detectProvider).mockResolvedValue({
+      kind: 'ollama',
+      baseUrl: 'http://localhost:11434',
+    });
+    vi.mocked(resolveAdapter).mockImplementation(() => {
+      throw new Error(
+        'QueQue: Ollama detected but local adapter is not wired yet (Phase 8). Set ANTHROPIC_API_KEY or use .env.local.',
+      );
+    });
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const parsed = JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim());
+    expect(parsed.kind).toBe('error');
+    expect(parsed.message).toMatch(/ollama|not wired yet/i);
+    expect(fetchCandidatesMock).not.toHaveBeenCalled();
+  });
 });
 
 describe('runForegroundClient: Zellij branch opens /dev/tty', () => {
@@ -539,12 +588,20 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
     rbuffer: '',
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-resolved-guard-test-'));
     requestFile = path.join(tmpDir, 'request.json');
     resultFile = path.join(tmpDir, 'result.json');
     fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
+
+    const { resolveAdapter } = await import('../src/providers/resolver.js');
+    const { detectProvider } = await import('../src/providers/detect.js');
+    vi.mocked(resolveAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    vi.mocked(detectProvider).mockResolvedValue({ kind: 'anthropic-key' });
+    fetchCandidatesMock.mockReset();
   });
 
   afterEach(() => {

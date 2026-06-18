@@ -12,7 +12,9 @@ let bootstrapped = false;
  * Registers all Phase 2 built-ins into their respective registries.
  *
  * This is the single source of truth for what built-ins exist in Phase 2.
- * Callers should invoke it at startup; repeated calls are safe no-ops.
+ * `main.ts` calls this at startup; `init.ts` also calls it defensively so shell
+ * adapter listing works even when init runs outside the normal CLI entry path.
+ * Repeated calls are safe no-ops.
  */
 export function bootstrapBuiltins(): void {
   if (bootstrapped) {

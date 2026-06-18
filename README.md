@@ -66,6 +66,8 @@ Press `Esc` to cancel and return to what you were typing, you can even tweak you
 
 QueQue detects Zellij automatically and opens in a floating pane instead of inline. Same trigger, same result, better layout.
 
+Set `QQ_PANE_WIDTH` (default `80`) and `QQ_PANE_HEIGHT` (default `24`) to resize the floating pane.
+
 Without Zellij, QueQue falls back to an inline TUI in your current terminal session.
 
 ## Privacy defaults
@@ -85,8 +87,22 @@ QueQue is **insertion-only**: it writes commands into your shell buffer — you 
 
 **Debug logging:** Off by default. When enabled, logs redact shell buffer text unless `QQ_DEBUG_VERBOSE=1`.
 
-**User config:** Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` to add extra sensitive path patterns, log redaction keys, or destructive-command warnings. Built-in defaults always apply — your patterns are merged on top. Override the file path with `QQ_CONFIG_FILE`.
+**User config:** Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` to add extra sensitive path patterns, log redaction keys, or destructive-command warnings. Built-in defaults always apply — your patterns are merged on top. Override the file path with `QQ_CONFIG_FILE`. Malformed `config.json` is ignored with a warning; QueQue falls back to built-in defaults (fail-closed).
 
 See [docs/EXTENSIONS.md](docs/EXTENSIONS.md) for the expansion path (local learning, multi-provider, plugins).
+
+## Configuration reference
+
+Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` (or set `QQ_CONFIG_FILE`). Field meanings:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `privacy.sensitivePathPatterns` | `string[]` | Extra regex patterns merged onto built-in defaults (`.env`, credentials, keys, etc.). Built-in patterns are never removed. |
+| `privacy.redactLogKeys` | `string[]` | Extra JSON keys to redact in debug logs (merged with defaults: `lbuffer`, `rbuffer`, `queryText`, `request`). |
+| `privacy.allowFileRead` | `boolean` | Opt-in gate for future file-content context. Env `QQ_ALLOW_FILE_READ=1` overrides this. No file reads in v1. |
+| `privacy.useGitignore` | `boolean` | Reserved for future gitignore-based filtering. Ignored today. |
+| `safety.destructiveCommandPatterns` | `string[]` | Extra warn-only UI patterns merged onto built-in defaults (`rm`, `sudo`, etc.). |
+
+See [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) for architecture and [docs/EXTENSIONS.md](docs/EXTENSIONS.md) for Phase 7/8 expansion.
 
 

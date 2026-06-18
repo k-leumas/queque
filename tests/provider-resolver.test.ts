@@ -32,4 +32,24 @@ describe('resolveAdapter()', () => {
       /not wired yet/i,
     );
   });
+
+  it('throws detected.message for none kind', () => {
+    expect(() =>
+      resolveAdapter({ kind: 'none', message: 'Set ANTHROPIC_API_KEY or add .env.local' }),
+    ).toThrow('Set ANTHROPIC_API_KEY or add .env.local');
+  });
+});
+
+describe('resolveAdapter() before bootstrap', () => {
+  beforeEach(() => {
+    clearContextProviders();
+    clearProviderBackends();
+    clearShellAdapters();
+    clearStorageHooks();
+    resetBootstrap();
+  });
+
+  it('throws a user-facing error when claude adapter is not registered', () => {
+    expect(() => resolveAdapter({ kind: 'anthropic-key' })).toThrow(/bootstrapBuiltins\(\)/);
+  });
 });

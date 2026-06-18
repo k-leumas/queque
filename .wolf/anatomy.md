@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:30:07.419Z
-> Files: 269 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:43:05.861Z
+> Files: 273 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -97,11 +97,11 @@
 - `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
-- `CONTRIBUTING.md` — Contributing (~853 tok)
+- `CONTRIBUTING.md` — Contributing (~1150 tok)
 - `lefthook.yml` (~200 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~524 tok)
-- `README.md` — Project documentation (~760 tok)
+- `README.md` — Project documentation (~1079 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 - `tsup.config.ts` — Declares commit (~195 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
@@ -455,7 +455,9 @@
 ## .planning/phases/06-hardening-privacy-defaults-and-extension-seams/
 
 - `06-01-PLAN.md` (~3012 tok)
+- `06-01-SUMMARY.md` — Phase 06 Plan 01: Privacy Defaults and CMD-04 Safety Summary (~1440 tok)
 - `06-02-PLAN.md` — Declares after (~3038 tok)
+- `06-02-SUMMARY.md` — Phase 06 Plan 02: Registry Provider Resolution Summary (~1477 tok)
 - `06-03-PLAN.md` (~2772 tok)
 - `06-PATTERNS.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Pattern Map (~6426 tok)
 - `06-RESEARCH.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Research (~6651 tok)
@@ -531,10 +533,11 @@
 
 ## docs/
 
-- `config.example.json` (~79 tok)
-- `EXTENSIONS.md` — QueQue Extension Seams (~801 tok)
+- `config.example.json` (~65 tok)
+- `EXTENSIONS.md` — QueQue Extension Seams (~798 tok)
 - `RELEASING.md` — Release Process (~1183 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
+- `SYSTEM_DESIGN.md` — System Design (~2554 tok)
 
 ## scripts/
 
@@ -544,7 +547,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2866 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2923 tok)
 
 ## src/
 
@@ -557,7 +560,7 @@
 ## src/cli/commands/
 
 - `client.ts` — Real client command handler. (~394 tok)
-- `init.ts` — Exports initCommand (~585 tok)
+- `init.ts` — Exports initCommand (~605 tok)
 
 ## src/client/
 
@@ -579,14 +582,14 @@
 
 ## src/providers/
 
-- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1563 tok)
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1597 tok)
 - `detect.ts` — Exports DetectedProvider, detectProvider (~646 tok)
 - `index.ts` (~56 tok)
-- `resolver.ts` — Maps a detected provider kind to a registered LLMAdapter instance. (~361 tok)
+- `resolver.ts` — Maps a detected provider kind to a registered LLMAdapter instance. (~370 tok)
 
 ## src/registry/
 
-- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~455 tok)
+- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~498 tok)
 - `provider-backends.ts` — Registers a provider backend descriptor and its LLMAdapter instance. (~357 tok)
 
 ## src/shared/
@@ -605,19 +608,21 @@
 
 ## tests/
 
-- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~4681 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~7209 tok)
-- `context-pipeline.test.ts` — Declares buildRequest (~1224 tok)
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~5346 tok)
+- `claude-provider.test.ts` — createMock: buildEnvelope (~1725 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
+- `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
+- `debug-log.test.ts` — Declares appendFileMock (~484 tok)
 - `env-file.test.ts` — Declares root (~715 tok)
 - `init-command.test.ts` — Declares marker (~163 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
-- `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~1919 tok)
+- `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
-- `provider-resolver.test.ts` — Declares adapter (~368 tok)
+- `provider-resolver.test.ts` — Declares adapter (~551 tok)
 - `qq-config.test.ts` — Declares parsed (~189 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~604 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7412 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7668 tok)
