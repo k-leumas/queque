@@ -32,7 +32,7 @@ findings:
   total: 8
 status: resolved
 remediated: 2026-06-18T22:45:00Z
-remediation_commit: pending
+remediation_commit: 1f19b96
 ---
 
 # Phase 20260617-privacy-config-file: Code Review Report

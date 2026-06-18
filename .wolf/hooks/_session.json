@@ -150,6 +150,12 @@
       "action": "create",
       "tokens": 365,
       "at": "2026-06-18T22:43:04.757Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260617-privacy-config-file/REVIEW.md",
+      "action": "create",
+      "tokens": 2449,
+      "at": "2026-06-18T22:43:28.097Z"
     }
   ],
   "edit_counts": {
@@ -159,7 +165,7 @@
     ".planning/STATE.md": 1,
     ".planning/quick/20260617-privacy-config-file/SUMMARY.md": 2,
     ".planning/quick/20260617-privacy-config-file/PLAN.md": 1,
-    ".planning/quick/20260617-privacy-config-file/REVIEW.md": 2
+    ".planning/quick/20260617-privacy-config-file/REVIEW.md": 3
   },
   "anatomy_hits": 8,
   "anatomy_misses": 7,
