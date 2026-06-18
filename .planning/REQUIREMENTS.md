@@ -17,7 +17,7 @@
 - [x] **INT-01**: Tool classifies the user request into a broad intent category before gathering extra context.
 - [x] **INT-02**: Tool always includes base shell context such as query text, current working directory, shell, platform, and TTY metadata.
 - [x] **INT-03**: Tool gathers extra context only when it is relevant to the inferred intent instead of assuming repo/code context for every request.
-- [ ] **INT-04**: Tool routes requests with confidence below `0.8` into a clarification flow inside the TUI.
+- [ ] **INT-04**: Tool routes requests with confidence below `0.8` into a clarification flow inside the TUI. *(Deferred — Phase 5)*
 
 ### Command Suggestions
 
@@ -29,8 +29,8 @@
 ### TUI Experience
 
 - [ ] **TUI-01**: Trigger opens a fuzzy-finder-style TUI with initial keyboard focus in the input area.
-- [ ] **TUI-02**: Low-confidence clarification stays inside the same TUI instead of bouncing the user into a separate prompt flow.
-- [ ] **TUI-03**: TUI can show clarifying turns and then return a refined command candidate list or final command.
+- [ ] **TUI-02**: Low-confidence clarification stays inside the same TUI instead of bouncing the user into a separate prompt flow. *(Deferred — Phase 5)*
+- [ ] **TUI-03**: TUI can show clarifying turns and then return a refined command candidate list or final command. *(Deferred — Phase 5)*
 
 ### Provider and Runtime
 
@@ -95,9 +95,9 @@
 | TUI-01 | Phase 4 | Pending |
 | CMD-03 | Phase 4 | Pending |
 | RUN-02 | Phase 4 | Pending |
-| INT-04 | Phase 5 | Pending |
-| TUI-02 | Phase 5 | Pending |
-| TUI-03 | Phase 5 | Pending |
+| INT-04 | Phase 5 | Deferred |
+| TUI-02 | Phase 5 | Deferred |
+| TUI-03 | Phase 5 | Deferred |
 | CMD-04 | Phase 6 | Pending |
 
 **Coverage:**
@@ -107,4 +107,4 @@
 
 ---
 *Requirements defined: 2026-04-30*
-*Last updated: 2026-04-30 after initial definition*
+*Last updated: 2026-06-17 after Phase 5 deferral*

@@ -14,11 +14,11 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Shell Bridge and Result Contract** - Make literal `??` invocation and shell-buffer replacement real.
 - [x] **Phase 2: Intent Router and Context Pipeline** - Build the request model that keeps QueQue general-purpose instead of repo-centric.
-- [ ] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
+- [x] **Phase 3: Claude Fast Path and Ranked Suggestions** - Return explainable command candidates for clear requests.
 - [x] **Phase 3.1: Monocle-style Interface and Interactivity** - Update interface and interactivity to match the monocle terminal UI model. (INSERTED)
 - [x] **Phase 3.2: Zellij floating pane integration for best UX** - Reduce scope to Zellij floating panes for best UX. (INSERTED)
 - [x] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
-- [ ] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready.
+- [~] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready. **(DEFERRED — Esc + re-query is acceptable workaround)**
 - [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
 - [ ] **Phase 7: Context-Aware Learning and Ambient Suggestions** - Make QueQue learn from every interaction and act without needing a query.
 - [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make QueQue work out of the box for anyone who already has Claude Code, Ollama, or an OpenAI key — no manual setup required.
@@ -118,9 +118,10 @@ Plans:
 - [x] 04-02-PLAN.md — Wave 1: add useEffect([query]) reset hook to CandidateSelect.tsx, making RED tests GREEN
 - [x] 04-03-PLAN.md — Wave 1 (parallel): add uncaughtException/unhandledRejection handlers to main.ts; export QQ_RESULT_FILE in qq.zsh
 
-### Phase 5: Clarification Chat in the Same TUI
+### Phase 5: Clarification Chat in the Same TUI (DEFERRED)
 **Goal**: Keep ambiguous requests inside a refinement loop until the tool can return a stronger command suggestion.
 **Depends on**: Phase 4
+**Status**: DEFERRED — users can Esc, edit their query, and re-trigger `??`. Revisit after Phase 8 zero-config path is working.
 **Requirements**: INT-04, TUI-02, TUI-03
 **Success Criteria** (what must be TRUE):
   1. Requests below the confidence threshold enter clarification mode instead of forcing a weak command guess.
@@ -136,7 +137,7 @@ Plans:
 
 ### Phase 6: Hardening, Privacy Defaults, and Extension Seams
 **Goal**: Make QueQue safe for daily use while preserving the extension architecture needed for cross-OS `zsh`, plugins, new providers, and local history.
-**Depends on**: Phase 5
+**Depends on**: Phase 4 (Phase 5 deferred)
 **Requirements**: CMD-04
 **Success Criteria** (what must be TRUE):
   1. QueQue remains insertion-only and never auto-executes commands.
@@ -191,17 +192,17 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 5 → 6 → 7 → 8
+Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7 → 8 (Phase 5 deferred)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Shell Bridge and Result Contract | 3/3 | Complete | 2026-05-02 |
 | 2. Intent Router and Context Pipeline | 3/3 | Complete | 2026-05-02 |
-| 3. Claude Fast Path and Ranked Suggestions | 0/3 | Not started | - |
+| 3. Claude Fast Path and Ranked Suggestions | 3/3 | Complete | 2026-05-15 |
 | 3.1. Monocle-style Interface and Interactivity | 3/3 | Complete (INSERTED) | 2026-05-14 |
 | 3.2. Zellij floating pane integration for best UX | 3/3 | Complete (INSERTED) | 2026-05-14 |
 | 4. Fuzzy TUI Selection UX | 3/3 | Complete | 2026-05-22 |
-| 5. Clarification Chat in the Same TUI | 0/3 | Not started | - |
-| 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | Not started | - |
+| 5. Clarification Chat in the Same TUI | 0/3 | Deferred | — |
+| 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | **Next** | - |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
 | 8. Zero-Config Install and Provider Detection | 0/3 | Not started | - |

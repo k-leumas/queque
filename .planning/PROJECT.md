@@ -21,9 +21,12 @@ Turn natural-language intent into a shell command that feels native to the termi
 - [ ] Open from a literal `??` trigger inside `zsh` without taking over the shell prompt.
 - [ ] Use pre-trigger command-line text plus current shell context to produce relevant command suggestions.
 - [ ] Show a fuzzy-finder-like TUI with ranked commands and short explanations for high-confidence requests.
-- [ ] Keep low-confidence requests inside an in-TUI clarification chat until a refined command is ready.
 - [ ] Return the selected command back into the shell buffer safely and predictably.
 - [ ] Define an LLM adapter interface so each backend implements the same request/response contract.
+
+### Deferred
+
+- [ ] Keep low-confidence requests inside an in-TUI clarification chat until a refined command is ready. *(Phase 5 deferred — Esc + re-query workaround)*
 
 ### Out of Scope
 
@@ -83,4 +86,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-15 — Phase 03 complete (Claude fast path, LLMAdapter contract, ranked candidates, error propagation, ZSH buffer safety)*
+*Last updated: 2026-06-17 — Phase 05 deferred; Phase 06 (hardening) is next*

@@ -4,8 +4,8 @@ milestone: v1.0
 milestone_name: milestone
 status: completed
 stopped_at: context exhaustion at 75% (2026-06-09)
-last_updated: "2026-06-09T01:54:10.457Z"
-last_activity: 2026-05-22 -- Phase 04 UAT fixes applied and phase marked complete
+last_updated: "2026-06-17T00:00:00.000Z"
+last_activity: 2026-06-17 -- Phase 05 deferred; Phase 06 next
 progress:
   total_phases: 10
   completed_phases: 6
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 05 — clarification-chat
+**Current focus:** Phase 06 — hardening, privacy defaults, and extension seams
 
 ## Current Position
 
 Phase: 04 (fuzzy-tui-selection-ux) — COMPLETE
-Next: Phase 05 (clarification-chat-in-tui)
-Status: Phase 04 complete, ready to start Phase 05
-Last activity: 2026-05-22 -- Phase 04 UAT fixes applied and phase marked complete
+Next: Phase 06 (hardening-privacy-defaults-and-extension-seams)
+Status: Phase 05 deferred; Phase 06 ready to plan
+Last activity: 2026-06-17 -- Phase 05 deferred (Esc + re-query workaround); Phase 06 is next
 
 Progress: [██████████] 100%
 
@@ -61,6 +61,7 @@ Progress: [██████████] 100%
 
 - Phase 3.1 inserted after Phase 3: update interface and interactivity to match that of this github project: https://github.com/imsnif/monocle (URGENT)
 - Phase 3.2 inserted after Phase 3.1: Reduce scope to Zellij floating panes for best UX (URGENT)
+- Phase 5 deferred (2026-06-17): In-TUI clarification chat is nice-to-have; users can Esc, edit query, and re-trigger `??`. Phase 6 proceeds without Phase 5. Revisit after Phase 8 zero-config.
 
 ### Decisions
 
@@ -84,7 +85,7 @@ None yet.
 ### Blockers/Concerns
 
 - TUI library choice must not compromise raw keyboard handling or shell-return behavior.
-- Confidence routing quality will determine whether the product feels magical or annoying.
+- Confidence routing quality will determine whether the product feels magical or annoying. (Deferred with Phase 5 — manual re-query is acceptable for now.)
 
 ### Quick Tasks Completed
 

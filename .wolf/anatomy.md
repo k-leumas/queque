@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-09T20:44:39.358Z
-> Files: 241 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T02:02:25.135Z
+> Files: 242 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -370,10 +370,10 @@
 - `.continue-here.md` — Session Handoff — Homebrew Binary Fix + Tooling Cleanup (~1144 tok)
 - `config.json` (~258 tok)
 - `HANDOFF.json` — Declares correctly (~1406 tok)
-- `PROJECT.md` — QueQue (~1526 tok)
-- `REQUIREMENTS.md` — Requirements: QueQue (~1295 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~3796 tok)
-- `STATE.md` — Project State (~1699 tok)
+- `PROJECT.md` — QueQue (~1525 tok)
+- `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~3853 tok)
+- `STATE.md` — Project State (~1774 tok)
 
 ## .planning/notes/
 
@@ -450,6 +450,10 @@
 - `04-UAT.md` — Current Test (~1187 tok)
 - `04-VALIDATION.md` — Phase 04 — Validation Strategy (~955 tok)
 - `04-VERIFICATION.md` — Phase 04: Fuzzy TUI Selection UX Verification Report (~4052 tok)
+
+## .planning/phases/06-hardening-privacy-defaults-and-extension-seams/
+
+- `06-PATTERNS.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Pattern Map (~6426 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
