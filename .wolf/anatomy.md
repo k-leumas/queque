@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:01:07.343Z
-> Files: 264 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:20:44.664Z
+> Files: 269 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -378,7 +378,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3853 tok)
-- `STATE.md` — Project State (~1827 tok)
+- `STATE.md` — Project State (~1843 tok)
 
 ## .planning/notes/
 
@@ -458,8 +458,13 @@
 
 ## .planning/phases/06-hardening-privacy-defaults-and-extension-seams/
 
+- `06-01-PLAN.md` (~3012 tok)
+- `06-02-PLAN.md` — Declares after (~3038 tok)
+- `06-03-PLAN.md` (~2772 tok)
 - `06-PATTERNS.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Pattern Map (~6426 tok)
 - `06-RESEARCH.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Research (~6651 tok)
+- `06-REVIEWS.md` — Cross-AI Plan Review — Phase 06 (~6403 tok)
+- `06-VALIDATION.md` — Phase 06 — Validation Strategy (~894 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 

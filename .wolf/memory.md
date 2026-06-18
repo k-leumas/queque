@@ -2,6 +2,7 @@
 
 > Chronological action log. Hooks and AI append to this file automatically.
 > Old sessions are consolidated by the daemon weekly.
+| 16:25 | replanned phase 06 incorporating 06-REVIEWS.md feedback; checker passed | 06-01/02/03-PLAN.md, STATE.md, ROADMAP.md | 3 plans, 9 tasks | ~1200 |
 | 18:33 | fixed repeating zellij modal title: added flexGrow={0} to title Box; fixed pre-existing unmount type decl | src/ui/CandidateSelect.tsx, src/client/run-foreground.ts | commit d3fb5ad | ~300 |
 | 00:00 | fixed stray string literal "Bash(ln *)", in shutdownWatchman | scripts/build-dashboard.mjs:567 | syntax error removed | ~200 |
 | 23:57 | researched beta distribution channels — Homebrew tap formula skeleton, awesome-zsh-plugins PR process, Zellij community (not plugin) venues | .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/BETA-RELEASE-REQUIREMENTS.md | document created | ~3500 |
@@ -1382,3 +1383,31 @@
 | 15:59 | Session end: 18 writes across 9 files (pnpm, privacy-filter.test.ts, registry.test.ts, STATE.md, SUMMARY.md) | 23 reads | ~39020 tok |
 | 16:01 | Created .local-bin/pnpm | — | ~126 |
 | 16:01 | Session end: 19 writes across 9 files (pnpm, privacy-filter.test.ts, registry.test.ts, STATE.md, SUMMARY.md) | 23 reads | ~39268 tok |
+
+## Session: 2026-06-18 16:05
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:06 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VALIDATION.md | — | ~954 |
+| 16:06 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-PLAN.md | — | ~2554 |
+| 16:06 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md | — | ~2349 |
+| 16:07 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md | — | ~2074 |
+| 16:08 | Created .planning/STATE.md | — | ~1951 |
+| 16:08 | Created .planning/STATE.md | — | ~1966 |
+| 16:08 | Session end: 6 writes across 5 files (06-VALIDATION.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md, STATE.md) | 29 reads | ~42568 tok |
+
+## Session: 2026-06-18 16:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-06-18 16:11
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:16 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-REVIEWS.md | — | ~6830 |
+| 16:17 | Session end: 1 writes across 1 files (06-REVIEWS.md) | 3 reads | ~7317 tok |
+| 16:20 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-PLAN.md | — | ~3212 |
+| 16:20 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md | — | ~3241 |
+| 16:20 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md | — | ~2957 |
+| 16:21 | Session end: 4 writes across 4 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md) | 12 reads | ~28885 tok |
