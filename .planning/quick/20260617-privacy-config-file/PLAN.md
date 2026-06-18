@@ -1,7 +1,7 @@
 ---
 slug: privacy-config-file
 date: 2026-06-17
-status: in-progress
+status: complete
 ---
 
 # Quick Task: User privacy config file

@@ -104,6 +104,7 @@ None yet.
 | 260529-ntf | implement release automation: release.yaml (beta branch + pnpm/action-setup@v4), homebrew.yml, .releaserc.json beta prerelease | 2026-05-30 | 1c0e36d | [260529-ntf-implement-release-automation-workflows-a](./quick/260529-ntf-implement-release-automation-workflows-a/) |
 | 20260604-isdr | regression tests for isDirectRun symlink mismatch (bug-159): process.argv[1] realpathSync fix prevents main() being skipped on Homebrew installs | 2026-06-04 | ba24b04 | [20260604-isDirectRun-symlink-regression](./quick/20260604-isDirectRun-symlink-regression/) |
 | 20260608-zellij-title-repeat | fix repeating queque title in zellij modal: add flexGrow={0} to title Box in CandidateSelect.tsx | 2026-06-08 | — | [20260608-zellij-title-repeat](./quick/20260608-zellij-title-repeat/) |
+| 20260617-privacy-config | user privacy config at ~/.config/qq/config.json — merge patterns onto built-in defaults | 2026-06-17 | 7bf0799 | [20260617-privacy-config-file](./quick/20260617-privacy-config-file/) |
 
 ## Session Continuity
 
