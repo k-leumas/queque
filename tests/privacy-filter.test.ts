@@ -22,6 +22,15 @@ describe('qq-config', () => {
   let configDir: string;
   let previousConfigFile: string | undefined;
 
+  /** Returns the test config file path set in beforeEach. */
+  function configFilePath(): string {
+    const path = process.env.QQ_CONFIG_FILE;
+    if (!path) {
+      throw new Error('QQ_CONFIG_FILE is not set');
+    }
+    return path;
+  }
+
   beforeEach(() => {
     resetQqConfigCache();
     configDir = join(tmpdir(), `qq-config-test-${Date.now()}`);
@@ -51,7 +60,7 @@ describe('qq-config', () => {
 
   it('merges user sensitivePathPatterns onto built-in defaults', () => {
     writeFileSync(
-      process.env.QQ_CONFIG_FILE!,
+      configFilePath(),
       JSON.stringify({
         privacy: {
           sensitivePathPatterns: ['internal/secrets'],
@@ -66,20 +75,14 @@ describe('qq-config', () => {
   });
 
   it('honors privacy.allowFileRead from config', () => {
-    writeFileSync(
-      process.env.QQ_CONFIG_FILE!,
-      JSON.stringify({ privacy: { allowFileRead: true } }),
-    );
+    writeFileSync(configFilePath(), JSON.stringify({ privacy: { allowFileRead: true } }));
     resetQqConfigCache();
 
     expect(isFileReadAllowed()).toBe(true);
   });
 
   it('env QQ_ALLOW_FILE_READ overrides config file', () => {
-    writeFileSync(
-      process.env.QQ_CONFIG_FILE!,
-      JSON.stringify({ privacy: { allowFileRead: false } }),
-    );
+    writeFileSync(configFilePath(), JSON.stringify({ privacy: { allowFileRead: false } }));
     process.env.QQ_ALLOW_FILE_READ = '1';
     resetQqConfigCache();
 
@@ -89,7 +92,7 @@ describe('qq-config', () => {
 
   it('merges user destructiveCommandPatterns', () => {
     writeFileSync(
-      process.env.QQ_CONFIG_FILE!,
+      configFilePath(),
       JSON.stringify({ safety: { destructiveCommandPatterns: ['\\bdd\\s+if='] } }),
     );
     resetQqConfigCache();
@@ -113,7 +116,7 @@ describe('qq-config', () => {
 
   it('warns when config file is present but invalid', () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    writeFileSync(process.env.QQ_CONFIG_FILE!, '{ not json');
+    writeFileSync(configFilePath(), '{ not json');
     resetQqConfigCache();
 
     loadQqConfig();

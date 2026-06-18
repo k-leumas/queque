@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:43:27.964Z
-> Files: 263 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:48:23.643Z
+> Files: 264 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -93,13 +93,14 @@
 
 ## ./
 
+- `.gitignore` — Git ignore rules (~60 tok)
 - `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
 - `CONTRIBUTING.md` — Contributing (~853 tok)
 - `lefthook.yml` (~200 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
-- `package.json` — Node.js package manifest (~470 tok)
+- `package.json` — Node.js package manifest (~524 tok)
 - `README.md` — Project documentation (~760 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 - `tsup.config.ts` — Declares commit (~195 tok)
@@ -611,7 +612,7 @@
 - `init-command.test.ts` — Declares marker (~163 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
-- `privacy-filter.test.ts` — Declares config (~1866 tok)
+- `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~1919 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
 - `provider-resolver.test.ts` — Declares adapter (~368 tok)
 - `qq-config.test.ts` — Declares parsed (~189 tok)
