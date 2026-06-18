@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T22:48:23.643Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:01:07.343Z
 > Files: 264 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -368,7 +368,7 @@
 
 ## .local-bin/
 
-- `pnpm` (~80 tok)
+- `pnpm` (~126 tok)
 
 ## .planning/
 
