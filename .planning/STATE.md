@@ -110,6 +110,7 @@ None yet.
 | 20260617-privacy-config | user privacy config at ~/.config/qq/config.json — merge patterns onto built-in defaults | 2026-06-17 | 7bf0799 | [20260617-privacy-config-file](./quick/20260617-privacy-config-file/) |
 | 20260618-trim | remove extra whitespace at start of the command in the candidate list | 2026-06-18 | — | [20260618-candidate-command-trim](./quick/20260618-candidate-command-trim/) |
 | 20260618-tail | extend selection arrow tail through wrapped command and explanation lines | 2026-06-18 | — | [20260618-selection-arrow-tail](./quick/20260618-selection-arrow-tail/) |
+| 20260618-destructive-mark | yellow ⚠ footnote on destructive candidate commands and footer warning | 2026-06-18 | — | [20260618-destructive-warning-mark](./quick/20260618-destructive-warning-mark/) |
 
 ## Session Continuity
 

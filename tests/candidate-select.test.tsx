@@ -523,8 +523,28 @@ describe('CandidateSelect — destructive command warning', () => {
     });
 
     const text = collectText(tree).join('\n');
-    expect(text).toContain('review carefully — this command may be destructive');
-    expect(text).toContain('rm -rf /tmp/foo');
+    expect(text).toContain('⚠ review carefully — this command may be destructive');
+    expect(text).toMatch(/rm -rf \/tmp\/foo\n ⚠/);
+  });
+
+  it('shows warning mark on destructive candidates even when not selected', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const tree = CandidateSelect({
+      candidates: [
+        { command: 'git status', explanation: 'show working tree status' },
+        { command: 'rm -rf /tmp/foo', explanation: 'remove temp files' },
+      ],
+      onSelect,
+      onCancel,
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toMatch(/rm -rf \/tmp\/foo\n ⚠/);
+    expect(text).not.toMatch(/git status\n ⚠/);
+    expect(text).not.toContain('⚠ review carefully — this command may be destructive');
   });
 
   it('does not show destructive warning for safe commands', async () => {
@@ -539,7 +559,8 @@ describe('CandidateSelect — destructive command warning', () => {
     });
 
     const text = collectText(tree).join('\n');
-    expect(text).not.toContain('review carefully — this command may be destructive');
+    expect(text).not.toContain('⚠ review carefully — this command may be destructive');
+    expect(text).not.toMatch(/git status\n ⚠/);
   });
 
   it('still calls onSelect for destructive commands (warn-only, not blocked)', async () => {

@@ -3,12 +3,12 @@
   "started": "2026-06-18T23:48:37.944Z",
   "files_read": {
     "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
-      "count": 6,
+      "count": 11,
       "tokens": 3908,
       "first_read": "2026-06-18T23:48:38.982Z"
     },
     "/Users/samuel/dev/tui-llm/src/shared/privacy-filter.ts": {
-      "count": 2,
+      "count": 6,
       "tokens": 717,
       "first_read": "2026-06-18T23:48:46.626Z"
     },
@@ -18,12 +18,12 @@
       "first_read": "2026-06-18T23:48:53.791Z"
     },
     "/Users/samuel/dev/tui-llm/src/context/pipeline.ts": {
-      "count": 2,
+      "count": 3,
       "tokens": 524,
       "first_read": "2026-06-18T23:49:09.095Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
-      "count": 1,
+      "count": 2,
       "tokens": 1597,
       "first_read": "2026-06-18T23:49:09.228Z"
     },
@@ -33,7 +33,7 @@
       "first_read": "2026-06-18T23:49:23.781Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 4,
+      "count": 7,
       "tokens": 1994,
       "first_read": "2026-06-18T23:49:24.826Z"
     },
@@ -73,7 +73,7 @@
       "first_read": "2026-06-18T23:49:43.539Z"
     },
     "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
-      "count": 1,
+      "count": 2,
       "tokens": 2923,
       "first_read": "2026-06-18T23:49:43.761Z"
     },
@@ -138,17 +138,17 @@
       "first_read": "2026-06-18T23:50:42.010Z"
     },
     "/Users/samuel/dev/tui-llm/src/shared/debug-log.ts": {
-      "count": 1,
+      "count": 4,
       "tokens": 229,
       "first_read": "2026-06-18T23:50:57.794Z"
     },
     "/Users/samuel/dev/tui-llm/src/registry/bootstrap.ts": {
-      "count": 1,
+      "count": 2,
       "tokens": 498,
       "first_read": "2026-06-18T23:51:15.178Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/resolver.ts": {
-      "count": 1,
+      "count": 2,
       "tokens": 370,
       "first_read": "2026-06-18T23:51:15.411Z"
     },
@@ -173,8 +173,8 @@
       "first_read": "2026-06-19T00:03:10.452Z"
     },
     "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx": {
-      "count": 2,
-      "tokens": 5346,
+      "count": 4,
+      "tokens": 6388,
       "first_read": "2026-06-19T00:03:10.694Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/quick/20260618-candidate-command-trim/SUMMARY.md": {
@@ -208,8 +208,8 @@
       "first_read": "2026-06-19T00:09:15.138Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/quick/20260618-selection-arrow-tail/SUMMARY.md": {
-      "count": 1,
-      "tokens": 0,
+      "count": 2,
+      "tokens": 115,
       "first_read": "2026-06-19T00:16:37.639Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/PROJECT.md": {
@@ -231,6 +231,56 @@
       "count": 1,
       "tokens": 7492,
       "first_read": "2026-06-19T00:19:38.377Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/registry/provider-backends.ts": {
+      "count": 4,
+      "tokens": 357,
+      "first_read": "2026-06-19T00:22:42.661Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-REVIEWS.md": {
+      "count": 1,
+      "tokens": 6403,
+      "first_read": "2026-06-19T00:23:20.512Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/registry/context-providers.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:23:32.783Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/main.ts": {
+      "count": 1,
+      "tokens": 1261,
+      "first_read": "2026-06-19T00:24:14.916Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts": {
+      "count": 1,
+      "tokens": 605,
+      "first_read": "2026-06-19T00:24:19.233Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/contracts/request.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:24:27.375Z"
+    },
+    "/Users/samuel/.claude/skills/gsd-quick/SKILL.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:26:43.230Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
+      "count": 1,
+      "tokens": 2743,
+      "first_read": "2026-06-19T00:27:00.598Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/quick/20260618-destructive-warning-mark/PLAN.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:27:09.385Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/quick/20260618-destructive-warning-mark/SUMMARY.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:27:10.226Z"
     }
   },
   "files_written": [
@@ -551,24 +601,98 @@
       "action": "create",
       "tokens": 2743,
       "at": "2026-06-19T00:18:58.076Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2838,
+      "at": "2026-06-19T00:27:01.735Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2856,
+      "at": "2026-06-19T00:27:02.687Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2933,
+      "at": "2026-06-19T00:27:03.686Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2925,
+      "at": "2026-06-19T00:27:04.588Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6584,
+      "at": "2026-06-19T00:27:10.383Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260618-destructive-warning-mark/PLAN.md",
+      "action": "create",
+      "tokens": 161,
+      "at": "2026-06-19T00:27:10.423Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260618-destructive-warning-mark/SUMMARY.md",
+      "action": "create",
+      "tokens": 133,
+      "at": "2026-06-19T00:27:11.235Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6598,
+      "at": "2026-06-19T00:27:11.615Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
+      "action": "create",
+      "tokens": 2337,
+      "at": "2026-06-19T00:27:14.291Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6586,
+      "at": "2026-06-19T00:27:22.955Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6611,
+      "at": "2026-06-19T00:27:24.023Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6611,
+      "at": "2026-06-19T00:27:24.795Z"
     }
   ],
   "edit_counts": {
     ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-SUMMARY.md": 1,
     ".planning/ROADMAP.md": 3,
-    ".planning/STATE.md": 7,
+    ".planning/STATE.md": 8,
     ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VERIFICATION.md": 1,
-    "src/ui/CandidateSelect.tsx": 21,
+    "src/ui/CandidateSelect.tsx": 25,
     "src/contracts/candidates.ts": 1,
-    "tests/candidate-select.test.tsx": 15,
+    "tests/candidate-select.test.tsx": 20,
     ".planning/quick/20260618-candidate-command-trim/SUMMARY.md": 1,
     "src/ui/ControlsLine.tsx": 1,
     "src/ui/SearchInput.tsx": 1,
-    ".planning/quick/20260618-selection-arrow-tail/SUMMARY.md": 1
+    ".planning/quick/20260618-selection-arrow-tail/SUMMARY.md": 1,
+    ".planning/quick/20260618-destructive-warning-mark/PLAN.md": 1,
+    ".planning/quick/20260618-destructive-warning-mark/SUMMARY.md": 1
   },
-  "anatomy_hits": 26,
-  "anatomy_misses": 14,
-  "repeated_reads_warned": 43,
+  "anatomy_hits": 31,
+  "anatomy_misses": 19,
+  "repeated_reads_warned": 69,
   "cerebrum_warnings": 0,
-  "stop_count": 11
+  "stop_count": 12
 }

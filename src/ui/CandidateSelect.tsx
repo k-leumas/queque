@@ -16,6 +16,12 @@ const ACTIVE_HEAD = '┌> ';
 /** Vertical tail on wrapped continuation lines of the active block (3 display columns). */
 const ACTIVE_TAIL = '│  ';
 
+/** Warn-only footnote shown beside destructive commands and in the selection footer. */
+const DESTRUCTIVE_WARNING_MARK = '⚠';
+
+/** Footer copy when the selected candidate matches a destructive command pattern. */
+const DESTRUCTIVE_WARNING_TEXT = `${DESTRUCTIVE_WARNING_MARK} review carefully — this command may be destructive`;
+
 /** Modal max width — keep in sync with Modal.tsx. */
 const MODAL_MAX_WIDTH = 80;
 
@@ -236,6 +242,7 @@ export function CandidateSelect({
           {visible.map((candidate, index) => {
             const active = index === selectedIndex;
             const command = normalizeCommand(candidate.command);
+            const destructive = isDestructiveCommand(command);
             const commandLines = wrapText(command, contentWidth);
             const explanationLines =
               candidate.explanation.length > 0 ? wrapText(candidate.explanation, contentWidth) : [];
@@ -249,6 +256,7 @@ export function CandidateSelect({
               >
                 {blockLines.map((line, lineIndex) => {
                   const isCommandLine = lineIndex < commandLines.length;
+                  const isLastCommandLine = isCommandLine && lineIndex === commandLines.length - 1;
                   const prefix = linePrefix(active, lineIndex);
                   return (
                     <Box key={`${prefix}${line}`}>
@@ -260,6 +268,9 @@ export function CandidateSelect({
                       >
                         {line}
                       </Text>
+                      {isLastCommandLine && destructive && (
+                        <Text color="yellow">{` ${DESTRUCTIVE_WARNING_MARK}`}</Text>
+                      )}
                     </Box>
                   );
                 })}
@@ -282,7 +293,7 @@ export function CandidateSelect({
       {content}
       {showDestructiveWarning && (
         <Box marginTop={1}>
-          <Text color="yellow">{'review carefully — this command may be destructive'}</Text>
+          <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>
         </Box>
       )}
       <ControlsLine />

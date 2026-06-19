@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:18:58.056Z
-> Files: 278 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:27:24.778Z
+> Files: 280 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -374,7 +374,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3893 tok)
-- `STATE.md` — Project State (~1994 tok)
+- `STATE.md` — Project State (~2045 tok)
 
 ## .planning/notes/
 
@@ -495,6 +495,11 @@
 
 - `SUMMARY.md` — Quick Task: Trim candidate command whitespace (~111 tok)
 
+## .planning/quick/20260618-destructive-warning-mark/
+
+- `PLAN.md` — Quick Task: Destructive command warning mark (~141 tok)
+- `SUMMARY.md` — Quick Task: Destructive command warning mark (~116 tok)
+
 ## .planning/quick/20260618-selection-arrow-tail/
 
 - `SUMMARY.md` — Quick Task: Selection arrow vertical tail (~115 tok)
@@ -612,14 +617,14 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2743 tok)
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2925 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `Modal.tsx` — Modal (~223 tok)
 - `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
 ## tests/
 
-- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6388 tok)
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6611 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~1725 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)

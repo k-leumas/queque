@@ -1524,3 +1524,16 @@
 | 17:20 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |
 | 17:20 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |
 | 17:21 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |
+| 17:22 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |
+| 17:27 | Created src/ui/CandidateSelect.tsx | — | ~2838 |
+| 17:27 | Created src/ui/CandidateSelect.tsx | — | ~2856 |
+| 17:27 | Created src/ui/CandidateSelect.tsx | — | ~2933 |
+| 17:27 | Created src/ui/CandidateSelect.tsx | — | ~2925 |
+| 17:27 | Created tests/candidate-select.test.tsx | — | ~6584 |
+| 17:27 | Created .planning/quick/20260618-destructive-warning-mark/PLAN.md | — | ~150 |
+| 17:27 | Created .planning/quick/20260618-destructive-warning-mark/SUMMARY.md | — | ~124 |
+| 17:27 | Created tests/candidate-select.test.tsx | — | ~6598 |
+| 17:27 | Created .planning/STATE.md | — | ~2181 |
+| 17:27 | Created tests/candidate-select.test.tsx | — | ~6586 |
+| 17:27 | Created tests/candidate-select.test.tsx | — | ~6611 |
+| 17:27 | Created tests/candidate-select.test.tsx | — | ~6611 |
