@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: verifying
-stopped_at: Completed 06-02-PLAN.md
-last_updated: "2026-06-18T23:41:48.531Z"
-last_activity: 2026-06-18 -- Phase 06 plan-phase complete (06-01, 06-02, 06-03)
+status: active
+stopped_at: Phase 06 verified — ready for Phase 07
+last_updated: "2026-06-18T16:55:00.000Z"
+last_activity: 2026-06-18 -- Phase 06 verified passed (4/4); execution + verification complete
 progress:
   total_phases: 10
-  completed_phases: 6
+  completed_phases: 7
   total_plans: 21
-  completed_plans: 20
-  percent: 0
+  completed_plans: 21
+  percent: 70
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 06 — hardening, privacy defaults, and extension seams
+**Current focus:** Phase 07 — context-aware learning and ambient suggestions
 
 ## Current Position
 
-Phase: 06 (hardening-privacy-defaults-and-extension-seams) — PLANNED
-Next: Execute Phase 06 (3 plans, waves 0→1→2)
-Status: Phase 05 deferred; Phase 06 plans verified — ready for /gsd-execute-phase
-Last activity: 2026-06-18 -- Phase 06 plan-phase complete (06-01, 06-02, 06-03)
+Phase: 07 (context-aware-learning-and-ambient-suggestions) — NOT STARTED
+Next: Discuss Phase 07 (/gsd-discuss-phase 07)
+Status: Phase 06 complete and verified (4/4 must-haves)
+Last activity: 2026-06-18 -- Phase 06 verification passed
 
-Progress: [░░░░░░░░░░] 0% (Phase 06 execution not started)
+Progress: [███████░░░] 70% (7/10 phases complete)
 
 ## Performance Metrics
 
@@ -108,6 +108,8 @@ None yet.
 | 20260604-isdr | regression tests for isDirectRun symlink mismatch (bug-159): process.argv[1] realpathSync fix prevents main() being skipped on Homebrew installs | 2026-06-04 | ba24b04 | [20260604-isDirectRun-symlink-regression](./quick/20260604-isDirectRun-symlink-regression/) |
 | 20260608-zellij-title-repeat | fix repeating queque title in zellij modal: add flexGrow={0} to title Box in CandidateSelect.tsx | 2026-06-08 | — | [20260608-zellij-title-repeat](./quick/20260608-zellij-title-repeat/) |
 | 20260617-privacy-config | user privacy config at ~/.config/qq/config.json — merge patterns onto built-in defaults | 2026-06-17 | 7bf0799 | [20260617-privacy-config-file](./quick/20260617-privacy-config-file/) |
+| 20260618-trim | remove extra whitespace at start of the command in the candidate list | 2026-06-18 | — | [20260618-candidate-command-trim](./quick/20260618-candidate-command-trim/) |
+| 20260618-tail | extend selection arrow tail through wrapped command and explanation lines | 2026-06-18 | — | [20260618-selection-arrow-tail](./quick/20260618-selection-arrow-tail/) |
 
 ## Session Continuity
 

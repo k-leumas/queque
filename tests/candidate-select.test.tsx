@@ -1,9 +1,8 @@
 /**
  * tests/candidate-select.test.tsx
  *
- * Wave 2 tests for CandidateSelect — targeting the full monocle contract:
- * candidates: CandidateList | null, initialQuery?: string, live search,
- * ┌> glyph, LoadingSpinner/SearchInput/ControlsLine composition, error state.
+ * Wave 2 tests for CandidateSelect — nullable candidates, live search,
+ * LoadingSpinner/SearchInput/ControlsLine composition, error state.
  *
  * Hook execution strategy: React hooks are mocked so the component function
  * can be called directly (outside a React render tree) to exercise the
@@ -26,6 +25,7 @@ vi.mock('ink', () => ({
       capturedInputHandler = handler;
     }),
   useStdin: vi.fn().mockReturnValue({ isRawModeSupported: true }),
+  useStdout: vi.fn().mockReturnValue({ stdout: { columns: 80 } }),
   useApp: vi.fn().mockReturnValue({ exit: vi.fn() }),
   render: vi.fn().mockReturnValue({ unmount: vi.fn(), rerender: vi.fn() }),
 }));
@@ -303,6 +303,117 @@ describe('CandidateSelect — onSelect receives explanation', () => {
     CandidateSelect({ candidates, onSelect, onCancel });
     capturedInputHandler?.('\r', { ...zeroKeys, return: true });
     expect(onSelect).toHaveBeenCalledWith('ls -la', 'list directory contents');
+  });
+});
+
+describe('CandidateSelect — command whitespace normalization', () => {
+  beforeEach(resetState);
+
+  /** Collects string leaves from a React element tree returned by the component. */
+  function collectText(node: unknown): string[] {
+    if (node == null || typeof node === 'boolean') {
+      return [];
+    }
+    if (typeof node === 'string' || typeof node === 'number') {
+      return [String(node)];
+    }
+    if (Array.isArray(node)) {
+      return node.flatMap(collectText);
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const props = (node as { props: { children?: unknown } }).props;
+      return collectText(props.children);
+    }
+    return [];
+  }
+
+  it('renders commands without leading whitespace in the candidate list', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const tree = CandidateSelect({
+      candidates: [{ command: '  git status', explanation: 'show working tree status' }],
+      onSelect,
+      onCancel,
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toContain('git status');
+    expect(text).not.toContain('  git status');
+  });
+
+  it('passes trimmed command to onSelect when Enter is pressed', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    CandidateSelect({
+      candidates: [{ command: '  git status  ', explanation: 'show working tree status' }],
+      onSelect,
+      onCancel,
+    });
+
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('git status', 'show working tree status');
+  });
+
+  it('uses a fixed 3-char gutter so selection does not shift command text', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const tree = CandidateSelect({
+      candidates: [
+        { command: 'git rm foo.txt', explanation: 'remove tracked file' },
+        { command: 'git rm --cached foo.txt', explanation: 'untrack only' },
+      ],
+      onSelect,
+      onCancel,
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toContain('┌>');
+    expect(text).toContain('git rm foo.txt');
+    expect(text).toContain('│');
+    expect(text).toContain('remove tracked file');
+    expect(text).toContain('git rm --cached foo.txt');
+    expect(text).toContain('untrack only');
+  });
+
+  it('extends the vertical tail through wrapped explanation lines on the active item', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const onCancel = vi.fn();
+
+    const tree = CandidateSelect({
+      candidates: [
+        {
+          command: 'git rm foo.txt',
+          explanation:
+            'remove the file from both the working directory and the git index staging area for commit',
+        },
+      ],
+      onSelect,
+      onCancel,
+    });
+
+    const text = collectText(tree).join('\n');
+    const tailCount = (text.match(/│/g) ?? []).length;
+    expect(text).toContain('┌>');
+    expect(tailCount).toBeGreaterThanOrEqual(2);
+  });
+});
+
+describe('wrapText', () => {
+  it('wraps long text into multiple lines', async () => {
+    const { wrapText } = await import('../src/ui/CandidateSelect.js');
+    const lines = wrapText('alpha beta gamma delta epsilon zeta', 10);
+    expect(lines.length).toBeGreaterThan(1);
+    for (const line of lines) {
+      expect(line.length).toBeLessThanOrEqual(10);
+    }
   });
 });
 

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const commandCandidateSchema = z.object({
-  command: z.string().min(1),
+  command: z.string().trim().min(1),
   explanation: z.string(),
 });
 

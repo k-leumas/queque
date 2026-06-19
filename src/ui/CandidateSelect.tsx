@@ -1,4 +1,4 @@
-import { Box, Text, useInput, useStdin } from 'ink';
+import { Box, Text, useInput, useStdin, useStdout } from 'ink';
 import { type ReactElement, useEffect, useState } from 'react';
 import type { CandidateList } from '../contracts/candidates.js';
 import { isDestructiveCommand } from '../shared/privacy-filter.js';
@@ -6,6 +6,75 @@ import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { Modal } from './Modal.js';
 import { SearchInput } from './SearchInput.js';
+
+/** Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text never shifts. */
+const ROW_GUTTER = '   ';
+
+/** Selection glyph on the first line of the active block (3 display columns). */
+const ACTIVE_HEAD = '┌> ';
+
+/** Vertical tail on wrapped continuation lines of the active block (3 display columns). */
+const ACTIVE_TAIL = '│  ';
+
+/** Modal max width — keep in sync with Modal.tsx. */
+const MODAL_MAX_WIDTH = 80;
+
+/** Horizontal padding inside Modal (paddingX={1} on each side). */
+const MODAL_PADDING_X = 2;
+
+/**
+ * Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens.
+ */
+export function wrapText(text: string, maxWidth: number): string[] {
+  if (maxWidth < 1) {
+    return [text];
+  }
+
+  const words = text.split(/\s+/).filter((word) => word.length > 0);
+  if (words.length === 0) {
+    return [''];
+  }
+
+  const lines: string[] = [];
+  let line = '';
+
+  for (const word of words) {
+    let remaining = word;
+    while (remaining.length > 0) {
+      const candidate = line ? `${line} ${remaining}` : remaining;
+      if (candidate.length <= maxWidth) {
+        line = candidate;
+        remaining = '';
+        break;
+      }
+
+      if (line) {
+        lines.push(line);
+        line = '';
+        continue;
+      }
+
+      lines.push(remaining.slice(0, maxWidth));
+      remaining = remaining.slice(maxWidth);
+    }
+  }
+
+  if (line) {
+    lines.push(line);
+  }
+
+  return lines;
+}
+
+/**
+ * Returns the 3-column gutter prefix for a line within a candidate block.
+ */
+function linePrefix(active: boolean, lineIndex: number): string {
+  if (!active) {
+    return ROW_GUTTER;
+  }
+  return lineIndex === 0 ? ACTIVE_HEAD : ACTIVE_TAIL;
+}
 
 /**
  * Props for CandidateSelect.
@@ -21,17 +90,24 @@ interface Props {
 }
 
 /**
+ * Strips leading and trailing whitespace from a shell command string.
+ */
+function normalizeCommand(command: string): string {
+  return command.trim();
+}
+
+/**
  * Filter candidates by case-insensitive substring match on command text.
  * Returns the full list unchanged when query is empty or falsy.
  */
 function filterCandidates(candidates: CandidateList, query: string): CandidateList {
   if (!query) return candidates;
   const lower = query.toLowerCase();
-  return candidates.filter((c) => c.command.toLowerCase().includes(lower));
+  return candidates.filter((c) => normalizeCommand(c.command).toLowerCase().includes(lower));
 }
 
 /**
- * Monocle-style candidate selector.
+ * Keyboard-driven candidate selector.
  *
  * Keys:
  *   ↑ / ↓     — move selection (wraps)
@@ -48,6 +124,9 @@ export function CandidateSelect({
   error,
 }: Props): ReactElement {
   const { isRawModeSupported } = useStdin();
+  const { stdout } = useStdout();
+  const modalWidth = Math.min(MODAL_MAX_WIDTH, stdout.columns || MODAL_MAX_WIDTH);
+  const contentWidth = modalWidth - MODAL_PADDING_X - ROW_GUTTER.length;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [query, setQuery] = useState(initialQuery ?? '');
 
@@ -98,8 +177,9 @@ export function CandidateSelect({
         const visible = filterCandidates(candidates, query);
         if (visible.length === 0) return;
         const selected = visible[selectedIndex] ?? visible[0];
-        const explanation = selected.explanation || `see man ${selected.command.split(' ')[0]}`;
-        onSelect(selected.command, explanation);
+        const command = normalizeCommand(selected.command);
+        const explanation = selected.explanation || `see man ${command.split(' ')[0]}`;
+        onSelect(command, explanation);
         return;
       }
 
@@ -140,7 +220,9 @@ export function CandidateSelect({
     );
   } else {
     const visible = filterCandidates(candidates, query);
-    const selectedCommand = visible[selectedIndex]?.command;
+    const selectedCommand = visible[selectedIndex]?.command
+      ? normalizeCommand(visible[selectedIndex].command)
+      : undefined;
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
     if (visible.length === 0) {
       content = (
@@ -153,20 +235,34 @@ export function CandidateSelect({
         <Box flexDirection="column" marginTop={1}>
           {visible.map((candidate, index) => {
             const active = index === selectedIndex;
+            const command = normalizeCommand(candidate.command);
+            const commandLines = wrapText(command, contentWidth);
+            const explanationLines =
+              candidate.explanation.length > 0 ? wrapText(candidate.explanation, contentWidth) : [];
+            const blockLines = [...commandLines, ...explanationLines];
+
             return (
-              <Box key={candidate.command} flexDirection="column" marginBottom={1}>
-                <Box>
-                  {active ? <Text color="ansi256(166)">{'┌> '}</Text> : <Text>{'   '}</Text>}
-                  <Text bold={active} color={active ? 'white' : undefined} dimColor={!active}>
-                    {candidate.command}
-                  </Text>
-                </Box>
-                {candidate.explanation.length > 0 && (
-                  <Box>
-                    <Text>{'   '}</Text>
-                    <Text dimColor>{candidate.explanation}</Text>
-                  </Box>
-                )}
+              <Box
+                key={`${command}::${candidate.explanation}`}
+                flexDirection="column"
+                marginBottom={1}
+              >
+                {blockLines.map((line, lineIndex) => {
+                  const isCommandLine = lineIndex < commandLines.length;
+                  const prefix = linePrefix(active, lineIndex);
+                  return (
+                    <Box key={`${prefix}${line}`}>
+                      <Text color={active ? 'ansi256(166)' : undefined}>{prefix}</Text>
+                      <Text
+                        bold={active && isCommandLine}
+                        color={active && isCommandLine ? 'white' : undefined}
+                        dimColor={!active || !isCommandLine}
+                      >
+                        {line}
+                      </Text>
+                    </Box>
+                  );
+                })}
               </Box>
             );
           })}

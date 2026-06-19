@@ -5,6 +5,7 @@ interface SearchInputProps {
   query: string;
 }
 
+/** Live filter input for narrowing the candidate list. */
 export function SearchInput({ query }: SearchInputProps): ReactElement {
   return (
     <Box>
