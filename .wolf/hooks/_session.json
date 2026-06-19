@@ -3,12 +3,12 @@
   "started": "2026-06-18T23:48:37.944Z",
   "files_read": {
     "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
-      "count": 13,
-      "tokens": 3908,
+      "count": 15,
+      "tokens": 3958,
       "first_read": "2026-06-18T23:48:38.982Z"
     },
     "/Users/samuel/dev/tui-llm/src/shared/privacy-filter.ts": {
-      "count": 6,
+      "count": 7,
       "tokens": 717,
       "first_read": "2026-06-18T23:48:46.626Z"
     },
@@ -18,23 +18,23 @@
       "first_read": "2026-06-18T23:48:53.791Z"
     },
     "/Users/samuel/dev/tui-llm/src/context/pipeline.ts": {
-      "count": 3,
+      "count": 4,
       "tokens": 524,
       "first_read": "2026-06-18T23:49:09.095Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
-      "count": 2,
+      "count": 4,
       "tokens": 1597,
       "first_read": "2026-06-18T23:49:09.228Z"
     },
     "/Users/samuel/dev/tui-llm/.gitignore": {
-      "count": 3,
+      "count": 5,
       "tokens": 60,
       "first_read": "2026-06-18T23:49:23.781Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 8,
-      "tokens": 2045,
+      "count": 9,
+      "tokens": 2096,
       "first_read": "2026-06-18T23:49:24.826Z"
     },
     "/Users/samuel/.cursor/skills/gsd-next/SKILL.md": {
@@ -48,7 +48,7 @@
       "first_read": "2026-06-18T23:49:26.808Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/REQUIREMENTS.md": {
-      "count": 1,
+      "count": 2,
       "tokens": 1313,
       "first_read": "2026-06-18T23:49:26.840Z"
     },
@@ -73,8 +73,8 @@
       "first_read": "2026-06-18T23:49:43.539Z"
     },
     "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
-      "count": 4,
-      "tokens": 2923,
+      "count": 5,
+      "tokens": 2968,
       "first_read": "2026-06-18T23:49:43.761Z"
     },
     "/Users/samuel/dev/tui-llm/docs/SYSTEM_DESIGN.md": {
@@ -88,7 +88,7 @@
       "first_read": "2026-06-18T23:49:47.683Z"
     },
     "/Users/samuel/dev/tui-llm/docs/config.example.json": {
-      "count": 2,
+      "count": 3,
       "tokens": 65,
       "first_read": "2026-06-18T23:49:47.785Z"
     },
@@ -143,12 +143,12 @@
       "first_read": "2026-06-18T23:50:57.794Z"
     },
     "/Users/samuel/dev/tui-llm/src/registry/bootstrap.ts": {
-      "count": 2,
+      "count": 3,
       "tokens": 498,
       "first_read": "2026-06-18T23:51:15.178Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/resolver.ts": {
-      "count": 2,
+      "count": 3,
       "tokens": 370,
       "first_read": "2026-06-18T23:51:15.411Z"
     },
@@ -168,13 +168,13 @@
       "first_read": "2026-06-19T00:03:08.308Z"
     },
     "/Users/samuel/dev/tui-llm/src/contracts/candidates.ts": {
-      "count": 2,
-      "tokens": 0,
+      "count": 3,
+      "tokens": 104,
       "first_read": "2026-06-19T00:03:10.452Z"
     },
     "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx": {
-      "count": 7,
-      "tokens": 6611,
+      "count": 8,
+      "tokens": 6504,
       "first_read": "2026-06-19T00:03:10.694Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/quick/20260618-candidate-command-trim/SUMMARY.md": {
@@ -213,7 +213,7 @@
       "first_read": "2026-06-19T00:16:37.639Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/PROJECT.md": {
-      "count": 2,
+      "count": 3,
       "tokens": 1525,
       "first_read": "2026-06-19T00:19:21.091Z"
     },
@@ -233,7 +233,7 @@
       "first_read": "2026-06-19T00:19:38.377Z"
     },
     "/Users/samuel/dev/tui-llm/src/registry/provider-backends.ts": {
-      "count": 4,
+      "count": 6,
       "tokens": 357,
       "first_read": "2026-06-19T00:22:42.661Z"
     },
@@ -268,8 +268,8 @@
       "first_read": "2026-06-19T00:26:43.230Z"
     },
     "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
-      "count": 3,
-      "tokens": 2925,
+      "count": 5,
+      "tokens": 2795,
       "first_read": "2026-06-19T00:27:00.598Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/quick/20260618-destructive-warning-mark/PLAN.md": {
@@ -348,7 +348,7 @@
       "first_read": "2026-06-19T00:31:49.316Z"
     },
     "/Users/samuel/dev/tui-llm/src/client/zellij-pane-resize.ts": {
-      "count": 1,
+      "count": 2,
       "tokens": 0,
       "first_read": "2026-06-19T00:31:52.040Z"
     },
@@ -371,6 +371,26 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-06-19T00:32:42.076Z"
+    },
+    "/Users/samuel/dev/tui-llm": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:33:22.356Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md": {
+      "count": 3,
+      "tokens": 3893,
+      "first_read": "2026-06-19T00:33:25.032Z"
+    },
+    "/Users/samuel/dev/tui-llm/README.md": {
+      "count": 1,
+      "tokens": 1079,
+      "first_read": "2026-06-19T00:34:02.588Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/registry.test.ts": {
+      "count": 1,
+      "tokens": 1515,
+      "first_read": "2026-06-19T00:34:36.097Z"
     }
   },
   "files_written": [
@@ -907,6 +927,24 @@
       "action": "create",
       "tokens": 2396,
       "at": "2026-06-19T00:32:43.959Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/modal-layout.test.ts",
+      "action": "create",
+      "tokens": 666,
+      "at": "2026-06-19T00:32:57.025Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2839,
+      "at": "2026-06-19T00:33:31.326Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh",
+      "action": "create",
+      "tokens": 3180,
+      "at": "2026-06-19T00:33:32.081Z"
     }
   ],
   "edit_counts": {
@@ -914,7 +952,7 @@
     ".planning/ROADMAP.md": 3,
     ".planning/STATE.md": 9,
     ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VERIFICATION.md": 1,
-    "src/ui/CandidateSelect.tsx": 31,
+    "src/ui/CandidateSelect.tsx": 32,
     "src/contracts/candidates.ts": 1,
     "tests/candidate-select.test.tsx": 23,
     ".planning/quick/20260618-candidate-command-trim/SUMMARY.md": 1,
@@ -929,15 +967,15 @@
     "src/ui/modal-layout.ts": 2,
     "src/client/zellij-pane-resize.ts": 1,
     "src/client/run-foreground.ts": 2,
-    "shell/zsh/queque.zsh": 1,
-    "tests/modal-layout.test.ts": 2,
+    "shell/zsh/queque.zsh": 2,
+    "tests/modal-layout.test.ts": 3,
     "tests/zellij-pane-resize.test.ts": 1,
     ".planning/quick/20260618-zellij-responsive-height/PLAN.md": 1,
     ".planning/quick/20260618-zellij-responsive-height/SUMMARY.md": 1
   },
-  "anatomy_hits": 39,
-  "anatomy_misses": 26,
-  "repeated_reads_warned": 82,
+  "anatomy_hits": 42,
+  "anatomy_misses": 27,
+  "repeated_reads_warned": 106,
   "cerebrum_warnings": 0,
-  "stop_count": 14
+  "stop_count": 17
 }

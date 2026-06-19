@@ -1563,3 +1563,9 @@
 | 17:32 | Created .planning/quick/20260618-zellij-responsive-height/PLAN.md | — | ~161 |
 | 17:32 | Created .planning/quick/20260618-zellij-responsive-height/SUMMARY.md | — | ~204 |
 | 17:32 | Created .planning/STATE.md | — | ~2236 |
+| 17:32 | Created tests/modal-layout.test.ts | — | ~666 |
+| 17:33 | Session end: 90 writes across 20 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 74 reads | ~407564 tok |
+| 17:33 | Created src/ui/CandidateSelect.tsx | — | ~2839 |
+| 17:33 | Created shell/zsh/queque.zsh | — | ~2968 |
+| 17:33 | Session end: 92 writes across 20 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 76 reads | ~417334 tok |
+| 17:34 | Session end: 92 writes across 20 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 77 reads | ~418464 tok |

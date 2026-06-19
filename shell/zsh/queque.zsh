@@ -259,7 +259,7 @@ JSON
     export QQ_PANE_HEIGHT="$qq_pane_height"
 
     # Launch the floating pane backgrounded+disowned (D-06).
-    # Height is capped at qq_pane_height; qq client shrinks the pane to fit content.
+    # Launch at config height; qq client shrinks the pane once content is rendered.
     zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" --name "qq" -- \
       "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
       2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!

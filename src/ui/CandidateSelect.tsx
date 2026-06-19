@@ -113,9 +113,13 @@ export function CandidateSelect({
 
   const includeDevFooter = process.env.QQ_DEV_ROOT != null;
 
+  // Keep Zellij pane at QQ_PANE_HEIGHT while loading; shrink/grow once content is known.
   // biome-ignore lint/correctness/useExhaustiveDependencies: layout callback mirrors render inputs
   useEffect(() => {
     if (!onLayoutLinesChange) {
+      return;
+    }
+    if (candidates === null && error !== true) {
       return;
     }
     onLayoutLinesChange(

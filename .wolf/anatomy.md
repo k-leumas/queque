@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:32:43.942Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:33:32.063Z
 > Files: 289 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -629,7 +629,7 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2795 tok)
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2839 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `modal-layout.ts` — Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens. (~1056 tok)
 - `Modal.tsx` — Modal (~223 tok)
@@ -647,7 +647,7 @@
 - `init-command.test.ts` — Declares marker (~163 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
-- `modal-layout.test.ts` — Declares lines (~668 tok)
+- `modal-layout.test.ts` — Declares lines (~666 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
 - `provider-resolver.test.ts` — Declares adapter (~551 tok)
