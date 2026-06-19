@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:47:52.597Z
-> Files: 290 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:54:50.896Z
+> Files: 292 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -104,7 +104,7 @@
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
 - `CONTRIBUTING.md` — Contributing (~1150 tok)
-- `lefthook.yml` (~200 tok)
+- `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~524 tok)
 - `README.md` — Project documentation (~1079 tok)
@@ -573,6 +573,7 @@
 
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
 - `smoke-homebrew-docker.sh` (~953 tok)
+- `strip-cursor-coauthor-from-msg.sh` — Removes Cursor co-author trailer lines from a git commit message file or stdin. (~114 tok)
 
 ## shell/zsh/
 
@@ -634,6 +635,7 @@
 ## src/ui/
 
 - `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2839 tok)
+- `ControlsLine.tsx` — Keyboard hints shown below the candidate list. (~248 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `modal-layout.ts` — Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens. (~1056 tok)
 - `Modal.tsx` — Modal (~223 tok)

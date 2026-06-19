@@ -1580,3 +1580,14 @@
 | 17:47 | Created .planning/quick/20260619-workflows-nvmrc/SUMMARY.md | — | ~91 |
 | 17:47 | Created .planning/STATE.md | — | ~2279 |
 | 17:48 | Session end: 5 writes across 5 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 5 reads | ~8442 tok |
+| 17:50 | Session end: 5 writes across 5 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 7 reads | ~9026 tok |
+| 17:51 | Session end: 5 writes across 5 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 8 reads | ~9134 tok |
+| 17:51 | Session end: 5 writes across 5 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 8 reads | ~9134 tok |
+| 17:52 | Created src/ui/ControlsLine.tsx | — | ~248 |
+| 17:52 | Session end: 6 writes across 6 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 8 reads | ~9382 tok |
+| 17:53 | Session end: 6 writes across 6 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 8 reads | ~9382 tok |
+| 17:54 | Created scripts/strip-cursor-coauthor-from-msg.sh | — | ~114 |
+| 17:54 | Created lefthook.yml | — | ~320 |
+| 17:54 | Session end: 8 writes across 8 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 10 reads | ~10024 tok |
+| 17:56 | Session end: 8 writes across 8 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 10 reads | ~10024 tok |
+| 17:59 | Session end: 5 writes across 5 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 8 reads | ~9026 tok |
