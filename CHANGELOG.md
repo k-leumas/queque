@@ -1,3 +1,26 @@
+# [0.4.0](https://github.com/k-leumas/queque/compare/v0.3.9...v0.4.0) (2026-06-19)
+
+
+### Bug Fixes
+
+* **build:** allow esbuild install scripts and ignore stray workspace yaml ([8fcc723](https://github.com/k-leumas/queque/commit/8fcc723b0e2eded1e77fbf43ce6fd08c63a3e0ae))
+* **ci:** allow esbuild and lefthook build scripts in pnpm 11 ([d09bfeb](https://github.com/k-leumas/queque/commit/d09bfeb1b7a8563fb039bf4830b9595534db4217))
+* **init:** detect real shell integration, not any queque mention ([0831827](https://github.com/k-leumas/queque/commit/0831827d1dba324a4229a6364593d8eb2646f842))
+* **privacy:** broaden rm destructive warning and close review ([54807d3](https://github.com/k-leumas/queque/commit/54807d3252edc83392babfbe255072e701f98d06))
+* **ui:** restore ControlsLine key badge styling ([d9f8a96](https://github.com/k-leumas/queque/commit/d9f8a965a30738922429c7ed78875dfb0f599038))
+* **ui:** stabilize candidate list gutter and extend selection tail ([1eb196c](https://github.com/k-leumas/queque/commit/1eb196ce78a86009aeef2341addeb7905835cc86))
+* **zellij:** keep config pane height until candidates load ([1d2b2cd](https://github.com/k-leumas/queque/commit/1d2b2cd7cb9204b240d7a72a905819baa7169f5b))
+
+
+### Features
+
+* **06:** harden privacy defaults and registry extension seams ([77eb61c](https://github.com/k-leumas/queque/commit/77eb61c3bad1077477e424cf50c9b236e38d41dd))
+* **privacy:** add configurable privacy defaults across stack ([c372b94](https://github.com/k-leumas/queque/commit/c372b94cdae2f3266e634cb06776553438da7972))
+* **registry:** resolve LLM adapters through provider backend registry ([6c14dd4](https://github.com/k-leumas/queque/commit/6c14dd43aed5aff853f0b201c2279f4a78b6c7ac))
+* **safety:** broaden destructive command detection and pin pnpm 11.8 ([1045a22](https://github.com/k-leumas/queque/commit/1045a22637729d99a055af686cf7162f390ee553))
+* **ui:** add yellow warning mark on destructive candidates ([7e1fdac](https://github.com/k-leumas/queque/commit/7e1fdac78b23e7b6d934f9f5e5f2049eeb70cf8f))
+* **zellij:** resize floating pane to fit modal content ([99adc79](https://github.com/k-leumas/queque/commit/99adc79119e05b59e42ad71a966afd2836783921))
+
 ## [0.3.9](https://github.com/k-leumas/queque/compare/v0.3.8...v0.3.9) (2026-06-09)
 
 ## [0.3.8](https://github.com/k-leumas/queque/compare/v0.3.7...v0.3.8) (2026-06-09)
