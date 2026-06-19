@@ -13,6 +13,7 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { writeShellResult } from './result-writer.js';
+import { syncZellijFloatingPaneHeight } from './zellij-pane-resize.js';
 
 /**
  * Splits a command + explanation into shell buffer halves.
@@ -245,6 +246,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
                 await writeShellResult(resultFile, { kind: 'cancel' });
                 unmount?.();
               },
+              onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined,
             });
 
           // Force interactive:true so Ink uses cursor-repositioning mode regardless of

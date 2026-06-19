@@ -5,6 +5,7 @@ import { isDestructiveCommand } from '../shared/privacy-filter.js';
 import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { Modal } from './Modal.js';
+import { estimateCandidateSelectLines, filterCandidates, wrapText } from './modal-layout.js';
 import { SearchInput } from './SearchInput.js';
 
 /** Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text never shifts. */
@@ -29,50 +30,6 @@ const MODAL_MAX_WIDTH = 80;
 const MODAL_PADDING_X = 2;
 
 /**
- * Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens.
- */
-export function wrapText(text: string, maxWidth: number): string[] {
-  if (maxWidth < 1) {
-    return [text];
-  }
-
-  const words = text.split(/\s+/).filter((word) => word.length > 0);
-  if (words.length === 0) {
-    return [''];
-  }
-
-  const lines: string[] = [];
-  let line = '';
-
-  for (const word of words) {
-    let remaining = word;
-    while (remaining.length > 0) {
-      const candidate = line ? `${line} ${remaining}` : remaining;
-      if (candidate.length <= maxWidth) {
-        line = candidate;
-        remaining = '';
-        break;
-      }
-
-      if (line) {
-        lines.push(line);
-        line = '';
-        continue;
-      }
-
-      lines.push(remaining.slice(0, maxWidth));
-      remaining = remaining.slice(maxWidth);
-    }
-  }
-
-  if (line) {
-    lines.push(line);
-  }
-
-  return lines;
-}
-
-/**
  * Returns the 3-column gutter prefix for a line within a candidate block.
  */
 function linePrefix(active: boolean, lineIndex: number): string {
@@ -93,6 +50,8 @@ interface Props {
   onSelect: (command: string, explanation: string) => void;
   onCancel: () => void;
   error?: boolean;
+  /** Called when rendered row count changes (Zellij pane resize). */
+  onLayoutLinesChange?: (lineCount: number) => void;
 }
 
 /**
@@ -100,16 +59,6 @@ interface Props {
  */
 function normalizeCommand(command: string): string {
   return command.trim();
-}
-
-/**
- * Filter candidates by case-insensitive substring match on command text.
- * Returns the full list unchanged when query is empty or falsy.
- */
-function filterCandidates(candidates: CandidateList, query: string): CandidateList {
-  if (!query) return candidates;
-  const lower = query.toLowerCase();
-  return candidates.filter((c) => normalizeCommand(c.command).toLowerCase().includes(lower));
 }
 
 /**
@@ -128,6 +77,7 @@ export function CandidateSelect({
   onSelect,
   onCancel,
   error,
+  onLayoutLinesChange,
 }: Props): ReactElement {
   const { isRawModeSupported } = useStdin();
   const { stdout } = useStdout();
@@ -160,6 +110,35 @@ export function CandidateSelect({
   useEffect(() => {
     setSelectedIndex(0);
   }, [query]);
+
+  const includeDevFooter = process.env.QQ_DEV_ROOT != null;
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: layout callback mirrors render inputs
+  useEffect(() => {
+    if (!onLayoutLinesChange) {
+      return;
+    }
+    onLayoutLinesChange(
+      estimateCandidateSelectLines({
+        candidates,
+        initialQuery,
+        query,
+        selectedIndex,
+        error,
+        contentWidth,
+        includeDevFooter,
+      }),
+    );
+  }, [
+    candidates,
+    initialQuery,
+    query,
+    selectedIndex,
+    error,
+    contentWidth,
+    includeDevFooter,
+    onLayoutLinesChange,
+  ]);
 
   // Single useInput handler with null-guards (Pitfall 3 fix).
   // isActive:false when raw mode is unavailable — prevents Ink from throwing

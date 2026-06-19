@@ -227,7 +227,7 @@ describe('CandidateSelect — selectedIndex reset on query change', () => {
     // useEffect must be called twice: once for useEffect([candidates]) and
     // once for useEffect([query]) — the latter added by Plan 04-02.
     // +1 for the isRawModeSupported cancel guard added in the prod-tui-crash fix.
-    expect(useEffect).toHaveBeenCalledTimes(3);
+    expect(useEffect).toHaveBeenCalledTimes(4);
   });
 });
 
@@ -403,17 +403,6 @@ describe('CandidateSelect — command whitespace normalization', () => {
     const tailCount = (text.match(/│/g) ?? []).length;
     expect(text).toContain('┌>');
     expect(tailCount).toBeGreaterThanOrEqual(2);
-  });
-});
-
-describe('wrapText', () => {
-  it('wraps long text into multiple lines', async () => {
-    const { wrapText } = await import('../src/ui/CandidateSelect.js');
-    const lines = wrapText('alpha beta gamma delta epsilon zeta', 10);
-    expect(lines.length).toBeGreaterThan(1);
-    for (const line of lines) {
-      expect(line.length).toBeLessThanOrEqual(10);
-    }
   });
 });
 

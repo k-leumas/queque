@@ -255,8 +255,11 @@ JSON
     # Pane dimensions — override with QQ_PANE_WIDTH / QQ_PANE_HEIGHT (defaults 80×24).
     local qq_pane_width="${QQ_PANE_WIDTH:-80}"
     local qq_pane_height="${QQ_PANE_HEIGHT:-24}"
+    export QQ_PANE_WIDTH="$qq_pane_width"
+    export QQ_PANE_HEIGHT="$qq_pane_height"
 
     # Launch the floating pane backgrounded+disowned (D-06).
+    # Height is capped at qq_pane_height; qq client shrinks the pane to fit content.
     zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" --name "qq" -- \
       "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
       2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!

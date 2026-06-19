@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:27:24.778Z
-> Files: 280 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:32:43.942Z
+> Files: 289 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -90,6 +90,12 @@
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
 - `project_target_audience.md` (~202 tok)
+
+## ../../.cursor/projects/Users-samuel-dev-tui-llm/agent-tools/
+
+- `55d1b009-26e8-4256-9cf0-568c32416191.txt` — Declares definitions (~20328 tok)
+- `a0c7f713-e5ba-4432-9036-d28b9afc3d41.txt` (~8668 tok)
+- `f0005c5f-1174-4259-a9b2-6b1ba941a3f9.txt` — Declares definitions (~20328 tok)
 
 ## ./
 
@@ -374,7 +380,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3893 tok)
-- `STATE.md` — Project State (~2045 tok)
+- `STATE.md` — Project State (~2096 tok)
 
 ## .planning/notes/
 
@@ -504,6 +510,11 @@
 
 - `SUMMARY.md` — Quick Task: Selection arrow vertical tail (~115 tok)
 
+## .planning/quick/20260618-zellij-responsive-height/
+
+- `PLAN.md` — Quick Task: Zellij responsive modal height (~151 tok)
+- `SUMMARY.md` — Quick Task: Zellij responsive modal height (~192 tok)
+
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
 - `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
@@ -562,7 +573,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2923 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2968 tok)
 
 ## src/
 
@@ -580,7 +591,8 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3908 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3958 tok)
+- `zellij-pane-resize.ts` — Default max floating pane height when QQ_PANE_HEIGHT is unset or invalid. (~694 tok)
 
 ## src/context/
 
@@ -617,14 +629,15 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2925 tok)
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2795 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
+- `modal-layout.ts` — Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens. (~1056 tok)
 - `Modal.tsx` — Modal (~223 tok)
 - `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
 ## tests/
 
-- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6611 tok)
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6504 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~1725 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
@@ -634,6 +647,7 @@
 - `init-command.test.ts` — Declares marker (~163 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
+- `modal-layout.test.ts` — Declares lines (~668 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
 - `provider-resolver.test.ts` — Declares adapter (~551 tok)
@@ -641,4 +655,5 @@
 - `registry-bootstrap.test.ts` — Declares hookIds (~604 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
+- `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7668 tok)
