@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:33:32.063Z
-> Files: 289 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:47:52.597Z
+> Files: 290 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -364,8 +364,8 @@
 
 ## .github/workflows/
 
-- `homebrew.yml` — CI: Update Homebrew Tap (~932 tok)
-- `release.yaml` — CI: Release (~1854 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~957 tok)
+- `release.yaml` — CI: Release (~1824 tok)
 
 ## .gsd/
 
@@ -380,7 +380,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3893 tok)
-- `STATE.md` — Project State (~2096 tok)
+- `STATE.md` — Project State (~2137 tok)
 
 ## .planning/notes/
 
@@ -514,6 +514,10 @@
 
 - `PLAN.md` — Quick Task: Zellij responsive modal height (~151 tok)
 - `SUMMARY.md` — Quick Task: Zellij responsive modal height (~192 tok)
+
+## .planning/quick/20260619-workflows-nvmrc/
+
+- `SUMMARY.md` — Quick Task: Workflows use .nvmrc for Node version (~85 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
