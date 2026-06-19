@@ -1455,3 +1455,72 @@
 | 16:43 | Created docs/SYSTEM_DESIGN.md | — | ~2724 |
 | 16:43 | Created CONTRIBUTING.md | — | ~1227 |
 | 16:47 | Session end: 41 writes across 25 files (06-REVIEWS.md, 06-01-PLAN.md, 06-02-PLAN.md, 06-03-PLAN.md, pnpm) | 52 reads | ~164364 tok |
+
+## Session: 2026-06-18 16:48
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 16:50 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-SUMMARY.md | — | ~1320 |
+| 16:50 | Created .planning/ROADMAP.md | — | ~4150 |
+| 16:50 | Created .planning/ROADMAP.md | — | ~4152 |
+| 16:50 | Created .planning/STATE.md | — | ~2040 |
+| 16:50 | Created .planning/ROADMAP.md | — | ~4152 |
+| 16:50 | Created .planning/STATE.md | — | ~2046 |
+| 16:51 | Created .planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VERIFICATION.md | — | ~2771 |
+| 16:52 | Created .planning/STATE.md | — | ~2049 |
+| 16:52 | Created .planning/STATE.md | — | ~2029 |
+| 16:52 | Created .planning/STATE.md | — | ~2029 |
+| 16:52 | Session end: 10 writes across 4 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md) | 31 reads | ~62825 tok |
+| 17:03 | Created src/ui/CandidateSelect.tsx | — | ~1984 |
+| 17:03 | Created src/contracts/candidates.ts | — | ~104 |
+| 17:03 | Created src/ui/CandidateSelect.tsx | — | ~1996 |
+| 17:03 | Created src/ui/CandidateSelect.tsx | — | ~2015 |
+| 17:03 | Created src/ui/CandidateSelect.tsx | — | ~2028 |
+| 17:03 | Created tests/candidate-select.test.tsx | — | ~5270 |
+| 17:03 | Created tests/candidate-select.test.tsx | — | ~5943 |
+| 17:03 | Created tests/candidate-select.test.tsx | — | ~5851 |
+| 17:04 | Created tests/candidate-select.test.tsx | — | ~5851 |
+| 17:04 | Created .planning/quick/20260618-candidate-command-trim/SUMMARY.md | — | ~118 |
+| 17:04 | Created .planning/STATE.md | — | ~2078 |
+| 17:04 | Session end: 21 writes across 8 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 36 reads | ~101565 tok |
+| 17:06 | Created src/ui/CandidateSelect.tsx | — | ~2201 |
+| 17:06 | Created src/ui/CandidateSelect.tsx | — | ~2254 |
+| 17:06 | Created src/ui/CandidateSelect.tsx | — | ~2205 |
+| 17:06 | Created src/ui/CandidateSelect.tsx | — | ~2191 |
+| 17:07 | Created tests/candidate-select.test.tsx | — | ~6082 |
+| 17:07 | Created src/ui/CandidateSelect.tsx | — | ~2224 |
+| 17:07 | Created tests/candidate-select.test.tsx | — | ~6082 |
+| 17:07 | Created tests/candidate-select.test.tsx | — | ~6090 |
+| 17:07 | Session end: 29 writes across 8 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 39 reads | ~134236 tok |
+| 17:09 | Created src/ui/ControlsLine.tsx | — | ~88 |
+| 17:09 | Created src/ui/CandidateSelect.tsx | — | ~2093 |
+| 17:09 | Created src/ui/SearchInput.tsx | — | ~108 |
+| 17:09 | Created src/ui/CandidateSelect.tsx | — | ~2094 |
+| 17:09 | Created src/ui/CandidateSelect.tsx | — | ~1984 |
+| 17:09 | Created tests/candidate-select.test.tsx | — | ~6066 |
+| 17:09 | Created tests/candidate-select.test.tsx | — | ~6042 |
+| 17:09 | Session end: 36 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 41 reads | ~152845 tok |
+| 17:11 | Created src/ui/CandidateSelect.tsx | — | ~2086 |
+| 17:11 | Created src/ui/CandidateSelect.tsx | — | ~2196 |
+| 17:11 | Created tests/candidate-select.test.tsx | — | ~6062 |
+| 17:11 | Session end: 39 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 41 reads | ~163189 tok |
+| 17:13 | Created src/ui/CandidateSelect.tsx | — | ~2141 |
+| 17:13 | Created src/ui/CandidateSelect.tsx | — | ~2123 |
+| 17:13 | Created tests/candidate-select.test.tsx | — | ~6048 |
+| 17:13 | Session end: 42 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 41 reads | ~173501 tok |
+| 17:16 | Created src/ui/CandidateSelect.tsx | — | ~2126 |
+| 17:16 | Created src/ui/CandidateSelect.tsx | — | ~2543 |
+| 17:16 | Created src/ui/CandidateSelect.tsx | — | ~2598 |
+| 17:16 | Created src/ui/CandidateSelect.tsx | — | ~2732 |
+| 17:16 | Created tests/candidate-select.test.tsx | — | ~6067 |
+| 17:16 | Created tests/candidate-select.test.tsx | — | ~6045 |
+| 17:16 | Created tests/candidate-select.test.tsx | — | ~6389 |
+| 17:16 | Created tests/candidate-select.test.tsx | — | ~6388 |
+| 17:16 | Created .planning/quick/20260618-selection-arrow-tail/SUMMARY.md | — | ~123 |
+| 17:16 | Session end: 51 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 42 reads | ~208520 tok |
+| 17:18 | Created .planning/STATE.md | — | ~2127 |
+| 17:18 | Created src/ui/CandidateSelect.tsx | — | ~2743 |
+| 17:19 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 42 reads | ~213542 tok |
+| 17:20 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |
+| 17:20 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |
+| 17:21 | Session end: 53 writes across 10 files (06-03-SUMMARY.md, ROADMAP.md, STATE.md, 06-VERIFICATION.md, CandidateSelect.tsx) | 46 reads | ~224853 tok |

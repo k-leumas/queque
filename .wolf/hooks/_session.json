@@ -1,556 +1,574 @@
 {
-  "session_id": "session-2026-06-18-1611",
-  "started": "2026-06-18T23:11:24.392Z",
+  "session_id": "session-2026-06-18-1648",
+  "started": "2026-06-18T23:48:37.944Z",
   "files_read": {
-    "/tmp/gsd-review-claude-06.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:15:44.075Z"
-    },
-    "/tmp/gsd-review-codex-06.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:15:44.089Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-REVIEWS.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:16:04.643Z"
-    },
-    "/Users/samuel/.claude/skills/gsd-plan-phase/SKILL.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:19:39.698Z"
-    },
-    "/Users/samuel/.claude/gsd-core/workflows/plan-phase.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:19:42.299Z"
+    "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
+      "count": 6,
+      "tokens": 3908,
+      "first_read": "2026-06-18T23:48:38.982Z"
     },
     "/Users/samuel/dev/tui-llm/src/shared/privacy-filter.ts": {
-      "count": 5,
+      "count": 2,
       "tokens": 717,
-      "first_read": "2026-06-18T23:19:51.210Z"
+      "first_read": "2026-06-18T23:48:46.626Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts": {
+      "count": 3,
+      "tokens": 2471,
+      "first_read": "2026-06-18T23:48:53.791Z"
     },
     "/Users/samuel/dev/tui-llm/src/context/pipeline.ts": {
-      "count": 5,
-      "tokens": 524,
-      "first_read": "2026-06-18T23:19:51.440Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/resolver.ts": {
-      "count": 4,
-      "tokens": 370,
-      "first_read": "2026-06-18T23:20:04.133Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/registry/provider-backends.ts": {
       "count": 2,
-      "tokens": 357,
-      "first_read": "2026-06-18T23:20:04.231Z"
+      "tokens": 524,
+      "first_read": "2026-06-18T23:49:09.095Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
-      "count": 4,
+      "count": 1,
       "tokens": 1597,
-      "first_read": "2026-06-18T23:20:06.639Z"
+      "first_read": "2026-06-18T23:49:09.228Z"
     },
-    "/Users/samuel/dev/tui-llm/.planning/REQUIREMENTS.md": {
+    "/Users/samuel/dev/tui-llm/.gitignore": {
+      "count": 3,
+      "tokens": 60,
+      "first_read": "2026-06-18T23:49:23.781Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
+      "count": 4,
+      "tokens": 1994,
+      "first_read": "2026-06-18T23:49:24.826Z"
+    },
+    "/Users/samuel/.cursor/skills/gsd-next/SKILL.md": {
       "count": 1,
-      "tokens": 1313,
-      "first_read": "2026-06-18T23:20:52.511Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-RESEARCH.md": {
-      "count": 1,
-      "tokens": 6651,
-      "first_read": "2026-06-18T23:20:52.943Z"
-    },
-    "/Users/samuel/dev/tui-llm/package.json": {
-      "count": 12,
-      "tokens": 524,
-      "first_read": "2026-06-18T23:27:11.728Z"
-    },
-    "/Users/samuel/dev/tui-llm/lefthook.yml": {
-      "count": 1,
-      "tokens": 200,
-      "first_read": "2026-06-18T23:27:11.947Z"
+      "tokens": 0,
+      "first_read": "2026-06-18T23:49:25.025Z"
     },
     "/Users/samuel/.cursor/get-shit-done/workflows/next.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T23:35:07.151Z"
+      "first_read": "2026-06-18T23:49:26.808Z"
     },
-    "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 2,
-      "tokens": 1843,
-      "first_read": "2026-06-18T23:35:07.350Z"
+    "/Users/samuel/dev/tui-llm/.planning/REQUIREMENTS.md": {
+      "count": 1,
+      "tokens": 1313,
+      "first_read": "2026-06-18T23:49:26.840Z"
     },
     "/Users/samuel/.claude/skills/gsd-execute-phase/SKILL.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T23:35:14.342Z"
+      "first_read": "2026-06-18T23:49:29.606Z"
     },
     "/Users/samuel/.claude/gsd-core/workflows/execute-phase.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T23:35:25.397Z"
+      "first_read": "2026-06-18T23:49:33.531Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md": {
+      "count": 2,
+      "tokens": 2772,
+      "first_read": "2026-06-18T23:49:33.605Z"
+    },
+    "/Users/samuel/dev/tui-llm/CONTRIBUTING.md": {
+      "count": 1,
+      "tokens": 1150,
+      "first_read": "2026-06-18T23:49:43.539Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
+      "count": 1,
+      "tokens": 2923,
+      "first_read": "2026-06-18T23:49:43.761Z"
+    },
+    "/Users/samuel/dev/tui-llm/docs/SYSTEM_DESIGN.md": {
+      "count": 1,
+      "tokens": 2554,
+      "first_read": "2026-06-18T23:49:47.513Z"
+    },
+    "/Users/samuel/dev/tui-llm/docs/EXTENSIONS.md": {
+      "count": 2,
+      "tokens": 798,
+      "first_read": "2026-06-18T23:49:47.683Z"
+    },
+    "/Users/samuel/dev/tui-llm/docs/config.example.json": {
+      "count": 2,
+      "tokens": 65,
+      "first_read": "2026-06-18T23:49:47.785Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-SUMMARY.md": {
+      "count": 3,
+      "tokens": 1440,
+      "first_read": "2026-06-18T23:49:51.887Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VALIDATION.md": {
+      "count": 1,
+      "tokens": 894,
+      "first_read": "2026-06-18T23:49:59.204Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-SUMMARY.md": {
+      "count": 3,
+      "tokens": 1477,
+      "first_read": "2026-06-18T23:49:59.419Z"
+    },
+    "/Users/samuel/.cursor/get-shit-done/templates/summary.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T23:50:09.419Z"
+    },
+    "/Users/samuel/dev/tui-llm/package.json": {
+      "count": 15,
+      "tokens": 524,
+      "first_read": "2026-06-18T23:50:10.431Z"
+    },
+    "/Users/samuel/.claude/skills/gsd-verify-work/SKILL.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T23:50:20.133Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-SUMMARY.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T23:50:28.463Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md": {
+      "count": 1,
+      "tokens": 3038,
+      "first_read": "2026-06-18T23:50:41.762Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-PLAN.md": {
       "count": 2,
       "tokens": 3012,
-      "first_read": "2026-06-18T23:36:30.692Z"
+      "first_read": "2026-06-18T23:50:42.010Z"
     },
     "/Users/samuel/dev/tui-llm/src/shared/debug-log.ts": {
-      "count": 3,
+      "count": 1,
       "tokens": 229,
-      "first_read": "2026-06-18T23:36:42.349Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts": {
-      "count": 2,
-      "tokens": 1919,
-      "first_read": "2026-06-18T23:36:42.533Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts": {
-      "count": 3,
-      "tokens": 1550,
-      "first_read": "2026-06-18T23:36:42.541Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx": {
-      "count": 3,
-      "tokens": 4681,
-      "first_read": "2026-06-18T23:36:47.312Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts": {
-      "count": 2,
-      "tokens": 7412,
-      "first_read": "2026-06-18T23:36:49.200Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
-      "count": 2,
-      "tokens": 1933,
-      "first_read": "2026-06-18T23:36:49.205Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/context/providers/git-context.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:36:49.425Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/qq-config.test.ts": {
-      "count": 1,
-      "tokens": 189,
-      "first_read": "2026-06-18T23:36:57.647Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/debug-log.test.ts": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:37:08.375Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/registry.test.ts": {
-      "count": 1,
-      "tokens": 1515,
-      "first_read": "2026-06-18T23:38:32.639Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/registry/context-providers.ts": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:38:32.664Z"
+      "first_read": "2026-06-18T23:50:57.794Z"
     },
     "/Users/samuel/dev/tui-llm/src/registry/bootstrap.ts": {
-      "count": 4,
+      "count": 1,
       "tokens": 498,
-      "first_read": "2026-06-18T23:38:57.060Z"
+      "first_read": "2026-06-18T23:51:15.178Z"
     },
-    "/Users/samuel/dev/tui-llm/src/intent/router.ts": {
+    "/Users/samuel/dev/tui-llm/src/providers/resolver.ts": {
+      "count": 1,
+      "tokens": 370,
+      "first_read": "2026-06-18T23:51:15.411Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VERIFICATION.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-18T23:51:58.088Z"
+    },
+    "/Users/samuel/.cursor/skills/gsd-quick/SKILL.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:03:06.109Z"
+    },
+    "/Users/samuel/.cursor/get-shit-done/workflows/quick.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:03:08.308Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/contracts/candidates.ts": {
       "count": 2,
       "tokens": 0,
-      "first_read": "2026-06-18T23:39:10.847Z"
+      "first_read": "2026-06-19T00:03:10.452Z"
     },
-    "/Users/samuel/.cursor/get-shit-done/templates/summary.md": {
+    "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx": {
+      "count": 2,
+      "tokens": 5346,
+      "first_read": "2026-06-19T00:03:10.694Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/quick/20260618-candidate-command-trim/SUMMARY.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T00:04:29.348Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/Modal.tsx": {
+      "count": 2,
+      "tokens": 223,
+      "first_read": "2026-06-19T00:06:06.782Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/SearchInput.tsx": {
       "count": 3,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:39:28.979Z"
+      "tokens": 112,
+      "first_read": "2026-06-19T00:06:21.973Z"
     },
-    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-SUMMARY.md": {
+    "/Users/samuel/dev/tui-llm/.planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/03.1-UI-SPEC.md": {
+      "count": 1,
+      "tokens": 3007,
+      "first_read": "2026-06-19T00:06:45.556Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/ControlsLine.tsx": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T23:39:43.609Z"
+      "first_read": "2026-06-19T00:09:15.053Z"
     },
-    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md": {
-      "count": 2,
-      "tokens": 3038,
-      "first_read": "2026-06-18T23:40:11.583Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/provider-resolver.test.ts": {
-      "count": 2,
-      "tokens": 368,
-      "first_read": "2026-06-18T23:40:16.469Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/registry-bootstrap.test.ts": {
+    "/Users/samuel/dev/tui-llm/src/ui/LoadingSpinner.tsx": {
       "count": 1,
-      "tokens": 604,
-      "first_read": "2026-06-18T23:40:16.499Z"
+      "tokens": 134,
+      "first_read": "2026-06-19T00:09:15.138Z"
     },
-    "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
-      "count": 5,
-      "tokens": 3908,
-      "first_read": "2026-06-18T23:40:16.581Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/client-result.test.ts": {
-      "count": 3,
-      "tokens": 7209,
-      "first_read": "2026-06-18T23:40:16.704Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts": {
-      "count": 3,
-      "tokens": 605,
-      "first_read": "2026-06-18T23:40:19.034Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/index.ts": {
-      "count": 1,
-      "tokens": 56,
-      "first_read": "2026-06-18T23:40:19.072Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/claude-provider.test.ts": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:40:19.408Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/context/providers/filesystem-context.ts": {
+    "/Users/samuel/dev/tui-llm/.planning/quick/20260618-selection-arrow-tail/SUMMARY.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-06-18T23:40:33.596Z"
+      "first_read": "2026-06-19T00:16:37.639Z"
     },
-    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-SUMMARY.md": {
-      "count": 1,
+    "/Users/samuel/dev/tui-llm/.planning/PROJECT.md": {
+      "count": 2,
+      "tokens": 1525,
+      "first_read": "2026-06-19T00:19:21.091Z"
+    },
+    "/Users/samuel/dev/tui-llm/pnpm-workspace.yaml": {
+      "count": 2,
       "tokens": 0,
-      "first_read": "2026-06-18T23:41:45.959Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md": {
-      "count": 1,
-      "tokens": 2772,
-      "first_read": "2026-06-18T23:42:21.030Z"
-    },
-    "/Users/samuel/dev/tui-llm/README.md": {
-      "count": 2,
-      "tokens": 760,
-      "first_read": "2026-06-18T23:42:26.503Z"
-    },
-    "/Users/samuel/dev/tui-llm/docs/config.example.json": {
-      "count": 2,
-      "tokens": 79,
-      "first_read": "2026-06-18T23:42:26.520Z"
-    },
-    "/Users/samuel/dev/tui-llm/docs/EXTENSIONS.md": {
-      "count": 1,
-      "tokens": 801,
-      "first_read": "2026-06-18T23:42:26.605Z"
-    },
-    "/Users/samuel/dev/tui-llm/docs/SYSTEM_DESGN.md": {
-      "count": 1,
-      "tokens": 3530,
-      "first_read": "2026-06-18T23:42:26.802Z"
-    },
-    "/Users/samuel/dev/tui-llm/CONTRIBUTING.md": {
-      "count": 2,
-      "tokens": 853,
-      "first_read": "2026-06-18T23:42:26.836Z"
-    },
-    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
-      "count": 2,
-      "tokens": 2866,
-      "first_read": "2026-06-18T23:42:26.981Z"
-    },
-    "/Users/samuel/dev/tui-llm/docs/SYSTEM_DESIGN.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-06-18T23:43:02.764Z"
-    },
-    "/Users/samuel/dev/tui-llm/.gitignore": {
-      "count": 1,
-      "tokens": 60,
-      "first_read": "2026-06-18T23:47:13.652Z"
+      "first_read": "2026-06-19T00:19:29.173Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/quick/20260617-privacy-config-file/REVIEW.md": {
       "count": 1,
       "tokens": 2143,
-      "first_read": "2026-06-18T23:47:40.667Z"
+      "first_read": "2026-06-19T00:19:35.633Z"
+    },
+    "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs": {
+      "count": 1,
+      "tokens": 7492,
+      "first_read": "2026-06-19T00:19:38.377Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-REVIEWS.md",
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-SUMMARY.md",
       "action": "create",
-      "tokens": 7317,
-      "at": "2026-06-18T23:16:05.982Z"
+      "tokens": 1414,
+      "at": "2026-06-18T23:50:29.337Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-PLAN.md",
+      "file": "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md",
       "action": "create",
-      "tokens": 3442,
-      "at": "2026-06-18T23:20:24.198Z"
+      "tokens": 4446,
+      "at": "2026-06-18T23:50:29.374Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md",
+      "file": "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md",
       "action": "create",
-      "tokens": 3472,
-      "at": "2026-06-18T23:20:36.376Z"
+      "tokens": 4449,
+      "at": "2026-06-18T23:50:30.181Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md",
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
       "action": "create",
-      "tokens": 3168,
-      "at": "2026-06-18T23:20:44.682Z"
+      "tokens": 2186,
+      "at": "2026-06-18T23:50:31.221Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.local-bin/pnpm",
+      "file": "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md",
       "action": "create",
-      "tokens": 101,
-      "at": "2026-06-18T23:30:07.436Z"
+      "tokens": 4449,
+      "at": "2026-06-18T23:50:31.254Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/debug-log.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
       "action": "create",
-      "tokens": 484,
-      "at": "2026-06-18T23:37:09.676Z"
+      "tokens": 2192,
+      "at": "2026-06-18T23:50:32.068Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VERIFICATION.md",
       "action": "create",
-      "tokens": 1957,
-      "at": "2026-06-18T23:37:11.063Z"
+      "tokens": 2969,
+      "at": "2026-06-18T23:51:58.688Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
       "action": "create",
-      "tokens": 2037,
-      "at": "2026-06-18T23:37:12.172Z"
+      "tokens": 2195,
+      "at": "2026-06-18T23:52:09.656Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
       "action": "create",
-      "tokens": 2455,
-      "at": "2026-06-18T23:37:13.577Z"
+      "tokens": 2174,
+      "at": "2026-06-18T23:52:11.334Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
       "action": "create",
-      "tokens": 2474,
-      "at": "2026-06-18T23:37:14.991Z"
+      "tokens": 2174,
+      "at": "2026-06-18T23:52:12.836Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/privacy-filter.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 2471,
-      "at": "2026-06-18T23:37:20.743Z"
+      "tokens": 1984,
+      "at": "2026-06-19T00:03:22.390Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/contracts/candidates.ts",
       "action": "create",
-      "tokens": 1478,
-      "at": "2026-06-18T23:37:23.518Z"
+      "tokens": 104,
+      "at": "2026-06-19T00:03:22.417Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 7668,
-      "at": "2026-06-18T23:37:25.838Z"
+      "tokens": 1996,
+      "at": "2026-06-19T00:03:23.382Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2015,
+      "at": "2026-06-19T00:03:24.939Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2028,
+      "at": "2026-06-19T00:03:25.745Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 5346,
-      "at": "2026-06-18T23:37:31.870Z"
+      "tokens": 5270,
+      "at": "2026-06-19T00:03:29.238Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 1477,
-      "at": "2026-06-18T23:37:49.897Z"
+      "tokens": 5943,
+      "at": "2026-06-19T00:03:43.590Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 1467,
-      "at": "2026-06-18T23:37:51.370Z"
+      "tokens": 5851,
+      "at": "2026-06-19T00:03:56.531Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 1525,
-      "at": "2026-06-18T23:38:08.111Z"
+      "tokens": 5851,
+      "at": "2026-06-19T00:04:13.384Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260618-candidate-command-trim/SUMMARY.md",
       "action": "create",
-      "tokens": 1556,
-      "at": "2026-06-18T23:38:37.193Z"
+      "tokens": 126,
+      "at": "2026-06-19T00:04:29.941Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
       "action": "create",
-      "tokens": 1488,
-      "at": "2026-06-18T23:38:39.203Z"
+      "tokens": 2226,
+      "at": "2026-06-19T00:04:30.348Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 1580,
-      "at": "2026-06-18T23:39:19.167Z"
+      "tokens": 2201,
+      "at": "2026-06-19T00:06:50.104Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/context-pipeline.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 1550,
-      "at": "2026-06-18T23:39:21.854Z"
+      "tokens": 2254,
+      "at": "2026-06-19T00:06:51.242Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-SUMMARY.md",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 1646,
-      "at": "2026-06-18T23:39:45.213Z"
+      "tokens": 2205,
+      "at": "2026-06-19T00:06:54.322Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/claude.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 1582,
-      "at": "2026-06-18T23:40:42.075Z"
+      "tokens": 2191,
+      "at": "2026-06-19T00:06:55.483Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/claude.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 1597,
-      "at": "2026-06-18T23:40:43.932Z"
+      "tokens": 6082,
+      "at": "2026-06-19T00:07:11.533Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/resolver.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 370,
-      "at": "2026-06-18T23:40:45.424Z"
+      "tokens": 2224,
+      "at": "2026-06-19T00:07:15.578Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/registry/bootstrap.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 498,
-      "at": "2026-06-18T23:40:46.500Z"
+      "tokens": 6082,
+      "at": "2026-06-19T00:07:16.395Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/cli/commands/init.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 605,
-      "at": "2026-06-18T23:40:47.541Z"
+      "tokens": 6090,
+      "at": "2026-06-19T00:07:41.427Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/claude.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/ControlsLine.tsx",
       "action": "create",
-      "tokens": 1597,
-      "at": "2026-06-18T23:40:48.417Z"
+      "tokens": 88,
+      "at": "2026-06-19T00:09:28.852Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/provider-resolver.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 551,
-      "at": "2026-06-18T23:40:48.434Z"
+      "tokens": 2093,
+      "at": "2026-06-19T00:09:28.858Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/claude-provider.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/SearchInput.tsx",
       "action": "create",
-      "tokens": 1725,
-      "at": "2026-06-18T23:40:49.986Z"
+      "tokens": 108,
+      "at": "2026-06-19T00:09:28.872Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 7714,
-      "at": "2026-06-18T23:40:50.708Z"
+      "tokens": 2094,
+      "at": "2026-06-19T00:09:30.272Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 7823,
-      "at": "2026-06-18T23:41:07.038Z"
+      "tokens": 1984,
+      "at": "2026-06-19T00:09:31.165Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/client-result.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 7932,
-      "at": "2026-06-18T23:41:08.293Z"
+      "tokens": 6066,
+      "at": "2026-06-19T00:09:33.721Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-SUMMARY.md",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 1688,
-      "at": "2026-06-18T23:41:46.951Z"
+      "tokens": 6042,
+      "at": "2026-06-19T00:09:35.367Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 898,
-      "at": "2026-06-18T23:42:46.476Z"
+      "tokens": 2086,
+      "at": "2026-06-19T00:11:00.617Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 1233,
-      "at": "2026-06-18T23:42:48.031Z"
+      "tokens": 2196,
+      "at": "2026-06-19T00:11:01.556Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/docs/config.example.json",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 65,
-      "at": "2026-06-18T23:42:49.636Z"
+      "tokens": 6062,
+      "at": "2026-06-19T00:11:02.786Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/docs/EXTENSIONS.md",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 912,
-      "at": "2026-06-18T23:42:49.793Z"
+      "tokens": 2141,
+      "at": "2026-06-19T00:13:38.607Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 3131,
-      "at": "2026-06-18T23:42:50.285Z"
+      "tokens": 2123,
+      "at": "2026-06-19T00:13:39.620Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/docs/SYSTEM_DESIGN.md",
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
       "action": "create",
-      "tokens": 2919,
-      "at": "2026-06-18T23:43:03.933Z"
+      "tokens": 6048,
+      "at": "2026-06-19T00:13:40.507Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/CONTRIBUTING.md",
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
       "action": "create",
-      "tokens": 1314,
-      "at": "2026-06-18T23:43:05.875Z"
+      "tokens": 2126,
+      "at": "2026-06-19T00:16:00.632Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2543,
+      "at": "2026-06-19T00:16:03.330Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2598,
+      "at": "2026-06-19T00:16:04.356Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2732,
+      "at": "2026-06-19T00:16:05.510Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6067,
+      "at": "2026-06-19T00:16:09.476Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6045,
+      "at": "2026-06-19T00:16:10.879Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6389,
+      "at": "2026-06-19T00:16:22.588Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/candidate-select.test.tsx",
+      "action": "create",
+      "tokens": 6388,
+      "at": "2026-06-19T00:16:37.002Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260618-selection-arrow-tail/SUMMARY.md",
+      "action": "create",
+      "tokens": 131,
+      "at": "2026-06-19T00:16:38.248Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
+      "action": "create",
+      "tokens": 2279,
+      "at": "2026-06-19T00:18:44.270Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx",
+      "action": "create",
+      "tokens": 2743,
+      "at": "2026-06-19T00:18:58.076Z"
     }
   ],
   "edit_counts": {
-    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-REVIEWS.md": 1,
-    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-PLAN.md": 1,
-    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-PLAN.md": 1,
-    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-PLAN.md": 1,
-    ".local-bin/pnpm": 1,
-    "tests/debug-log.test.ts": 1,
-    "tests/privacy-filter.test.ts": 5,
-    "tests/context-pipeline.test.ts": 8,
-    "tests/zsh-widget.test.ts": 1,
-    "tests/candidate-select.test.tsx": 1,
-    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-01-SUMMARY.md": 1,
-    "src/providers/claude.ts": 3,
-    "src/providers/resolver.ts": 1,
-    "src/registry/bootstrap.ts": 1,
-    "src/cli/commands/init.ts": 1,
-    "tests/provider-resolver.test.ts": 1,
-    "tests/claude-provider.test.ts": 1,
-    "tests/client-result.test.ts": 3,
-    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-02-SUMMARY.md": 1,
-    "README.md": 2,
-    "docs/config.example.json": 1,
-    "docs/EXTENSIONS.md": 1,
-    "shell/zsh/queque.zsh": 1,
-    "docs/SYSTEM_DESIGN.md": 1,
-    "CONTRIBUTING.md": 1
+    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-03-SUMMARY.md": 1,
+    ".planning/ROADMAP.md": 3,
+    ".planning/STATE.md": 7,
+    ".planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-VERIFICATION.md": 1,
+    "src/ui/CandidateSelect.tsx": 21,
+    "src/contracts/candidates.ts": 1,
+    "tests/candidate-select.test.tsx": 15,
+    ".planning/quick/20260618-candidate-command-trim/SUMMARY.md": 1,
+    "src/ui/ControlsLine.tsx": 1,
+    "src/ui/SearchInput.tsx": 1,
+    ".planning/quick/20260618-selection-arrow-tail/SUMMARY.md": 1
   },
-  "anatomy_hits": 33,
-  "anatomy_misses": 16,
-  "repeated_reads_warned": 59,
+  "anatomy_hits": 26,
+  "anatomy_misses": 14,
+  "repeated_reads_warned": 43,
   "cerebrum_warnings": 0,
-  "stop_count": 10
+  "stop_count": 11
 }

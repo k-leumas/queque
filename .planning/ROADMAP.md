@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3.2: Zellij floating pane integration for best UX** - Reduce scope to Zellij floating panes for best UX. (INSERTED)
 - [x] **Phase 4: Fuzzy TUI Selection UX** - Make command selection feel natural, keyboard-first, and stable.
 - [~] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready. **(DEFERRED — Esc + re-query is acceptable workaround)**
-- [ ] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
+- [x] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
 - [ ] **Phase 7: Context-Aware Learning and Ambient Suggestions** - Make QueQue learn from every interaction and act without needing a query.
 - [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make QueQue work out of the box for anyone who already has Claude Code, Ollama, or an OpenAI key — no manual setup required.
 
@@ -180,7 +180,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 06-03: Package the MVP for daily-driver usage and document the next expansion path.
+- [x] 06-03: Package the MVP for daily-driver usage and document the next expansion path.
 
 **Cross-cutting constraints:**
 
@@ -245,6 +245,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 | 3.2. Zellij floating pane integration for best UX | 3/3 | Complete (INSERTED) | 2026-05-14 |
 | 4. Fuzzy TUI Selection UX | 3/3 | Complete | 2026-05-22 |
 | 5. Clarification Chat in the Same TUI | 0/3 | Deferred | — |
-| 6. Hardening, Privacy Defaults, and Extension Seams | 0/3 | **Next** | - |
+| 6. Hardening, Privacy Defaults, and Extension Seams | 3/3 | Complete | 2026-06-18 |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
 | 8. Zero-Config Install and Provider Detection | 0/3 | Not started | - |

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-18T23:43:05.861Z
-> Files: 273 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:18:58.056Z
+> Files: 278 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -373,8 +373,8 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~3853 tok)
-- `STATE.md` — Project State (~1843 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~3893 tok)
+- `STATE.md` — Project State (~1994 tok)
 
 ## .planning/notes/
 
@@ -459,10 +459,12 @@
 - `06-02-PLAN.md` — Declares after (~3038 tok)
 - `06-02-SUMMARY.md` — Phase 06 Plan 02: Registry Provider Resolution Summary (~1477 tok)
 - `06-03-PLAN.md` (~2772 tok)
+- `06-03-SUMMARY.md` — Phase 06 Plan 03: Daily-Driver Documentation Summary (~1237 tok)
 - `06-PATTERNS.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Pattern Map (~6426 tok)
 - `06-RESEARCH.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams - Research (~6651 tok)
 - `06-REVIEWS.md` — Cross-AI Plan Review — Phase 06 (~6403 tok)
 - `06-VALIDATION.md` — Phase 06 — Validation Strategy (~894 tok)
+- `06-VERIFICATION.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams Verification Report (~2598 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
@@ -488,6 +490,14 @@
 - `PLAN.md` — Quick Task: User privacy config file (~170 tok)
 - `REVIEW.md` — Phase 20260617-privacy-config-file: Code Review Report (~2143 tok)
 - `SUMMARY.md` — Quick Task: User privacy config file (~319 tok)
+
+## .planning/quick/20260618-candidate-command-trim/
+
+- `SUMMARY.md` — Quick Task: Trim candidate command whitespace (~111 tok)
+
+## .planning/quick/20260618-selection-arrow-tail/
+
+- `SUMMARY.md` — Quick Task: Selection arrow vertical tail (~115 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
@@ -573,6 +583,7 @@
 
 ## src/contracts/
 
+- `candidates.ts` — Zod schemas: commandCandidateSchema, candidateListSchema (~104 tok)
 - `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
 
 ## src/daemon/
@@ -601,14 +612,14 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Props for CandidateSelect. (~1933 tok)
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2743 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `Modal.tsx` — Modal (~223 tok)
-- `SearchInput.tsx` — SearchInput (~112 tok)
+- `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
 ## tests/
 
-- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~5346 tok)
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6388 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~1725 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
