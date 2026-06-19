@@ -113,6 +113,7 @@ None yet.
 | 20260618-destructive-mark | yellow ⚠ footnote on destructive candidate commands and footer warning | 2026-06-18 | 0219fee | [20260618-destructive-warning-mark](./quick/20260618-destructive-warning-mark/) |
 | 20260618-zellij-height | Zellij floating pane resizes to modal content, capped at QQ_PANE_HEIGHT | 2026-06-18 | — | [20260618-zellij-responsive-height](./quick/20260618-zellij-responsive-height/) |
 | 20260619-nvmrc | GitHub Actions workflows use node-version-file from .nvmrc | 2026-06-19 | — | [20260619-workflows-nvmrc](./quick/20260619-workflows-nvmrc/) |
+| 20260619-pnpm-builds | commit pnpm-workspace.yaml allowBuilds for esbuild/lefthook CI install | 2026-06-19 | — | [20260619-pnpm-allow-builds](./quick/20260619-pnpm-allow-builds/) |
 
 ## Session Continuity
 

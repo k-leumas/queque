@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T00:54:50.896Z
-> Files: 292 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T01:06:56.063Z
+> Files: 294 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -99,14 +99,14 @@
 
 ## ./
 
-- `.gitignore` — Git ignore rules (~60 tok)
+- `.gitignore` — Git ignore rules (~54 tok)
 - `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
 - `CLAUDE.md` — OpenWolf (~1634 tok)
 - `CONTRIBUTING.md` — Contributing (~1150 tok)
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
-- `package.json` — Node.js package manifest (~524 tok)
+- `package.json` — Node.js package manifest (~499 tok)
 - `README.md` — Project documentation (~1079 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
 - `tsup.config.ts` — Declares commit (~195 tok)
@@ -380,7 +380,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~3893 tok)
-- `STATE.md` — Project State (~2137 tok)
+- `STATE.md` — Project State (~2182 tok)
 
 ## .planning/notes/
 
@@ -514,6 +514,11 @@
 
 - `PLAN.md` — Quick Task: Zellij responsive modal height (~151 tok)
 - `SUMMARY.md` — Quick Task: Zellij responsive modal height (~192 tok)
+
+## .planning/quick/20260619-pnpm-allow-builds/
+
+- `PLAN.md` — Quick Task: Fix CI pnpm install ERR_PNPM_IGNORED_BUILDS (~54 tok)
+- `SUMMARY.md` — Quick Task: Fix CI pnpm install ERR_PNPM_IGNORED_BUILDS (~70 tok)
 
 ## .planning/quick/20260619-workflows-nvmrc/
 

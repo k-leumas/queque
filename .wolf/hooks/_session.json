@@ -8,8 +8,8 @@
       "first_read": "2026-06-19T00:47:37.511Z"
     },
     "/Users/samuel/dev/tui-llm/.github/workflows/homebrew.yml": {
-      "count": 2,
-      "tokens": 932,
+      "count": 3,
+      "tokens": 957,
       "first_read": "2026-06-19T00:47:39.849Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/quick/20260619-workflows-nvmrc/PLAN.md": {
@@ -23,17 +23,17 @@
       "first_read": "2026-06-19T00:47:46.865Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
-      "count": 2,
-      "tokens": 2096,
+      "count": 4,
+      "tokens": 2137,
       "first_read": "2026-06-19T00:47:47.457Z"
     },
     "/Users/samuel/dev/tui-llm/.gitignore": {
-      "count": 1,
-      "tokens": 60,
+      "count": 4,
+      "tokens": 54,
       "first_read": "2026-06-19T00:48:22.825Z"
     },
     "/Users/samuel/dev/tui-llm/package.json": {
-      "count": 2,
+      "count": 5,
       "tokens": 524,
       "first_read": "2026-06-19T00:48:29.158Z"
     },
@@ -41,6 +41,41 @@
       "count": 2,
       "tokens": 0,
       "first_read": "2026-06-19T00:58:21.269Z"
+    },
+    "/tmp/pnpm-test/pnpm-workspace.yaml": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T01:05:35.758Z"
+    },
+    "/Users/samuel/dev/tui-llm/pnpm-workspace.yaml": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T01:05:38.055Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/quick/20260619-pnpm-allow-builds/PLAN.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T01:05:45.390Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/quick/20260619-pnpm-allow-builds/SUMMARY.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T01:05:45.761Z"
+    },
+    "/Users/samuel/dev/tui-llm": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-06-19T01:07:28.237Z"
+    },
+    "/Users/samuel/dev/tui-llm/scripts/build-dashboard.mjs": {
+      "count": 1,
+      "tokens": 7492,
+      "first_read": "2026-06-19T01:07:30.798Z"
+    },
+    "/Users/samuel/dev/tui-llm/.github/workflows/release.yaml": {
+      "count": 1,
+      "tokens": 1824,
+      "first_read": "2026-06-19T01:07:37.412Z"
     }
   },
   "files_written": [
@@ -73,6 +108,54 @@
       "action": "create",
       "tokens": 2442,
       "at": "2026-06-19T00:47:52.616Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260619-pnpm-allow-builds/PLAN.md",
+      "action": "create",
+      "tokens": 61,
+      "at": "2026-06-19T01:05:46.256Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260619-pnpm-allow-builds/SUMMARY.md",
+      "action": "create",
+      "tokens": 75,
+      "at": "2026-06-19T01:05:46.968Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/package.json",
+      "action": "create",
+      "tokens": 524,
+      "at": "2026-06-19T01:06:20.194Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/package.json",
+      "action": "create",
+      "tokens": 524,
+      "at": "2026-06-19T01:06:32.150Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/package.json",
+      "action": "create",
+      "tokens": 499,
+      "at": "2026-06-19T01:06:50.107Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/20260619-pnpm-allow-builds/SUMMARY.md",
+      "action": "create",
+      "tokens": 80,
+      "at": "2026-06-19T01:06:51.028Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.gitignore",
+      "action": "create",
+      "tokens": 58,
+      "at": "2026-06-19T01:06:51.469Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/STATE.md",
+      "action": "create",
+      "tokens": 2494,
+      "at": "2026-06-19T01:06:56.083Z"
     }
   ],
   "edit_counts": {
@@ -80,11 +163,15 @@
     ".planning/quick/20260619-workflows-nvmrc/PLAN.md": 1,
     ".github/workflows/homebrew.yml": 1,
     ".planning/quick/20260619-workflows-nvmrc/SUMMARY.md": 1,
-    ".planning/STATE.md": 1
+    ".planning/STATE.md": 2,
+    ".planning/quick/20260619-pnpm-allow-builds/PLAN.md": 1,
+    ".planning/quick/20260619-pnpm-allow-builds/SUMMARY.md": 2,
+    "package.json": 3,
+    ".gitignore": 1
   },
-  "anatomy_hits": 4,
-  "anatomy_misses": 4,
-  "repeated_reads_warned": 5,
+  "anatomy_hits": 6,
+  "anatomy_misses": 9,
+  "repeated_reads_warned": 14,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 4
 }

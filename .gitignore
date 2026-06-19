@@ -9,6 +9,5 @@ dist/
 .wolf/suggestions.json
 .wolf/token-ledger.json
 .env.local
-pnpm-workspace.yaml
 
 **/.DS_Store
