@@ -10,11 +10,6 @@ export HOME=/root
 export QQ_DEBUG_LOG_FILE=/tmp/qq-smoke-debug.log
 rm -f "$HOME/.zshrc" "$QQ_DEBUG_LOG_FILE"
 
-# Legacy initCommand currently appends only when the existing .zshrc search()
-# result is 0. Seed this throwaway container profile with a leading marker so
-# the smoke can continue through the Homebrew-shaped install flow without
-# changing application code.
-printf '%s\n' 'queque() { :; }' > "$HOME/.zshrc"
 qq init zsh
 
 if ! grep -F 'source "/home/linuxbrew/.linuxbrew/share/queque/queque.zsh"' "$HOME/.zshrc" >/dev/null; then

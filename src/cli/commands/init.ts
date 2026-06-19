@@ -25,6 +25,19 @@ function _resolveScriptPath(shell: Shell): string {
   return resolve(__dirname, '../../shell', shell, `queque.${shell}`);
 }
 
+/**
+ * Returns true when .zshrc already sources the queque shell script or contains
+ * our integration marker — not merely any mention of "queque".
+ */
+export function hasShellIntegration(existing: string, shell: Shell): boolean {
+  if (/# queque shell integration/.test(existing)) {
+    return true;
+  }
+
+  const scriptPattern = new RegExp(`source\\s+["'][^"']*queque\\.${shell.replace('.', '\\.')}["']`);
+  return scriptPattern.test(existing);
+}
+
 export function initCommand(shell: string): void {
   // Defensive bootstrap — main.ts also registers built-ins at startup.
   bootstrapBuiltins();
@@ -36,13 +49,12 @@ export function initCommand(shell: string): void {
   }
 
   const zshrc = join(homedir(), '.zshrc');
-  const marker = /\bqueque\b/;
   const scriptPath = _resolveScriptPath(shell as Shell);
   const snippet = `source "${scriptPath}"`;
 
   const existing = existsSync(zshrc) ? readFileSync(zshrc, 'utf8') : '';
 
-  if (marker.test(existing)) {
+  if (hasShellIntegration(existing, shell as Shell)) {
     console.error('queque: shell integration already present in ~/.zshrc');
     process.exit(0);
   }

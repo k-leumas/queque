@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T01:06:56.063Z
-> Files: 294 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T01:12:17.419Z
+> Files: 295 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -577,6 +577,7 @@
 ## scripts/
 
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
+- `docker-homebrew-smoke-runner.sh` (~491 tok)
 - `smoke-homebrew-docker.sh` (~953 tok)
 - `strip-cursor-coauthor-from-msg.sh` — Removes Cursor co-author trailer lines from a git commit message file or stdin. (~114 tok)
 
@@ -596,7 +597,7 @@
 ## src/cli/commands/
 
 - `client.ts` — Real client command handler. (~394 tok)
-- `init.ts` — Exports initCommand (~605 tok)
+- `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~734 tok)
 
 ## src/client/
 
@@ -655,7 +656,7 @@
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
 - `env-file.test.ts` — Declares root (~715 tok)
-- `init-command.test.ts` — Declares marker (~163 tok)
+- `init-command.test.ts` — Declares stub (~350 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — Declares lines (~666 tok)

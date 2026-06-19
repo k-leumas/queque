@@ -1600,3 +1600,8 @@
 | 18:06 | Created .gitignore | — | ~54 |
 | 18:06 | Created .planning/STATE.md | — | ~2328 |
 | 18:07 | Session end: 13 writes across 7 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 12 reads | ~13382 tok |
+| 18:12 | Created src/cli/commands/init.ts | — | ~736 |
+| 18:12 | Created src/cli/commands/init.ts | — | ~734 |
+| 18:12 | Created scripts/docker-homebrew-smoke-runner.sh | — | ~491 |
+| 18:12 | Created tests/init-command.test.ts | — | ~350 |
+| 18:12 | Session end: 17 writes across 10 files (release.yaml, PLAN.md, homebrew.yml, SUMMARY.md, STATE.md) | 19 reads | ~26829 tok |
