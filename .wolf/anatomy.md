@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T01:12:17.419Z
-> Files: 295 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T21:38:46.333Z
+> Files: 300 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -96,6 +96,15 @@
 - `55d1b009-26e8-4256-9cf0-568c32416191.txt` — Declares definitions (~20328 tok)
 - `a0c7f713-e5ba-4432-9036-d28b9afc3d41.txt` (~8668 tok)
 - `f0005c5f-1174-4259-a9b2-6b1ba941a3f9.txt` — Declares definitions (~20328 tok)
+
+## ../SpreadPaper-intel/
+
+- `index.html` — SpreadPaper — Seamless Multi-Monitor Wallpapers for macOS (~7281 tok)
+- `README.md` — Project documentation (~1260 tok)
+
+## ../SpreadPaper-intel/.github/workflows/
+
+- `release.yml` — CI: Release (~1156 tok)
 
 ## ./
 
@@ -471,6 +480,11 @@
 - `06-REVIEWS.md` — Cross-AI Plan Review — Phase 06 (~6403 tok)
 - `06-VALIDATION.md` — Phase 06 — Validation Strategy (~894 tok)
 - `06-VERIFICATION.md` — Phase 6: Hardening, Privacy Defaults, and Extension Seams Verification Report (~2598 tok)
+
+## .planning/phases/07-context-aware-learning-and-ambient-suggestions/
+
+- `07-CONTEXT.md` — Phase 7: Context-Aware Learning and Ambient Suggestions - Context (~2244 tok)
+- `07-DISCUSSION-LOG.md` — Phase 7: Context-Aware Learning and Ambient Suggestions - Discussion Log (~764 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 

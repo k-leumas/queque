@@ -7,6 +7,7 @@
 ## User Preferences
 
 - **Commit planning/context with code:** Treat `.wolf/`, `.planning/`, and `.gsd/` as first-class project artifacts — commit them alongside the code they affect, not as optional or local-only files.
+- **Phase 7 scope — empty-lbuffer only:** User deprioritized event logging, SQLite pattern cache, and precmd proactive suggestions as nice-to-have with uncertain value. Phase 7 should focus on empty-lbuffer ambient `??` (full TUI, Claude with ambient context). Signal priority: failed last command → dirty git → new cwd → nothing obvious.
 
 ## Key Learnings
 
