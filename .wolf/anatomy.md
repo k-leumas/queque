@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-30T18:37:41.185Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-30T18:49:13.643Z
 > Files: 302 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -666,7 +666,7 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6504 tok)
-- `claude-provider.test.ts` — createMock: buildEnvelope (~1725 tok)
+- `claude-provider.test.ts` — createMock: buildEnvelope (~1752 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)

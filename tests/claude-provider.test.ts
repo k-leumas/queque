@@ -1,23 +1,24 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
+import { DEFAULT_MODEL } from '../src/providers/claude.js';
 
-const { createMock, anthropicCtorMock } = vi.hoisted(() => {
+const { createMock, anthropicCtorMock, AnthropicMock } = vi.hoisted(() => {
   const createMock = vi.fn();
   const anthropicCtorMock = vi.fn();
 
-  return { createMock, anthropicCtorMock };
-});
+  class AnthropicMock {
+    messages: { create: typeof createMock };
 
-class AnthropicMock {
-  messages: { create: typeof createMock };
-
-  constructor(options: unknown) {
-    anthropicCtorMock(options);
-    this.messages = {
-      create: createMock,
-    };
+    constructor(options: unknown) {
+      anthropicCtorMock(options);
+      this.messages = {
+        create: createMock,
+      };
+    }
   }
-}
+
+  return { createMock, anthropicCtorMock, AnthropicMock };
+});
 
 vi.mock('@anthropic-ai/sdk', () => ({
   default: AnthropicMock,
@@ -79,7 +80,7 @@ describe('fetchCandidates', () => {
     expect(createMock).toHaveBeenCalledTimes(1);
 
     const request = createMock.mock.calls[0][0];
-    expect(request.model).toBe('claude-haiku-4-5-20251001');
+    expect(request.model).toBe(DEFAULT_MODEL);
     expect(request.messages[0].content).toContain('versionControl');
     expect(request.messages[0].content).toContain('"branch": "main"');
     expect(request.messages[0].content).toContain('"changedFiles"');
