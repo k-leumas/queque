@@ -2956,6 +2956,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-06-19T18:31:26.030Z"
+    },
+    {
+      "id": "bug-185",
+      "timestamp": "2026-07-30T19:32:14.000Z",
+      "error_message": "QueQue: 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"`temperature` is deprecated for this model.\"}}",
+      "file": "src/providers/claude.ts",
+      "root_cause": "The Messages request passed `temperature: 0`, but the default model claude-sonnet-5 (like the Opus 4.7/4.8 family) removed the sampling parameters temperature/top_p/top_k — any non-default value now returns a 400. This broke the CI/CD smoke test.",
+      "fix": "Removed the `temperature: 0` line from client.messages.create in fetchCandidates(); steer output via the system prompt instead. Verified with scripts/smoke-homebrew-docker.sh (live LLM request now returns candidates, no 400).",
+      "tags": [
+        "anthropic",
+        "temperature",
+        "sonnet-5",
+        "400",
+        "deprecated-param",
+        "ci"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-07-30T19:32:14.000Z"
     }
   ]
 }

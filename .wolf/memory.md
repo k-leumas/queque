@@ -1657,3 +1657,7 @@
 |------|--------|---------|---------|--------|
 | 11:49 | Created tests/claude-provider.test.ts | — | ~1752 |
 | 11:49 | Session end: 1 writes across 1 files (claude-provider.test.ts) | 0 reads | ~1752 tok |
+| 12:29 | Edited src/providers/claude.ts | 4→3 lines | ~16 |
+| 19:32 | Removed deprecated temperature:0 from Anthropic request (CI 400 fix); smoke test passed | src/providers/claude.ts | fixed | ~40 |
+| 12:32 | Session end: 2 writes across 2 files (claude-provider.test.ts, claude.ts) | 10 reads | ~26495 tok |
+| 12:46 | Session end: 2 writes across 2 files (claude-provider.test.ts, claude.ts) | 10 reads | ~26495 tok |

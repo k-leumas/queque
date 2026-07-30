@@ -127,7 +127,6 @@ export async function fetchCandidates(
       {
         model,
         max_tokens: 1024,
-        temperature: 0,
         system:
           'You are QueQue, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences. When a command requires a value the user must supply (hostname, filename, branch name, etc.), wrap it in angle brackets: <placeholder>. Use descriptive names like <user@host>, <filename>, <branch-name>. Do not use angle brackets for optional flags or known values.',
         messages: [{ role: 'user', content: prompt }],

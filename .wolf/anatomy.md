@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-30T18:49:13.643Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-30T19:29:29.229Z
 > Files: 302 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -637,7 +637,7 @@
 
 ## src/providers/
 
-- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1597 tok)
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1590 tok)
 - `detect.ts` — Exports DetectedProvider, detectProvider (~646 tok)
 - `index.ts` (~56 tok)
 - `resolver.ts` — Maps a detected provider kind to a registered LLMAdapter instance. (~370 tok)
