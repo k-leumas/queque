@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-06-19T21:38:46.333Z
-> Files: 300 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-30T18:37:41.185Z
+> Files: 302 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -93,9 +93,11 @@
 
 ## ../../.cursor/projects/Users-samuel-dev-tui-llm/agent-tools/
 
+- `42f233de-2af8-4fa8-abdb-7567371c317e.txt` — [BUG] OAuth refresh returns 400 after early 401 before local expiresAt; concurrent sessions forced t (~10929 tok)
 - `55d1b009-26e8-4256-9cf0-568c32416191.txt` — Declares definitions (~20328 tok)
 - `a0c7f713-e5ba-4432-9036-d28b9afc3d41.txt` (~8668 tok)
 - `f0005c5f-1174-4259-a9b2-6b1ba941a3f9.txt` — Declares definitions (~20328 tok)
+- `f43e11ed-66f9-41f2-9a7d-df1ee64cd15c.txt` (~5970 tok)
 
 ## ../SpreadPaper-intel/
 

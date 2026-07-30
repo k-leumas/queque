@@ -6,7 +6,7 @@ import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
 import type { LLMAdapter } from './provider.js';
 
-const DEFAULT_MODEL = 'claude-haiku-4-5-20251001';
+const DEFAULT_MODEL = 'claude-sonnet-5';
 
 function resolveModel(): string {
   return process.env.QQ_MODEL ?? readEnvValueFromDotEnvLocal('QQ_MODEL') ?? DEFAULT_MODEL;
