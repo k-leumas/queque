@@ -1,3 +1,11 @@
+## [0.4.2](https://github.com/k-leumas/queque/compare/v0.4.1...v0.4.2) (2026-07-30)
+
+
+### Bug Fixes
+
+* **provider:** remove deprecated temperature param from Anthropic request ([df712a9](https://github.com/k-leumas/queque/commit/df712a94b010212f3b5202d2be52f5fe08312a99))
+* update claude provider to expose model to fix broken test ([2f6f2c5](https://github.com/k-leumas/queque/commit/2f6f2c59ead9dbeb02973cbc65475d6390014244))
+
 ## [0.4.1](https://github.com/k-leumas/queque/compare/v0.4.0...v0.4.1) (2026-07-29)
 
 # [0.4.0](https://github.com/k-leumas/queque/compare/v0.3.9...v0.4.0) (2026-06-19)
