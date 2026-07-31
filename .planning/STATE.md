@@ -63,6 +63,7 @@ Progress: [███████░░░] 70% (7/10 phases complete)
 - Phase 3.1 inserted after Phase 3: update interface and interactivity to match that of this github project: https://github.com/imsnif/monocle (URGENT)
 - Phase 3.2 inserted after Phase 3.1: Reduce scope to Zellij floating panes for best UX (URGENT)
 - Phase 5 deferred (2026-06-17): In-TUI clarification chat is nice-to-have; users can Esc, edit query, and re-trigger `??`. Phase 6 proceeds without Phase 5. Revisit after Phase 8 zero-config.
+- Phase 8 scope expanded (2026-07-31): 08-01 must fix macOS Keychain detection gap — prototype `detectProvider()` only checks credentials file, missing `/login` sessions on darwin.
 
 ### Decisions
 

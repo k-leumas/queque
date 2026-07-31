@@ -149,7 +149,7 @@ Built-ins register in `src/registry/bootstrap.ts`:
 
 Provider resolution:
 
-1. `detectProvider()` — anthropic-key → claude-cli → ollama → openai-key → none
+1. `detectProvider()` — anthropic-key → claude-cli (Linux/Windows: credentials file or OAuth env tokens; macOS: `claude` on PATH for Keychain `/login`) → ollama → openai-key → none
 2. `resolveAdapter(detected)` — maps to registered adapter; Phase 8 adds subprocess adapters
 
 Production code resolves through registries — no direct adapter imports in the client path.

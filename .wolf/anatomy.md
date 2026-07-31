@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-30T19:29:29.229Z
-> Files: 302 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T20:27:37.282Z
+> Files: 305 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -90,6 +90,10 @@
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
 - `project_target_audience.md` (~202 tok)
+
+## ../../.cursor/plans/
+
+- `phase_8_macos_gap_6db8d319.plan.md` — Add macOS Claude Auth Gap to Phase 8 (Planning Only) (~1836 tok)
 
 ## ../../.cursor/projects/Users-samuel-dev-tui-llm/agent-tools/
 
@@ -390,8 +394,8 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~3893 tok)
-- `STATE.md` — Project State (~2182 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~4056 tok)
+- `STATE.md` — Project State (~2235 tok)
 
 ## .planning/notes/
 
@@ -487,6 +491,11 @@
 
 - `07-CONTEXT.md` — Phase 7: Context-Aware Learning and Ambient Suggestions - Context (~2244 tok)
 - `07-DISCUSSION-LOG.md` — Phase 7: Context-Aware Learning and Ambient Suggestions - Discussion Log (~764 tok)
+
+## .planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
+- `08-RESEARCH.md` — Phase 8 research: Claude Code auth by platform, detection gap, recommended `claudeAuthPresent()` fix. (~1300 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
@@ -585,10 +594,10 @@
 ## docs/
 
 - `config.example.json` (~65 tok)
-- `EXTENSIONS.md` — QueQue Extension Seams (~798 tok)
+- `EXTENSIONS.md` — QueQue Extension Seams (~863 tok)
 - `RELEASING.md` — Release Process (~1183 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
-- `SYSTEM_DESIGN.md` — System Design (~2554 tok)
+- `SYSTEM_DESIGN.md` — System Design (~2579 tok)
 
 ## scripts/
 

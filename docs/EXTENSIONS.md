@@ -15,7 +15,7 @@ Built-ins wire up in `src/registry/bootstrap.ts`. Production code should resolve
 
 ## Provider resolution
 
-1. `detectProvider()` — pre-flight check (anthropic-key → claude-cli → ollama → openai-key → none)
+1. `detectProvider()` — pre-flight check (anthropic-key → claude-cli → ollama → openai-key → none). Claude CLI detection is platform-aware: credentials file or OAuth env tokens on Linux/Windows; on macOS, `claude` on PATH covers Keychain `/login` (Phase 8 / 08-01).
 2. `resolveAdapter(detected)` — maps detection to a registered `LLMAdapter`
 
 Phase 8 adds subprocess adapters for Claude CLI, Ollama, and OpenAI. Phase 6 wires the Anthropic SDK path through the registry.
@@ -30,6 +30,7 @@ Phase 8 adds subprocess adapters for Claude CLI, Ollama, and OpenAI. Phase 6 wir
 
 ### Phase 8 — Zero-config providers
 
+- 08-01: Platform-aware Claude CLI detection (macOS Keychain `/login` gap; OAuth env tokens)
 - Extend `resolveAdapter()` for `claude-cli`, `ollama`, `openai-key`
 - Setup wizard when `detectProvider()` returns `none`
 
