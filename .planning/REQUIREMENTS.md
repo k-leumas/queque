@@ -37,7 +37,7 @@
 - [ ] **PRV-01**: Tool can call Claude using `ANTHROPIC_API_KEY`.
 - [ ] **PRV-02**: Provider integration is isolated behind a provider interface so more models/providers can be added later.
 - [ ] **PRV-03**: Every LLM backend implements the same adapter contract for direct suggestion, clarification continuation, structured confidence/result parsing, and error mapping.
-- [ ] **RUN-01**: A background daemon keeps repeat invocations fast and avoids paying full startup cost on every use.
+- [x] **RUN-01**: A background daemon keeps repeat invocations fast and avoids paying full startup cost on every use.
 - [ ] **RUN-02**: If the daemon is missing or stale, the client can recover without corrupting shell state.
 
 ### Safety and Extensibility
@@ -81,7 +81,7 @@
 | SHL-02 | Phase 1 | Pending |
 | SHL-03 | Phase 1 | Pending |
 | SHL-04 | Phase 1 | Pending |
-| RUN-01 | Phase 1 | Pending |
+| RUN-01 | Phase 1 | Complete |
 | INT-01 | Phase 2 | Complete |
 | INT-02 | Phase 2 | Complete |
 | INT-03 | Phase 2 | Complete |

@@ -230,7 +230,7 @@ Plans:
 
 Plans:
 
-- [ ] 08-01: Provider detection module — `detectProvider()` waterfall: `ANTHROPIC_API_KEY` → platform-aware Claude CLI auth (Linux/Windows: credentials file or `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_AUTH_TOKEN`; macOS: `claude` on PATH is sufficient because `/login` uses Keychain) → Ollama health check (`localhost:11434`) → `OPENAI_API_KEY` / openai CLI → none (message mentions credentials file or macOS Keychain login); returns a typed `DetectedProvider` union consumed by the provider registry.
+- [x] 08-01: Provider detection module — `detectProvider()` waterfall: `ANTHROPIC_API_KEY` → platform-aware Claude CLI auth (Linux/Windows: credentials file or `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_AUTH_TOKEN`; macOS: `claude` on PATH is sufficient because `/login` uses Keychain) → Ollama health check (`localhost:11434`) → `OPENAI_API_KEY` / openai CLI → none (message mentions credentials file or macOS Keychain login); returns a typed `DetectedProvider` union consumed by the provider registry.
 - [ ] 08-02: Subprocess provider adapters — `claude -p` and `openai` CLI adapters that shell out, parse conversational output into the existing `CommandCandidate[]` shape, and surface errors cleanly; wire into provider registry alongside the native Anthropic SDK adapter.
 - [ ] 08-03: No-provider setup wizard — when `detectProvider()` returns `none`, print a short interactive prompt: pick Ollama (auto-opens install URL), enter an API key, or open claude.ai; persist the choice to `~/.config/qq/provider.json` so the next run skips detection.
 

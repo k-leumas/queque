@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: verifying
-stopped_at: Phase 07 context gathered
-last_updated: "2026-06-19T21:38:59.117Z"
-last_activity: 2026-06-18 -- Phase 06 verification passed
+stopped_at: Completed 08-01-PLAN.md
+last_updated: "2026-07-31T23:41:05.629Z"
+last_activity: 2026-07-31
 progress:
   total_phases: 10
-  completed_phases: 7
-  total_plans: 21
-  completed_plans: 21
+  completed_phases: 8
+  total_plans: 22
+  completed_plans: 22
   percent: 70
 ---
 
@@ -21,14 +21,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 07 — context-aware learning and ambient suggestions
+**Current focus:** Phase 08 — zero-config-install-and-provider-detection
 
 ## Current Position
 
-Phase: 07 (context-aware-learning-and-ambient-suggestions) — NOT STARTED
+Phase: 08 (zero-config-install-and-provider-detection) — EXECUTING
+Plan: 1 of 1
 Next: Discuss Phase 07 (/gsd-discuss-phase 07)
-Status: Phase 06 complete and verified (4/4 must-haves)
-Last activity: 2026-06-18 -- Phase 06 verification passed
+Status: Phase complete — ready for verification
+Last activity: 2026-07-31
 
 Progress: [███████░░░] 70% (7/10 phases complete)
 
@@ -55,6 +56,7 @@ Progress: [███████░░░] 70% (7/10 phases complete)
 | Phase 02-intent-router-and-context-pipeline P02 | 26 | 3 tasks | 13 files |
 | Phase 02-intent-router-and-context-pipeline P03 | 11 | 2 tasks | 8 files |
 | Phase 06-hardening-privacy-defaults-and-extension-seams P02 | 20min | 3 tasks | 7 files |
+| Phase 08 P01 | 2min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -81,6 +83,8 @@ Recent decisions affecting current work:
 - [Phase 02-intent-router-and-context-pipeline]: Built-in context providers now register through explicit registries and bootstrap instead of a hardcoded array.
 - [Phase 06]: buildPrompt calls filterContextEnvelope before chunk extraction (defense-in-depth)
 - [Phase 06]: resolveAdapter missing-adapter error references bootstrapBuiltins() for clarity
+- [Phase 08]: darwin treats claude on PATH as auth-present (Keychain); false positives fail at 08-02 request time
+- [Phase 08]: CLAUDE_CODE_OAUTH_TOKEN and ANTHROPIC_AUTH_TOKEN count as Claude auth without reading values
 
 ### Pending Todos
 
@@ -120,6 +124,6 @@ None yet.
 
 Last activity: 2026-05-29 — completed quick task 260529-ney: research beta distribution channels
 
-Last session: 2026-06-19T21:38:59.100Z
-Stopped at: Phase 07 context gathered
-Resume file: .planning/phases/07-context-aware-learning-and-ambient-suggestions/07-CONTEXT.md
+Last session: 2026-07-31T23:41:05.619Z
+Stopped at: Completed 08-01-PLAN.md
+Resume file: None
