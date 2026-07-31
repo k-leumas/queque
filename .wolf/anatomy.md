@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T20:27:37.282Z
-> Files: 305 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T23:45:16.390Z
+> Files: 307 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -395,7 +395,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~4056 tok)
-- `STATE.md` — Project State (~2235 tok)
+- `STATE.md` — Project State (~2290 tok)
 
 ## .planning/notes/
 
@@ -495,7 +495,9 @@
 ## .planning/phases/08-zero-config-install-and-provider-detection/
 
 - `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
+- `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
 - `08-RESEARCH.md` — Phase 8 research: Claude Code auth by platform, detection gap, recommended `claudeAuthPresent()` fix. (~1300 tok)
+- `08-REVIEW.md` — Phase 08: Code Review Report (~1174 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
@@ -647,7 +649,7 @@
 ## src/providers/
 
 - `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1590 tok)
-- `detect.ts` — Exports DetectedProvider, detectProvider (~646 tok)
+- `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~56 tok)
 - `resolver.ts` — Maps a detected provider kind to a registered LLMAdapter instance. (~370 tok)
 
@@ -686,7 +688,7 @@
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — Declares lines (~666 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
-- `provider-detect.test.ts` — --------------------------------------------------------------------------- (~2274 tok)
+- `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-resolver.test.ts` — Declares adapter (~551 tok)
 - `qq-config.test.ts` — Declares parsed (~189 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~604 tok)

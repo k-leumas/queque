@@ -1,33 +1,18 @@
 {
-  "session_id": "session-2026-07-31-1636",
-  "started": "2026-07-31T23:36:30.236Z",
+  "session_id": "session-2026-07-31-1646",
+  "started": "2026-07-31T23:46:38.066Z",
   "files_read": {
-    "/Users/samuel/dev/tui-llm/src/providers/detect.ts": {
-      "count": 2,
-      "tokens": 646,
-      "first_read": "2026-07-31T23:37:28.984Z"
-    },
     "/Users/samuel/dev/tui-llm/tests/provider-detect.test.ts": {
-      "count": 2,
-      "tokens": 2274,
-      "first_read": "2026-07-31T23:37:29.088Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/08-zero-config-install-and-provider-detection/08-01-PLAN.md": {
       "count": 1,
-      "tokens": 1700,
-      "first_read": "2026-07-31T23:37:31.951Z"
-    },
-    "/Users/samuel/dev/tui-llm": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-07-31T23:37:41.541Z"
+      "tokens": 3034,
+      "first_read": "2026-07-31T23:46:47.643Z"
     }
   },
   "files_written": [],
   "edit_counts": {},
-  "anatomy_hits": 3,
-  "anatomy_misses": 1,
-  "repeated_reads_warned": 2,
+  "anatomy_hits": 1,
+  "anatomy_misses": 0,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
   "stop_count": 0
 }
