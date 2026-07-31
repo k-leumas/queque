@@ -33,6 +33,22 @@ async function claudeAuthFileExists(): Promise<boolean> {
   return false;
 }
 
+/**
+ * Returns whether Claude CLI auth appears present without reading secrets.
+ * Env tokens and darwin Keychain login count as present; other platforms
+ * fall back to a credentials-file stat only.
+ */
+async function claudeAuthPresent(): Promise<boolean> {
+  if (process.env.CLAUDE_CODE_OAUTH_TOKEN || process.env.ANTHROPIC_AUTH_TOKEN) {
+    return true;
+  }
+  if (process.platform === 'darwin') {
+    // Keychain auth; validated by subprocess adapter at call time
+    return true;
+  }
+  return claudeAuthFileExists();
+}
+
 async function ollamaHealthy(): Promise<boolean> {
   try {
     const res = await fetch('http://localhost:11434/api/tags', {
@@ -50,8 +66,8 @@ export async function detectProvider(): Promise<DetectedProvider> {
     return { kind: 'anthropic-key' };
   }
 
-  // Step 2 — Claude CLI: binary on PATH + auth file present
-  if (claudeOnPath() && (await claudeAuthFileExists())) {
+  // Step 2 — Claude CLI: binary on PATH + auth present (file, env token, or darwin Keychain)
+  if (claudeOnPath() && (await claudeAuthPresent())) {
     return { kind: 'claude-cli' };
   }
 
@@ -72,7 +88,7 @@ export async function detectProvider(): Promise<DetectedProvider> {
       'queque: no AI provider configured\n' +
       'Checked (in order):\n' +
       '  1. ANTHROPIC_API_KEY env var or .env.local\n' +
-      '  2. Claude CLI (claude on PATH + credentials file)\n' +
+      '  2. Claude CLI (claude on PATH + credentials file or macOS Keychain login)\n' +
       '  3. Ollama at http://localhost:11434\n' +
       '  4. OPENAI_API_KEY env var\n' +
       'Set one of the above and re-trigger ??',
