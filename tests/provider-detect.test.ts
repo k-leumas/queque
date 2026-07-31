@@ -93,6 +93,8 @@ function ollamaDown(): void {
 // Tests
 // ---------------------------------------------------------------------------
 describe('detectProvider()', () => {
+  const originalPlatform = process.platform;
+
   beforeEach(() => {
     execSyncMock.mockReset();
     statMock.mockReset();
@@ -103,7 +105,18 @@ describe('detectProvider()', () => {
 
   afterEach(() => {
     vi.unstubAllEnvs();
+    Object.defineProperty(process, 'platform', {
+      value: originalPlatform,
+      configurable: true,
+    });
   });
+
+  function stubPlatform(platform: NodeJS.Platform): void {
+    Object.defineProperty(process, 'platform', {
+      value: platform,
+      configurable: true,
+    });
+  }
 
   it('Branch 1: returns anthropic-key when ANTHROPIC_API_KEY is set', async () => {
     vi.stubEnv('ANTHROPIC_API_KEY', 'sk-ant-test');
@@ -163,7 +176,9 @@ describe('detectProvider()', () => {
     const result = await detectProvider();
 
     expect(result.kind).toBe('none');
-    expect((result as { kind: 'none'; message: string }).message).toMatch(/no AI provider/);
+    const message = (result as { kind: 'none'; message: string }).message;
+    expect(message).toMatch(/no AI provider/);
+    expect(message).toMatch(/credentials file or macOS Keychain login/);
   });
 
   it('Branch 1b: returns anthropic-key when ANTHROPIC_API_KEY is in .env.local', async () => {
@@ -192,9 +207,28 @@ describe('detectProvider()', () => {
     expect(result).toEqual({ kind: 'openai-key' });
   });
 
-  it('claude on PATH but no auth file → falls through to Ollama check', async () => {
+  it('darwin + claude on PATH + no auth file → returns claude-cli', async () => {
+    stubPlatform('darwin');
     vi.stubEnv('ANTHROPIC_API_KEY', '');
     vi.stubEnv('OPENAI_API_KEY', '');
+    vi.stubEnv('CLAUDE_CODE_OAUTH_TOKEN', '');
+    vi.stubEnv('ANTHROPIC_AUTH_TOKEN', '');
+    claudeOnPath();
+    authFileMissing();
+    ollamaUp();
+
+    const { detectProvider } = await import('../src/providers/detect.js');
+    const result = await detectProvider();
+
+    expect(result).toEqual({ kind: 'claude-cli' });
+  });
+
+  it('linux + claude on PATH + no auth file → falls through to Ollama check', async () => {
+    stubPlatform('linux');
+    vi.stubEnv('ANTHROPIC_API_KEY', '');
+    vi.stubEnv('OPENAI_API_KEY', '');
+    vi.stubEnv('CLAUDE_CODE_OAUTH_TOKEN', '');
+    vi.stubEnv('ANTHROPIC_AUTH_TOKEN', '');
     claudeOnPath();
     authFileMissing();
     ollamaUp();
@@ -203,5 +237,53 @@ describe('detectProvider()', () => {
     const result = await detectProvider();
 
     expect(result).toEqual({ kind: 'ollama', baseUrl: 'http://localhost:11434' });
+  });
+
+  it('CLAUDE_CODE_OAUTH_TOKEN + claude on PATH → returns claude-cli', async () => {
+    stubPlatform('linux');
+    vi.stubEnv('ANTHROPIC_API_KEY', '');
+    vi.stubEnv('OPENAI_API_KEY', '');
+    vi.stubEnv('CLAUDE_CODE_OAUTH_TOKEN', 'oauth-token-test');
+    vi.stubEnv('ANTHROPIC_AUTH_TOKEN', '');
+    claudeOnPath();
+    authFileMissing();
+    ollamaDown();
+
+    const { detectProvider } = await import('../src/providers/detect.js');
+    const result = await detectProvider();
+
+    expect(result).toEqual({ kind: 'claude-cli' });
+  });
+
+  it('ANTHROPIC_AUTH_TOKEN + claude on PATH → returns claude-cli', async () => {
+    stubPlatform('linux');
+    vi.stubEnv('ANTHROPIC_API_KEY', '');
+    vi.stubEnv('OPENAI_API_KEY', '');
+    vi.stubEnv('CLAUDE_CODE_OAUTH_TOKEN', '');
+    vi.stubEnv('ANTHROPIC_AUTH_TOKEN', 'auth-token-test');
+    claudeOnPath();
+    authFileMissing();
+    ollamaDown();
+
+    const { detectProvider } = await import('../src/providers/detect.js');
+    const result = await detectProvider();
+
+    expect(result).toEqual({ kind: 'claude-cli' });
+  });
+
+  it('non-darwin + credentials file still → returns claude-cli', async () => {
+    stubPlatform('linux');
+    vi.stubEnv('ANTHROPIC_API_KEY', '');
+    vi.stubEnv('OPENAI_API_KEY', '');
+    vi.stubEnv('CLAUDE_CODE_OAUTH_TOKEN', '');
+    vi.stubEnv('ANTHROPIC_AUTH_TOKEN', '');
+    claudeOnPath();
+    authFileExists();
+    ollamaDown();
+
+    const { detectProvider } = await import('../src/providers/detect.js');
+    const result = await detectProvider();
+
+    expect(result).toEqual({ kind: 'claude-cli' });
   });
 });
