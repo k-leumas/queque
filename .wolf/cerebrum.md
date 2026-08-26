@@ -11,6 +11,7 @@
 
 ## Key Learnings
 
+- **Phase 8 selector:** Runtime uses `provider.json` pin or Claude default. `detectProvider()` waterfall is not the long-term adapter selector.
 - **Project:** tui-llm
 - Claude Code `/login` stores OAuth in macOS Keychain (not `~/.claude/.credentials.json`). Prototype `detectProvider()` Step 2 only stats the credentials file, so darwin logged-in users miss `claude-cli`. Phase 8 / 08-01 must use platform-aware presence (`claude` on PATH on darwin; file/env elsewhere) — no Keychain read, no `claude -p` probe (200 ms budget).
 - ZLE user-defined widgets run with stdin redirected from `/dev/null`; any foreground TUI client launched from the widget must be reattached to `/dev/tty` explicitly.
@@ -30,3 +31,4 @@
 
 <!-- Significant technical decisions with rationale. Why X was chosen over Y. -->
 - [2026-07-31] Phase 8 docs-only expansion: document macOS Keychain detection gap in ROADMAP + 08-RESEARCH + 08-01-PLAN before code. Detection strategy for darwin: PATH-only presence; validate auth at 08-02 subprocess call time. Prefer false-positive (installed but logged out) over missing logged-in Keychain users.
+- [2026-08-25] Phase 8 provider selection: pin, not waterfall. Claude is the silent default (`claude -p` then env-key SDK rescue). OpenAI/Ollama are an explicit `~/.config/qq/provider.json` pin from a first-run/`qq init provider` quiz — never probed on every `??`, never a silent Claude→OpenAI→Ollama fallthrough. Do not attach the quiz to `qq init zsh`. 08-01 `claudeAuthPresent()` is leftover preflight, not the 08-02 fetch gate.

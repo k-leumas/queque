@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-07-31T23:45:16.390Z
-> Files: 307 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T02:09:38.002Z
+> Files: 309 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -496,6 +496,8 @@
 
 - `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
 - `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
+- `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2287 tok)
+- `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-RESEARCH.md` — Phase 8 research: Claude Code auth by platform, detection gap, recommended `claudeAuthPresent()` fix. (~1300 tok)
 - `08-REVIEW.md` — Phase 08: Code Review Report (~1174 tok)
 
