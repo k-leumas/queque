@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T02:46:27.845Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:02:33.730Z
 > Files: 320 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -401,7 +401,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~4031 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~4039 tok)
 - `STATE.md` — Project State (~2364 tok)
 
 ## .planning/notes/
@@ -503,7 +503,7 @@
 
 - `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
 - `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
-- `08-02-PLAN.md` — Phase 08 Plan 02: Claude CLI-first fetch + SDK rescue (~2100 tok)
+- `08-02-PLAN.md` (~10802 tok)
 - `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2287 tok)
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)

@@ -1780,3 +1780,4 @@
 | 19:47 | Session end: 1 writes across 1 files (08-REVIEWS.md) | 3 reads | ~2688 tok |
 | 20:02 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-02-PLAN.md | — | ~11522 |
 | 20:02 | Created .planning/ROADMAP.md | — | ~4309 |
+| 20:05 | Replanned 08-02 from 08-REVIEWS.md (mock shape, composite registry, argv ps accept, remainingMs, debug, QueQue prefix) | 08-02-PLAN.md, ROADMAP.md | in-place revise, no 08-03 | ~4500 |
