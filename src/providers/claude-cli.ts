@@ -1,20 +1,67 @@
 import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
+import {
+  buildPrompt,
+  ensureSelectableCandidates,
+  parseCandidates,
+  QUEQUE_SYSTEM,
+} from './claude.js';
+import { execFileAsync } from './claude-exec.js';
 import type { LLMAdapter } from './provider.js';
 
+const CLI_BUDGET_MS = 25_000;
+
+type ClaudeExecOptions = Parameters<typeof execFileAsync>[2] & {
+  stdio?: Array<'ignore' | 'pipe' | 'inherit'>;
+  killSignal?: NodeJS.Signals;
+  maxBuffer?: number;
+  windowsHide?: boolean;
+  shell?: boolean;
+  encoding?: BufferEncoding;
+};
+
 /**
- * Spawns `claude -p` and parses stdout as a candidate list. Throws on failure.
- * Unregistered — isolation and tests only.
+ * Spawns `claude -p` print mode and parses stdout with the shared candidate contract.
+ * Throws on spawn, non-zero, or timeout. Does not rescue via the SDK.
  */
 export async function fetchClaudeCliCandidates(
-  _envelope: ContextEnvelope,
-  _remainingMs: number,
+  envelope: ContextEnvelope,
+  remainingBudgetMs: number,
 ): Promise<CandidateList> {
-  throw new Error('fetchClaudeCliCandidates is not implemented');
+  const prompt = buildPrompt(envelope);
+  const args = [
+    '-p',
+    '--output-format',
+    'text',
+    '--safe-mode',
+    '--tools',
+    '',
+    '--no-session-persistence',
+    '--system-prompt',
+    QUEQUE_SYSTEM,
+    prompt,
+  ];
+  const options: ClaudeExecOptions = {
+    encoding: 'utf8',
+    timeout: remainingBudgetMs,
+    killSignal: 'SIGTERM',
+    maxBuffer: 1024 * 1024,
+    cwd: envelope.base.cwd,
+    env: process.env,
+    windowsHide: true,
+    shell: false,
+    stdio: ['ignore', 'pipe', 'pipe'],
+  };
+
+  const { stdout } = await execFileAsync('claude', args, options);
+  return ensureSelectableCandidates(parseCandidates(stdout));
 }
 
+/**
+ * Raw CLI-only adapter. Unregistered — isolation and tests only.
+ */
 export const claudeCliAdapter: LLMAdapter = {
   async fetchCandidates(envelope: ContextEnvelope): Promise<CandidateList> {
-    return fetchClaudeCliCandidates(envelope, 25_000);
+    return fetchClaudeCliCandidates(envelope, CLI_BUDGET_MS);
   },
 };

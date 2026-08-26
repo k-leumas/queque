@@ -8,6 +8,12 @@ import type { LLMAdapter } from './provider.js';
 
 export const DEFAULT_MODEL = 'claude-sonnet-5';
 
+/**
+ * Shared system prompt for the SDK Messages API and Claude CLI `--system-prompt`.
+ */
+export const QUEQUE_SYSTEM =
+  'You are QueQue, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences. When a command requires a value the user must supply (hostname, filename, branch name, etc.), wrap it in angle brackets: <placeholder>. Use descriptive names like <user@host>, <filename>, <branch-name>. Do not use angle brackets for optional flags or known values.';
+
 function resolveModel(): string {
   return process.env.QQ_MODEL ?? readEnvValueFromDotEnvLocal('QQ_MODEL') ?? DEFAULT_MODEL;
 }
@@ -25,7 +31,10 @@ function stripCodeFence(raw: string): string {
   return m ? m[1].trim() : raw.trim();
 }
 
-function parseCandidates(text: string): CandidateList {
+/**
+ * Parses model text into a candidate list, failing closed on unexpected JSON.
+ */
+export function parseCandidates(text: string): CandidateList {
   let parsed: unknown;
   try {
     parsed = JSON.parse(stripCodeFence(text));
@@ -48,7 +57,10 @@ function shouldForceSelector(): boolean {
   return configured === '1' || configured === 'true';
 }
 
-function ensureSelectableCandidates(candidates: CandidateList): CandidateList {
+/**
+ * Pads a single candidate to two when QQ_FORCE_SELECTOR is enabled.
+ */
+export function ensureSelectableCandidates(candidates: CandidateList): CandidateList {
   if (!shouldForceSelector() || candidates.length >= 2) {
     return candidates;
   }
@@ -67,7 +79,10 @@ function ensureSelectableCandidates(candidates: CandidateList): CandidateList {
   ];
 }
 
-function buildPrompt(envelope: ContextEnvelope): string {
+/**
+ * Builds the privacy-filtered user prompt for both the SDK and CLI adapters.
+ */
+export function buildPrompt(envelope: ContextEnvelope): string {
   const filtered = filterContextEnvelope(envelope);
   const gitChunk = filtered.extras.find((chunk) => chunk.kind === 'git');
   const filesystemChunk = filtered.extras.find((chunk) => chunk.kind === 'filesystem');
@@ -99,12 +114,14 @@ function buildPrompt(envelope: ContextEnvelope): string {
  * Calls Claude with the assembled context envelope and returns ranked command candidates.
  *
  * `rbuffer` remains a side parameter because it is shell transport state, not context.
+ * Optional `timeoutMs` defaults to 25000 so SDK rescue can pass remaining budget.
  * The envelope describes the request intent and execution environment, while Phase 4's
  * TUI remains responsible for deciding how the raw shell buffers are rewritten.
  */
 export async function fetchCandidates(
   envelope: ContextEnvelope,
   rbuffer: string = '',
+  timeoutMs: number = 25_000,
 ): Promise<CandidateList> {
   const apiKey = process.env.ANTHROPIC_API_KEY ?? readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY');
   if (!apiKey) {
@@ -127,12 +144,11 @@ export async function fetchCandidates(
       {
         model,
         max_tokens: 1024,
-        system:
-          'You are QueQue, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences. When a command requires a value the user must supply (hostname, filename, branch name, etc.), wrap it in angle brackets: <placeholder>. Use descriptive names like <user@host>, <filename>, <branch-name>. Do not use angle brackets for optional flags or known values.',
+        system: QUEQUE_SYSTEM,
         messages: [{ role: 'user', content: prompt }],
       },
       {
-        timeout: 25_000, // 25s — slightly under the zsh 30s FIFO timeout
+        timeout: timeoutMs,
       },
     );
 

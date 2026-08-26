@@ -1797,3 +1797,20 @@
 | 20:51 | Created src/providers/claude-default.ts | — | ~194 |
 | 20:52 | Created tests/claude-cli-provider.test.ts | — | ~4150 |
 | 20:53 | Rule 3: added throw-on-call stubs so pre-commit typecheck can commit RED tests; 14/15 CLI tests still fail on unimplemented adapter / missing claude-cli id | src/providers/claude-*.ts | typecheck passes, tests still RED | ~150 |
+| 20:54 | Created src/providers/claude.ts | — | ~1727 |
+| 20:54 | Created src/providers/claude.ts | — | ~1729 |
+| 20:54 | Created src/providers/claude.ts | — | ~1731 |
+| 20:54 | Created src/providers/claude.ts | — | ~1733 |
+| 20:54 | Created src/providers/claude.ts | — | ~1742 |
+| 20:54 | Created src/providers/claude.ts | — | ~1602 |
+| 20:54 | Created src/providers/claude.ts | — | ~1628 |
+| 20:54 | Created src/providers/claude.ts | — | ~1652 |
+| 20:54 | Created src/providers/claude.ts | — | ~1674 |
+| 20:54 | Created src/providers/claude.ts | — | ~1699 |
+| 20:54 | Created src/providers/claude-default.ts | — | ~1156 |
+| 20:54 | Created src/providers/claude-cli.ts | — | ~524 |
+| 20:54 | Created src/registry/bootstrap.ts | — | ~519 |
+| 20:54 | Created src/providers/index.ts | — | ~83 |
+| 20:54 | Created src/registry/bootstrap.ts | — | ~571 |
+| 20:55 | Created src/providers/claude.ts | — | ~1723 |
+| 20:56 | GREEN: CLI-first composite + claude-cli registry; Wave 0 tests 30/30 pass | src/providers/claude*.ts, src/registry/bootstrap.ts | pnpm test:run Wave 0 files exit 0 | ~200 |

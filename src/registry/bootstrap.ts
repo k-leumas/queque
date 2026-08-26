@@ -1,6 +1,7 @@
 import { filesystemContextProvider } from '../context/providers/filesystem-context.js';
 import { gitContextProvider } from '../context/providers/git-context.js';
 import { claudeAdapter } from '../providers/claude.js';
+import { claudeDefaultAdapter } from '../providers/claude-default.js';
 import { registerContextProvider } from './context-providers.js';
 import { registerProviderBackend } from './provider-backends.js';
 import { registerShellAdapter } from './shell-adapters.js';
@@ -46,6 +47,12 @@ export function bootstrapBuiltins(): void {
     name: 'Claude (Anthropic)',
     description: 'Anthropic Claude adapter — default LLM backend',
     adapter: claudeAdapter,
+  });
+  registerProviderBackend({
+    id: 'claude-cli',
+    name: 'Claude (CLI)',
+    description: 'Claude Code print-mode adapter with SDK rescue',
+    adapter: claudeDefaultAdapter,
   });
 }
 

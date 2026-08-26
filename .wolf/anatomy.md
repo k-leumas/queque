@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:51:35.973Z
-> Files: 323 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:55:07.067Z
+> Files: 324 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -661,17 +661,17 @@
 
 ## src/providers/
 
-- `claude-cli.ts` — Spawns `claude -p` and parses stdout as a candidate list. Throws on failure. (~250 tok)
-- `claude-default.ts` — CLI-first composite adapter with SDK rescue, remainingMs, and MIN_SDK_RESCUE_MS. (~194 tok)
+- `claude-cli.ts` — Spawns `claude -p` print mode and parses stdout with the shared candidate contract. (~524 tok)
+- `claude-default.ts` — CLI-first composite: claude -p then SDK rescue with remainingMs and MIN_SDK_RESCUE_MS. (~1156 tok)
 - `claude-exec.ts` — Thin execFile wrapper that always resolves `{ stdout, stderr }` so tests can mock spawn. (~207 tok)
-- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1590 tok)
+- `claude.ts` — SDK adapter plus shared QUEQUE_SYSTEM, buildPrompt, parseCandidates, ensureSelectableCandidates. (~1723 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
-- `index.ts` (~56 tok)
+- `index.ts` (~83 tok)
 - `resolver.ts` — Maps a detected provider kind to a registered LLMAdapter instance. (~370 tok)
 
 ## src/registry/
 
-- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~498 tok)
+- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~571 tok)
 - `provider-backends.ts` — Registers a provider backend descriptor and its LLMAdapter instance. (~357 tok)
 
 ## src/shared/
