@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T02:37:42.022Z
-> Files: 319 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T02:46:27.845Z
+> Files: 320 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -509,6 +509,7 @@
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
 - `08-REVIEW.md` — Phase 08: Code Review Report (~1174 tok)
+- `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
