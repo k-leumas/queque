@@ -7,8 +7,7 @@ import type { NormalizedRequest } from '../contracts/request.js';
 import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { classifyIntent } from '../intent/router.js';
-import { detectProvider } from '../providers/detect.js';
-import { resolveAdapter } from '../providers/resolver.js';
+import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
@@ -38,6 +37,11 @@ export function buildShellBuffers(
     };
   }
   return { lbuffer: command, rbuffer: comment };
+}
+
+/** Prefixes FIFO error copy once so adapter `QueQue:` messages are not doubled. */
+function formatFifoError(message: string): string {
+  return message.startsWith('QueQue:') ? message : `QueQue: ${message}`;
 }
 
 export interface ForegroundClientArgs {
@@ -100,19 +104,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       shellPid: request.shellPid,
     });
 
-    const detectedProvider = await detectProvider();
-    void appendDebugLog('client', 'provider detected', { kind: detectedProvider.kind });
-
-    if (detectedProvider.kind === 'none') {
-      if (ttyHandle && !inZellij) {
-        try {
-          await ttyHandle.write(`\r\n${detectedProvider.message}\r\n`);
-        } catch {}
-      }
-      await writeShellResult(resultFile, { kind: 'error', message: detectedProvider.message });
-      return;
-    }
-
     // Ensure the daemon is reachable before we do anything interactive
     await ensureDaemon(socketPath);
     void appendDebugLog('client', 'daemon ensured', { socketPath });
@@ -153,8 +144,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           extraCount: envelope.extras.length,
         });
 
-        const adapter = resolveAdapter(detectedProvider);
-        void appendDebugLog('client', 'provider adapter resolved', { kind: detectedProvider.kind });
+        const adapter = resolveClaudeDefaultAdapter();
+        void appendDebugLog('client', 'provider adapter resolved', { id: 'claude-cli' });
 
         // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
@@ -300,7 +291,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;
               resolved = true;
-              const errorMsg = `QueQue: ${message}`;
+              const errorMsg = formatFifoError(message);
               await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
               // skipClear=true: don't restore cursor to ZLE's saved start position —
               // doing so would cause zle reset-prompt to draw the next prompt right
@@ -313,7 +304,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         void appendDebugLog('client', 'llm request failed', { message });
-        const errorMsg = `QueQue: ${message}`;
+        const errorMsg = formatFifoError(message);
         await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
       }
     } else {

@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:55:07.067Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:58:39.009Z
 > Files: 324 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -609,7 +609,7 @@
 ## docs/
 
 - `config.example.json` (~65 tok)
-- `EXTENSIONS.md` — QueQue Extension Seams (~863 tok)
+- `EXTENSIONS.md` — QueQue Extension Seams (~932 tok)
 - `RELEASING.md` — Release Process (~1183 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
 - `SYSTEM_DESIGN.md` — System Design (~2579 tok)
@@ -642,7 +642,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3958 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3874 tok)
 - `zellij-pane-resize.ts` — Default max floating pane height when QQ_PANE_HEIGHT is unset or invalid. (~694 tok)
 
 ## src/context/
@@ -666,8 +666,8 @@
 - `claude-exec.ts` — Thin execFile wrapper that always resolves `{ stdout, stderr }` so tests can mock spawn. (~207 tok)
 - `claude.ts` — SDK adapter plus shared QUEQUE_SYSTEM, buildPrompt, parseCandidates, ensureSelectableCandidates. (~1723 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
-- `index.ts` (~83 tok)
-- `resolver.ts` — Maps a detected provider kind to a registered LLMAdapter instance. (~370 tok)
+- `index.ts` (~91 tok)
+- `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
 
 ## src/registry/
 
@@ -695,7 +695,7 @@
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6504 tok)
 - `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~4143 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~1752 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~7766 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
 - `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
@@ -706,7 +706,7 @@
 - `modal-layout.test.ts` — Declares lines (~666 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
-- `provider-resolver.test.ts` — Declares adapter (~551 tok)
+- `provider-resolver.test.ts` — Declares resetRegistries (~774 tok)
 - `qq-config.test.ts` — Declares parsed (~189 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)

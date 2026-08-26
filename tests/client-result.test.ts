@@ -14,14 +14,6 @@ vi.mock('../src/daemon/bootstrap.js', () => ({
 }));
 
 // ---------------------------------------------------------------------------
-// Mock detectProvider so runForegroundClient tests don't depend on real
-// provider detection (env vars, fs access, network)
-// ---------------------------------------------------------------------------
-vi.mock('../src/providers/detect.js', () => ({
-  detectProvider: vi.fn().mockResolvedValue({ kind: 'anthropic-key' }),
-}));
-
-// ---------------------------------------------------------------------------
 // Mock socket-path to return a predictable path
 // ---------------------------------------------------------------------------
 vi.mock('../src/shared/socket-path.js', () => ({
@@ -36,6 +28,9 @@ const fetchCandidatesMock = vi.hoisted(() => vi.fn());
 
 vi.mock('../src/providers/resolver.js', () => ({
   resolveAdapter: vi.fn(() => ({
+    fetchCandidates: fetchCandidatesMock,
+  })),
+  resolveClaudeDefaultAdapter: vi.fn(() => ({
     fetchCandidates: fetchCandidatesMock,
   })),
 }));
@@ -337,12 +332,10 @@ describe('runForegroundClient', () => {
     // Write a sample shell request
     fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
 
-    const { resolveAdapter } = await import('../src/providers/resolver.js');
-    const { detectProvider } = await import('../src/providers/detect.js');
-    vi.mocked(resolveAdapter).mockImplementation(() => ({
+    const { resolveClaudeDefaultAdapter } = await import('../src/providers/resolver.js');
+    vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => ({
       fetchCandidates: fetchCandidatesMock,
     }));
-    vi.mocked(detectProvider).mockResolvedValue({ kind: 'anthropic-key' });
     fetchCandidatesMock.mockReset();
   });
 
@@ -462,11 +455,12 @@ describe('runForegroundClient', () => {
     expect(parsed.kind).toBe('error');
     expect(parsed.message).toContain('API timeout');
     expect(parsed.message).toContain('QueQue:');
+    expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
   });
 
-  it('writes error ShellResult when resolveAdapter throws', async () => {
-    const { resolveAdapter } = await import('../src/providers/resolver.js');
-    vi.mocked(resolveAdapter).mockImplementation(() => {
+  it('writes error ShellResult when resolveClaudeDefaultAdapter throws', async () => {
+    const { resolveClaudeDefaultAdapter } = await import('../src/providers/resolver.js');
+    vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => {
       throw new Error(
         'QueQue: Claude provider is not registered — was bootstrapBuiltins() called?',
       );
@@ -479,30 +473,26 @@ describe('runForegroundClient', () => {
     expect(parsed.kind).toBe('error');
     expect(parsed.message).toContain('bootstrapBuiltins');
     expect(parsed.message).toContain('QueQue:');
+    expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
     expect(fetchCandidatesMock).not.toHaveBeenCalled();
   });
 
-  it('writes error ShellResult when ollama provider is not wired', async () => {
-    const { detectProvider } = await import('../src/providers/detect.js');
-    const { resolveAdapter } = await import('../src/providers/resolver.js');
-
-    vi.mocked(detectProvider).mockResolvedValue({
-      kind: 'ollama',
-      baseUrl: 'http://localhost:11434',
-    });
-    vi.mocked(resolveAdapter).mockImplementation(() => {
-      throw new Error(
-        'QueQue: Ollama detected but local adapter is not wired yet (Phase 8). Set ANTHROPIC_API_KEY or use .env.local.',
-      );
-    });
+  it('writes FIFO kind error with D-13 /login copy and a single QueQue prefix', async () => {
+    fetchCandidatesMock.mockRejectedValue(
+      new Error(
+        'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.',
+      ),
+    );
 
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
     await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
 
     const parsed = JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim());
     expect(parsed.kind).toBe('error');
-    expect(parsed.message).toMatch(/ollama|not wired yet/i);
-    expect(fetchCandidatesMock).not.toHaveBeenCalled();
+    expect(parsed.message).toMatch(/login/);
+    expect(parsed.message).toMatch(/ANTHROPIC_API_KEY/);
+    expect(parsed.message).not.toMatch(/not wired yet/i);
+    expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
   });
 });
 
@@ -595,12 +585,10 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
     resultFile = path.join(tmpDir, 'result.json');
     fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
 
-    const { resolveAdapter } = await import('../src/providers/resolver.js');
-    const { detectProvider } = await import('../src/providers/detect.js');
-    vi.mocked(resolveAdapter).mockImplementation(() => ({
+    const { resolveClaudeDefaultAdapter } = await import('../src/providers/resolver.js');
+    vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => ({
       fetchCandidates: fetchCandidatesMock,
     }));
-    vi.mocked(detectProvider).mockResolvedValue({ kind: 'anthropic-key' });
     fetchCandidatesMock.mockReset();
   });
 

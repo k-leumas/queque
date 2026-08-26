@@ -2,4 +2,4 @@ export { claudeDefaultAdapter, MIN_SDK_RESCUE_MS, remainingMs } from './claude-d
 export type { DetectedProvider } from './detect.js';
 export { detectProvider } from './detect.js';
 export type { LLMAdapter } from './provider.js';
-export { resolveAdapter } from './resolver.js';
+export { resolveAdapter, resolveClaudeDefaultAdapter } from './resolver.js';

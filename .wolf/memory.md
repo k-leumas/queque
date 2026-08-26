@@ -1814,3 +1814,25 @@
 | 20:54 | Created src/registry/bootstrap.ts | — | ~571 |
 | 20:55 | Created src/providers/claude.ts | — | ~1723 |
 | 20:56 | GREEN: CLI-first composite + claude-cli registry; Wave 0 tests 30/30 pass | src/providers/claude*.ts, src/registry/bootstrap.ts | pnpm test:run Wave 0 files exit 0 | ~200 |
+| 20:57 | Created src/providers/resolver.ts | — | ~303 |
+| 20:57 | Created src/providers/index.ts | — | ~91 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3945 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3982 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3852 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3848 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3849 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3850 |
+| 20:57 | Created src/providers/resolver.ts | — | ~352 |
+| 20:57 | Created src/client/run-foreground.ts | — | ~3913 |
+| 20:58 | Created src/client/run-foreground.ts | — | ~3937 |
+| 20:58 | Created tests/provider-resolver.test.ts | — | ~700 |
+| 20:58 | Created tests/client-result.test.ts | — | ~7816 |
+| 20:58 | Created tests/client-result.test.ts | — | ~7843 |
+| 20:58 | Created tests/client-result.test.ts | — | ~7838 |
+| 20:58 | Created docs/EXTENSIONS.md | — | ~988 |
+| 20:58 | Created tests/client-result.test.ts | — | ~7766 |
+| 20:58 | Created src/client/run-foreground.ts | — | ~3874 |
+| 20:58 | Created tests/provider-resolver.test.ts | — | ~774 |
+| 20:58 | Created docs/EXTENSIONS.md | — | ~994 |
+| 20:58 | Session end: 36 writes across 10 files (claude.ts, claude-default.ts, claude-cli.ts, bootstrap.ts, index.ts) | 21 reads | ~127818 tok |
+| 20:59 | GREEN Task 3: bypass detect selector, Claude-default resolver, single QueQue FIFO prefix; full suite 236/236 | resolver.ts, run-foreground.ts, EXTENSIONS.md, tests | pnpm test:run exit 0 | ~200 |

@@ -29,6 +29,7 @@
 - [2026-07-30] Do not pass `temperature`, `top_p`, or `top_k` to the Anthropic Messages API. The default model `claude-sonnet-5` (and the Opus 4.7/4.8 family) removed these sampling parameters — any non-default value returns a `400 invalid_request_error` ("`temperature` is deprecated for this model"). This is a runtime-only failure; TypeScript, biome, and vitest will not catch it — only a live request (e.g. scripts/smoke-homebrew-docker.sh) surfaces it. Steer output via the system prompt instead.
 - [2026-08-25] Do not invoke `claude -p --bare` for QueQue `/login` users. Bare mode skips Keychain and OAuth. Use `--safe-mode --tools ""` instead. Do not pass `--output-format json` into `parseCandidates` (wrapper envelope, not candidate array).
 - [2026-08-26] Do not copy `tests/context-pipeline.test.ts` raw `execFile` + `promisify` for CLI spawn tests. A `vi.fn()` mock of `execFile` has no `[util.promisify.custom]`, so promisify resolves to an **array**; `const { stdout } = await execFileAsync(...)` is `undefined`. Mock a thin `execFileAsync` that resolves `{ stdout, stderr }`. Register `claudeDefaultAdapter` as `claude-cli`, not raw `claudeCliAdapter`.
+- [2026-08-26] TDD RED tests that import new modules fail `tsc --noEmit` in pre-commit. Add throw-on-call stubs with the public exports so typecheck can commit; keep fetch behavior unimplemented until GREEN.
 
 ## Decision Log
 

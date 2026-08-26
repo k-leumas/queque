@@ -7,7 +7,7 @@ QueQue is built around registries so new shells, providers, context sources, and
 | Registry | Register | Resolve | Default built-in |
 |----------|----------|---------|------------------|
 | Context providers | `registerContextProvider()` | `listContextProviders()` | `git-context`, `filesystem-context` |
-| Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (Anthropic SDK) |
+| Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (SDK), `claude-cli` (CLI + SDK rescue) |
 | Shell adapters | `registerShellAdapter()` | `listShellAdapters()` | `zsh` |
 | Storage hooks | `registerStorageHook()` | `listStorageHooks()` | `noop` (no persistence) |
 
@@ -15,10 +15,11 @@ Built-ins wire up in `src/registry/bootstrap.ts`. Production code should resolve
 
 ## Provider resolution
 
-1. `detectProvider()` — pre-flight check (anthropic-key → claude-cli → ollama → openai-key → none). Claude CLI detection is platform-aware: credentials file or OAuth env tokens on Linux/Windows; on macOS, `claude` on PATH covers Keychain `/login` (Phase 8 / 08-01).
-2. `resolveAdapter(detected)` — maps detection to a registered `LLMAdapter`
+Claude is the silent default: spawn `claude -p` first, then rescue with the Anthropic SDK when `ANTHROPIC_API_KEY` is in the environment or `.env.local`. Runtime resolves `getProviderAdapter('claude-cli')` (the CLI+SDK composite) — it does not select a backend from `detectProvider()`.
 
-Phase 8 adds subprocess adapters for Claude CLI, Ollama, and OpenAI. Phase 6 wires the Anthropic SDK path through the registry.
+`detectProvider()` remains as leftover preflight for debug callers. It is not the hot-path adapter selector.
+
+OpenAI, Ollama, and a `~/.config/qq/provider.json` pin are upcoming in 08-03. They are not shipped in 08-02. Changing provider later means re-running the 08-03 picker or editing the pin — not re-detecting the machine on every `??`.
 
 ## Roadmap expansion
 
@@ -31,8 +32,8 @@ Phase 8 adds subprocess adapters for Claude CLI, Ollama, and OpenAI. Phase 6 wir
 ### Phase 8 — Zero-config providers
 
 - 08-01: Platform-aware Claude CLI detection (macOS Keychain `/login` gap; OAuth env tokens)
-- Extend `resolveAdapter()` for `claude-cli`, `ollama`, `openai-key`
-- Setup wizard when `detectProvider()` returns `none`
+- 08-02: Claude silent default (`claude -p` then env-key SDK rescue); `detectProvider()` leftover, not selector
+- 08-03 (upcoming): persist an explicit provider pin and optional OpenAI/Ollama adapters — not live yet
 
 ### Phase 5 (deferred) — Clarification chat
 
