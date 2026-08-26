@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 08 08-02 planned — ready to execute
-last_updated: "2026-08-26T02:36:54.664Z"
-last_activity: 2026-08-26 -- Phase 08 08-02 planning complete
+stopped_at: Completed 08-02-PLAN.md
+last_updated: "2026-08-26T04:00:49.782Z"
+last_activity: 2026-08-26
 progress:
   total_phases: 10
-  completed_phases: 7
-  total_plans: 24
-  completed_plans: 22
+  completed_phases: 8
+  total_plans: 23
+  completed_plans: 23
   percent: 70
 ---
 
@@ -25,13 +25,13 @@ See: .planning/PROJECT.md (updated 2026-04-30)
 
 ## Current Position
 
-Phase: 08 (zero-config-install-and-provider-detection) — READY TO EXECUTE
-Plan: 1 of 3 complete (08-01 done; 08-02 planned; 08-03 not yet planned)
-Next: Execute 08-02 (`/gsd-execute-phase 08`)
-Status: 08-02 PLAN.md ready — Claude CLI-first + SDK rescue; pin/OpenAI/Ollama remain 08-03
-Last activity: 2026-08-26 -- Phase 08 08-02 planning complete
+Phase: 08 (zero-config-install-and-provider-detection) — 08-02 COMPLETE
+Plan: 2 of 2
+Next: Verify Phase 08 (`/gsd-verify-work 08`); 08-03 provider pin remains on the roadmap
+Status: Completed 08-02-PLAN.md
+Last activity: 2026-08-26 -- Completed 08-02 Claude CLI-first fetch
 
-Progress: [███████░░░] 70% (7/10 phases complete)
+Progress: [████████░░] 80% (8/10 phases with plans in progress; 08-03 still open on ROADMAP)
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [███████░░░] 70% (7/10 phases complete)
 | Phase 02-intent-router-and-context-pipeline P03 | 11 | 2 tasks | 8 files |
 | Phase 06-hardening-privacy-defaults-and-extension-seams P02 | 20min | 3 tasks | 7 files |
 | Phase 08 P01 | 2min | 1 tasks | 2 files |
+| Phase 08 P02 | 12min | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -86,6 +87,9 @@ Recent decisions affecting current work:
 - [Phase 08]: darwin treats claude on PATH as auth-present (Keychain); false positives fail at 08-02 request time
 - [Phase 08]: CLAUDE_CODE_OAUTH_TOKEN and ANTHROPIC_AUTH_TOKEN count as Claude auth without reading values
 - [Phase 08]: Provider selection is pin-not-waterfall; Claude silent default; 08-02 is CLI-first `claude -p` with SDK rescue
+- [Phase 08]: Register the CLI+SDK composite as claude-cli, not raw claudeCliAdapter
+- [Phase 08]: Keep the prompt as last argv with stdin ignore (accepted ps disclosure T-08-02-07)
+- [Phase 08]: none/ollama/openai-key resolve to Claude default as an 08-02 bridge until 08-03 pinning
 
 ### Pending Todos
 
@@ -123,8 +127,8 @@ None yet.
 
 ## Session Continuity
 
-Last activity: 2026-05-29 — completed quick task 260529-ney: research beta distribution channels
+Last activity: 2026-08-26 — completed 08-02 Claude CLI-first fetch with SDK rescue
 
-Last session: 2026-08-26T02:09:57.064Z
-Stopped at: Phase 8 context gathered
-Resume file: .planning/phases/08-zero-config-install-and-provider-detection/08-CONTEXT.md
+Last session: 2026-08-26T04:00:49.766Z
+Stopped at: Completed 08-02-PLAN.md
+Resume file: None

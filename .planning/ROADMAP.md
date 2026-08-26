@@ -230,7 +230,7 @@ Plans:
 Plans:
 
 - [x] 08-01: Provider detection module — `detectProvider()` waterfall: `ANTHROPIC_API_KEY` → platform-aware Claude CLI auth (Linux/Windows: credentials file or `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_AUTH_TOKEN`; macOS: `claude` on PATH is sufficient because `/login` uses Keychain) → Ollama health check (`localhost:11434`) → `OPENAI_API_KEY` / openai CLI → none (message mentions credentials file or macOS Keychain login); returns a typed `DetectedProvider` union consumed by the provider registry.
-- [ ] 08-02-PLAN.md — Claude-only `claude -p` + SDK rescue composite registered as `claude-cli`; bypass `detectProvider()` as selector; argv prompt (`ps` accepted); no OpenAI/Ollama/`provider.json` (08-03).
+- [x] 08-02-PLAN.md — Claude-only `claude -p` + SDK rescue composite registered as `claude-cli`; bypass `detectProvider()` as selector; argv prompt (`ps` accepted); no OpenAI/Ollama/`provider.json` (08-03).
 - [ ] 08-03: No-provider setup wizard — when `detectProvider()` returns `none`, print a short interactive prompt: pick Ollama (auto-opens install URL), enter an API key, or open claude.ai; persist the choice to `~/.config/qq/provider.json` so the next run skips detection.
 
 ## Progress
@@ -249,4 +249,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 | 5. Clarification Chat in the Same TUI | 0/3 | Deferred | — |
 | 6. Hardening, Privacy Defaults, and Extension Seams | 3/3 | Complete | 2026-06-18 |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
-| 8. Zero-Config Install and Provider Detection | 0/3 | Not started | - |
+| 8. Zero-Config Install and Provider Detection | 2/3 | In Progress | - |
