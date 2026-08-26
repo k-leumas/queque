@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: completed
-stopped_at: Phase 8 context gathered
-last_updated: "2026-08-26T02:09:57.081Z"
-last_activity: 2026-07-31
+status: executing
+stopped_at: Phase 08 08-02 planned — ready to execute
+last_updated: "2026-08-26T02:36:54.664Z"
+last_activity: 2026-08-26 -- Phase 08 08-02 planning complete
 progress:
   total_phases: 10
-  completed_phases: 8
-  total_plans: 22
+  completed_phases: 7
+  total_plans: 24
   completed_plans: 22
-  percent: 80
+  percent: 70
 ---
 
 # Project State
@@ -25,11 +25,11 @@ See: .planning/PROJECT.md (updated 2026-04-30)
 
 ## Current Position
 
-Phase: 08 (zero-config-install-and-provider-detection) — EXECUTING
-Plan: 1 of 3 complete (08-01 done; 08-02 and 08-03 not yet planned as PLAN.md)
-Next: Plan 08-02 subprocess provider adapters (/gsd-plan-phase 08)
-Status: 08-01 complete — phase incomplete until 08-02 and 08-03
-Last activity: 2026-07-31
+Phase: 08 (zero-config-install-and-provider-detection) — READY TO EXECUTE
+Plan: 1 of 3 complete (08-01 done; 08-02 planned; 08-03 not yet planned)
+Next: Execute 08-02 (`/gsd-execute-phase 08`)
+Status: 08-02 PLAN.md ready — Claude CLI-first + SDK rescue; pin/OpenAI/Ollama remain 08-03
+Last activity: 2026-08-26 -- Phase 08 08-02 planning complete
 
 Progress: [███████░░░] 70% (7/10 phases complete)
 
@@ -85,6 +85,7 @@ Recent decisions affecting current work:
 - [Phase 06]: resolveAdapter missing-adapter error references bootstrapBuiltins() for clarity
 - [Phase 08]: darwin treats claude on PATH as auth-present (Keychain); false positives fail at 08-02 request time
 - [Phase 08]: CLAUDE_CODE_OAUTH_TOKEN and ANTHROPIC_AUTH_TOKEN count as Claude auth without reading values
+- [Phase 08]: Provider selection is pin-not-waterfall; Claude silent default; 08-02 is CLI-first `claude -p` with SDK rescue
 
 ### Pending Todos
 

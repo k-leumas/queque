@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T02:09:38.002Z
-> Files: 309 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T02:37:42.022Z
+> Files: 319 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -97,9 +97,16 @@
 
 ## ../../.cursor/projects/Users-samuel-dev-tui-llm/agent-tools/
 
+- `2101a60a-5383-4516-9005-e358d5918c89.txt` — Declares errors (~9899 tok)
 - `42f233de-2af8-4fa8-abdb-7567371c317e.txt` — [BUG] OAuth refresh returns 400 after early 401 before local expiresAt; concurrent sessions forced t (~10929 tok)
+- `538a3a7b-eaec-43b9-a58f-ce1ff7a518d0.txt` (~60186 tok)
 - `55d1b009-26e8-4256-9cf0-568c32416191.txt` — Declares definitions (~20328 tok)
+- `6303af03-5778-4afa-a9ca-d7ff395eceed.txt` — Declares errors (~9899 tok)
+- `6905a00b-1807-4faa-bcf1-55816a173fce.txt` — ls: lsExample, lsExample (~18678 tok)
+- `9967328d-9cb0-497e-bb82-1653c0bd8045.txt` (~60186 tok)
 - `a0c7f713-e5ba-4432-9036-d28b9afc3d41.txt` (~8668 tok)
+- `a9bbd6ca-7ace-44fb-838e-59e081d48030.txt` (~5745 tok)
+- `e42b4f5f-0ac6-4103-b772-a2c6dcc56bf5.txt` — Declares names (~6528 tok)
 - `f0005c5f-1174-4259-a9b2-6b1ba941a3f9.txt` — Declares definitions (~20328 tok)
 - `f43e11ed-66f9-41f2-9a7d-df1ee64cd15c.txt` (~5970 tok)
 
@@ -394,8 +401,8 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~4056 tok)
-- `STATE.md` — Project State (~2290 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~4031 tok)
+- `STATE.md` — Project State (~2364 tok)
 
 ## .planning/notes/
 
@@ -496,10 +503,13 @@
 
 - `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
 - `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
+- `08-02-PLAN.md` — Phase 08 Plan 02: Claude CLI-first fetch + SDK rescue (~2100 tok)
 - `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2287 tok)
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
-- `08-RESEARCH.md` — Phase 8 research: Claude Code auth by platform, detection gap, recommended `claudeAuthPresent()` fix. (~1300 tok)
+- `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
+- `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
 - `08-REVIEW.md` — Phase 08: Code Review Report (~1174 tok)
+- `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
