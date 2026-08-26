@@ -13,6 +13,7 @@
 
 - **Phase 8 selector:** Runtime uses `provider.json` pin or Claude default. `detectProvider()` waterfall is not the long-term adapter selector.
 - **`claude -p` flags for QueQue:** Use `--safe-mode --tools "" --no-session-persistence --output-format text` and argv prompt. Never `--bare` (skips Keychain/OAuth). Never `--output-format json` into `parseCandidates` (wrapper envelope). Stdin must be `ignore` or Ink/Zellij hangs. Shared 25s CLI+SDK budget under FIFO 30s.
+- **Node `execFile` ignores `stdio`:** `child_process.execFile` / `promisify(execFile)` always spawn with piped stdin. Passing `stdio: ['ignore','pipe','pipe']` is a no-op — `child.stdin` stays writable. Use `spawn` when stdin must be `/dev/null`. Phase 08 CR-01: this can hang `claude -p` for 25s and skip SDK rescue.
 - **Project:** tui-llm
 - Claude Code `/login` stores OAuth in macOS Keychain (not `~/.claude/.credentials.json`). Prototype `detectProvider()` Step 2 only stats the credentials file, so darwin logged-in users miss `claude-cli`. Phase 8 / 08-01 must use platform-aware presence (`claude` on PATH on darwin; file/env elsewhere) — no Keychain read, no `claude -p` probe (200 ms budget).
 - ZLE user-defined widgets run with stdin redirected from `/dev/null`; any foreground TUI client launched from the widget must be reattached to `/dev/tty` explicitly.
@@ -30,6 +31,7 @@
 - [2026-08-25] Do not invoke `claude -p --bare` for QueQue `/login` users. Bare mode skips Keychain and OAuth. Use `--safe-mode --tools ""` instead. Do not pass `--output-format json` into `parseCandidates` (wrapper envelope, not candidate array).
 - [2026-08-26] Do not copy `tests/context-pipeline.test.ts` raw `execFile` + `promisify` for CLI spawn tests. A `vi.fn()` mock of `execFile` has no `[util.promisify.custom]`, so promisify resolves to an **array**; `const { stdout } = await execFileAsync(...)` is `undefined`. Mock a thin `execFileAsync` that resolves `{ stdout, stderr }`. Register `claudeDefaultAdapter` as `claude-cli`, not raw `claudeCliAdapter`.
 - [2026-08-26] TDD RED tests that import new modules fail `tsc --noEmit` in pre-commit. Add throw-on-call stubs with the public exports so typecheck can commit; keep fetch behavior unimplemented until GREEN.
+- [2026-08-26] Do not implement `execFileAsync` with `promisify(execFile)` when the call site needs `stdio: ['ignore','pipe','pipe']`. Node `execFile` does not take `stdio`; mocks that only assert `options.stdio[0]==='ignore'` will pass while production hangs. Use `spawn` and add an unmocked stdin-EOF child test.
 
 ## Decision Log
 

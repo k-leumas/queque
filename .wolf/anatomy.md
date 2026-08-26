@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:58:39.009Z
-> Files: 324 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T04:13:23.666Z
+> Files: 326 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -402,7 +402,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~4039 tok)
-- `STATE.md` — Project State (~2364 tok)
+- `STATE.md` — Project State (~2404 tok)
 
 ## .planning/notes/
 
@@ -504,13 +504,16 @@
 - `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
 - `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
 - `08-02-PLAN.md` (~10802 tok)
+- `08-02-SUMMARY.md` — Phase 08 Plan 02: Claude CLI-First Fetch with SDK Rescue Summary (~1774 tok)
 - `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2287 tok)
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
-- `08-REVIEW.md` — Phase 08: Code Review Report (~1174 tok)
+- `08-REVIEW.md` — Phase 08: Code Review Report (~2665 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
+- `08-VERIFICATION.md` — Phase 08 goal-backward verification: 08-01/08-02 vs CR-01 stdin gap and 08-03 remaining. (~3200 tok)
+- `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~4525 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
