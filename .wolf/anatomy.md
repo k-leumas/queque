@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:02:33.730Z
-> Files: 320 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T03:51:35.973Z
+> Files: 323 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -661,6 +661,9 @@
 
 ## src/providers/
 
+- `claude-cli.ts` — Spawns `claude -p` and parses stdout as a candidate list. Throws on failure. (~250 tok)
+- `claude-default.ts` — CLI-first composite adapter with SDK rescue, remainingMs, and MIN_SDK_RESCUE_MS. (~194 tok)
+- `claude-exec.ts` — Thin execFile wrapper that always resolves `{ stdout, stderr }` so tests can mock spawn. (~207 tok)
 - `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1590 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~56 tok)
@@ -690,6 +693,7 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6504 tok)
+- `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~4143 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~1752 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7932 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
@@ -704,7 +708,7 @@
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-resolver.test.ts` — Declares adapter (~551 tok)
 - `qq-config.test.ts` — Declares parsed (~189 tok)
-- `registry-bootstrap.test.ts` — Declares hookIds (~604 tok)
+- `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)

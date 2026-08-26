@@ -1781,3 +1781,19 @@
 | 20:02 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-02-PLAN.md | — | ~11522 |
 | 20:02 | Created .planning/ROADMAP.md | — | ~4309 |
 | 20:05 | Replanned 08-02 from 08-REVIEWS.md (mock shape, composite registry, argv ps accept, remainingMs, debug, QueQue prefix) | 08-02-PLAN.md, ROADMAP.md | in-place revise, no 08-03 | ~4500 |
+| 20:06 | Session end: 3 writes across 3 files (08-REVIEWS.md, 08-02-PLAN.md, ROADMAP.md) | 26 reads | ~59131 tok |
+| 20:35 | Session end: 3 writes across 3 files (08-REVIEWS.md, 08-02-PLAN.md, ROADMAP.md) | 26 reads | ~59131 tok |
+
+## Session: 2026-08-26 20:45
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:49 | Created tests/claude-cli-provider.test.ts | — | ~4099 |
+| 20:49 | Created tests/registry-bootstrap.test.ts | — | ~689 |
+| 20:51 | RED: Wave 0 CLI/registry tests fail on missing claude-default/claude-cli modules and missing claude-cli registry id | tests/claude-cli-provider.test.ts, tests/registry-bootstrap.test.ts | fail-closed as planned | ~200 |
+| 20:51 | Created src/providers/claude-exec.ts | — | ~207 |
+| 20:51 | Created src/providers/claude-cli.ts | — | ~199 |
+| 20:51 | Created tests/claude-cli-provider.test.ts | — | ~4143 |
+| 20:51 | Created src/providers/claude-default.ts | — | ~194 |
+| 20:52 | Created tests/claude-cli-provider.test.ts | — | ~4150 |
+| 20:53 | Rule 3: added throw-on-call stubs so pre-commit typecheck can commit RED tests; 14/15 CLI tests still fail on unimplemented adapter / missing claude-cli id | src/providers/claude-*.ts | typecheck passes, tests still RED | ~150 |

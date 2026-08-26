@@ -51,6 +51,12 @@ describe('bootstrapBuiltins()', () => {
     expect(getProviderAdapter('claude')?.fetchCandidates).toBeTypeOf('function');
   });
 
+  it('registers the claude-cli provider backend with an adapter instance', () => {
+    bootstrapBuiltins();
+    expect(listProviderBackends().map((backend) => backend.id)).toContain('claude-cli');
+    expect(getProviderAdapter('claude-cli')?.fetchCandidates).toBeTypeOf('function');
+  });
+
   it('is idempotent', () => {
     expect(() => {
       bootstrapBuiltins();
