@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 08
-current_phase_name: Zero-Config Install and Provider Detection
+current_phase: 9
+current_phase_name: Installed-Only Command Awareness
 status: executing
 stopped_at: Phase 9 context gathered
-last_updated: "2026-10-08T05:41:24.332Z"
+last_updated: "2026-10-08T06:41:07.252Z"
 last_activity: 2026-08-26
 last_activity_desc: Completed 08-02 Claude CLI-first fetch
-state_head: c2b7371a91b334443c6cbaf030ab8697b2accb27
+state_head: 5eba350882ea73fa000b577b30e35d14c19de81d
 progress:
   total_phases: 11
   completed_phases: 8
-  total_plans: 27
+  total_plans: 32
   completed_plans: 23
 milestone_name: milestone
 ---
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-04-30)
 
 ## Current Position
 
-Phase: 08 (Zero-Config Install and Provider Detection) — READY TO EXECUTE
+Phase: 9 (Installed-Only Command Awareness) — READY TO EXECUTE
 Plan: 2 of 2
 Next: Verify Phase 08 (`/gsd-verify-work 08`); 08-03 provider pin remains on the roadmap
 Status: Completed 08-02-PLAN.md
