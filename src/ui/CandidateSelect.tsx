@@ -1,11 +1,17 @@
 import { Box, Text, useInput, useStdin, useStdout } from 'ink';
 import { type ReactElement, useEffect, useState } from 'react';
-import type { CandidateList } from '../contracts/candidates.js';
 import { isDestructiveCommand } from '../shared/privacy-filter.js';
+import type { DisplayCandidate } from '../shared/tool-awareness.js';
 import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { Modal } from './Modal.js';
-import { estimateCandidateSelectLines, filterCandidates, wrapText } from './modal-layout.js';
+import {
+  estimateCandidateSelectLines,
+  filterCandidates,
+  MISSING_TOOL_MARK,
+  missingToolsFooterText,
+  wrapText,
+} from './modal-layout.js';
 import { SearchInput } from './SearchInput.js';
 
 /** Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text never shifts. */
@@ -43,9 +49,10 @@ function linePrefix(active: boolean, lineIndex: number): string {
  * Props for CandidateSelect.
  *
  * D-06: candidates is nullable — null means loading state (spinner shown).
+ * D-08: a candidate's optional `missingTools` drives the ⊘ mark and footer; it stays selectable.
  */
 interface Props {
-  candidates: CandidateList | null;
+  candidates: readonly DisplayCandidate[] | null;
   initialQuery?: string;
   onSelect: (command: string, explanation: string) => void;
   onCancel: () => void;
@@ -195,6 +202,7 @@ export function CandidateSelect({
 
   let content: ReactElement;
   let showDestructiveWarning = false;
+  let selectedMissingTools: readonly string[] = [];
   if (error === true) {
     content = (
       <Box marginTop={1}>
@@ -213,6 +221,7 @@ export function CandidateSelect({
       ? normalizeCommand(visible[selectedIndex].command)
       : undefined;
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
+    selectedMissingTools = visible[selectedIndex]?.missingTools ?? [];
     if (visible.length === 0) {
       content = (
         <Box marginTop={1}>
@@ -226,6 +235,7 @@ export function CandidateSelect({
             const active = index === selectedIndex;
             const command = normalizeCommand(candidate.command);
             const destructive = isDestructiveCommand(command);
+            const flagged = (candidate.missingTools?.length ?? 0) > 0;
             const commandLines = wrapText(command, contentWidth);
             const explanationLines =
               candidate.explanation.length > 0 ? wrapText(candidate.explanation, contentWidth) : [];
@@ -243,7 +253,10 @@ export function CandidateSelect({
                   const prefix = linePrefix(active, lineIndex);
                   return (
                     <Box key={`${prefix}${line}`}>
-                      <Text color={active ? 'ansi256(166)' : undefined}>{prefix}</Text>
+                      {/* flexShrink={0} on the gutter and marks: Ink wraps the command text, never a mark. */}
+                      <Box flexShrink={0}>
+                        <Text color={active ? 'ansi256(166)' : undefined}>{prefix}</Text>
+                      </Box>
                       <Text
                         bold={active && isCommandLine}
                         color={active && isCommandLine ? 'white' : undefined}
@@ -252,7 +265,14 @@ export function CandidateSelect({
                         {line}
                       </Text>
                       {isLastCommandLine && destructive && (
-                        <Text color="yellow">{` ${DESTRUCTIVE_WARNING_MARK}`}</Text>
+                        <Box flexShrink={0}>
+                          <Text color="yellow">{` ${DESTRUCTIVE_WARNING_MARK}`}</Text>
+                        </Box>
+                      )}
+                      {isLastCommandLine && flagged && (
+                        <Box flexShrink={0}>
+                          <Text color="cyan">{` ${MISSING_TOOL_MARK}`}</Text>
+                        </Box>
                       )}
                     </Box>
                   );
@@ -274,9 +294,13 @@ export function CandidateSelect({
       )}
       <SearchInput query={query} />
       {content}
-      {showDestructiveWarning && (
-        <Box marginTop={1}>
-          <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>
+      {(showDestructiveWarning || selectedMissingTools.length > 0) && (
+        // One footer block: destructive and missing-tool lines share a single margin.
+        <Box flexDirection="column" marginTop={1}>
+          {showDestructiveWarning && <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>}
+          {selectedMissingTools.length > 0 && (
+            <Text color="cyan">{missingToolsFooterText(selectedMissingTools)}</Text>
+          )}
         </Box>
       )}
       <ControlsLine />

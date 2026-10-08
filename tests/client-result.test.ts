@@ -717,3 +717,171 @@ describe('main.ts: unhandledRejection handler writes cancel to QQ_RESULT_FILE', 
     processSpy.mockRestore();
   });
 });
+
+describe('runForegroundClient: installed-tool awareness', () => {
+  let tmpDir: string;
+  let requestFile: string;
+  let resultFile: string;
+
+  const sampleRequest = {
+    version: 1 as const,
+    ttyPath: '/dev/tty',
+    cwd: '/home/user',
+    shellPid: 1234,
+    lbuffer: 'list files in src',
+    rbuffer: '',
+  };
+
+  type RenderedCandidate = { command: string; explanation: string; missingTools?: string[] };
+
+  /** Writes the handoff next to request.json with the REAL widget helper under zsh -f. */
+  function writeRealHandoff(dir: string): void {
+    const result = spawnSync(
+      'zsh',
+      [
+        '-f',
+        '-c',
+        `source ${widgetPath}
+         mkdir -p "$QQ_TEST_DIR/bin"
+         print -r -- '#!/bin/sh' > "$QQ_TEST_DIR/bin/qqpresenttool"
+         chmod +x "$QQ_TEST_DIR/bin/qqpresenttool"
+         path=("$QQ_TEST_DIR/bin" /usr/bin /bin)
+         qqfntool() { :; }
+         _qq_write_tool_handoff "$QQ_TEST_DIR"`,
+      ],
+      { encoding: 'utf8', env: { ...process.env, QQ_TEST_DIR: dir }, timeout: 5000 },
+    );
+    expect(result.status).toBe(0);
+  }
+
+  /** Candidates passed to the most recent app.rerender (the ink mock records them). */
+  async function lastRerenderedCandidates(): Promise<RenderedCandidate[]> {
+    const { render } = await import('ink');
+    const results = vi.mocked(render).mock.results;
+    const app = results[results.length - 1]?.value as {
+      rerender: ReturnType<typeof vi.fn>;
+    };
+    const calls = app.rerender.mock.calls;
+    const element = calls[calls.length - 1]?.[0] as { props: { candidates: RenderedCandidate[] } };
+    return element.props.candidates;
+  }
+
+  beforeEach(async () => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-tools-test-'));
+    requestFile = path.join(tmpDir, 'request.json');
+    resultFile = path.join(tmpDir, 'result.json');
+    fs.writeFileSync(requestFile, `${JSON.stringify(sampleRequest)}\n`);
+
+    const { resolveClaudeDefaultAdapter } = await import('../src/providers/resolver.js');
+    vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    fetchCandidatesMock.mockReset();
+  });
+
+  afterEach(() => {
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch {
+      // ignore
+    }
+  });
+
+  it('case A: flags a missing tool from a real zsh handoff, keeps order, inserts verbatim', async () => {
+    writeRealHandoff(tmpDir);
+    fetchCandidatesMock.mockResolvedValue([
+      { command: 'qqpresenttool --list | qqabsenttool', explanation: 'demo' },
+      { command: 'qqfntool && cd /tmp', explanation: 'fn' },
+    ]);
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const candidates = await lastRerenderedCandidates();
+    expect(candidates.map((c) => c.command)).toEqual([
+      'qqpresenttool --list | qqabsenttool',
+      'qqfntool && cd /tmp',
+    ]);
+    expect(candidates[0].missingTools).toEqual(['qqabsenttool']);
+    expect(candidates[1].missingTools).toBeUndefined();
+
+    const result = JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim());
+    expect(result).toEqual({
+      kind: 'replace-buffer',
+      lbuffer: 'qqpresenttool --list | qqabsenttool',
+      rbuffer: '  # demo',
+      query: 'list files in src',
+    });
+  });
+
+  it('case B: no handoff files means no flags', async () => {
+    fetchCandidatesMock.mockResolvedValue([
+      { command: 'qqabsenttool --x', explanation: 'missing' },
+      { command: 'git status', explanation: 'status' },
+    ]);
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const candidates = await lastRerenderedCandidates();
+    expect(candidates).toHaveLength(2);
+    for (const candidate of candidates) {
+      expect(candidate.missingTools).toBeUndefined();
+    }
+  });
+
+  it('case C: QQ_TOOL_AWARENESS=0 in the client disables flags even with files present', async () => {
+    writeRealHandoff(tmpDir);
+    fetchCandidatesMock.mockResolvedValue([
+      { command: 'qqpresenttool | qqabsenttool', explanation: 'demo' },
+    ]);
+    const saved = process.env.QQ_TOOL_AWARENESS;
+    process.env.QQ_TOOL_AWARENESS = '0';
+    try {
+      const { runForegroundClient } = await import('../src/client/run-foreground.js');
+      await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+      const candidates = await lastRerenderedCandidates();
+      expect(candidates).toHaveLength(1);
+      expect(candidates[0].missingTools).toBeUndefined();
+    } finally {
+      if (saved === undefined) {
+        delete process.env.QQ_TOOL_AWARENESS;
+      } else {
+        process.env.QQ_TOOL_AWARENESS = saved;
+      }
+    }
+  });
+
+  it('case D: malformed model output never throws or yields undefined words', async () => {
+    writeRealHandoff(tmpDir);
+    fetchCandidatesMock.mockResolvedValue([
+      { command: '"rg\\', explanation: 'escape at end of input' },
+      { command: 'constructor --x | toString', explanation: 'prototype-key words' },
+      { command: 'echo "a" "`', explanation: 'unterminated backtick' },
+      { command: `qqabsenttool ${'x'.repeat(9000)}`, explanation: 'over the length cap' },
+    ]);
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await expect(
+      runForegroundClient({ requestFile, resultFile, resultMode: 'llm' }),
+    ).resolves.toBeUndefined();
+
+    const candidates = await lastRerenderedCandidates();
+    expect(candidates.map((c) => c.explanation)).toEqual([
+      'escape at end of input',
+      'prototype-key words',
+      'unterminated backtick',
+      'over the length cap',
+    ]);
+    expect(candidates[0].missingTools).toEqual(['rg']);
+    expect(candidates[1].missingTools).toEqual(['constructor', 'toString']);
+    expect(candidates[2].missingTools).toBeUndefined();
+    expect(candidates[3].missingTools).toBeUndefined();
+    for (const candidate of candidates) {
+      for (const tool of candidate.missingTools ?? []) {
+        expect(tool).not.toContain('undefined');
+      }
+    }
+  });
+});

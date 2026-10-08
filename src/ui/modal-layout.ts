@@ -1,5 +1,20 @@
-import type { CandidateList } from '../contracts/candidates.js';
+import type { CommandCandidate } from '../contracts/candidates.js';
 import { isDestructiveCommand } from '../shared/privacy-filter.js';
+import type { DisplayCandidate } from '../shared/tool-awareness.js';
+
+/**
+ * Mark shown after the last command line of a candidate that uses a tool zsh cannot resolve
+ * (D-08, glyph choice is Claude's Discretion per CONTEXT). U+2298 has East Asian Width N in
+ * Unicode 16 and width 1 in Ink's string-width, so it occupies one column. Rendered cyan,
+ * distinct from the yellow destructive ⚠. Lives here, not in CandidateSelect.tsx, so the line
+ * estimate can measure the same footer text without an import cycle.
+ */
+export const MISSING_TOOL_MARK = '⊘';
+
+/** Footer line shown when the selected candidate uses tools that are not installed. */
+export function missingToolsFooterText(missing: readonly string[]): string {
+  return `${MISSING_TOOL_MARK} not installed: ${missing.join(', ')}`;
+}
 
 /**
  * Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens.
@@ -54,7 +69,10 @@ function normalizeCommand(command: string): string {
  * Filter candidates by case-insensitive substring match on command text.
  * Returns the full list unchanged when query is empty or falsy.
  */
-export function filterCandidates(candidates: CandidateList, query: string): CandidateList {
+export function filterCandidates<T extends CommandCandidate>(
+  candidates: readonly T[],
+  query: string,
+): readonly T[] {
   if (!query) return candidates;
   const lower = query.toLowerCase();
   return candidates.filter((c) => normalizeCommand(c.command).toLowerCase().includes(lower));
@@ -62,7 +80,7 @@ export function filterCandidates(candidates: CandidateList, query: string): Cand
 
 /** Input for estimating how many terminal rows the candidate modal occupies. */
 export interface CandidateSelectLayoutInput {
-  candidates: CandidateList | null;
+  candidates: readonly DisplayCandidate[] | null;
   initialQuery?: string;
   query: string;
   selectedIndex: number;

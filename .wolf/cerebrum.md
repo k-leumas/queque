@@ -44,6 +44,7 @@
 - [2026-10-08] `qq-question-widget` sets `trap "_qq_cleanup '$tmpdir'" EXIT ERR INT` before it calls helpers; the ERR trap fires on any failing command inside called functions and deletes the session dir (request.json). Every helper the widget calls must end each list with status 0 (`|| true`, `|| return 0`) and keep stderr off the ZLE line (probed: unguarded writes to an unwritable dir fired the trap 3x).
 - [2026-10-08] Spike 002 `extract.mjs:77` (`v += s[++i]` inside double quotes) appends the text `undefined` at end of input: `"rg\` lexes as `rgundefined`. Every escape read in the port needs `?? ''`.
 - [2026-10-08] `rehash` (= `hash -r`) also drops manual `hash name=path` entries (verified). `⊘` U+2298 is East Asian Width N (Unicode 16) and width 1 in Ink's string-width — not an ambiguous-width glyph.
+- [2026-10-08] Ink 7 `<Text>` accepts no layout props (it hardcodes `flexShrink: 1`). To keep a gutter or mark from shrinking in a row, wrap it in `<Box flexShrink={0}>`.
 
 ## Do-Not-Repeat
 - [2026-10-08] In the Claude Code Bash tool, `git` is a shell function from a shell snapshot: `git ls-files --error-unmatch` and `git check-ignore` returned 0 for untracked paths. Use the real binary (`/usr/local/bin/git`, or `whence -p git`) when an exit status decides tracked/ignored.

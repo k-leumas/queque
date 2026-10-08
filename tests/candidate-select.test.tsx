@@ -637,3 +637,39 @@ describe('CandidateSelect — wrapping navigation', () => {
     expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
   });
 });
+
+describe('CandidateSelect — missing-tool flag', () => {
+  beforeEach(resetState);
+
+  /** Collects string leaves from a React element tree returned by the component. */
+  function collectText(node: unknown): string[] {
+    if (node == null || typeof node === 'boolean') {
+      return [];
+    }
+    if (typeof node === 'string' || typeof node === 'number') {
+      return [String(node)];
+    }
+    if (Array.isArray(node)) {
+      return node.flatMap(collectText);
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const props = (node as { props: { children?: unknown } }).props;
+      return collectText(props.children);
+    }
+    return [];
+  }
+
+  it('renders ⊘ after the command and a not-installed footer for the selected candidate', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    const tree = CandidateSelect({
+      candidates: [{ command: 'fd -e ts', explanation: 'find ts files', missingTools: ['fd'] }],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toMatch(/fd -e ts\n ⊘/);
+    expect(text).toContain('⊘ not installed: fd');
+  });
+});

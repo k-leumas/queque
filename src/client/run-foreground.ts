@@ -1,4 +1,5 @@
 import * as fsp from 'node:fs/promises';
+import * as path from 'node:path';
 import * as tty from 'node:tty';
 import { render } from 'ink';
 import React from 'react';
@@ -10,8 +11,10 @@ import { fetchCandidatesForUi } from '../daemon/fetch-client.js';
 import { classifyIntent } from '../intent/router.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
+import { annotateCandidates } from '../shared/tool-awareness.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { writeShellResult } from './result-writer.js';
+import { readToolHandoff } from './tool-handoff.js';
 import { syncZellijFloatingPaneHeight } from './zellij-pane-resize.js';
 
 /**
@@ -103,6 +106,12 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       cwd: request.cwd,
       shellPid: request.shellPid,
     });
+
+    // Installed-tool handoff from the widget (D-01). Read eagerly alongside request.json, not
+    // when candidates arrive: the session dir only lives until the widget's cleanup (Zellij
+    // pane timing). The inventory stays in this process — never sent over IPC (D-04).
+    const toolInventory =
+      resultMode === 'llm' ? await readToolHandoff(path.dirname(requestFile)) : null;
 
     // Ensure the daemon is reachable before we do anything interactive
     await ensureDaemon(socketPath);
@@ -279,8 +288,12 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
           fetchCandidatesForUi(socketPath, envelope)
             .then((candidates) => {
-              void appendDebugLog('client', 'candidates received', { count: candidates.length });
-              app.rerender(buildCandidateElement(candidates));
+              const displayCandidates = annotateCandidates(candidates, toolInventory);
+              void appendDebugLog('client', 'candidates received', {
+                count: candidates.length,
+                flagged: displayCandidates.filter((c) => c.missingTools !== undefined).length,
+              });
+              app.rerender(buildCandidateElement(displayCandidates));
             })
             .catch(async (err) => {
               const message = err instanceof Error ? err.message : String(err);

@@ -2112,3 +2112,19 @@
 | 01:44 | Edited .planning/ROADMAP.md | 3→3 lines | ~151 |
 | 01:44 | Edited .planning/ROADMAP.md | inline fix | ~63 |
 | 01:45 | Revised phase 9 plans from cross-AI review round 1 (1c64f97): lenient daemon chunk filter, ERR-trap-safe handoff, lexer hardening blocking in tracer, shared footer + reserve 17, comment/heredoc install-form block, wave-2 .wolf deferral, ledgers in all 5 plans | .planning/phases/09-installed-only-command-awareness/ | all plans valid, decision coverage 19/19 | ~90k |
+| 01:47 | Session end: 13 writes across 7 files (09-01-PLAN.md, 09-02-PLAN.md, 09-03-PLAN.md, 09-04-PLAN.md, 09-05-PLAN.md) | 27 reads | ~124764 tok |
+| 01:49 | Replanned phase 9 from cross-AI reviews; checker passed; fixed dup threat IDs | 09-0*-PLAN.md | done | ~10k |
+| 01:49 | Session end: 13 writes across 7 files (09-01-PLAN.md, 09-02-PLAN.md, 09-03-PLAN.md, 09-04-PLAN.md, 09-05-PLAN.md) | 27 reads | ~124764 tok |
+
+## Session: 2026-10-08 02:01
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 02:04 | Edited shell/zsh/queque.zsh | modified names() | ~509 |
+| 02:04 | Edited shell/zsh/queque.zsh | 2→4 lines | ~20 |
+| 02:04 | Edited shell/zsh/queque.zsh | 3→5 lines | ~28 |
+| 02:06 | Created src/shared/command-words.ts | — | ~3990 |
+| 02:06 | Created src/shared/tool-awareness.ts | — | ~750 |
+| 02:06 | Created src/client/tool-handoff.ts | — | ~735 |
+| 02:06 | Edited src/client/run-foreground.ts | 3→3 lines | ~79 |
+| 02:09 | 09-01 Task 1 tracer: zsh handoff helper + reader + hardened lexer port + annotate + ⊘ mark/shared footer; client-result cases A-D + flag render test | shell/zsh/queque.zsh, src/client/tool-handoff.ts, src/shared/command-words.ts, src/shared/tool-awareness.ts, src/client/run-foreground.ts, src/ui/* | 41 tests pass, typecheck clean | ~25k |

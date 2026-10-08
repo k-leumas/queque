@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T07:44:35.684Z
-> Files: 374 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:06:58.913Z
+> Files: 377 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -689,7 +689,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2963 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~3478 tok)
 
 ## src/
 
@@ -708,7 +708,8 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3830 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~4048 tok)
+- `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Default max floating pane height when QQ_PANE_HEIGHT is unset or invalid. (~694 tok)
 
 ## src/context/
@@ -744,11 +745,13 @@
 
 ## src/shared/
 
+- `command-words.ts` — Hardened TS port of spike 002 hand lexer: lexHand (comment tokens), commandWords (Map tables, depth cap 32), extractCommandWords (8192 cap, never throws); zero imports (~3990 tok)
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~668 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~1276 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
+- `tool-awareness.ts` — ToolInventory, DisplayCandidate, isInstalled (commands|functions+aliases), missingTools, annotateCandidates (order-preserving, never drops) (~750 tok)
 
 ## src/ui/
 

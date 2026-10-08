@@ -22,6 +22,42 @@ _qq_cleanup() {
   trap - EXIT ERR INT
 }
 
+# ---------------------------------------------------------------------------
+# Installed-tool handoff (spike 001, D-01, D-19).
+# Writes the names zsh can resolve into the session dir ($1) next to
+# request.json, so the qq client can flag candidates that use missing tools:
+#   commands.txt  — keys of $commands (external commands on PATH)
+#   builtins.txt  — keys of $builtins (never flagged)
+#   functions.txt — function names (minus `_`-prefixed internals) AND alias
+#                   names. One file on purpose (D-01 amended) — do not split it.
+# `rehash` runs on every enabled call so a tool installed earlier in this
+# shell session is listed (no mtime fingerprint, no background job — D-19).
+# Side effect, accepted: `rehash` also drops manual `hash name=path` entries.
+# Names only: one expansion per file, no per-entry loop, no ordering in zsh
+# (both cost 100+ ms; sort in Node if ever needed).
+# Every line is guarded: the widget's ERR trap deletes the session dir
+# (request.json included) on any failing command, so nothing here may leave a
+# non-zero status, and stderr stays off the ZLE line. A failed write removes
+# all three files, so failure means "no files" and the client shows no flags.
+# Kill switch: QQ_TOOL_AWARENESS=0 in the shell writes nothing.
+# ---------------------------------------------------------------------------
+_qq_write_tool_handoff() {
+  local dir="$1"
+  if [[ "${QQ_TOOL_AWARENESS:-}" == 0 ]]; then
+    return 0
+  fi
+  zmodload zsh/parameter 2>/dev/null || return 0
+  rehash 2>/dev/null || true
+  {
+    print -rl -- ${(k)commands} > "$dir/commands.txt" &&
+    print -rl -- ${(k)builtins} > "$dir/builtins.txt" &&
+    print -rl -- ${(k)functions:#_*} ${(k)aliases} > "$dir/functions.txt"
+  } 2>/dev/null || {
+    rm -f -- "$dir/commands.txt" "$dir/builtins.txt" "$dir/functions.txt" 2>/dev/null || true
+  }
+  return 0
+}
+
 typeset -g QQ_DAEMON_PREWARMED="${QQ_DAEMON_PREWARMED:-0}"
 
 _qq_log() {
@@ -211,6 +247,8 @@ qq-question-widget() {
   "rbuffer": $(printf '%s' "$QQ_RBUFFER"  | jq -Rs .)
 }
 JSON
+  _qq_write_tool_handoff "$tmpdir"
+  _qq_log "tool handoff written"
 
   # Build the qq invocation.
   # qq may be a shell function (dev mode) or an installed binary. zellij run

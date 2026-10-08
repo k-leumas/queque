@@ -3174,6 +3174,24 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-08T07:44:34.169Z"
+    },
+    {
+      "id": "bug-198",
+      "timestamp": "2026-10-08T08:06:58.935Z",
+      "error_message": "TS2322: Property 'flexShrink' does not exist on type 'IntrinsicAttributes & Props' (Ink <Text flexShrink={0}>)",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "Ink 7 <Text> takes no layout props; it renders ink-text with a hardcoded flexShrink: 1",
+      "fix": "Wrap the gutter prefix and each mark <Text> in <Box flexShrink={0}> so Ink wraps the command text, never a mark",
+      "tags": [
+        "ink",
+        "flexShrink",
+        "typescript",
+        "candidate-select",
+        "phase-9"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-08T08:06:58.935Z"
     }
   ]
 }
