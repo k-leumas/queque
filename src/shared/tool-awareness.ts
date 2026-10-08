@@ -1,5 +1,5 @@
 import type { CommandCandidate } from '../contracts/candidates.js';
-import { extractCommandWords } from './command-words.js';
+import { extractCommandWords, lexHand } from './command-words.js';
 
 /**
  * Names zsh can resolve, read from the session-dir handoff (D-01).
@@ -63,37 +63,110 @@ export interface InstallPlan {
  * Binary name → package name where they differ (D-12). Shipped and not user-extendable;
  * a tool not in the map installs under its own name.
  */
-export const PACKAGE_ALIASES: ReadonlyMap<string, string> = new Map([]);
+export const PACKAGE_ALIASES: ReadonlyMap<string, string> = new Map([
+  ['rg', 'ripgrep'],
+  ['delta', 'git-delta'],
+  ['nvim', 'neovim'],
+  ['magick', 'imagemagick'],
+  ['convert', 'imagemagick'],
+  ['identify', 'imagemagick'],
+  ['mogrify', 'imagemagick'],
+  ['ag', 'the_silver_searcher'],
+  // Homebrew coreutils 9.11 installs `timeout`, `nproc`, `sha256sum` unprefixed and
+  // `gtimeout`, `gdate` prefixed. Linux ships these, so they are never flagged there.
+  ['gtimeout', 'coreutils'],
+  ['timeout', 'coreutils'],
+  ['gdate', 'coreutils'],
+  ['nproc', 'coreutils'],
+  ['sha256sum', 'coreutils'],
+  ['gsed', 'gnu-sed'],
+  ['ffprobe', 'ffmpeg'],
+  ['btm', 'bottom'],
+  ['difft', 'difftastic'],
+  ['http', 'httpie'],
+  ['https', 'httpie'],
+  ['vd', 'visidata'],
+  ['mlr', 'miller'],
+  ['csvlook', 'csvkit'],
+  ['gtime', 'gnu-time'],
+  ['kubectl', 'kubernetes-cli'],
+  ['dig', 'bind'],
+  ['rga', 'ripgrep-all'],
+  ['tldr', 'tealdeer'],
+  ['aws', 'awscli'],
+  // Debian binary names: they only appear where the Debian package is the right one.
+  ['fdfind', 'fd-find'],
+  ['batcat', 'bat'],
+]);
+
+/** List operators after which a failed install would still run the user's command (T-09-11). */
+const LIST_OPS: ReadonlySet<string> = new Set([';', '||', '&', ';;']);
+
+/** A heredoc operator (`<<`, `<<-`, `2<<`); a here-string `<<<` does not match. */
+const HEREDOC_RE = /^\d*<<-?$/;
+
+const BLOCKED_PLAN = (blocked: InstallBlockReason): InstallPlan => ({
+  form: null,
+  packages: [],
+  blocked,
+});
 
 /** The installer for this platform, or null when none is available (D-11). */
 export function pickInstaller(
-  _inventory: ToolInventory,
-  _platform: NodeJS.Platform,
+  inventory: ToolInventory,
+  platform: NodeJS.Platform,
 ): InstallerId | null {
-  throw new Error('pickInstaller: not implemented');
+  if (platform === 'darwin') return isInstalled(inventory, 'brew') ? 'brew' : null;
+  if (platform === 'linux') {
+    return LINUX_INSTALLER_ORDER.find((id) => isInstalled(inventory, id)) ?? null;
+  }
+  return null;
 }
 
 /** The package that provides `tool` (D-12). */
-export function packageFor(_tool: string): string {
-  throw new Error('packageFor: not implemented');
+export function packageFor(tool: string): string {
+  return PACKAGE_ALIASES.get(tool) ?? tool;
 }
 
-/** `<installer> <packages> && <command>` with list-safe wrapping, or null when unwrappable. */
+/**
+ * `<installer> <packages> && <command>`. A command with a list operator (`;`, `||`, `&`, `;;`,
+ * newline) is wrapped in `{ …; }` so it never runs after a failed install; pipelines and
+ * `&&` chains need no wrap because `&&` binds looser than `|`. Returns null when a wrap is
+ * needed but a `#` comment or heredoc would swallow or displace the closing brace (T-09-20).
+ */
 export function buildInstallForm(
-  _command: string,
-  _packages: readonly string[],
-  _installer: InstallerId,
+  command: string,
+  packages: readonly string[],
+  installer: InstallerId,
 ): string | null {
-  throw new Error('buildInstallForm: not implemented');
+  const cmd = command.trim();
+  const prefix = `${INSTALL_COMMANDS[installer]} ${packages.join(' ')}`;
+  const tokens = lexHand(cmd);
+  const needsWrap = tokens.some((token) => token.t === 'op' && LIST_OPS.has(token.v));
+  if (!needsWrap) return `${prefix} && ${cmd}`;
+  const unwrappable = tokens.some(
+    (token) => token.t === 'comment' || (token.t === 'redir' && HEREDOC_RE.test(token.v)),
+  );
+  if (unwrappable) return null;
+  const last = tokens[tokens.length - 1];
+  const terminated = last?.t === 'op' && (last.v === ';' || last.v === ';;' || last.v === '&');
+  return `${prefix} && { ${cmd}${terminated ? '' : ';'} }`;
 }
 
 /** The install plan for a flagged candidate (D-09..D-12). */
 export function planInstall(
-  _command: string,
-  _missing: readonly string[],
-  _installer: InstallerId | null,
+  command: string,
+  missing: readonly string[],
+  installer: InstallerId | null,
 ): InstallPlan {
-  throw new Error('planInstall: not implemented');
+  if (installer === null) return BLOCKED_PLAN('no-package-manager');
+  if (missing.some((word) => !SAFE_PACKAGE_NAME_RE.test(word))) {
+    return BLOCKED_PLAN('unsafe-package-name');
+  }
+  const packages = [...new Set(missing.map(packageFor))];
+  const form = buildInstallForm(command, packages, installer);
+  if (form === null) return BLOCKED_PLAN('unwrappable-command');
+  return { form, packages, blocked: null };
 }
 
 /**
@@ -120,22 +193,29 @@ export function missingTools(command: string, inventory: ToolInventory): string[
 }
 
 /**
- * Attaches `missingTools` to candidates that use a tool zsh cannot resolve.
+ * Attaches `missingTools` and an install plan to candidates that use a tool zsh cannot resolve.
  * Keeps the model's order and never drops a candidate (SC-3, D-13). A null inventory
- * (handoff unavailable or disabled) returns unflagged copies.
+ * (handoff unavailable or disabled) returns unflagged copies. The installer is chosen once
+ * from the same inventory (D-11); there is no use-before-install or wrong-OS logic (D-07).
  */
 export function annotateCandidates(
   candidates: readonly CommandCandidate[],
   inventory: ToolInventory | null,
-  _platform: NodeJS.Platform = process.platform,
+  platform: NodeJS.Platform = process.platform,
 ): DisplayCandidate[] {
   if (inventory === null) {
     return candidates.map((candidate) => ({ ...candidate }));
   }
+  const installer = pickInstaller(inventory, platform);
   return candidates.map((candidate) => {
     try {
       const missing = missingTools(candidate.command, inventory);
-      return missing.length > 0 ? { ...candidate, missingTools: missing } : { ...candidate };
+      if (missing.length === 0) return { ...candidate };
+      return {
+        ...candidate,
+        missingTools: missing,
+        install: planInstall(candidate.command, missing, installer),
+      };
     } catch {
       return { ...candidate };
     }
