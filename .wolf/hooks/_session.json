@@ -92,6 +92,12 @@
       "action": "create",
       "tokens": 1083,
       "at": "2026-10-08T08:14:20.518Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-01-SUMMARY.md",
+      "action": "create",
+      "tokens": 4076,
+      "at": "2026-10-08T08:16:30.308Z"
     }
   ],
   "edit_counts": {
@@ -101,7 +107,8 @@
     "src/client/tool-handoff.ts": 1,
     "src/client/run-foreground.ts": 1,
     "tests/tool-handoff.test.ts": 1,
-    "tests/tool-awareness.test.ts": 1
+    "tests/tool-awareness.test.ts": 1,
+    ".planning/phases/09-installed-only-command-awareness/09-01-SUMMARY.md": 1
   },
   "anatomy_hits": 4,
   "anatomy_misses": 3,

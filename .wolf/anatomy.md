@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:14:20.477Z
-> Files: 379 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:16:30.290Z
+> Files: 380 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -538,6 +538,7 @@
 ## .planning/phases/09-installed-only-command-awareness/
 
 - `09-01-PLAN.md` — Wave 1 tracer: ERR-trap-safe zsh handoff (kill switch) → tool-handoff reader → hardened command-words lexer → ⊘ flag; handoff safety/timing tests; TDD layout rows + reserve 17; review ledger (~14923 tok)
+- `09-01-SUMMARY.md` — Phase 9 Plan 01: Installed-Tool Awareness Tracer Summary (~3567 tok)
 - `09-02-PLAN.md` — Wave 2: 40 spike-002 lexer cases, robustness + token-contract cases, child-process fuzz (maxBuffer, per-case timeouts); no .wolf commits (~5997 tok)
 - `09-03-PLAN.md` — Wave 2: tool catalog, lenient daemon-side / strict client-side installed-tools schemas, steering.ts buildSystemPrompt, adapters guard, 08-03/08-04 notes (~9570 tok)
 - `09-04-PLAN.md` — Wave 2: installer/package map/install form (comment/heredoc block), Tab toggle, ControlsLine tabHint via element tree (~9205 tok)

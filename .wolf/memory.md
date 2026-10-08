@@ -2134,3 +2134,4 @@
 | 02:13 | 09-01 Task 3 GREEN: estimate counts shared footer block, wrapped flag footer, mark overflow (MARK_COLUMNS=2); MODAL_VIEWPORT_LINES 16->17 | src/ui/modal-layout.ts, src/client/run-foreground.ts | 15/15 modal-layout | ~3k |
 | 02:14 | Created tests/tool-awareness.test.ts | — | ~1083 |
 | 02:14 | 09-01 Task 3 characterization: missingTools/annotateCandidates semantics + dual-mark/shared-footer/flexShrink/Enter render tests, all green first run | tests/tool-awareness.test.ts, tests/candidate-select.test.tsx | 54 pass | ~5k |
+| 02:16 | Created .planning/phases/09-installed-only-command-awareness/09-01-SUMMARY.md | — | ~3804 |
