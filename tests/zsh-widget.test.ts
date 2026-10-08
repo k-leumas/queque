@@ -18,7 +18,16 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -733,5 +742,194 @@ describe('CMD-04: insertion-only shell contract', () => {
     expect(result.status).toBe(0);
     expect(result.stdout).toContain('lbuffer=git status');
     expect(result.stdout).toContain('rbuffer=  # show working tree status');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 9: installed-tool handoff (_qq_write_tool_handoff). Every case runs the
+// real helper under `zsh -f` against real directories — no stubbed binaries.
+// ---------------------------------------------------------------------------
+
+/** Error text that must never reach the ZLE line. */
+const HANDOFF_ERROR_TEXT = /permission denied|is a directory|no such file/i;
+
+/** Body of `_qq_write_tool_handoff` from the widget source (up to its closing `}` line). */
+function handoffHelperBody(): string {
+  const source = readFileSync(widgetPath, 'utf8');
+  const start = source.indexOf('_qq_write_tool_handoff() {');
+  expect(start).toBeGreaterThanOrEqual(0);
+  const end = source.indexOf('\n}\n', start);
+  expect(end).toBeGreaterThan(start);
+  return source.slice(start, end + 2);
+}
+
+describe('tool handoff', () => {
+  it('SC-1: lists a tool created after the hash table was primed, and builtins include cd', () => {
+    const result = runZsh(`
+      d=$(mktemp -d)
+      mkdir -p "$d/bin"
+      path=("$d/bin" $path)
+      zmodload zsh/parameter
+      : $(( \${#commands} ))
+      print -r -- '#!/bin/sh' > "$d/bin/qqfreshtool"
+      chmod +x "$d/bin/qqfreshtool"
+      _qq_write_tool_handoff "$d"
+      grep -qx qqfreshtool "$d/commands.txt" && print -r -- 'fresh=found' || print -r -- 'fresh=absent'
+      grep -qx cd "$d/builtins.txt" && print -r -- 'cd=found' || print -r -- 'cd=absent'
+      rm -rf "$d"
+    `);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toContain('fresh=found');
+    expect(result.stdout).toContain('cd=found');
+  });
+
+  it('D-01 amended: functions.txt lists function and alias names, not _-prefixed functions', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-handoff-fn-'));
+    try {
+      const result = runZsh(`
+        qqfnsample() { :; }
+        _qqprivatefn() { :; }
+        alias qqalsample=ls
+        _qq_write_tool_handoff '${dir}'
+      `);
+      expect(result.status).toBe(0);
+      const names = readFileSync(join(dir, 'functions.txt'), 'utf8').split('\n');
+      expect(names).toContain('qqfnsample');
+      expect(names).toContain('qqalsample');
+      expect(names).not.toContain('_qqprivatefn');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('ERR-trap safety: a partial write returns 0, never trips ERR, and leaves no files', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-handoff-partial-'));
+    try {
+      // A directory named functions.txt makes the third write fail even when run as root.
+      mkdirSync(join(dir, 'functions.txt'));
+      const result = runZsh(`
+        trap 'print -r -- TRAPPED' ERR
+        _qq_write_tool_handoff '${dir}'
+        print -r -- "status=$?"
+        [[ -e '${dir}/commands.txt' ]] && print -r -- 'commands=present' || print -r -- 'commands=absent'
+        [[ -e '${dir}/builtins.txt' ]] && print -r -- 'builtins=present' || print -r -- 'builtins=absent'
+      `);
+      expect(result.stdout).toContain('status=0');
+      expect(result.stdout).not.toContain('TRAPPED');
+      expect(result.stdout).toContain('commands=absent');
+      expect(result.stdout).toContain('builtins=absent');
+      expect(result.stderr).not.toMatch(HANDOFF_ERROR_TEXT);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it.skipIf(process.getuid?.() === 0)(
+    'ERR-trap safety: an unwritable session dir returns 0, never trips ERR, writes nothing',
+    () => {
+      const dir = mkdtempSync(join(tmpdir(), 'qq-handoff-ro-'));
+      chmodSync(dir, 0o500);
+      try {
+        const result = runZsh(`
+          trap 'print -r -- TRAPPED' ERR
+          _qq_write_tool_handoff '${dir}'
+          print -r -- "status=$?"
+        `);
+        expect(result.stdout).toContain('status=0');
+        expect(result.stdout).not.toContain('TRAPPED');
+        expect(result.stderr).not.toMatch(HANDOFF_ERROR_TEXT);
+        expect(readdirSync(dir)).toEqual([]);
+      } finally {
+        chmodSync(dir, 0o700);
+        rmSync(dir, { recursive: true, force: true });
+      }
+    },
+  );
+
+  it('ERR-trap safety: a missing session dir returns 0, never trips ERR, prints nothing', () => {
+    const result = runZsh(`
+      trap 'print -r -- TRAPPED' ERR
+      _qq_write_tool_handoff /nonexistent/qq-handoff-probe
+      print -r -- "status=$?"
+    `);
+    expect(result.stdout).toContain('status=0');
+    expect(result.stdout).not.toContain('TRAPPED');
+    expect(result.stderr).not.toMatch(HANDOFF_ERROR_TEXT);
+    expect(existsSync('/nonexistent/qq-handoff-probe')).toBe(false);
+  });
+
+  it('kill switch: QQ_TOOL_AWARENESS=0 as a shell parameter writes no files', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-handoff-off-'));
+    try {
+      const result = runZsh(`
+        QQ_TOOL_AWARENESS=0
+        _qq_write_tool_handoff '${dir}'
+        print -r -- "status=$?"
+      `);
+      expect(result.stdout).toContain('status=0');
+      expect(readdirSync(dir).filter((name) => name.endsWith('.txt'))).toEqual([]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('placement: the widget writes the handoff after request.json and before both launches', () => {
+    const source = readFileSync(widgetPath, 'utf8');
+    const handoff = source.indexOf('_qq_write_tool_handoff "$tmpdir"');
+    const requestHeredoc = source.indexOf('cat > "$req_file" <<JSON');
+    // Match the launch lines themselves, not the header comment that mentions zellij run.
+    const zellijLaunch = source.search(/^\s+zellij run --floating/m);
+    const inlineLaunch = source.indexOf(
+      'client --request-file "$req_file" --result-file "$result_file"',
+    );
+    expect(requestHeredoc).toBeGreaterThan(0);
+    expect(handoff).toBeGreaterThan(requestHeredoc);
+    expect(zellijLaunch).toBeGreaterThan(handoff);
+    expect(inlineLaunch).toBeGreaterThan(zellijLaunch);
+    expect(inlineLaunch).toBeGreaterThan(handoff);
+  });
+
+  it('shape guard (D-01, D-19): guarded, unconditional rehash, three print -rl, no loop/sort/background', () => {
+    const body = handoffHelperBody();
+    expect(body).toMatch(/\brehash\b/);
+    expect(body).toContain('QQ_TOOL_AWARENESS');
+    expect(body.match(/print -rl --/g) ?? []).toHaveLength(3);
+    expect(body).not.toMatch(/\b(for|while)\b/);
+    // No ordering or key-value flag inside any expansion flag group.
+    expect(body).not.toMatch(/\$\{\([^)]*[oOv][^)]*\)/);
+    expect(body).not.toContain('zstat');
+    // No lone background `&` at a line end (the `&&` chain is allowed).
+    expect(body).not.toMatch(/(^|[^&])&[ \t]*$/m);
+    expect(body).not.toContain('&!');
+    expect(body).not.toContain('&|');
+  });
+});
+
+describe('handoff timing', () => {
+  it('median of 5 handoffs under zsh -f stays below the 25 ms guard (D-19)', () => {
+    // Inherited PATH: a realistic ~2k-command table. `zsh -f` has almost no functions or
+    // aliases, so this understates the real interactive shell; 09-05's human check records
+    // the real-shell number. This is a regression guard, not the SC-2 evidence itself.
+    const result = runZsh(`
+      zmodload zsh/datetime
+      d=$(mktemp -d)
+      typeset -F start
+      repeat 5; do
+        start=$EPOCHREALTIME
+        _qq_write_tool_handoff "$d"
+        print -r -- "ms=$(( (EPOCHREALTIME - start) * 1000 ))"
+      done
+      rm -rf "$d"
+    `);
+    expect(result.status).toBe(0);
+    const samples = result.stdout
+      .split('\n')
+      .filter((line) => line.startsWith('ms='))
+      .map((line) => Number.parseFloat(line.slice(3)))
+      .sort((a, b) => a - b);
+    expect(samples).toHaveLength(5);
+    const median = samples[2];
+    console.log(`handoff median ms: ${median.toFixed(2)}`);
+    expect(median).toBeLessThan(25);
   });
 });

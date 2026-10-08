@@ -2128,3 +2128,5 @@
 | 02:06 | Created src/client/tool-handoff.ts | — | ~735 |
 | 02:06 | Edited src/client/run-foreground.ts | 3→3 lines | ~79 |
 | 02:09 | 09-01 Task 1 tracer: zsh handoff helper + reader + hardened lexer port + annotate + ⊘ mark/shared footer; client-result cases A-D + flag render test | shell/zsh/queque.zsh, src/client/tool-handoff.ts, src/shared/command-words.ts, src/shared/tool-awareness.ts, src/client/run-foreground.ts, src/ui/* | 41 tests pass, typecheck clean | ~25k |
+| 02:11 | Created tests/tool-handoff.test.ts | — | ~1431 |
+| 02:11 | 09-01 Task 2: handoff proof — freshness, functions/aliases, ERR-trap (partial/unwritable/missing), kill switch, placement, shape guard, timing (zsh -f median ~6-8 ms); readToolHandoff fallbacks + counts-only log tests | tests/zsh-widget.test.ts, tests/tool-handoff.test.ts | 54 tests pass | ~12k |

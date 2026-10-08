@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:06:58.913Z
-> Files: 377 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:11:23.901Z
+> Files: 378 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -785,5 +785,6 @@
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
+- `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)

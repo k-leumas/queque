@@ -80,6 +80,12 @@
       "action": "edit",
       "tokens": 79,
       "at": "2026-10-08T08:06:58.932Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/tool-handoff.test.ts",
+      "action": "create",
+      "tokens": 1431,
+      "at": "2026-10-08T08:11:23.921Z"
     }
   ],
   "edit_counts": {
@@ -87,7 +93,8 @@
     "src/shared/command-words.ts": 1,
     "src/shared/tool-awareness.ts": 1,
     "src/client/tool-handoff.ts": 1,
-    "src/client/run-foreground.ts": 1
+    "src/client/run-foreground.ts": 1,
+    "tests/tool-handoff.test.ts": 1
   },
   "anatomy_hits": 4,
   "anatomy_misses": 3,
