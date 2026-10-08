@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { DisplayCandidate } from '../src/shared/tool-awareness.js';
 import {
+  candidateKey,
   estimateCandidateSelectLines,
   filterCandidates,
   missingToolsFooterText,
@@ -198,7 +199,10 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
   it('counts the wrapped rows of a flag footer longer than contentWidth', () => {
     const narrow = { ...base, contentWidth: 20 };
     const missing = ['aaaaaaaa', 'bbbbbbbb', 'cccccccc'];
-    const footerRows = wrapText(missingToolsFooterText(missing), 20).length;
+    const footerRows = wrapText(
+      missingToolsFooterText({ command: 'ls', explanation: 'list', missingTools: missing }, false),
+      20,
+    ).length;
     expect(footerRows).toBe(3);
     const plain = estimateCandidateSelectLines({
       ...narrow,
@@ -209,5 +213,139 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
       candidates: [{ command: 'ls', explanation: 'list', missingTools: missing }],
     });
     expect(flagged).toBe(plain + 1 + footerRows);
+  });
+});
+
+describe('candidateKey', () => {
+  it('is the trimmed command, ::, then the explanation', () => {
+    expect(candidateKey({ command: '  fd -e ts ', explanation: 'find' })).toBe('fd -e ts::find');
+  });
+});
+
+describe('missingToolsFooterText — install states (D-11, D-14)', () => {
+  const flagged: DisplayCandidate = {
+    command: 'fd . | rg x',
+    explanation: 'find',
+    missingTools: ['fd', 'rg'],
+    install: {
+      form: 'brew install fd ripgrep && fd . | rg x',
+      packages: ['fd', 'ripgrep'],
+      blocked: null,
+    },
+  };
+
+  it('lists the missing tools while the original command is shown', () => {
+    expect(missingToolsFooterText(flagged, false)).toBe('⊘ not installed: fd, rg');
+  });
+
+  it('lists the packages while the install form is shown', () => {
+    expect(missingToolsFooterText(flagged, true)).toBe('⊘ will install: fd, ripgrep');
+  });
+
+  it('explains a missing package manager', () => {
+    expect(
+      missingToolsFooterText(
+        { ...flagged, install: { form: null, packages: [], blocked: 'no-package-manager' } },
+        false,
+      ),
+    ).toBe('⊘ not installed: fd, rg — no package manager found');
+  });
+
+  it('explains an unsafe word or an unwrappable command', () => {
+    for (const blocked of ['unsafe-package-name', 'unwrappable-command'] as const) {
+      expect(
+        missingToolsFooterText(
+          { ...flagged, install: { form: null, packages: [], blocked } },
+          false,
+        ),
+      ).toBe('⊘ not installed: fd, rg — no safe install command');
+    }
+  });
+
+  it('keeps the plain copy for a candidate with no install plan', () => {
+    expect(
+      missingToolsFooterText({ command: 'fd', explanation: '', missingTools: ['fd'] }, false),
+    ).toBe('⊘ not installed: fd');
+  });
+});
+
+describe('estimateCandidateSelectLines — install toggle', () => {
+  const base = {
+    initialQuery: undefined,
+    query: '',
+    selectedIndex: 0,
+    contentWidth: 20,
+    includeDevFooter: false,
+  };
+  const selected = { command: 'ls', explanation: 'list' };
+
+  function flaggedWithForm(form: string): DisplayCandidate {
+    return {
+      command: 'fd x',
+      explanation: 'x',
+      missingTools: ['fd'],
+      install: { form, packages: ['fd'], blocked: null },
+    };
+  }
+
+  it('counts the wrapped install-form lines of a toggled row', () => {
+    // 'brew install fd && fd x' (23) wraps to 2 rows at 20; 'fd x' is 1 row.
+    const candidate = flaggedWithForm('brew install fd && fd x');
+    const untoggled = estimateCandidateSelectLines({ ...base, candidates: [selected, candidate] });
+    const toggled = estimateCandidateSelectLines({
+      ...base,
+      candidates: [selected, candidate],
+      installToggled: new Set([candidateKey(candidate)]),
+    });
+    expect(toggled).toBe(untoggled + 1);
+  });
+
+  it('counts the mark-overflow row of the displayed install form', () => {
+    // Rows: 'brew install fd &&' and 'fd abcdefghijklmnop' (19 + ' ⊘' = 21 > 20 → one more row).
+    const candidate = flaggedWithForm('brew install fd && fd abcdefghijklmnop');
+    const untoggled = estimateCandidateSelectLines({ ...base, candidates: [selected, candidate] });
+    const toggled = estimateCandidateSelectLines({
+      ...base,
+      candidates: [selected, candidate],
+      installToggled: new Set([candidateKey(candidate)]),
+    });
+    expect(toggled).toBe(untoggled + 2);
+  });
+
+  it('runs the destructive check on a toggled sudo form (footer gains the ⚠ line)', () => {
+    const candidate: DisplayCandidate = {
+      command: 'fdfind -e ts',
+      explanation: 'find',
+      missingTools: ['fdfind'],
+      install: {
+        form: 'sudo apt install fd-find && fdfind -e ts',
+        packages: ['fd-find'],
+        blocked: null,
+      },
+    };
+    const wide = { ...base, contentWidth: 75 };
+    const untoggled = estimateCandidateSelectLines({ ...wide, candidates: [candidate] });
+    const toggled = estimateCandidateSelectLines({
+      ...wide,
+      candidates: [candidate],
+      installToggled: new Set([candidateKey(candidate)]),
+    });
+    expect(toggled).toBe(untoggled + 1);
+  });
+
+  it('ignores a toggled key whose plan has no form', () => {
+    const candidate: DisplayCandidate = {
+      command: 'fd x',
+      explanation: 'x',
+      missingTools: ['fd'],
+      install: { form: null, packages: [], blocked: 'no-package-manager' },
+    };
+    const untoggled = estimateCandidateSelectLines({ ...base, candidates: [selected, candidate] });
+    const toggled = estimateCandidateSelectLines({
+      ...base,
+      candidates: [selected, candidate],
+      installToggled: new Set(['fd x::x']),
+    });
+    expect(toggled).toBe(untoggled);
   });
 });

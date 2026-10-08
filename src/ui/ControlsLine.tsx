@@ -1,8 +1,14 @@
 import { Box, Text } from 'ink';
 import type { ReactElement } from 'react';
 
+/** Props for ControlsLine. */
+export interface ControlsLineProps {
+  /** Label for the Tab chip; omitted when Tab does nothing for the selected row (D-14). */
+  tabHint?: 'install' | 'undo install';
+}
+
 /** Keyboard hints shown below the candidate list. */
-export function ControlsLine(): ReactElement {
+export function ControlsLine(_props: ControlsLineProps = {}): ReactElement {
   return (
     <Box marginTop={1}>
       <Text backgroundColor="ansi256(238)" color="white" bold>

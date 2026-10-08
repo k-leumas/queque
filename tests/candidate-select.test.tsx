@@ -775,3 +775,315 @@ describe('CandidateSelect — missing-tool flag', () => {
     expect(onSelect).toHaveBeenCalledWith('fd -e ts', 'find ts files');
   });
 });
+
+describe('CandidateSelect — Tab install form', () => {
+  beforeEach(resetState);
+
+  /** Collects string leaves from a React element tree returned by the component. */
+  function collectText(node: unknown): string[] {
+    if (node == null || typeof node === 'boolean') {
+      return [];
+    }
+    if (typeof node === 'string' || typeof node === 'number') {
+      return [String(node)];
+    }
+    if (Array.isArray(node)) {
+      return node.flatMap(collectText);
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const props = (node as { props: { children?: unknown } }).props;
+      return collectText(props.children);
+    }
+    return [];
+  }
+
+  type Element = { type: unknown; props: Record<string, unknown> & { children?: unknown } };
+
+  /** First element of the given type, walking props.children (function components are not invoked). */
+  function findElementByType(node: unknown, type: unknown): Element | undefined {
+    if (Array.isArray(node)) {
+      for (const child of node) {
+        const found = findElementByType(child, type);
+        if (found) return found;
+      }
+      return undefined;
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const element = node as Element;
+      if (element.type === type) return element;
+      return findElementByType(element.props.children, type);
+    }
+    return undefined;
+  }
+
+  /** Every element in the tree (function components are not invoked). */
+  function collectElements(node: unknown): Element[] {
+    if (Array.isArray(node)) {
+      return node.flatMap(collectElements);
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const element = node as Element;
+      return [element, ...collectElements(element.props.children)];
+    }
+    return [];
+  }
+
+  const flagged = {
+    command: 'fd -e ts',
+    explanation: 'find ts files',
+    missingTools: ['fd'],
+    install: { form: 'brew install fd && fd -e ts', packages: ['fd'], blocked: null },
+  } as const;
+
+  const tab = { ...zeroKeys, tab: true };
+
+  it('Tab switches the selected flagged row to its install form and back', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = { candidates: [flagged], onSelect: vi.fn(), onCancel: vi.fn() };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+    expect(stateSetters[2]).toHaveBeenCalled();
+
+    stateCallCount = 0;
+    let text = collectText(CandidateSelect(props)).join('\n');
+    expect(text).toMatch(/brew install fd && fd -e ts\n ⊘/);
+    expect(text).toContain('⊘ will install: fd');
+    expect(text).not.toContain('⊘ not installed: fd');
+
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    text = collectText(CandidateSelect(props)).join('\n');
+    expect(text).toMatch(/fd -e ts\n ⊘/);
+    expect(text).not.toContain('brew install fd');
+    expect(text).toContain('⊘ not installed: fd');
+  });
+
+  it('Shift+Tab toggles the same way', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = { candidates: [flagged], onSelect: vi.fn(), onCancel: vi.fn() };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', { ...tab, shift: true });
+    stateCallCount = 0;
+    const text = collectText(CandidateSelect(props)).join('\n');
+    expect(text).toContain('brew install fd && fd -e ts');
+  });
+
+  it('Tab never reaches the search filter', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    CandidateSelect({ candidates: [flagged], onSelect: vi.fn(), onCancel: vi.fn() });
+    capturedInputHandler?.('\t', tab);
+
+    expect(stateSetters[1]).not.toHaveBeenCalled();
+    expect(stateValues[1]).toBe('');
+  });
+
+  it('Enter after Tab inserts exactly the install form', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const props = { candidates: [flagged], onSelect, onCancel: vi.fn() };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('brew install fd && fd -e ts', 'find ts files');
+  });
+
+  it('builds the explanation fallback from the original command, not the installer', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const props = {
+      candidates: [{ ...flagged, explanation: '' }],
+      onSelect,
+      onCancel: vi.fn(),
+    };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('brew install fd && fd -e ts', 'see man fd');
+  });
+
+  it('Tab does nothing on an unflagged candidate', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    CandidateSelect({
+      candidates: [{ command: 'git status', explanation: 'status' }],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+    capturedInputHandler?.('', tab);
+
+    expect(stateSetters[2]).not.toHaveBeenCalled();
+    expect(stateSetters[1]).not.toHaveBeenCalled();
+  });
+
+  it('Tab does nothing on a flagged candidate whose install plan is blocked', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    CandidateSelect({
+      candidates: [
+        {
+          command: 'fd -e ts',
+          explanation: 'find',
+          missingTools: ['fd'],
+          install: { form: null, packages: [], blocked: 'no-package-manager' },
+        },
+      ],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+    capturedInputHandler?.('', tab);
+
+    expect(stateSetters[2]).not.toHaveBeenCalled();
+    expect(stateSetters[1]).not.toHaveBeenCalled();
+  });
+
+  it('explains blocked plans in the footer', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const footerFor = (
+      blocked: 'no-package-manager' | 'unsafe-package-name' | 'unwrappable-command',
+    ) => {
+      resetState();
+      const tree = CandidateSelect({
+        candidates: [
+          {
+            command: 'fd -e ts',
+            explanation: 'find',
+            missingTools: ['fd'],
+            install: { form: null, packages: [], blocked },
+          },
+        ],
+        onSelect: vi.fn(),
+        onCancel: vi.fn(),
+      });
+      return collectText(tree).join('\n');
+    };
+
+    expect(footerFor('no-package-manager')).toContain(
+      '⊘ not installed: fd — no package manager found',
+    );
+    expect(footerFor('unsafe-package-name')).toContain(
+      '⊘ not installed: fd — no safe install command',
+    );
+    expect(footerFor('unwrappable-command')).toContain(
+      '⊘ not installed: fd — no safe install command',
+    );
+  });
+
+  it('shows ⚠ and ⊘ and both footer lines for a toggled sudo install form (D-08)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = {
+      candidates: [
+        {
+          command: 'fdfind -e ts',
+          explanation: 'find',
+          missingTools: ['fdfind'],
+          install: {
+            form: 'sudo apt install fd-find && fdfind -e ts',
+            packages: ['fd-find'],
+            blocked: null,
+          },
+        },
+      ],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    const tree = CandidateSelect(props);
+
+    const text = collectText(tree).join('\n');
+    expect(text).toMatch(/sudo apt install fd-find && fdfind -e ts\n ⚠\n ⊘/);
+    const footers = collectElements(tree).filter((element) => {
+      if (element.props.flexDirection !== 'column' || element.props.marginTop !== 1) return false;
+      const footerText = collectText(element.props.children).join('\n');
+      return (
+        footerText.includes('⚠ review carefully — this command may be destructive') &&
+        footerText.includes('⊘ will install: fd-find')
+      );
+    });
+    expect(footers).toHaveLength(1);
+  });
+
+  it('keeps the toggle on the same candidate when a search query re-indexes the list (D-13)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = {
+      candidates: [{ command: 'ls -la', explanation: 'list' }, flagged],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+
+    // Type a query that hides `ls -la`; the [query] effect would reset selection to 0.
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('f', zeroKeys);
+    stateValues[0] = 0;
+    stateCallCount = 0;
+    const text = collectText(CandidateSelect(props)).join('\n');
+
+    expect(stateValues[1]).toBe('f');
+    expect(text).not.toContain('ls -la');
+    expect(text).toContain('brew install fd && fd -e ts');
+    expect(text).toContain('⊘ will install: fd');
+  });
+
+  it('passes the matching tabHint to ControlsLine (D-14)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const { ControlsLine } = await import('../src/ui/ControlsLine.js');
+    const props = { candidates: [flagged], onSelect: vi.fn(), onCancel: vi.fn() };
+
+    const before = findElementByType(CandidateSelect(props), ControlsLine);
+    expect(before).toBeDefined();
+    expect(before?.props.tabHint).toBe('install');
+
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    const after = findElementByType(CandidateSelect(props), ControlsLine);
+    expect(after?.props.tabHint).toBe('undo install');
+
+    resetState();
+    const unflagged = findElementByType(
+      CandidateSelect({
+        candidates: [{ command: 'git status', explanation: 'status' }],
+        onSelect: vi.fn(),
+        onCancel: vi.fn(),
+      }),
+      ControlsLine,
+    );
+    expect(unflagged).toBeDefined();
+    expect(unflagged?.props.tabHint).toBeUndefined();
+
+    resetState();
+    const blocked = findElementByType(
+      CandidateSelect({
+        candidates: [
+          {
+            ...flagged,
+            install: { form: null, packages: [], blocked: 'unsafe-package-name' },
+          },
+        ],
+        onSelect: vi.fn(),
+        onCancel: vi.fn(),
+      }),
+      ControlsLine,
+    );
+    expect(blocked?.props.tabHint).toBeUndefined();
+  });
+});

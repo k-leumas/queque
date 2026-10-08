@@ -12,8 +12,13 @@ import type { DisplayCandidate } from '../shared/tool-awareness.js';
 export const MISSING_TOOL_MARK = '⊘';
 
 /** Footer line shown when the selected candidate uses tools that are not installed. */
-export function missingToolsFooterText(missing: readonly string[]): string {
-  return `${MISSING_TOOL_MARK} not installed: ${missing.join(', ')}`;
+export function missingToolsFooterText(candidate: DisplayCandidate, _toggled: boolean): string {
+  return `${MISSING_TOOL_MARK} not installed: ${(candidate.missingTools ?? []).join(', ')}`;
+}
+
+/** Candidate identity (`command::explanation`) — the row key and the install-toggle key. */
+export function candidateKey(_candidate: CommandCandidate): string {
+  throw new Error('candidateKey: not implemented');
 }
 
 /**
@@ -87,6 +92,8 @@ export interface CandidateSelectLayoutInput {
   error?: boolean;
   contentWidth: number;
   includeDevFooter?: boolean;
+  /** Keys (candidateKey) of rows currently showing their install form. */
+  installToggled?: ReadonlySet<string>;
 }
 
 /**
@@ -152,7 +159,8 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
     : undefined;
   const showDestructiveWarning =
     selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-  const selectedMissingTools = visible[input.selectedIndex]?.missingTools ?? [];
+  const selectedCandidate = visible[input.selectedIndex];
+  const selectedMissingTools = selectedCandidate?.missingTools ?? [];
 
   // Mirrors CandidateSelect's single footer block: one shared marginTop, then the
   // destructive line and the (possibly wrapped) missing-tool line.
@@ -162,7 +170,10 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
       lines += 1; // destructive warning text
     }
     if (selectedMissingTools.length > 0) {
-      lines += wrapText(missingToolsFooterText(selectedMissingTools), input.contentWidth).length;
+      lines += wrapText(
+        missingToolsFooterText(selectedCandidate as DisplayCandidate, false),
+        input.contentWidth,
+      ).length;
     }
   }
 

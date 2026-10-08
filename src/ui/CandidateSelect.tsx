@@ -203,6 +203,7 @@ export function CandidateSelect({
   let content: ReactElement;
   let showDestructiveWarning = false;
   let selectedMissingTools: readonly string[] = [];
+  let selectedCandidate: DisplayCandidate | undefined;
   if (error === true) {
     content = (
       <Box marginTop={1}>
@@ -221,7 +222,8 @@ export function CandidateSelect({
       ? normalizeCommand(visible[selectedIndex].command)
       : undefined;
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-    selectedMissingTools = visible[selectedIndex]?.missingTools ?? [];
+    selectedCandidate = visible[selectedIndex];
+    selectedMissingTools = selectedCandidate?.missingTools ?? [];
     if (visible.length === 0) {
       content = (
         <Box marginTop={1}>
@@ -298,8 +300,8 @@ export function CandidateSelect({
         // One footer block: destructive and missing-tool lines share a single margin.
         <Box flexDirection="column" marginTop={1}>
           {showDestructiveWarning && <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>}
-          {selectedMissingTools.length > 0 && (
-            <Text color="cyan">{missingToolsFooterText(selectedMissingTools)}</Text>
+          {selectedCandidate !== undefined && selectedMissingTools.length > 0 && (
+            <Text color="cyan">{missingToolsFooterText(selectedCandidate, false)}</Text>
           )}
         </Box>
       )}
