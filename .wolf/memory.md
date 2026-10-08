@@ -2040,3 +2040,6 @@
 | 20:54 | Edited .planning/ROADMAP.md | 5→5 lines | ~22 |
 | 20:54 | Edited .planning/ROADMAP.md | 1→4 lines | ~213 |
 | 20:54 | Edited .planning/ROADMAP.md | inline fix | ~20 |
+| 20:57 | Created .planning/spikes/003-prompt-steering/catalog.ts | — | ~440 |
+| 20:57 | Created .planning/spikes/003-prompt-steering/compare.ts | — | ~1696 |
+| 20:58 | Session end: 19 writes across 15 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 19 reads | ~117401 tok |

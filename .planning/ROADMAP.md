@@ -228,12 +228,16 @@ Plans:
 **Plans**: 6 plans
 **UI hint**: no
 Plans:
-
+**Wave 1**
 - [x] 08-01: Provider detection module — `detectProvider()` waterfall: `ANTHROPIC_API_KEY` → platform-aware Claude CLI auth (Linux/Windows: credentials file or `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_AUTH_TOKEN`; macOS: `claude` on PATH is sufficient because `/login` uses Keychain) → Ollama health check (`localhost:11434`) → `OPENAI_API_KEY` / openai CLI → none (message mentions credentials file or macOS Keychain login); returns a typed `DetectedProvider` union consumed by the provider registry.
 - [x] 08-02-PLAN.md — Claude-only `claude -p` + SDK rescue composite registered as `claude-cli`; bypass `detectProvider()` as selector; argv prompt (`ps` accepted); no OpenAI/Ollama/`provider.json` (08-03).
 - [ ] 08-03-PLAN.md — (gap closure) `~/.config/qq/provider.json` pin: schema decision checkpoint, loader + `resolveProviderAdapter()` as the runtime selector, Ollama `/api/chat` adapter end-to-end through the daemon; invalid pin fails closed, never Claude.
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 08-04-PLAN.md — (gap closure) OpenAI Chat Completions adapter behind the pin (`OPENAI_API_KEY` from env or `.env.local`); static failure copy; no vendor fallthrough.
 - [ ] 08-05-PLAN.md — (gap closure) `qq init provider` picker on `/dev/tty` (Claude → OpenAI → Ollama), atomic 0600 pin write, Ollama model list, daemon restart; never on `qq init zsh` or the `??` path.
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 08-06-PLAN.md — (gap closure) first failed `??` copy points at `qq init provider`; detection-never-selects comment; EXTENSIONS/README docs for the shipped pin.
 
 ## Progress

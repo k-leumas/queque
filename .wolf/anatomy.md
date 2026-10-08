@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T02:54:55.210Z
-> Files: 346 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T02:57:41.915Z
+> Files: 349 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -509,7 +509,6 @@
 - `08-04-PLAN.md` — Gap closure: OpenAI Chat Completions adapter behind the pin, OPENAI_API_KEY handling (~5566 tok)
 - `08-05-PLAN.md` — Gap closure: `qq init provider` picker on /dev/tty, atomic 0600 pin write, daemon restart (~6701 tok)
 - `08-06-PLAN.md` — Gap closure: first failed ?? hint to `qq init provider`, detection-never-selects comment, docs (~4152 tok)
-- `COVERAGE.md` — API coverage matrix (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) for the seal-time gate (~1900 tok)
 - `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2262 tok)
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
@@ -519,6 +518,7 @@
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
 - `08-VERIFICATION.md` — Phase 08 goal-backward verification: 08-01/08-02 vs CR-01 stdin gap and 08-03 remaining. (~3200 tok)
 - `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~4525 tok)
+- `COVERAGE.md` — API coverage matrix (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) for the seal-time gate (~1900 tok)
 - `COVERAGE.md` — API Coverage — Phase 08 (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) (~1524 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
@@ -631,6 +631,11 @@
 - `extract.mjs` — Index just past the `close` that balances the `open` at s[i]. Respects quotes and escapes. (~2563 tok)
 - `README.md` — Project documentation (~1281 tok)
 - `run.mjs` — Spike 002 runner: accuracy of hand lexer vs shell-quote, plus per-candidate cost and (~730 tok)
+
+## .planning/spikes/003-prompt-steering/
+
+- `catalog.ts` — Curated catalog of notable CLI tools that have common alternatives. Variant B sends only (~440 tok)
+- `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1696 tok)
 
 ## docs/
 
