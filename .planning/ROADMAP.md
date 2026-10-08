@@ -272,11 +272,11 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
   5. Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout).
   6. The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter.
 
-**Plans:** 5 plans
+**Plans:** 1/5 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 09-01-PLAN.md — Tracer: ERR-trap-safe zsh `$commands`/builtins/functions handoff (shell-level kill switch) → client reader → hardened hand lexer → ⊘ "not installed" flag in the picker; handoff safety, freshness, timing guard, layout rows and flag tests (wave 1)
+- [x] 09-01-PLAN.md — Tracer: ERR-trap-safe zsh `$commands`/builtins/functions handoff (shell-level kill switch) → client reader → hardened hand lexer → ⊘ "not installed" flag in the picker; handoff safety, freshness, timing guard, layout rows and flag tests (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 09-02-PLAN.md — Lexer proof: 40 spike cases as a vitest table, robustness and token-contract cases, child-process fuzz with hard per-input timeouts (wave 2)

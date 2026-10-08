@@ -1,19 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 9
+current_phase: 09
 current_phase_name: Installed-Only Command Awareness
 status: executing
-stopped_at: Phase 9 context gathered
-last_updated: "2026-10-08T07:49:09.874Z"
-last_activity: 2026-08-26
-last_activity_desc: Completed 08-02 Claude CLI-first fetch
-state_head: e3e9082f9110a44e71b7aad5970c47543be336fa
+stopped_at: Completed 09-01-PLAN.md
+last_updated: "2026-10-08T08:16:50.633Z"
+last_activity: 2026-10-08
+last_activity_desc: Phase 09 execution started
+state_head: 57bb3c7fd788fda1e3efcc67c5eb793b245dc1c6
 progress:
   total_phases: 11
   completed_phases: 8
   total_plans: 32
-  completed_plans: 23
+  completed_plans: 24
 milestone_name: milestone
 ---
 
@@ -24,15 +24,15 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-04-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 08 — zero-config-install-and-provider-detection
+**Current focus:** Phase 09 — Installed-Only Command Awareness
 
 ## Current Position
 
-Phase: 9 (Installed-Only Command Awareness) — READY TO EXECUTE
-Plan: 2 of 2
-Next: Verify Phase 08 (`/gsd-verify-work 08`); 08-03 provider pin remains on the roadmap
-Status: Completed 08-02-PLAN.md
-Last activity: 2026-08-26 -- Completed 08-02 Claude CLI-first fetch
+Phase: 09 (Installed-Only Command Awareness) — EXECUTING
+Plan: 2 of 5
+Next: Phase 09 wave 2 — 09-02, 09-03, 09-04 (parallel); then 09-05
+Status: Ready to execute
+Last activity: 2026-10-08 — Phase 09 execution started
 
 Progress: [████████░░] 80% (8/10 phases with plans in progress; 08-03 still open on ROADMAP)
 
@@ -61,6 +61,11 @@ Progress: [████████░░] 80% (8/10 phases with plans in progre
 | Phase 06-hardening-privacy-defaults-and-extension-seams P02 | 20min | 3 tasks | 7 files |
 | Phase 08 P01 | 2min | 1 tasks | 2 files |
 | Phase 08 P02 | 12min | 3 tasks | 13 files |
+**Per-Plan Metrics:**
+
+| Plan | Duration | Tasks | Files |
+|------|----------|-------|-------|
+| Phase 09 P01 | 11min | 3 tasks | 13 files |
 
 ## Accumulated Context
 
@@ -95,6 +100,8 @@ Recent decisions affecting current work:
 - [Phase 08]: Keep the prompt as last argv with stdin ignore (accepted ps disclosure T-08-02-07)
 - [Phase 08]: none/ollama/openai-key resolve to Claude default as an 08-02 bridge until 08-03 pinning
 - Warm client: daemon `fetch-candidates` IPC + cached Anthropic SDK; Ink stays in the foreground client; no LaunchAgent
+- [Phase 09]: 09-01: Ink Text takes no layout props; gutter and ⊘/⚠ marks use <Box flexShrink={0}> wrappers
+- [Phase 09]: 09-01: handoff files commands/builtins/functions.txt are a fixed widget-client contract; zsh -f handoff median ~6-8 ms
 
 ### Pending Todos
 
@@ -134,6 +141,6 @@ None yet.
 
 Last activity: 2026-08-26 — completed 08-02 Claude CLI-first fetch with SDK rescue
 
-Last session: 2026-10-08T05:41:23.714Z
-Stopped at: Phase 9 context gathered
-Resume file: .planning/phases/09-installed-only-command-awareness/09-CONTEXT.md
+Last session: 2026-10-08T08:16:50.344Z
+Stopped at: Completed 09-01-PLAN.md
+Resume file: None
