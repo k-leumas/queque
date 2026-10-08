@@ -2059,3 +2059,11 @@
 | 23:40 | Created .planning/phases/09-installed-only-command-awareness/09-CONTEXT.md | — | ~2914 |
 | 23:41 | Created .planning/phases/09-installed-only-command-awareness/09-DISCUSSION-LOG.md | — | ~1206 |
 | 23:41 | discuss-phase 9: 18 decisions (Tab install toggle, model order, no install steps in prompt) | .planning/phases/09-installed-only-command-awareness/09-CONTEXT.md | done | ~20k |
+| 23:41 | Session end: 29 writes across 24 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 21 reads | ~129689 tok |
+
+## Session: 2026-10-08 23:42
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 00:04 | Created .planning/phases/09-installed-only-command-awareness/09-RESEARCH.md | — | ~14089 |
+| 00:04 | phase 9 research written | .planning/phases/09-installed-only-command-awareness/09-RESEARCH.md | done | ~60k |

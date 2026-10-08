@@ -35,6 +35,11 @@
 - [2026-10-07] zsh `$commands` is stale until `rehash`: new binaries are missing and removed ones linger. `rehash` + refill + `print -rl -- ${(k)commands}` costs ~7 ms (2.2k entries). Never loop or sort `$commands` in zsh (136–167 ms). See .planning/spikes/001.
 - [2026-10-07] shell-quote misses `$(…)` inside double quotes and `<(…)`; sh-syntax 0.7 exposes Cmd nodes only as {Pos,End}. The hand lexer in .planning/spikes/002 is the chosen approach.
 
+- [2026-10-08] Phase 9 research: adding a new `contextChunkSchema` kind breaks old daemons silently (server.ts drops failed safeParse → 800 ms ack timeout + cold fallback). Bump a pong capability flag and replace daemons lacking it.
+- [2026-10-08] `nvm` (and conda/sdk/zoxide `z`) are zsh functions, not `$commands` entries — D-01 handoff flags them "not installed". `${(k)functions:#_*} ${(k)aliases}` costs ~1.6 ms if ever handed off.
+- [2026-10-08] zsh `$commands` handoff measured 10–12 ms on this Mac (spike said 7 ms); refill dominates. Use a <25 ms regression guard in tests, not a hard 10 ms assert.
+- [2026-10-08] Node 24 native type stripping lets a `.mjs` test child import a zero-import, erasable-syntax `.ts` source file directly (used for the lexer fuzz child with spawnSync timeout).
+
 ## Do-Not-Repeat
 - [2026-10-07] `packageManager` must pin a pnpm that ships a darwin-x64 binary (11.8.0 did not; pnpm then refused every command incl. lefthook hooks). Now pinned to 12.6.0 to match the global install. If pnpm errors with ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY, repin rather than using `pnpm_config_pm_on_fail=ignore`.
 - [2026-10-07] commitlint subject-case rejects subjects starting with an acronym (e.g. "SDK-first ..."). Start the subject with a lowercase word.
