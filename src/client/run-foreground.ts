@@ -197,12 +197,15 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           return;
         }
 
-        // Reserve exactly as many lines as the TUI needs (header + filter + up to 3
-        // candidates × 3 rows + controls + 2 buffer = 16). This scrolls previous
-        // terminal content up by only 16 lines so it stays visible above the TUI,
-        // rather than filling the whole screen.
+        // Reserve as many lines as the TUI typically needs: header + filter + up to 3
+        // candidates × 3 rows + one shared footer block (marginTop + destructive line +
+        // missing-tool line) + controls + buffer = 17. The destructive and missing-tool
+        // footers share one margin, so flags grow the reserve by one line, not four.
+        // This scrolls previous terminal content up by only 17 lines so it stays visible
+        // above the TUI, rather than filling the whole screen. It is a fixed approximation
+        // written before candidates arrive (5-candidate lists can exceed it).
         // Skipped in Zellij: the floating pane starts with a clean screen.
-        const MODAL_VIEWPORT_LINES = 16;
+        const MODAL_VIEWPORT_LINES = 17;
         if (ttyWriteStream && !inZellij) {
           ttyWriteStream.write('\n'.repeat(MODAL_VIEWPORT_LINES));
           ttyWriteStream.write(`\x1b[${MODAL_VIEWPORT_LINES}A`);

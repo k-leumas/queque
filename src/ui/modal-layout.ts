@@ -90,6 +90,12 @@ export interface CandidateSelectLayoutInput {
 }
 
 /**
+ * Columns one inline mark takes after the last command line: a space plus a one-column glyph
+ * (⚠ or ⊘). Estimate-only — render spacing stays in Ink props.
+ */
+const MARK_COLUMNS = 2;
+
+/**
  * Estimates rendered row count for CandidateSelect, mirroring Ink layout structure.
  * Used to size the Zellij floating pane to content without exceeding QQ_PANE_HEIGHT.
  */
@@ -120,6 +126,18 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
             ? wrapText(candidate.explanation, input.contentWidth)
             : [];
         lines += commandLines.length + explanationLines.length;
+        // The gutter and marks have flexShrink={0}: when the marks no longer fit after the
+        // last command line, Ink wraps the command text onto one more row.
+        const markCount =
+          (isDestructiveCommand(command) ? 1 : 0) +
+          ((candidate.missingTools?.length ?? 0) > 0 ? 1 : 0);
+        const lastCommandLine = commandLines[commandLines.length - 1] ?? '';
+        if (
+          markCount > 0 &&
+          lastCommandLine.length + MARK_COLUMNS * markCount > input.contentWidth
+        ) {
+          lines += 1;
+        }
         lines += 1; // marginBottom per candidate block
       }
     }
@@ -134,10 +152,18 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
     : undefined;
   const showDestructiveWarning =
     selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
+  const selectedMissingTools = visible[input.selectedIndex]?.missingTools ?? [];
 
-  if (showDestructiveWarning) {
-    lines += 1; // marginTop
-    lines += 1; // warning text
+  // Mirrors CandidateSelect's single footer block: one shared marginTop, then the
+  // destructive line and the (possibly wrapped) missing-tool line.
+  if (showDestructiveWarning || selectedMissingTools.length > 0) {
+    lines += 1; // shared footer marginTop
+    if (showDestructiveWarning) {
+      lines += 1; // destructive warning text
+    }
+    if (selectedMissingTools.length > 0) {
+      lines += wrapText(missingToolsFooterText(selectedMissingTools), input.contentWidth).length;
+    }
   }
 
   lines += 1; // ControlsLine marginTop
