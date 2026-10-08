@@ -230,6 +230,22 @@ describe('claudeDefaultAdapter', () => {
     expect(args.at(-1)).not.toContain('.env');
   });
 
+  it('passes buildSystemPrompt(envelope) with installed-tools steering as --system-prompt', async () => {
+    execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const { buildSystemPrompt } = await import('../src/providers/steering.js');
+    const envelope = buildEnvelope([{ kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } }]);
+
+    await claudeDefaultAdapter.fetchCandidates(envelope);
+
+    const args = spawnArgs();
+    const systemPrompt = args[args.indexOf('--system-prompt') + 1];
+    expect(systemPrompt).toBe(buildSystemPrompt(envelope));
+    expect(systemPrompt).toContain('Never include install steps');
+    expect(systemPrompt).toContain('fd rg');
+    expect(args.at(-1)).not.toContain('Notable command-line tools');
+  });
+
   it('ignores stdin, uses envelope cwd, and times out within the remaining budget', async () => {
     execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');

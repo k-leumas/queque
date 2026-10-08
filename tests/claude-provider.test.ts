@@ -1,6 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
-import { DEFAULT_MODEL, resetAnthropicClientCache } from '../src/providers/claude.js';
+import {
+  buildPrompt,
+  DEFAULT_MODEL,
+  QUEQUE_SYSTEM,
+  resetAnthropicClientCache,
+} from '../src/providers/claude.js';
 
 const { createMock, anthropicCtorMock, AnthropicMock, readEnvValueFromDotEnvLocalMock } =
   vi.hoisted(() => {
@@ -262,5 +267,45 @@ describe('fetchCandidates', () => {
     await fetchCandidates(buildEnvelope(), '');
     expect(anthropicCtorMock).toHaveBeenCalledTimes(1);
     expect(createMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('sends installed-tools steering in the system prompt only, never the user prompt', async () => {
+    createMock.mockResolvedValue({
+      content: [{ type: 'text', text: '[{"command":"fd -e ts","explanation":"Find ts"}]' }],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(
+      buildEnvelope([{ kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } }]),
+      '',
+    );
+
+    const request = createMock.mock.calls[0][0];
+    expect(request.system).toContain('Notable command-line tools installed on this machine');
+    expect(request.system).toContain('fd rg');
+    expect(request.messages[0].content).not.toContain('installed-tools');
+    expect(request.messages[0].content).not.toContain('Notable command-line tools');
+    expect(request).not.toHaveProperty('temperature');
+    expect(request).not.toHaveProperty('top_p');
+    expect(request).not.toHaveProperty('top_k');
+  });
+
+  it('sends the unchanged system constant when no installed-tools chunk is present', async () => {
+    createMock.mockResolvedValue({
+      content: [{ type: 'text', text: '[{"command":"git status","explanation":""}]' }],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(buildEnvelope(), '');
+
+    expect(createMock.mock.calls[0][0].system).toBe(QUEQUE_SYSTEM);
+  });
+
+  it('builds a byte-identical user prompt with or without the installed-tools chunk', () => {
+    const without = buildEnvelope();
+    const withChunk = buildEnvelope([
+      { kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } },
+    ]);
+    expect(buildPrompt(withChunk)).toBe(buildPrompt(without));
   });
 });

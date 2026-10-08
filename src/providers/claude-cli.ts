@@ -1,13 +1,9 @@
 import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
-import {
-  buildPrompt,
-  ensureSelectableCandidates,
-  parseCandidates,
-  QUEQUE_SYSTEM,
-} from './claude.js';
+import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
 import { type ExecFileAsyncOptions, execFileAsync } from './claude-exec.js';
 import type { LLMAdapter } from './provider.js';
+import { buildSystemPrompt } from './steering.js';
 
 const CLI_BUDGET_MS = 25_000;
 
@@ -29,7 +25,7 @@ export async function fetchClaudeCliCandidates(
     '',
     '--no-session-persistence',
     '--system-prompt',
-    QUEQUE_SYSTEM,
+    buildSystemPrompt(envelope),
     prompt,
   ];
   const options: ExecFileAsyncOptions = {

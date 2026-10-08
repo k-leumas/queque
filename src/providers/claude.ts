@@ -5,6 +5,10 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
 import type { LLMAdapter } from './provider.js';
+import { buildSystemPrompt } from './steering.js';
+
+/** Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. */
+export { QUEQUE_SYSTEM } from './steering.js';
 
 export const DEFAULT_MODEL = 'claude-sonnet-5';
 
@@ -32,12 +36,6 @@ export function getAnthropicClient(apiKey: string): Anthropic {
 export function resetAnthropicClientCache(): void {
   cachedAnthropic = undefined;
 }
-
-/**
- * Shared system prompt for the SDK Messages API and Claude CLI `--system-prompt`.
- */
-export const QUEQUE_SYSTEM =
-  'You are QueQue, a terminal shell assistant. Return ONLY a JSON array of command candidates, ranked with the most correct/direct command first. No prose, no markdown, no code fences. When a command requires a value the user must supply (hostname, filename, branch name, etc.), wrap it in angle brackets: <placeholder>. Use descriptive names like <user@host>, <filename>, <branch-name>. Do not use angle brackets for optional flags or known values.';
 
 function resolveModel(): string {
   return process.env.QQ_MODEL ?? readEnvValueFromDotEnvLocal('QQ_MODEL') ?? DEFAULT_MODEL;
@@ -171,7 +169,7 @@ export async function fetchCandidates(
       {
         model,
         max_tokens: 1024,
-        system: QUEQUE_SYSTEM,
+        system: buildSystemPrompt(envelope),
         messages: [{ role: 'user', content: prompt }],
       },
       {

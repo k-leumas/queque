@@ -1,3 +1,6 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import {
   type ContextEnvelope,
@@ -195,5 +198,70 @@ describe('buildSteeringText', () => {
       'At least one candidate must use only installed tools or standard system utilities.',
       'Never include install steps in a candidate: no brew, apt, dnf or pacman install commands and no curl-to-shell installers.',
     ]);
+  });
+});
+
+const PROVIDERS_DIR = fileURLToPath(new URL('../src/providers/', import.meta.url));
+
+function providerSources(): Map<string, string> {
+  const sources = new Map<string, string>();
+  for (const name of readdirSync(PROVIDERS_DIR)) {
+    if (name.endsWith('.ts')) {
+      sources.set(name, readFileSync(join(PROVIDERS_DIR, name), 'utf8'));
+    }
+  }
+  return sources;
+}
+
+// D-18 guard: every provider adapter must send buildSystemPrompt(envelope), never the raw
+// system constant, so installed-tools steering does not depend on which provider runs.
+describe('adapters', () => {
+  const sources = providerSources();
+  const CONSTANT = 'QUEQUE_SYSTEM';
+  const RE_EXPORT = "export { QUEQUE_SYSTEM } from './steering.js';";
+
+  it('adapters: scans the real provider directory', () => {
+    expect(sources.has('claude.ts')).toBe(true);
+    expect(sources.has('claude-cli.ts')).toBe(true);
+    expect(sources.has('steering.ts')).toBe(true);
+  });
+
+  it('adapters: (a) only claude.ts mentions the system constant, as the steering re-export', () => {
+    for (const [name, source] of sources) {
+      if (name === 'steering.ts' || !source.includes(CONSTANT)) continue;
+      expect(name).toBe('claude.ts');
+      const lines = source.split('\n').filter((line) => line.includes(CONSTANT));
+      for (const line of lines) {
+        expect(line.trim()).toBe(RE_EXPORT);
+      }
+    }
+    expect(sources.get('claude.ts')).toContain(RE_EXPORT);
+  });
+
+  it('adapters: (b) every file that hands a system prompt to a model uses buildSystemPrompt', () => {
+    const modelCalls = ['messages.create(', "'--system-prompt'", '/api/chat', 'chat/completions'];
+    for (const [name, source] of sources) {
+      if (modelCalls.some((marker) => source.includes(marker))) {
+        expect(source, `${name} sends a system prompt without buildSystemPrompt(`).toContain(
+          'buildSystemPrompt(',
+        );
+      }
+    }
+  });
+
+  it('adapters: (c) the SDK and claude -p paths pass buildSystemPrompt(envelope)', () => {
+    expect(sources.get('claude.ts')).toContain('buildSystemPrompt(envelope)');
+    expect(sources.get('claude-cli.ts')).toContain('buildSystemPrompt(envelope)');
+  });
+
+  it('adapters: (d) every file that calls buildPrompt also calls buildSystemPrompt', () => {
+    const buildPromptCall = /\bbuildPrompt\(/;
+    for (const [name, source] of sources) {
+      if (buildPromptCall.test(source)) {
+        expect(source, `${name} builds a user prompt without buildSystemPrompt(`).toContain(
+          'buildSystemPrompt(',
+        );
+      }
+    }
   });
 });
