@@ -2975,6 +2975,91 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-07-30T19:32:14.000Z"
+    },
+    {
+      "id": "bug-186",
+      "timestamp": "2026-08-26T04:18:00.000Z",
+      "error_message": "execFile ignores stdio: ['ignore','pipe','pipe']; claude -p hangs on open stdin pipe until 25s timeout, skipping SDK rescue",
+      "file": "src/providers/claude-exec.ts",
+      "root_cause": "execFileAsync used promisify(execFile). Node execFile does not accept stdio, so child.stdin stays a pipe. claude -p print mode reads stdin and waits for EOF.",
+      "fix": "Rewrote execFileAsync with spawn so stdio ignore is applied. Added unmocked stdin-until-EOF child test.",
+      "tags": [
+        "claude-cli",
+        "spawn",
+        "stdio",
+        "phase-8",
+        "hang"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-26T04:18:00.000Z"
+    },
+    {
+      "id": "bug-187",
+      "timestamp": "2026-08-26T04:18:00.000Z",
+      "error_message": "Empty ANTHROPIC_API_KEY=\"\" blocks .env.local SDK rescue because ?? treats empty string as present",
+      "file": "src/providers/claude-default.ts",
+      "root_cause": "lookupApiKey and fetchCandidates used nullish coalescing. Empty CI stub env vars are not nullish, so .env.local was never read and the SDK received \"\".",
+      "fix": "Added usableSecret() and used it before falling back to .env.local in both lookupApiKey and fetchCandidates.",
+      "tags": [
+        "api-key",
+        "env",
+        "d-09",
+        "phase-8"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-26T04:18:00.000Z"
+    },
+    {
+      "id": "bug-188",
+      "timestamp": "2026-08-26T06:20:00.000Z",
+      "error_message": "?? still taking forever to get a response",
+      "file": "src/daemon/fetch-client.ts",
+      "root_cause": "ensureDaemon returned immediately on a live socket from 2026-08-24. That daemon ignored unknown fetch-candidates IPC. The new client waited FETCH_TIMEOUT_MS (26s) then fell back to a cold in-process SDK.",
+      "fix": "New daemons write fetch-accepted immediately and pong with fetchCandidates:true. Client fails in 800ms without an ack. ensureDaemon replaces a live pong that lacks the flag. Unanswered ping stays (test dummy servers).",
+      "tags": [
+        "daemon",
+        "ipc",
+        "latency",
+        "stale-socket"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-08-26T06:20:00.000Z"
+    },
+    {
+      "id": "bug-189",
+      "timestamp": "2026-10-08T02:06:36.685Z",
+      "error_message": "ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY: Cannot run @pnpm/exe@11.8.0 on this host: it ships no native binary for darwin-x64",
+      "file": "package.json",
+      "root_cause": "packageManager pins pnpm@11.8.0, which ships no darwin-x64 native binary; global pnpm 12 tries to switch and fails, breaking pnpm exec in lefthook hooks",
+      "fix": "Run hooks/commands with pnpm_config_pm_on_fail=ignore (npm_config_ prefix is ignored), or call ./node_modules/.bin/<tool> directly",
+      "tags": [
+        "pnpm",
+        "lefthook",
+        "darwin-x64",
+        "tooling"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-08T02:06:36.685Z"
+    },
+    {
+      "id": "bug-190",
+      "timestamp": "2026-10-08T02:06:36.685Z",
+      "error_message": "biome lint/style/noNonNullAssertion at tests/claude-cli-provider.test.ts:390 (adapter!)",
+      "file": "tests/claude-cli-provider.test.ts",
+      "root_cause": "getProviderAdapter returns LLMAdapter | undefined; test used a non-null assertion",
+      "fix": "Narrow with if (!adapter) throw before calling fetchCandidates",
+      "tags": [
+        "biome",
+        "lint",
+        "tests"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-08T02:06:36.685Z"
     }
   ]
 }

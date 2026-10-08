@@ -224,6 +224,36 @@ printf '%s\n' "$*" > "${marker}"
     expect(status).toBe(0);
     expect(stdout).toContain('daemon --ensure');
   });
+
+  it('prewarms via qq on PATH when QQ_DEV_ROOT is unset', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-prewarm-qq-'));
+    const binDir = join(dir, 'bin');
+    const marker = join(dir, 'qq-invoked');
+    mkdirSync(binDir, { recursive: true });
+    writeFileSync(
+      join(binDir, 'qq'),
+      `#!/bin/sh
+printf '%s\n' "$*" > "${marker}"
+`,
+      { encoding: 'utf8' },
+    );
+    chmodSync(join(binDir, 'qq'), 0o755);
+
+    const script = `
+      unset QQ_DEV_ROOT
+      PATH="${binDir}:$PATH"
+      source ${widgetPath}
+      for i in {1..50}; do
+        [[ -f "${marker}" ]] && break
+        sleep 0.05
+      done
+      [[ -f "${marker}" ]] && cat "${marker}"
+    `;
+    const { stdout, status } = runInteractiveZsh(script);
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    expect(stdout).toContain('daemon --ensure');
+  });
 });
 
 // ---------------------------------------------------------------------------

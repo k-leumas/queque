@@ -194,8 +194,9 @@ Files:
 
 - [src/daemon/bootstrap.ts](src/daemon/bootstrap.ts)
 - [src/daemon/server.ts](src/daemon/server.ts)
+- [src/daemon/fetch-client.ts](src/daemon/fetch-client.ts)
 
-The daemon listens on `/tmp/qq-<uid>.sock`. Current IPC messages: `ping`, `ensure-session`, `run-query` (ack-only). Query orchestration stays in the foreground client for now; the daemon provides a warm process boundary for future session state (Phase 7).
+The daemon listens on `/tmp/qq-<uid>.sock`. IPC: `ping`, `ensure-session`, `run-query` (ack-only), and `fetch-candidates` (warm Anthropic SDK / `claude -p` in the daemon process). The foreground client still owns Ink; it sends the context envelope over the socket and renders the candidate list.
 
 ## Contracts
 
@@ -244,6 +245,6 @@ Built-in sensitive patterns always apply. User config adds patterns only. Invali
 ## Risks And Follow-Up Work
 
 - Daemon bootstrap has a known race around stale-socket unlink during concurrent startup.
-- `run-query` IPC acknowledges receipt but does not orchestrate queries — foreground client owns the LLM path.
+- `run-query` IPC acknowledges receipt but does not orchestrate queries. Candidate fetch uses `fetch-candidates` on the daemon so the SDK client stays warm.
 - Shell script depends on `jq` for JSON serialization and result parsing.
 - Phase 8 subprocess adapters (`claude-cli`, `ollama`, `openai-key`) are detected but not yet wired.

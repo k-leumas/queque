@@ -49,7 +49,8 @@ describe('daemon bootstrap', () => {
 
   afterEach(async () => {
     if (testServer) {
-      await new Promise<void>((resolve) => testServer?.close(() => resolve()));
+      testServer.close();
+      testServer.unref();
       testServer = null;
     }
     try {
@@ -61,7 +62,9 @@ describe('daemon bootstrap', () => {
 
   it('connects without spawning when a live socket already exists', async () => {
     // Create a real listening socket before calling ensureDaemon
-    testServer = net.createServer(() => {});
+    testServer = net.createServer((socket) => {
+      socket.resume();
+    });
     await new Promise<void>((resolve, reject) => {
       testServer?.listen(socketPath, () => resolve());
       testServer?.once('error', reject);
@@ -70,8 +73,39 @@ describe('daemon bootstrap', () => {
     const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
 
     await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
-    // spawn should NOT have been called — socket was already alive
+    // Unanswered ping is `unknown` — keep the socket (test dummy servers).
     expect(spawnFn).not.toHaveBeenCalled();
+  });
+
+  it('replaces a live daemon whose pong lacks fetchCandidates', async () => {
+    const legacyServer = net.createServer((socket) => {
+      socket.on('data', (chunk) => {
+        const line = chunk.toString();
+        if (line.includes('"ping"')) {
+          socket.write(`${JSON.stringify({ kind: 'pong' })}\n`);
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      legacyServer.listen(socketPath, () => resolve());
+      legacyServer.once('error', reject);
+    });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+    try {
+      await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+    } finally {
+      legacyServer.close();
+      legacyServer.unref();
+    }
   });
 
   it('spawns the daemon when no socket file exists', async () => {
@@ -117,9 +151,10 @@ describe('daemon server', () => {
     socketPath = `/tmp/qq-server-${suffix}.sock`;
   });
 
-  afterEach(async () => {
+  afterEach(() => {
     if (testServer) {
-      await new Promise<void>((resolve) => testServer?.close(() => resolve()));
+      testServer.close();
+      testServer.unref();
       testServer = null;
     }
     try {
@@ -154,6 +189,6 @@ describe('daemon server', () => {
       setTimeout(() => reject(new Error('timeout waiting for pong')), 2000);
     });
 
-    expect(JSON.parse(result)).toEqual({ kind: 'pong' });
+    expect(JSON.parse(result)).toEqual({ kind: 'pong', fetchCandidates: true });
   });
 });

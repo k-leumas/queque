@@ -3,6 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
+import { resetAnthropicClientCache } from '../src/providers/claude.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import {
   clearProviderBackends,
@@ -55,9 +56,13 @@ vi.mock('../src/providers/claude-exec.js', () => ({
   execFileAsync: execFileAsyncMock,
 }));
 
-vi.mock('../src/shared/env-file.js', () => ({
-  readEnvValueFromDotEnvLocal: readEnvValueFromDotEnvLocalMock,
-}));
+vi.mock('../src/shared/env-file.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../src/shared/env-file.js')>();
+  return {
+    ...actual,
+    readEnvValueFromDotEnvLocal: readEnvValueFromDotEnvLocalMock,
+  };
+});
 
 vi.mock('../src/shared/debug-log.js', () => ({
   appendDebugLog: appendDebugLogMock,
@@ -171,6 +176,7 @@ describe('claudeDefaultAdapter', () => {
     readEnvValueFromDotEnvLocalMock.mockReset();
     readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
     appendDebugLogMock.mockClear();
+    resetAnthropicClientCache();
     clearProviderBackends();
     resetBootstrap();
   });
@@ -238,18 +244,21 @@ describe('claudeDefaultAdapter', () => {
     expect(options.env).toBe(process.env);
   });
 
-  it('prefers CLI when ANTHROPIC_API_KEY is set and CLI succeeds (D-08)', async () => {
+  it('uses the SDK and does not spawn when ANTHROPIC_API_KEY is set (D-08)', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
-    execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
+    sdkSuccess();
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
-    expect(execFileAsyncMock).toHaveBeenCalled();
-    expect(createMock).not.toHaveBeenCalled();
+    expect(createMock).toHaveBeenCalled();
+    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    const requestOptions = createMock.mock.calls[0]?.[1] as { timeout?: number };
+    expect(requestOptions.timeout).toBeLessThanOrEqual(25_000);
+    expect(requestOptions.timeout).toBeGreaterThan(24_000);
   });
 
-  it('rescues with the SDK when CLI is ENOENT and a key is in the environment (D-09)', async () => {
+  it('uses the SDK and does not spawn when a key is in the environment (D-09)', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
     execFileAsyncMock.mockRejectedValue(enoentError());
     sdkSuccess();
@@ -259,6 +268,7 @@ describe('claudeDefaultAdapter', () => {
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(createMock).toHaveBeenCalled();
+    expect(execFileAsyncMock).not.toHaveBeenCalled();
   });
 
   it('throws D-13 copy and skips SDK when CLI is ENOENT and no key exists (D-09, D-13)', async () => {
@@ -276,11 +286,11 @@ describe('claudeDefaultAdapter', () => {
     expect(createMock).not.toHaveBeenCalled();
   });
 
-  it('rescues from a logged-out CLI using a .env.local key without injecting it into child env (D-09)', async () => {
+  it('uses .env.local when ANTHROPIC_API_KEY is an empty stub and does not spawn (D-09)', async () => {
+    process.env.ANTHROPIC_API_KEY = '';
     readEnvValueFromDotEnvLocalMock.mockImplementation((key: string) =>
       key === 'ANTHROPIC_API_KEY' ? 'sk-ant-from-dotenv' : null,
     );
-    execFileAsyncMock.mockRejectedValue(loggedOutError());
     sdkSuccess();
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
@@ -288,8 +298,21 @@ describe('claudeDefaultAdapter', () => {
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(createMock).toHaveBeenCalled();
-    expect(spawnOptions().env).toBe(process.env);
-    expect(spawnOptions().env?.ANTHROPIC_API_KEY).toBeUndefined();
+    expect(execFileAsyncMock).not.toHaveBeenCalled();
+  });
+
+  it('uses a .env.local key without spawning claude (D-09)', async () => {
+    readEnvValueFromDotEnvLocalMock.mockImplementation((key: string) =>
+      key === 'ANTHROPIC_API_KEY' ? 'sk-ant-from-dotenv' : null,
+    );
+    sdkSuccess();
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
+    expect(createMock).toHaveBeenCalled();
+    expect(execFileAsyncMock).not.toHaveBeenCalled();
   });
 
   it('does not import detect.ts, detectProvider, or claudeAuthPresent (D-10)', () => {
@@ -305,16 +328,12 @@ describe('claudeDefaultAdapter', () => {
     const fetchSpy = vi.fn();
     vi.stubGlobal('fetch', fetchSpy);
     process.env.ANTHROPIC_API_KEY = 'test-key';
-    execFileAsyncMock.mockRejectedValue(enoentError());
     sdkSuccess();
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
-    expect(execFileAsyncMock.mock.calls.every((call) => call[0] === 'claude')).toBe(true);
-    expect(execFileAsyncMock.mock.calls.some((call) => String(call[0]).includes('openai'))).toBe(
-      false,
-    );
+    expect(execFileAsyncMock).not.toHaveBeenCalled();
     expect(fetchSpy.mock.calls.some((call) => String(call[0]).includes('localhost:11434'))).toBe(
       false,
     );
@@ -336,43 +355,6 @@ describe('claudeDefaultAdapter', () => {
     expect(createMock).not.toHaveBeenCalled();
   });
 
-  it('skips SDK rescue when remaining budget is just below MIN_SDK_RESCUE_MS', async () => {
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-    const { claudeDefaultAdapter, MIN_SDK_RESCUE_MS } = await import(
-      '../src/providers/claude-default.js'
-    );
-    let now = 1_000_000;
-    vi.spyOn(Date, 'now').mockImplementation(() => now);
-    execFileAsyncMock.mockImplementation(async () => {
-      now += 25_000 - (MIN_SDK_RESCUE_MS - 1);
-      throw enoentError();
-    });
-
-    await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow();
-    expect(createMock).not.toHaveBeenCalled();
-  });
-
-  it('rescues with remaining timeout when budget is just above MIN_SDK_RESCUE_MS', async () => {
-    process.env.ANTHROPIC_API_KEY = 'test-key';
-    sdkSuccess();
-    const { claudeDefaultAdapter, MIN_SDK_RESCUE_MS } = await import(
-      '../src/providers/claude-default.js'
-    );
-    let now = 1_000_000;
-    vi.spyOn(Date, 'now').mockImplementation(() => now);
-    execFileAsyncMock.mockImplementation(async () => {
-      now += 25_000 - (MIN_SDK_RESCUE_MS + 1);
-      throw enoentError();
-    });
-
-    await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
-
-    expect(createMock).toHaveBeenCalled();
-    const requestOptions = createMock.mock.calls[0]?.[1] as { timeout?: number };
-    expect(requestOptions.timeout).toBe(MIN_SDK_RESCUE_MS + 1);
-    expect(requestOptions.timeout).toBeLessThan(25_000);
-  });
-
   it('throws a timeout-style error when CLI is SIGTERM-killed and no key exists', async () => {
     execFileAsyncMock.mockRejectedValue(killedError());
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
@@ -383,32 +365,34 @@ describe('claudeDefaultAdapter', () => {
     expect(createMock).not.toHaveBeenCalled();
   });
 
-  it('logs path claude-cli then sdk-rescue without argv, env, streams, or tokens', async () => {
+  it('logs path sdk without argv, env, streams, or tokens when a key exists', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
-    execFileAsyncMock.mockRejectedValue(enoentError());
     sdkSuccess();
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
     const paths = debugPaths();
-    expect(paths.indexOf('claude-cli')).toBeGreaterThanOrEqual(0);
-    expect(paths.indexOf('sdk-rescue')).toBeGreaterThan(paths.indexOf('claude-cli'));
+    expect(paths).toContain('sdk');
+    expect(paths).not.toContain('claude-cli');
     expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toMatch(FORBIDDEN_DEBUG);
   });
 
-  it('registers the composite as claude-cli so CLI failure plus env key rescues via SDK', async () => {
+  it('registers the composite as claude-cli so an env key uses the SDK without spawning', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
-    execFileAsyncMock.mockRejectedValue(enoentError());
     sdkSuccess();
     bootstrapBuiltins();
 
     const adapter = getProviderAdapter('claude-cli');
     expect(listProviderBackends().map((backend) => backend.id)).toContain('claude-cli');
     expect(adapter?.fetchCandidates).toBeTypeOf('function');
+    if (!adapter) {
+      throw new Error('claude-cli adapter not registered');
+    }
 
-    await adapter!.fetchCandidates(buildEnvelope());
+    await adapter.fetchCandidates(buildEnvelope());
 
     expect(createMock).toHaveBeenCalled();
+    expect(execFileAsyncMock).not.toHaveBeenCalled();
   });
 });

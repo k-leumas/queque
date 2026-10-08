@@ -8,7 +8,8 @@ const MISSING_ADAPTER_MESSAGE =
 /**
  * Returns the Claude-default composite registered as `claude-cli`.
  *
- * Production fetch goes through this adapter (CLI-first, then SDK rescue).
+ * Production fetch goes through this adapter (SDK-first when a key exists,
+ * otherwise `claude -p` for `/login`).
  * Throws if `bootstrapBuiltins()` was not called.
  */
 export function resolveClaudeDefaultAdapter(): LLMAdapter {

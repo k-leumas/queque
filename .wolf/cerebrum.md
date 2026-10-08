@@ -7,12 +7,17 @@
 ## User Preferences
 
 - **Commit planning/context with code:** Treat `.wolf/`, `.planning/`, and `.gsd/` as first-class project artifacts — commit them alongside the code they affect, not as optional or local-only files.
+- **?? latency is the product constraint:** Prefer the smallest change that cuts time-to-candidates. Reject LaunchAgent/login-daemon work — uninstall/plist/Homebrew path is too much surface for a ~2s cold `ensureDaemon` that does not warm Anthropic or skip Node+Ink boot. SDK-first stays; real next win is a warm HTTP client in a long-lived process.
 - **Phase 7 scope — empty-lbuffer only:** User deprioritized event logging, SQLite pattern cache, and precmd proactive suggestions as nice-to-have with uncertain value. Phase 7 should focus on empty-lbuffer ambient `??` (full TUI, Claude with ambient context). Signal priority: failed last command → dirty git → new cwd → nothing obvious.
 
 ## Key Learnings
 
 - **Phase 8 selector:** Runtime uses `provider.json` pin or Claude default. `detectProvider()` waterfall is not the long-term adapter selector.
 - **`claude -p` flags for QueQue:** Use `--safe-mode --tools "" --no-session-persistence --output-format text` and argv prompt. Never `--bare` (skips Keychain/OAuth). Never `--output-format json` into `parseCandidates` (wrapper envelope). Stdin must be `ignore` or Ink/Zellij hangs. Shared 25s CLI+SDK budget under FIFO 30s.
+- **SDK-first when a key exists:** `claudeDefaultAdapter` calls the Anthropic SDK when `usableSecret()` finds `ANTHROPIC_API_KEY` in env or `.env.local`. Spawn `claude -p` only for `/login`-only users. CLI-first (old D-08) made `??` ~6s because every query paid Claude Code process boot.
+- **Warm client is the daemon, not launchd:** Foreground Ink still starts per `??`. `fetch-candidates` IPC runs `fetchCandidates` in the daemon so `getAnthropicClient()` reuses one SDK instance (TLS/keep-alive). LaunchAgent was reverted — uninstall/plist cost with no hot-path win. Shell prewarm (`qq daemon --ensure`) runs for `QQ_DEV_ROOT` or `qq` on PATH.
+- **Stale daemons ignore new IPC:** `ensureDaemon` connect-success is not enough. Pre-fetch daemons pong but swallow `fetch-candidates`; the client then waits 26s. Ping must advertise `fetchCandidates: true`, fetch must ack immediately, and `ensureDaemon` replaces a live pong without the flag. Unanswered ping stays so dumb test sockets are not killed.
+- **Empty `ANTHROPIC_API_KEY=""` is not missing:** `??` does not fall through. Use `usableSecret()` (trim, reject empty) before `.env.local`.
 - **Node `execFile` ignores `stdio`:** `child_process.execFile` / `promisify(execFile)` always spawn with piped stdin. Passing `stdio: ['ignore','pipe','pipe']` is a no-op — `child.stdin` stays writable. Use `spawn` when stdin must be `/dev/null`. Phase 08 CR-01: this can hang `claude -p` for 25s and skip SDK rescue.
 - **Project:** tui-llm
 - Claude Code `/login` stores OAuth in macOS Keychain (not `~/.claude/.credentials.json`). Prototype `detectProvider()` Step 2 only stats the credentials file, so darwin logged-in users miss `claude-cli`. Phase 8 / 08-01 must use platform-aware presence (`claude` on PATH on darwin; file/env elsewhere) — no Keychain read, no `claude -p` probe (200 ms budget).
@@ -21,6 +26,8 @@
 - Phase 2 should treat context gathering as a pre-provider concern; `src/providers/claude.ts` owning git detection is acceptable as a Phase 1 seam but the planner should remove that coupling before more intents are added.
 
 ## Do-Not-Repeat
+- [2026-10-07] commitlint subject-case rejects subjects starting with an acronym (e.g. "SDK-first ..."). Start the subject with a lowercase word.
+- [2026-10-07] Do not call `pnpm exec` on this host bare: pinned pnpm@11.8.0 has no darwin-x64 binary. Use `pnpm_config_pm_on_fail=ignore` (the npm_config_ form does NOT work; also needed for git commit hooks) or `./node_modules/.bin/<tool>`.
 
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->
@@ -32,6 +39,9 @@
 - [2026-08-26] Do not copy `tests/context-pipeline.test.ts` raw `execFile` + `promisify` for CLI spawn tests. A `vi.fn()` mock of `execFile` has no `[util.promisify.custom]`, so promisify resolves to an **array**; `const { stdout } = await execFileAsync(...)` is `undefined`. Mock a thin `execFileAsync` that resolves `{ stdout, stderr }`. Register `claudeDefaultAdapter` as `claude-cli`, not raw `claudeCliAdapter`.
 - [2026-08-26] TDD RED tests that import new modules fail `tsc --noEmit` in pre-commit. Add throw-on-call stubs with the public exports so typecheck can commit; keep fetch behavior unimplemented until GREEN.
 - [2026-08-26] Do not implement `execFileAsync` with `promisify(execFile)` when the call site needs `stdio: ['ignore','pipe','pipe']`. Node `execFile` does not take `stdio`; mocks that only assert `options.stdio[0]==='ignore'` will pass while production hangs. Use `spawn` and add an unmocked stdin-EOF child test.
+- [2026-08-26] Do not use `??` to resolve `ANTHROPIC_API_KEY`. An exported empty string is a present value and blocks `.env.local`. Use `usableSecret()` first.
+- [2026-08-26] Do not spawn `claude -p` when a usable API key exists. CLI-first made `??` ~6s (Claude Code boot). SDK-first for keys; CLI only for `/login`-only users.
+- [2026-08-26] Do not treat a connectable socket as a current daemon. Pre-fetch listeners ignore `fetch-candidates` and stall the client for the full IPC timeout. Require `fetch-accepted` within ~800ms and replace pongs that lack `fetchCandidates: true`. Keep unanswered ping so test dummy servers are not restarted.
 
 ## Decision Log
 
@@ -41,3 +51,5 @@
 - [2026-08-25] 08-02 CLI: `--bare` is incompatible with `/login` (no Keychain/OAuth). `--max-turns` is in official docs but missing from Claude Code 2.1.206 `--help` — omit unknown flags. Bypass `detectProvider()` as selector; do not delete.
 - [2026-08-25] 08-02 reviews: register `claudeDefaultAdapter` (CLI+SDK) as `claude-cli`, not the raw CLI adapter. Mock `execFileAsync` resolving `{stdout,stderr}` — do not copy git-context `promisify(execFile)`. Prompt stays on argv; `ps` disclosure is accepted risk T-08-02-07 (stdin+`-p` not proven).
 - [2026-08-26] 08-02 spawn privacy: keep prompt as last argv (`stdio: ['ignore','pipe','pipe']`). RESEARCH does not prove stdin write+close is safe with `claude -p` (print mode reads stdin; open pipe hangs Ink). Process-list (`ps`) disclosure of the filtered prompt is an accepted risk (T-08-02-07) until a later verified stdin contract.
+- [2026-08-26] Flip D-08: SDK-first when `usableSecret()` finds `ANTHROPIC_API_KEY` in env or `.env.local`; `claude -p` only when no usable key (`/login`). Restores ~1–2s latency for API-key users. `/login`-only stays on CLI spawn.
+- [2026-08-26] Warmup option (b) LaunchAgent reverted. Speed path is `fetch-candidates` in the existing daemon plus a cached Anthropic client. Shell `qq daemon --ensure` prewarm is enough to have that process up. Do not add login plists for this.

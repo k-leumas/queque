@@ -2,7 +2,21 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { readEnvValueFromDotEnvLocal } from '../src/shared/env-file.js';
+import { readEnvValueFromDotEnvLocal, usableSecret } from '../src/shared/env-file.js';
+
+describe('usableSecret', () => {
+  it('returns undefined for missing, empty, and whitespace-only values', () => {
+    expect(usableSecret(undefined)).toBeUndefined();
+    expect(usableSecret(null)).toBeUndefined();
+    expect(usableSecret('')).toBeUndefined();
+    expect(usableSecret('   ')).toBeUndefined();
+  });
+
+  it('returns a trimmed non-empty secret', () => {
+    expect(usableSecret('sk-ant-live')).toBe('sk-ant-live');
+    expect(usableSecret('  sk-ant-live  ')).toBe('sk-ant-live');
+  });
+});
 
 describe('readEnvValueFromDotEnvLocal', () => {
   it('finds ANTHROPIC_API_KEY in a parent .env.local file', () => {

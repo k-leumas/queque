@@ -6,8 +6,8 @@ import { gatherContext } from '../context/pipeline.js';
 import type { NormalizedRequest } from '../contracts/request.js';
 import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
+import { fetchCandidatesForUi } from '../daemon/fetch-client.js';
 import { classifyIntent } from '../intent/router.js';
-import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
@@ -144,9 +144,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           extraCount: envelope.extras.length,
         });
 
-        const adapter = resolveClaudeDefaultAdapter();
-        void appendDebugLog('client', 'provider adapter resolved', { id: 'claude-cli' });
-
         // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
         // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
@@ -280,8 +277,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           };
 
           // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
-          adapter
-            .fetchCandidates(envelope)
+          fetchCandidatesForUi(socketPath, envelope)
             .then((candidates) => {
               void appendDebugLog('client', 'candidates received', { count: candidates.length });
               app.rerender(buildCandidateElement(candidates));

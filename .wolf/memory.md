@@ -1848,3 +1848,168 @@
 | 21:07 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW.md | — | ~2843 |
 | 21:13 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-VERIFICATION.md | — | ~4827 |
 | 21:15 | Verified phase 08 goal-backward: 10/15 must-haves; CR-01 stdin + 08-03 gaps | 08-VERIFICATION.md, cerebrum.md, anatomy.md | gaps_found | ~8k |
+| 21:16 | Created src/providers/claude-exec.ts | — | ~1102 |
+| 21:16 | Created src/providers/claude-default.ts | — | ~1163 |
+| 21:16 | Created src/providers/claude.ts | — | ~1727 |
+| 21:16 | Created src/shared/env-file.ts | — | ~668 |
+| 21:16 | Created src/providers/claude-cli.ts | — | ~462 |
+| 21:16 | Created src/providers/claude-default.ts | — | ~1168 |
+| 21:16 | Created src/providers/claude.ts | — | ~1737 |
+| 21:16 | Created src/providers/claude-cli.ts | — | ~463 |
+| 21:16 | Created tests/claude-cli-provider.test.ts | — | ~4189 |
+| 21:17 | Created tests/claude-cli-provider.test.ts | — | ~4378 |
+| 21:17 | Created tests/claude-provider.test.ts | — | ~1876 |
+| 21:17 | Created tests/claude-provider.test.ts | — | ~1907 |
+| 21:17 | Created tests/claude-exec.test.ts | — | ~386 |
+| 21:17 | Created tests/env-file.test.ts | — | ~862 |
+| 21:17 | Created tests/claude-provider.test.ts | — | ~2082 |
+| 21:17 | Created src/providers/claude-exec.ts | — | ~1859 |
+| 21:17 | Created src/providers/claude-exec.ts | — | ~1256 |
+| 21:18 | Fixed CR-01 spawn stdin ignore + empty API key usableSecret; 32 targeted tests green | claude-exec.ts, env-file.ts, claude.ts, claude-default.ts, tests | typecheck 0 | ~4k |
+| 21:25 | Re-verified bugs 1–2: execFile stdin still a Socket with fake stdio; spawn stdin null; 32 tests pass | claude-exec.ts, env-file.ts | already fixed | ~2k |
+| 21:25 | Session end: 19 writes across 11 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 35 reads | ~92635 tok |
+| 21:48 | Session end: 19 writes across 11 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 35 reads | ~92635 tok |
+| 21:51 | Session end: 19 writes across 11 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 35 reads | ~92635 tok |
+| 21:56 | Session end: 19 writes across 11 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 35 reads | ~92635 tok |
+| 21:59 | Session end: 19 writes across 11 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 35 reads | ~92635 tok |
+| 22:02 | Session end: 19 writes across 11 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 36 reads | ~93134 tok |
+| 22:07 | Created src/providers/claude-default.ts | — | ~1052 |
+| 22:07 | Created src/providers/resolver.ts | — | ~364 |
+| 22:07 | Created src/providers/index.ts | — | ~86 |
+| 22:08 | Created tests/claude-cli-provider.test.ts | — | ~4433 |
+| 22:08 | Created tests/claude-cli-provider.test.ts | — | ~4389 |
+| 22:08 | Created tests/claude-cli-provider.test.ts | — | ~4328 |
+| 22:08 | Created tests/claude-cli-provider.test.ts | — | ~3877 |
+| 22:08 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-CONTEXT.md | — | ~2440 |
+| 22:08 | Created .planning/STATE.md | — | ~2573 |
+| 22:09 | SDK-first when usable API key exists; CLI only for /login-only; 36 tests green | claude-default.ts, claude-cli-provider.test.ts | typecheck 0 | ~2k |
+| 22:09 | Session end: 29 writes across 15 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 37 reads | ~119619 tok |
+| 22:17 | Session end: 29 writes across 15 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 38 reads | ~120318 tok |
+| 22:25 | Created src/shared/socket-path.ts | — | ~355 |
+| 22:25 | Created src/daemon/bootstrap.ts | — | ~1313 |
+| 22:25 | Created src/shared/socket-path.ts | — | ~365 |
+| 22:25 | Created src/daemon/bootstrap.ts | — | ~1113 |
+| 22:25 | Created tests/launch-agent.test.ts | — | ~1736 |
+| 22:25 | Created src/daemon/launch-agent.ts | — | ~2494 |
+| 22:26 | Created tests/launch-agent.test.ts | — | ~2182 |
+| 22:26 | Created src/cli/commands/daemon.ts | — | ~707 |
+| 22:26 | Created src/cli/main.ts | — | ~1280 |
+| 22:26 | Created src/cli/commands/init.ts | — | ~753 |
+| 22:26 | Created src/cli/main.ts | — | ~1332 |
+| 22:26 | Created src/cli/commands/init.ts | — | ~852 |
+| 22:27 | Created tests/launch-agent.test.ts | — | ~2298 |
+| 22:30 | Implemented login-time LaunchAgent (option b); 17 launch-agent tests green | launch-agent.ts, daemon.ts, init.ts, tests/launch-agent.test.ts | install via `qq daemon --install-launch-agent` or `qq init zsh` | ~8k |
+| 22:30 | Created .planning/STATE.md | — | ~2611 |
+| 22:31 | Session end: 43 writes across 22 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 47 reads | ~146664 tok |
+| 22:36 | Session end: 43 writes across 22 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 47 reads | ~146664 tok |
+| 22:39 | Session end: 43 writes across 22 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 47 reads | ~146664 tok |
+| 22:43 | Created src/cli/commands/daemon.ts | — | ~436 |
+| 22:43 | Created src/cli/commands/init.ts | — | ~831 |
+| 22:43 | Created src/cli/main.ts | — | ~1313 |
+| 22:44 | Created src/shared/socket-path.ts | — | ~352 |
+| 22:44 | Created src/cli/commands/init.ts | — | ~732 |
+| 22:44 | Created src/cli/main.ts | — | ~1261 |
+| 22:44 | Created src/providers/claude.ts | — | ~1979 |
+| 22:44 | Created src/providers/claude.ts | — | ~1979 |
+| 22:44 | Created src/daemon/fetch-client.ts | — | ~1067 |
+| 22:45 | Created src/contracts/ipc.ts | — | ~386 |
+| 22:45 | Created src/client/run-foreground.ts | — | ~3873 |
+| 22:45 | Created shell/zsh/queque.zsh | — | ~2963 |
+| 22:45 | Created src/client/run-foreground.ts | — | ~3831 |
+| 22:45 | Created src/client/run-foreground.ts | — | ~3830 |
+| 22:46 | Created src/daemon/server.ts | — | ~1267 |
+| 22:46 | Created src/daemon/server.ts | — | ~1261 |
+| 22:46 | Created tests/claude-provider.test.ts | — | ~2116 |
+| 22:46 | Created src/daemon/server.ts | — | ~1271 |
+| 22:46 | Created tests/claude-provider.test.ts | — | ~2124 |
+| 22:47 | Created tests/claude-provider.test.ts | — | ~2100 |
+| 22:47 | Created tests/claude-cli-provider.test.ts | — | ~3897 |
+| 22:47 | Created tests/claude-cli-provider.test.ts | — | ~3907 |
+| 22:47 | Created tests/claude-provider.test.ts | — | ~2261 |
+| 22:47 | Created tests/daemon-fetch.test.ts | — | ~755 |
+| 22:47 | Created docs/SYSTEM_DESIGN.md | — | ~2762 |
+| 22:47 | Created tests/zsh-widget.test.ts | — | ~7917 |
+| 22:47 | Created docs/SYSTEM_DESIGN.md | — | ~2774 |
+| 22:48 | Created .planning/STATE.md | — | ~2605 |
+| 22:49 | Created src/daemon/fetch-client.ts | — | ~1084 |
+| 22:49 | Created src/daemon/fetch-client.ts | — | ~980 |
+| 22:49 | Created src/daemon/fetch-client.ts | — | ~974 |
+| 22:50 | Reverted LaunchAgent; warm fetch-candidates IPC + cached Anthropic client | launch-agent deleted, server.ts, fetch-client.ts, run-foreground.ts, queque.zsh | 86 related tests green | ~12k |
+| 22:50 | Created docs/SYSTEM_DESIGN.md | — | ~2790 |
+| 22:50 | Session end: 75 writes across 30 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 56 reads | ~233450 tok |
+| 23:15 | Created src/contracts/ipc.ts | — | ~400 |
+| 23:15 | Created src/daemon/server.ts | — | ~1277 |
+| 23:15 | Created src/contracts/ipc.ts | — | ~417 |
+| 23:15 | Created src/daemon/server.ts | — | ~1292 |
+| 23:15 | Created src/daemon/server.ts | — | ~1301 |
+| 23:17 | Created src/daemon/fetch-client.ts | — | ~1260 |
+| 23:17 | Created src/daemon/bootstrap.ts | — | ~2012 |
+| 23:17 | Created src/daemon/server.ts | — | ~1308 |
+| 23:17 | Created tests/daemon-fetch.test.ts | — | ~910 |
+| 23:17 | Created tests/daemon-bootstrap.test.ts | — | ~1471 |
+| 23:17 | Created tests/daemon-bootstrap.test.ts | — | ~1756 |
+| 23:17 | Created tests/daemon-fetch.test.ts | — | ~909 |
+| 23:18 | Created tests/daemon-fetch.test.ts | — | ~902 |
+| 23:19 | Created tests/daemon-bootstrap.test.ts | — | ~1748 |
+| 23:19 | Created tests/daemon-fetch.test.ts | — | ~913 |
+| 23:19 | Created tests/daemon-fetch.test.ts | — | ~903 |
+| 23:20 | Created src/daemon/bootstrap.ts | — | ~2027 |
+| 23:20 | Created tests/daemon-bootstrap.test.ts | — | ~1758 |
+| 23:20 | Created src/daemon/bootstrap.ts | — | ~2012 |
+| 23:20 | Created src/daemon/bootstrap.ts | — | ~2039 |
+| 23:20 | Created tests/daemon-bootstrap.test.ts | — | ~1751 |
+| 23:21 | Created tests/daemon-bootstrap.test.ts | — | ~1741 |
+| 23:22 | Stale daemon ignored fetch-candidates (26s hang); ack + replace + killed Aug 24 pid | fetch-client.ts, bootstrap.ts, ipc.ts | 9 daemon tests green; live pong has fetchCandidates | ~4k |
+| 23:23 | Session end: 97 writes across 31 files (08-REVIEW.md, 08-VERIFICATION.md, claude-exec.ts, claude-default.ts, claude.ts) | 59 reads | ~264222 tok |
+
+## Session: 2026-09-03 17:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-03 17:21
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-04 11:32
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-11 20:42
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-12 11:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-18 11:35
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-09-22 03:04
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-04 11:07
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-05 19:12
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-08 19:56
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:06 | Edited tests/claude-cli-provider.test.ts | added 1 condition(s) | ~57 |
+| 20:06 | Lint/typecheck/test before committing CR-01 fix + warm client; biome autofix 3 files, fixed noNonNullAssertion | tests/*, src/daemon/* | 247 tests pass | ~3000 |

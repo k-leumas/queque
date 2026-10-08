@@ -54,6 +54,19 @@ function parseEnvFile(content: string): Map<string, string> {
 // the entry has not been populated yet (Map.get returns undefined for missing keys).
 const envCache = new Map<string, string | null>();
 
+/**
+ * Returns a usable secret string, or undefined when the value is missing, empty,
+ * or whitespace-only. Empty CI stubs such as `ANTHROPIC_API_KEY=""` must not
+ * block fallback to `.env.local`.
+ */
+export function usableSecret(value: string | null | undefined): string | undefined {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed === '' ? undefined : trimmed;
+}
+
 export function readEnvValueFromDotEnvLocal(key: string, startDir = process.cwd()): string | null {
   const cacheKey = `${key}\0${startDir}`;
   if (envCache.has(cacheKey)) {

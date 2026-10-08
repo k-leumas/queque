@@ -29,9 +29,9 @@ Make `??` work on first run for Claude users with zero extra QueQue config. Non-
 ### 08-02 — Claude only
 - **D-06:** 08-02 ships Claude only. No OpenAI or Ollama adapters in this plan.
 - **D-07:** Both Claude auth modes work: `claude /login` (CLI) and `ANTHROPIC_API_KEY` from the environment or `.env.local`.
-- **D-08:** If `claude` is on PATH, always call `claude -p` first — even when an API key is set. One primary code path; `/login` is preferred because it is easier and keeps key storage out of QueQue.
-- **D-09:** Anthropic SDK is rescue only: (a) CLI not on PATH and a key is set, or (b) `claude -p` fails and a key is set. A logged-out CLI must not strand someone who already has a key.
-- **D-10:** PATH-first is the fetch rule. Do not require `claudeAuthPresent()` to be true before attempting `claude -p`. If the CLI is present, try it; validate auth at call time. `detectProvider()` / `claudeAuthPresent()` are leftover preflight, not the long-term selector.
+- **D-08:** If a usable `ANTHROPIC_API_KEY` exists in the environment or `.env.local`, call the Anthropic SDK first and do not spawn `claude -p`. CLI is only for `/login`-only users (no usable key).
+- **D-09:** SDK is the primary path when a key exists. `claude -p` runs only when no usable key is present. CLI failure without a key is a hard error (D-13); do not spawn OpenAI or Ollama.
+- **D-10:** Do not call `detectProvider()` / `claudeAuthPresent()` on the fetch path. Spawn `claude -p` only when no usable key exists; validate `/login` auth at call time.
 - **D-11:** `ollama` and `openai-key` detections must not surface “not wired yet”. Until those adapters and a pin exist, treat them as a Claude setup miss (same `/login` or key guidance).
 
 ### Failure UX

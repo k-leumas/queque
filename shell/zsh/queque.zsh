@@ -37,22 +37,13 @@ _qq_prewarm_daemon() {
     return 0
   fi
 
-  if [[ -z "$QQ_DEV_ROOT" ]]; then
-    return 0
-  fi
-
-  local cli_path="$QQ_DEV_ROOT/dist/cli/main.js"
-  if [[ ! -f "$cli_path" ]]; then
-    return 0
-  fi
-
-  if ! command -v node >/dev/null 2>&1; then
-    return 0
-  fi
-
   QQ_DAEMON_PREWARMED=1
   (
-    command node "$cli_path" daemon --ensure >/dev/null 2>&1
+    if [[ -n "$QQ_DEV_ROOT" && -f "$QQ_DEV_ROOT/dist/cli/main.js" ]] && command -v node >/dev/null 2>&1; then
+      command node "$QQ_DEV_ROOT/dist/cli/main.js" daemon --ensure
+    elif command -v qq >/dev/null 2>&1; then
+      command qq daemon --ensure
+    fi
   ) >/dev/null 2>&1 &!
 }
 #

@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { candidateListSchema } from './candidates.js';
+import { contextEnvelopeSchema } from './request.js';
 import { shellRequestSchema } from './shell.js';
 
 /**
@@ -17,6 +19,10 @@ export const ipcRequestSchema = z.discriminatedUnion('kind', [
     kind: z.literal('run-query'),
     request: shellRequestSchema,
   }),
+  z.object({
+    kind: z.literal('fetch-candidates'),
+    envelope: contextEnvelopeSchema,
+  }),
 ]);
 
 export type IpcRequest = z.infer<typeof ipcRequestSchema>;
@@ -27,6 +33,7 @@ export type IpcRequest = z.infer<typeof ipcRequestSchema>;
 export const ipcResponseSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('pong'),
+    fetchCandidates: z.literal(true).optional(),
   }),
   z.object({
     kind: z.literal('session-ready'),
@@ -35,6 +42,17 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('query-accepted'),
     requestId: z.string(),
+  }),
+  z.object({
+    kind: z.literal('fetch-accepted'),
+  }),
+  z.object({
+    kind: z.literal('candidates'),
+    candidates: candidateListSchema,
+  }),
+  z.object({
+    kind: z.literal('fetch-error'),
+    message: z.string(),
   }),
 ]);
 

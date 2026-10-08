@@ -2,11 +2,36 @@ import Anthropic from '@anthropic-ai/sdk';
 import { type CandidateList, candidateListSchema } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
-import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
+import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
 import type { LLMAdapter } from './provider.js';
 
 export const DEFAULT_MODEL = 'claude-sonnet-5';
+
+let cachedAnthropic: { apiKey: string; client: Anthropic } | undefined;
+
+/**
+ * Returns a reused Anthropic SDK client for this process.
+ *
+ * The constructor is the keep-alive / TLS boundary. Creating a new client on
+ * every `??` in a short-lived foreground process cannot warm that. The daemon
+ * holds one client so repeat fetches skip handshake setup.
+ */
+export function getAnthropicClient(apiKey: string): Anthropic {
+  if (cachedAnthropic?.apiKey === apiKey) {
+    return cachedAnthropic.client;
+  }
+  cachedAnthropic = { apiKey, client: new Anthropic({ apiKey }) };
+  return cachedAnthropic.client;
+}
+
+/**
+ * Drops the cached SDK client. Tests call this so constructor assertions stay
+ * per-case after a previous fetch reused the module singleton.
+ */
+export function resetAnthropicClientCache(): void {
+  cachedAnthropic = undefined;
+}
 
 /**
  * Shared system prompt for the SDK Messages API and Claude CLI `--system-prompt`.
@@ -123,12 +148,14 @@ export async function fetchCandidates(
   rbuffer: string = '',
   timeoutMs: number = 25_000,
 ): Promise<CandidateList> {
-  const apiKey = process.env.ANTHROPIC_API_KEY ?? readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY');
+  const apiKey =
+    usableSecret(process.env.ANTHROPIC_API_KEY) ??
+    usableSecret(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY'));
   if (!apiKey) {
     throw new Error('ANTHROPIC_API_KEY is required in the environment or .env.local');
   }
 
-  const client = new Anthropic({ apiKey });
+  const client = getAnthropicClient(apiKey);
   const prompt = buildPrompt(envelope);
   const model = resolveModel();
 

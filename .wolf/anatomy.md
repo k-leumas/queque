@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-08-26T04:13:23.666Z
-> Files: 326 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T02:06:11.004Z
+> Files: 333 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -402,7 +402,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~4039 tok)
-- `STATE.md` — Project State (~2404 tok)
+- `STATE.md` — Project State (~2442 tok)
 
 ## .planning/notes/
 
@@ -505,7 +505,7 @@
 - `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
 - `08-02-PLAN.md` (~10802 tok)
 - `08-02-SUMMARY.md` — Phase 08 Plan 02: Claude CLI-First Fetch with SDK Rescue Summary (~1774 tok)
-- `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2287 tok)
+- `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2262 tok)
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
@@ -615,7 +615,7 @@
 - `EXTENSIONS.md` — QueQue Extension Seams (~932 tok)
 - `RELEASING.md` — Release Process (~1183 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
-- `SYSTEM_DESIGN.md` — System Design (~2579 tok)
+- `SYSTEM_DESIGN.md` — System Design (~2615 tok)
 
 ## scripts/
 
@@ -627,7 +627,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2968 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2963 tok)
 
 ## src/
 
@@ -640,12 +640,13 @@
 ## src/cli/commands/
 
 - `client.ts` — Real client command handler. (~394 tok)
-- `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~734 tok)
+- `daemon.ts` — Real daemon command handler. (~436 tok)
+- `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~732 tok)
 
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3874 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3830 tok)
 - `zellij-pane-resize.ts` — Default max floating pane height when QQ_PANE_HEIGHT is unset or invalid. (~694 tok)
 
 ## src/context/
@@ -655,21 +656,23 @@
 ## src/contracts/
 
 - `candidates.ts` — Zod schemas: commandCandidateSchema, candidateListSchema (~104 tok)
+- `ipc.ts` — IPC request — sent from the foreground client to the daemon over a Unix socket. (~417 tok)
 - `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
 
 ## src/daemon/
 
-- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~1134 tok)
-- `server.ts` — Starts the daemon Unix-socket server. (~699 tok)
+- `bootstrap.ts` — Ensures a current daemon: ping `fetchCandidates`, replace stale pongs, spawn if needed. (~2039 tok)
+- `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`. (~1100 tok)
+- `server.ts` — Starts the daemon Unix-socket server. (~1308 tok)
 
 ## src/providers/
 
-- `claude-cli.ts` — Spawns `claude -p` print mode and parses stdout with the shared candidate contract. (~524 tok)
-- `claude-default.ts` — CLI-first composite: claude -p then SDK rescue with remainingMs and MIN_SDK_RESCUE_MS. (~1156 tok)
-- `claude-exec.ts` — Thin execFile wrapper that always resolves `{ stdout, stderr }` so tests can mock spawn. (~207 tok)
-- `claude.ts` — SDK adapter plus shared QUEQUE_SYSTEM, buildPrompt, parseCandidates, ensureSelectableCandidates. (~1723 tok)
+- `claude-cli.ts` — Spawns `claude -p` print mode and parses stdout with the shared candidate contract. (~463 tok)
+- `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`. (~900 tok)
+- `claude-exec.ts` — Options for `execFileAsync`. Built on `spawn` so `stdio` is actually applied — (~1256 tok)
+- `claude.ts` — Returns a reused Anthropic SDK client for this process. (~1979 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
-- `index.ts` (~91 tok)
+- `index.ts` (~86 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
 
 ## src/registry/
@@ -680,9 +683,10 @@
 ## src/shared/
 
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
-- `env-file.ts` — Exports readEnvValueFromDotEnvLocal (~547 tok)
+- `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~668 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~1276 tok)
+- `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
 
 ## src/ui/
 
@@ -696,13 +700,15 @@
 ## tests/
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6504 tok)
-- `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~4143 tok)
-- `claude-provider.test.ts` — createMock: buildEnvelope (~1752 tok)
+- `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
+- `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
+- `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7766 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
-- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1466 tok)
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1741 tok)
+- `daemon-fetch.test.ts` — Declares buildEnvelope (~903 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
-- `env-file.test.ts` — Declares root (~715 tok)
+- `env-file.test.ts` — Declares root (~862 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
@@ -715,4 +721,4 @@
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7668 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)

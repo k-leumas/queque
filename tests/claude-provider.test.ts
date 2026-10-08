@@ -1,28 +1,42 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
-import { DEFAULT_MODEL } from '../src/providers/claude.js';
+import { DEFAULT_MODEL, resetAnthropicClientCache } from '../src/providers/claude.js';
 
-const { createMock, anthropicCtorMock, AnthropicMock } = vi.hoisted(() => {
-  const createMock = vi.fn();
-  const anthropicCtorMock = vi.fn();
+const { createMock, anthropicCtorMock, AnthropicMock, readEnvValueFromDotEnvLocalMock } =
+  vi.hoisted(() => {
+    const createMock = vi.fn();
+    const anthropicCtorMock = vi.fn();
 
-  class AnthropicMock {
-    messages: { create: typeof createMock };
+    class AnthropicMock {
+      messages: { create: typeof createMock };
 
-    constructor(options: unknown) {
-      anthropicCtorMock(options);
-      this.messages = {
-        create: createMock,
-      };
+      constructor(options: unknown) {
+        anthropicCtorMock(options);
+        this.messages = {
+          create: createMock,
+        };
+      }
     }
-  }
 
-  return { createMock, anthropicCtorMock, AnthropicMock };
-});
+    return {
+      createMock,
+      anthropicCtorMock,
+      AnthropicMock,
+      readEnvValueFromDotEnvLocalMock: vi.fn<(key: string, startDir?: string) => string | null>(),
+    };
+  });
 
 vi.mock('@anthropic-ai/sdk', () => ({
   default: AnthropicMock,
 }));
+
+vi.mock('../src/shared/env-file.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../src/shared/env-file.js')>();
+  return {
+    ...actual,
+    readEnvValueFromDotEnvLocal: readEnvValueFromDotEnvLocalMock,
+  };
+});
 
 function buildEnvelope(extras: ContextEnvelope['extras'] = []): ContextEnvelope {
   return {
@@ -46,6 +60,9 @@ describe('fetchCandidates', () => {
     delete process.env.QQ_FORCE_SELECTOR;
     createMock.mockReset();
     anthropicCtorMock.mockClear();
+    readEnvValueFromDotEnvLocalMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
+    resetAnthropicClientCache();
   });
 
   it('returns candidate JSON from Claude and includes git context in the prompt', async () => {
@@ -84,6 +101,24 @@ describe('fetchCandidates', () => {
     expect(request.messages[0].content).toContain('versionControl');
     expect(request.messages[0].content).toContain('"branch": "main"');
     expect(request.messages[0].content).toContain('"changedFiles"');
+  });
+
+  it('falls back to .env.local when ANTHROPIC_API_KEY is an empty stub', async () => {
+    process.env.ANTHROPIC_API_KEY = '';
+    readEnvValueFromDotEnvLocalMock.mockReturnValue('sk-ant-from-dotenv');
+    createMock.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '[{"command":"git status","explanation":"Show repo status"}]',
+        },
+      ],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(buildEnvelope(), '');
+
+    expect(anthropicCtorMock).toHaveBeenCalledWith({ apiKey: 'sk-ant-from-dotenv' });
   });
 
   it('uses QQ_MODEL env var when set', async () => {
@@ -210,5 +245,22 @@ describe('fetchCandidates', () => {
     });
     expect(result[1]?.command).toBe('git status');
     expect(result[1]?.explanation).toContain('forced duplicate');
+  });
+
+  it('reuses the Anthropic client for a second fetch with the same key', async () => {
+    createMock.mockResolvedValue({
+      content: [
+        {
+          type: 'text',
+          text: '[{"command":"git status","explanation":"Show repo status"}]',
+        },
+      ],
+    });
+
+    const { fetchCandidates } = await import('../src/providers/claude.js');
+    await fetchCandidates(buildEnvelope(), '');
+    await fetchCandidates(buildEnvelope(), '');
+    expect(anthropicCtorMock).toHaveBeenCalledTimes(1);
+    expect(createMock).toHaveBeenCalledTimes(2);
   });
 });

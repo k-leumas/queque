@@ -86,10 +86,11 @@ Recent decisions affecting current work:
 - [Phase 06]: resolveAdapter missing-adapter error references bootstrapBuiltins() for clarity
 - [Phase 08]: darwin treats claude on PATH as auth-present (Keychain); false positives fail at 08-02 request time
 - [Phase 08]: CLAUDE_CODE_OAUTH_TOKEN and ANTHROPIC_AUTH_TOKEN count as Claude auth without reading values
-- [Phase 08]: Provider selection is pin-not-waterfall; Claude silent default; 08-02 is CLI-first `claude -p` with SDK rescue
+- [Phase 08]: Provider selection is pin-not-waterfall; Claude silent default; SDK-first when a usable API key exists, `claude -p` only for `/login`-only users
 - [Phase 08]: Register the CLI+SDK composite as claude-cli, not raw claudeCliAdapter
 - [Phase 08]: Keep the prompt as last argv with stdin ignore (accepted ps disclosure T-08-02-07)
 - [Phase 08]: none/ollama/openai-key resolve to Claude default as an 08-02 bridge until 08-03 pinning
+- Warm client: daemon `fetch-candidates` IPC + cached Anthropic SDK; Ink stays in the foreground client; no LaunchAgent
 
 ### Pending Todos
 

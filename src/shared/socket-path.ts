@@ -1,3 +1,5 @@
+import * as path from 'node:path';
+
 /**
  * Returns the Unix socket path for the qq daemon for a given UID.
  *
@@ -16,4 +18,20 @@ export function socketPathForUid(uid: number): string {
  */
 export function socketPath(): string {
   return socketPathForUid(process.getuid?.() ?? 0);
+}
+
+/**
+ * Rejects socket paths that are not `/tmp/qq-*.sock` (or `/private/tmp/qq-*.sock`).
+ *
+ * Call this before unlink or bind so a caller-controlled string cannot
+ * delete or listen on an arbitrary file.
+ */
+export function assertSafeSocketPath(socketPath: string): void {
+  const resolved = path.resolve(socketPath);
+  const base = path.basename(resolved);
+  const dir = path.dirname(resolved);
+  const tmpRoots = ['/tmp', '/private/tmp'];
+  if (!tmpRoots.includes(dir) || !base.startsWith('qq-') || !base.endsWith('.sock')) {
+    throw new Error(`unsafe socket path rejected: ${socketPath}`);
+  }
 }

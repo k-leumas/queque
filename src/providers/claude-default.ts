@@ -1,7 +1,7 @@
 import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
-import { readEnvValueFromDotEnvLocal } from '../shared/env-file.js';
+import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { fetchCandidates as fetchSdkCandidates } from './claude.js';
 import { fetchClaudeCliCandidates } from './claude-cli.js';
 import type { LLMAdapter } from './provider.js';
@@ -19,9 +19,6 @@ const ENOENT_MESSAGE =
 
 const TIMEOUT_MESSAGE =
   'QueQue: Claude timed out. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.';
-
-/** Minimum remaining budget required to start an SDK rescue after CLI failure. */
-export const MIN_SDK_RESCUE_MS = 1000;
 
 /**
  * Returns milliseconds left before `deadline`, floored at zero.
@@ -64,7 +61,8 @@ function exitCodeDetail(error: unknown): boolean {
 
 function lookupApiKey(): string | undefined {
   return (
-    process.env.ANTHROPIC_API_KEY ?? readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY') ?? undefined
+    usableSecret(process.env.ANTHROPIC_API_KEY) ??
+    usableSecret(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY'))
   );
 }
 
@@ -82,39 +80,29 @@ function hardError(error: unknown): Error {
 }
 
 /**
- * CLI-first composite: spawn `claude -p`, then rescue with the Anthropic SDK
- * when a key exists and enough of the shared 25s budget remains.
+ * Claude composite: SDK-first when a usable API key exists, otherwise
+ * `claude -p` for `/login`-only users. Shared 25s budget under FIFO 30s.
  */
 export const claudeDefaultAdapter: LLMAdapter = {
   async fetchCandidates(envelope: ContextEnvelope): Promise<CandidateList> {
     const deadline = Date.now() + TOTAL_BUDGET_MS;
+    const apiKey = lookupApiKey();
+
+    if (apiKey) {
+      void appendDebugLog('provider', 'sdk path', {
+        path: 'sdk',
+      });
+      return fetchSdkCandidates(envelope, '', remainingMs(deadline));
+    }
 
     try {
       return await fetchClaudeCliCandidates(envelope, remainingMs(deadline));
     } catch (error) {
-      const authFailure = isAuthFailure(error);
       void appendDebugLog('provider', 'claude-cli path', {
         path: 'claude-cli',
         exitCode: exitCodeDetail(error),
-        authFailure,
+        authFailure: isAuthFailure(error),
       });
-
-      const remaining = remainingMs(deadline);
-      const apiKey = lookupApiKey();
-
-      if (apiKey && remaining >= MIN_SDK_RESCUE_MS) {
-        void appendDebugLog('provider', 'sdk-rescue path', {
-          path: 'sdk-rescue',
-          exitCode: exitCodeDetail(error),
-          authFailure,
-        });
-        return fetchSdkCandidates(envelope, '', remaining);
-      }
-
-      if (remaining < MIN_SDK_RESCUE_MS) {
-        throw new Error(TIMEOUT_MESSAGE);
-      }
-
       throw hardError(error);
     }
   },
