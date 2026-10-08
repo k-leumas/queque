@@ -1,195 +1,235 @@
 {
-  "session_id": "session-2026-10-08-2342",
-  "started": "2026-10-08T05:42:56.882Z",
+  "session_id": "session-2026-10-08-0049",
+  "started": "2026-10-08T06:49:08.620Z",
   "files_read": {
-    "/Users/samuel/.claude/gsd-core/workflows/plan-phase.md": {
+    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
+      "count": 2,
+      "tokens": 2839,
+      "first_read": "2026-10-08T06:49:23.474Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
+      "count": 4,
+      "tokens": 3830,
+      "first_read": "2026-10-08T06:49:23.595Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/contracts/ipc.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-08T06:49:23.691Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/daemon-bootstrap.test.ts": {
+      "count": 2,
+      "tokens": 1741,
+      "first_read": "2026-10-08T06:49:32.985Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-RESEARCH.md": {
+      "count": 4,
+      "tokens": 13208,
+      "first_read": "2026-10-08T06:49:33.533Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/client-result.test.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-08T06:49:59.908Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-08T06:50:00.253Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/daemon/bootstrap.ts": {
+      "count": 1,
+      "tokens": 2039,
+      "first_read": "2026-10-08T06:50:07.629Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/06-hardening-privacy-defaults-and-extension-seams/06-REVIEWS.md": {
+      "count": 1,
+      "tokens": 6403,
+      "first_read": "2026-10-08T06:50:07.682Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/sources/003-prompt-steering/catalog.ts": {
       "count": 2,
       "tokens": 0,
-      "first_read": "2026-10-08T05:43:08.518Z"
+      "first_read": "2026-10-08T06:50:19.603Z"
     },
-    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
-      "count": 1,
-      "tokens": 2963,
-      "first_read": "2026-10-08T05:52:58.645Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/contracts/shell.ts": {
-      "count": 1,
-      "tokens": 426,
-      "first_read": "2026-10-08T05:52:59.091Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/contracts/request.ts": {
+    "/Users/samuel/dev/tui-llm/.nvmrc": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-10-08T05:52:59.603Z"
+      "first_read": "2026-10-08T06:50:19.793Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/daemon/fetch-client.ts": {
+      "count": 1,
+      "tokens": 1100,
+      "first_read": "2026-10-08T06:50:43.761Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/sources/002-candidate-binary-check/find-hang.mjs": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-08T06:50:44.672Z"
+    },
+    "/Users/samuel/dev/tui-llm/package.json": {
+      "count": 1,
+      "tokens": 499,
+      "first_read": "2026-10-08T06:50:46.046Z"
     },
     "/Users/samuel/dev/tui-llm/src/contracts/candidates.ts": {
       "count": 1,
       "tokens": 104,
-      "first_read": "2026-10-08T05:52:59.917Z"
+      "first_read": "2026-10-08T06:51:07.183Z"
     },
-    "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
+    "/Users/samuel/dev/tui-llm/src/contracts/shell.ts": {
       "count": 1,
-      "tokens": 1979,
-      "first_read": "2026-10-08T05:53:03.641Z"
+      "tokens": 426,
+      "first_read": "2026-10-08T06:51:08.714Z"
     },
-    "/Users/samuel/dev/tui-llm/src/providers/claude-cli.ts": {
+    "/Users/samuel/dev/tui-llm/src/providers/claude-exec.ts": {
       "count": 1,
-      "tokens": 463,
-      "first_read": "2026-10-08T05:53:04.134Z"
+      "tokens": 1256,
+      "first_read": "2026-10-08T06:52:04.461Z"
     },
-    "/Users/samuel/dev/tui-llm/src/client/run-foreground.ts": {
-      "count": 1,
-      "tokens": 3830,
-      "first_read": "2026-10-08T05:53:04.533Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
-      "count": 1,
-      "tokens": 2839,
-      "first_read": "2026-10-08T05:53:08.551Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/ui/ControlsLine.tsx": {
-      "count": 1,
-      "tokens": 248,
-      "first_read": "2026-10-08T05:53:09.058Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/context/pipeline.ts": {
-      "count": 1,
-      "tokens": 524,
-      "first_read": "2026-10-08T05:53:09.444Z"
-    },
-    "/Users/samuel/dev/tui-llm/node_modules/ink/build/hooks/use-input.js": {
+    "/var/folders/tk/mgym91f555d45tx9fnsg33680000gn/T/gsd-review-zh3vw6/gsd-review-cursor.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-10-08T05:54:48.955Z"
+      "first_read": "2026-10-08T06:55:04.698Z"
     },
-    "/Users/samuel/dev/tui-llm/node_modules/ink/build/components/App.js": {
+    "/var/folders/tk/mgym91f555d45tx9fnsg33680000gn/T/gsd-review-zh3vw6/gsd-review-claude.md": {
       "count": 1,
       "tokens": 0,
-      "first_read": "2026-10-08T05:59:22.310Z"
+      "first_read": "2026-10-08T06:55:04.826Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-REVIEWS.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-08T07:13:16.928Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-CONTEXT.md": {
-      "count": 3,
-      "tokens": 2940,
-      "first_read": "2026-10-08T06:08:28.758Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-RESEARCH.md": {
-      "count": 2,
-      "tokens": 13208,
-      "first_read": "2026-10-08T06:09:29.023Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-PATTERNS.md": {
       "count": 1,
-      "tokens": 3875,
-      "first_read": "2026-10-08T06:11:55.298Z"
+      "tokens": 2940,
+      "first_read": "2026-10-08T07:13:17.132Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-01-PLAN.md": {
+      "count": 1,
+      "tokens": 10129,
+      "first_read": "2026-10-08T07:13:22.662Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-02-PLAN.md": {
+      "count": 1,
+      "tokens": 3976,
+      "first_read": "2026-10-08T07:13:29.266Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-03-PLAN.md": {
+      "count": 1,
+      "tokens": 5587,
+      "first_read": "2026-10-08T07:13:29.492Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-04-PLAN.md": {
+      "count": 1,
+      "tokens": 6534,
+      "first_read": "2026-10-08T07:13:37.452Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-05-PLAN.md": {
+      "count": 1,
+      "tokens": 5325,
+      "first_read": "2026-10-08T07:13:37.714Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-VALIDATION.md": {
       "count": 1,
       "tokens": 1217,
-      "first_read": "2026-10-08T06:11:55.893Z"
+      "first_read": "2026-10-08T07:13:42.448Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-RESEARCH.md",
-      "action": "create",
-      "tokens": 15095,
-      "at": "2026-10-08T06:04:25.320Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-CONTEXT.md",
-      "action": "edit",
-      "tokens": 251,
-      "at": "2026-10-08T06:08:36.676Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-VALIDATION.md",
-      "action": "create",
-      "tokens": 1390,
-      "at": "2026-10-08T06:09:06.503Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-PATTERNS.md",
-      "action": "create",
-      "tokens": 4428,
-      "at": "2026-10-08T06:10:41.438Z"
-    },
-    {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-01-PLAN.md",
       "action": "create",
-      "tokens": 11600,
-      "at": "2026-10-08T06:27:05.747Z"
+      "tokens": 17054,
+      "at": "2026-10-08T07:34:22.082Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-01-PLAN.md",
       "action": "edit",
-      "tokens": 266,
-      "at": "2026-10-08T06:27:27.873Z"
+      "tokens": 38,
+      "at": "2026-10-08T07:34:38.494Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-01-PLAN.md",
       "action": "edit",
-      "tokens": 75,
-      "at": "2026-10-08T06:27:30.533Z"
+      "tokens": 40,
+      "at": "2026-10-08T07:34:39.606Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-02-PLAN.md",
       "action": "create",
-      "tokens": 4544,
-      "at": "2026-10-08T06:29:40.101Z"
+      "tokens": 6853,
+      "at": "2026-10-08T07:36:00.561Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-03-PLAN.md",
       "action": "create",
-      "tokens": 6386,
-      "at": "2026-10-08T06:31:27.603Z"
+      "tokens": 10937,
+      "at": "2026-10-08T07:38:25.055Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-04-PLAN.md",
       "action": "create",
-      "tokens": 7467,
-      "at": "2026-10-08T06:33:48.139Z"
+      "tokens": 10520,
+      "at": "2026-10-08T07:40:35.495Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-05-PLAN.md",
       "action": "create",
-      "tokens": 6086,
-      "at": "2026-10-08T06:35:35.218Z"
+      "tokens": 9207,
+      "at": "2026-10-08T07:42:39.914Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/COVERAGE.md",
-      "action": "create",
-      "tokens": 96,
-      "at": "2026-10-08T06:36:07.223Z"
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-VALIDATION.md",
+      "action": "edit",
+      "tokens": 109,
+      "at": "2026-10-08T07:44:12.496Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/COVERAGE.md",
-      "action": "create",
-      "tokens": 50,
-      "at": "2026-10-08T06:36:14.854Z"
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-VALIDATION.md",
+      "action": "edit",
+      "tokens": 286,
+      "at": "2026-10-08T07:44:18.957Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-VALIDATION.md",
+      "action": "edit",
+      "tokens": 262,
+      "at": "2026-10-08T07:44:23.227Z"
     },
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md",
       "action": "edit",
-      "tokens": 266,
-      "at": "2026-10-08T06:36:41.355Z"
+      "tokens": 77,
+      "at": "2026-10-08T07:44:29.915Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md",
+      "action": "edit",
+      "tokens": 161,
+      "at": "2026-10-08T07:44:34.156Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/ROADMAP.md",
+      "action": "edit",
+      "tokens": 67,
+      "at": "2026-10-08T07:44:35.721Z"
     }
   ],
   "edit_counts": {
-    ".planning/phases/09-installed-only-command-awareness/09-RESEARCH.md": 1,
-    ".planning/phases/09-installed-only-command-awareness/09-CONTEXT.md": 1,
-    ".planning/phases/09-installed-only-command-awareness/09-VALIDATION.md": 1,
-    ".planning/phases/09-installed-only-command-awareness/09-PATTERNS.md": 1,
     ".planning/phases/09-installed-only-command-awareness/09-01-PLAN.md": 3,
     ".planning/phases/09-installed-only-command-awareness/09-02-PLAN.md": 1,
     ".planning/phases/09-installed-only-command-awareness/09-03-PLAN.md": 1,
     ".planning/phases/09-installed-only-command-awareness/09-04-PLAN.md": 1,
     ".planning/phases/09-installed-only-command-awareness/09-05-PLAN.md": 1,
-    ".planning/phases/09-installed-only-command-awareness/COVERAGE.md": 2,
-    ".planning/ROADMAP.md": 1
+    ".planning/phases/09-installed-only-command-awareness/09-VALIDATION.md": 3,
+    ".planning/ROADMAP.md": 3
   },
-  "anatomy_hits": 13,
-  "anatomy_misses": 4,
-  "repeated_reads_warned": 4,
+  "anatomy_hits": 17,
+  "anatomy_misses": 6,
+  "repeated_reads_warned": 9,
   "cerebrum_warnings": 0,
-  "stop_count": 6
+  "stop_count": 5
 }

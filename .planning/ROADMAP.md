@@ -276,12 +276,12 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 
 Plans:
 **Wave 1**
-- [ ] 09-01-PLAN.md — Tracer: zsh `$commands`/builtins/functions handoff → client reader → ported hand lexer → ⊘ "not installed" flag in the picker; handoff freshness, timing guard and flag tests (wave 1)
+- [ ] 09-01-PLAN.md — Tracer: ERR-trap-safe zsh `$commands`/builtins/functions handoff (shell-level kill switch) → client reader → hardened hand lexer → ⊘ "not installed" flag in the picker; handoff safety, freshness, timing guard, layout rows and flag tests (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 09-02-PLAN.md — Lexer proof: 40 spike cases as a vitest table, child-process fuzz with hard per-input timeouts (wave 2)
-- [ ] 09-03-PLAN.md — Steering: catalog allow list, refine-guarded `installed-tools` chunk, `buildSystemPrompt` for the SDK and `claude -p` paths, adapters guard (wave 2)
-- [ ] 09-04-PLAN.md — Tab install form: platform installer, package alias map, guarded install form, Tab toggle, controls hint (wave 2)
+- [ ] 09-02-PLAN.md — Lexer proof: 40 spike cases as a vitest table, robustness and token-contract cases, child-process fuzz with hard per-input timeouts (wave 2)
+- [ ] 09-03-PLAN.md — Steering: catalog allow list, `installed-tools` chunk (daemon filters unknown names, client checks strictly), `buildSystemPrompt` for the SDK and `claude -p` paths, adapters guard, notes in 08-03/08-04 (wave 2)
+- [ ] 09-04-PLAN.md — Tab install form: platform installer, package alias map, guarded install form (no wrap for comments/heredocs), Tab toggle, controls hint (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 09-05-PLAN.md — Send the chunk across IPC with a stale-daemon capability bump; human check of the live `??` flow (wave 3)
+- [ ] 09-05-PLAN.md — Apply wave-2 OpenWolf entries; send the chunk across IPC with a stale-daemon capability bump and a catalog-drift test; human check of the live `??` flow incl. real-shell timing and the Zellij kill switch (wave 3)

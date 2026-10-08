@@ -44,12 +44,12 @@ Task IDs filled in by the planner (2026-10-08). Rows stay keyed by success crite
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
 | 09-01-T2 (+T1 e2e) | 09-01 | 1 | SC-1 | T-09-03 | N/A | zsh smoke | `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ file / ❌ cases | ⬜ pending |
 | 09-01-T2 | 09-01 | 1 | SC-2 | — | N/A | zsh timing (regression guard, median of 5 < 25 ms, median printed — D-19) | `pnpm exec vitest run tests/zsh-widget.test.ts -t "handoff timing"` | ❌ W0 | ⬜ pending |
-| 09-01-T1, 09-01-T3, 09-04-T1, 09-04-T2 | 09-01, 09-04 | 1, 2 | SC-3 | T-09-10, T-09-11 | Install form only accepts safe package words | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| 09-01-T1, 09-01-T3, 09-04-T1, 09-04-T2 | 09-01, 09-04 | 1, 2 | SC-3 | T-09-10, T-09-11, T-09-20 | Install form only accepts safe package words; comment/heredoc commands are never brace-wrapped | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ❌ W0 / ✅ | ⬜ pending |
 | 09-02-T1 (+09-01-T3) | 09-02 | 2 | SC-4 | — | N/A | unit table (40 spike cases) | `pnpm exec vitest run tests/command-words.test.ts` | ❌ W0 | ⬜ pending |
 | 09-02-T2 | 09-02 | 2 | SC-5 | T-09-01, T-09-05 | Malformed model output cannot hang/crash the client | child-process fuzz | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | ❌ W0 | ⬜ pending |
 | 09-03-T1, 09-03-T2, 09-05-T2 | 09-03, 09-05 | 2, 3 | SC-6 | T-09-07, T-09-08, T-09-15 | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ❌ W0 / ✅ | ⬜ pending |
-| 09-05-T1 | 09-05 | 3 | Compat | T-09-14 | N/A | unit (stale daemon replaced) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts` | ✅ / ❌ cases | ⬜ pending |
-| 09-01-T1, 09-01-T2 | 09-01 | 1 | Fallback | T-09-02 | N/A | unit (missing handoff → no chunk, no flags, no error) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| 09-05-T1 | 09-05 | 3 | Compat | T-09-14, T-09-19 | Unknown catalog names are filtered daemon-side, never a dropped request | unit (stale daemon replaced; catalog drift filtered) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts tests/daemon-fetch.test.ts` | ✅ / ❌ cases | ⬜ pending |
+| 09-01-T1, 09-01-T2 | 09-01 | 1 | Fallback | T-09-02, T-09-17 | Handoff failures never reach the widget ERR trap | unit + zsh smoke (missing handoff → no chunk, no flags, no error; partial write / unwritable dir → no files, status 0) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` and `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ❌ W0 / ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -71,7 +71,9 @@ No framework install is needed.
 | Behavior | Requirement | Why Manual | Test Instructions |
 |----------|-------------|------------|-------------------|
 | A tool installed in the same shell is treated as installed on the next `??` | SC-1 | Needs a real interactive shell and package manager | In one zsh session: `brew install <tool>`, then type `<intent>??` and confirm candidates using `<tool>` are not flagged |
-| Handoff median vs the ~10 ms target | SC-2 | The automated test is a 25 ms regression guard (D-19); the target is recorded, not asserted | Record the median printed by the `handoff timing` test in VERIFICATION.md |
+| Handoff median vs the ~10 ms target | SC-2 | The automated test is a 25 ms regression guard (D-19) under `zsh -f`, which has almost no functions or aliases; the target is recorded, not asserted | Record two numbers in VERIFICATION.md: the median printed by the `handoff timing` test, and the median of 5 `_qq_write_tool_handoff` runs in the user's real interactive shell (09-05 Task 3 step 6) |
+| Kill switch inside and outside Zellij | Fallback | Needs a live Zellij pane; the pane gets argv, not later shell exports | `QQ_TOOL_AWARENESS=0` (shell parameter) then `??` shows no ⊘, once with `ZELLIJ` set and once without (09-05 Task 3 step 7) |
+| Linux `apt` / `dnf` / `pacman` install form | SC-3 | No Linux host in the human check; CI's Ubuntu runner only exercises injected inventories | Optional: on a Linux box, Tab on a flagged row shows `sudo apt install …` with both ⚠ and ⊘, and Enter only inserts it |
 
 ---
 

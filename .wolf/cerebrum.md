@@ -41,8 +41,12 @@
 - [2026-10-08] Node 24 native type stripping lets a `.mjs` test child import a zero-import, erasable-syntax `.ts` source file directly (used for the lexer fuzz child with spawnSync timeout).
 - [2026-10-08] Spike 002 `extract.mjs` looks up `WRAPPERS[w]` on a plain object, so command words like `constructor`/`toString` resolve to Object.prototype members, get treated as wrappers, and then throw on `.has`. The src/ port must use `Map`/`Set` membership (`.has`) for every word-keyed table.
 - [2026-10-08] CandidateSelect tests mock `useState` by call order and store the initial argument verbatim (lazy initializers are never called) — new state must be appended after `query` and given an eager initial value.
+- [2026-10-08] `qq-question-widget` sets `trap "_qq_cleanup '$tmpdir'" EXIT ERR INT` before it calls helpers; the ERR trap fires on any failing command inside called functions and deletes the session dir (request.json). Every helper the widget calls must end each list with status 0 (`|| true`, `|| return 0`) and keep stderr off the ZLE line (probed: unguarded writes to an unwritable dir fired the trap 3x).
+- [2026-10-08] Spike 002 `extract.mjs:77` (`v += s[++i]` inside double quotes) appends the text `undefined` at end of input: `"rg\` lexes as `rgundefined`. Every escape read in the port needs `?? ''`.
+- [2026-10-08] `rehash` (= `hash -r`) also drops manual `hash name=path` entries (verified). `⊘` U+2298 is East Asian Width N (Unicode 16) and width 1 in Ink's string-width — not an ambiguous-width glyph.
 
 ## Do-Not-Repeat
+- [2026-10-08] In the Claude Code Bash tool, `git` is a shell function from a shell snapshot: `git ls-files --error-unmatch` and `git check-ignore` returned 0 for untracked paths. Use the real binary (`/usr/local/bin/git`, or `whence -p git`) when an exit status decides tracked/ignored.
 - [2026-10-07] `packageManager` must pin a pnpm that ships a darwin-x64 binary (11.8.0 did not; pnpm then refused every command incl. lefthook hooks). Now pinned to 12.6.0 to match the global install. If pnpm errors with ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY, repin rather than using `pnpm_config_pm_on_fail=ignore`.
 - [2026-10-07] commitlint subject-case rejects subjects starting with an acronym (e.g. "SDK-first ..."). Start the subject with a lowercase word.
 
@@ -74,4 +78,6 @@
 - [2026-08-26] Warmup option (b) LaunchAgent reverted. Speed path is `fetch-candidates` in the existing daemon plus a cached Anthropic client. Shell `qq daemon --ensure` prewarm is enough to have that process up. Do not add login plists for this.
 - [2026-10-08] Phase 9 plan shape: tracer = flag path (zsh handoff → reader → lexer → ⊘ flag); the `installed-tools` envelope chunk is only sent in 09-05 together with the pong `installedTools` capability bump, so no client ever sends a chunk an old daemon would silently drop. Flags/install plans are a UI-local `DisplayCandidate`, never the IPC candidate contract.
 - [2026-10-07] Installed-only commands: widget hands off rehashed `${(k)commands}` + `${(k)builtins}`; client classifies each candidate's command words with a hand lexer and flags missing tools. Prompt-injection of the list is still open (spike 003).
+- [2026-10-08] Phase 9 reviews round 1: the daemon-side `installed-tools` schema FILTERS unknown catalog names (zod transform) instead of rejecting the request, and the client checks strictly (`strictInstalledToolsChunkSchema`). Rule: IPC schemas reject unknown shapes but filter unknown values; only shape changes need a pong capability bump. The build-hash-in-pong alternative was deferred (would restart the daemon on every dev rebuild).
+- [2026-10-08] Phase 9 wave 2 (09-02/03/04) runs in parallel worktrees and the OpenWolf hooks rewrite `.wolf/anatomy.md` and `memory.md` on every write, so wave-2 plans commit no `.wolf/` file; they list entries in their SUMMARY and 09-05 (alone in wave 3) applies them.
 

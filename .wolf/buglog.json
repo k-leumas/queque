@@ -3142,6 +3142,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-08T06:36:41.364Z"
+    },
+    {
+      "id": "bug-196",
+      "timestamp": "2026-10-08T07:44:18.963Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/09-installed-only-command-awareness/09-VALIDATION.md",
+      "root_cause": "Had `pnpm exec vitest run tests/daemon-bootstrap.test.",
+      "fix": "Changed to `pnpm exec vitest run tests/daemon-bootstrap.test.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-08T07:44:23.235Z"
+    },
+    {
+      "id": "bug-197",
+      "timestamp": "2026-10-08T07:44:34.169Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/ROADMAP.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→3 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-08T07:44:34.169Z"
     }
   ]
 }
