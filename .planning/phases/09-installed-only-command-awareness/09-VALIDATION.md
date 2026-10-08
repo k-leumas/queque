@@ -1,0 +1,87 @@
+---
+phase: "9"
+slug: "installed-only-command-awareness"
+# status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6)
+# audit-milestone §5.5 distinguishes NOT-VALIDATED (draft) from PARTIAL (validated + nyquist_compliant: false) (#2117)
+status: draft
+nyquist_compliant: false
+wave_0_complete: false
+created: "2026-10-08"
+---
+
+# Phase 9 — Validation Strategy
+
+> Per-phase validation contract for feedback sampling during execution.
+
+---
+
+## Test Infrastructure
+
+| Property | Value |
+|----------|-------|
+| **Framework** | vitest 4.0.4 (`environment: 'node'`, includes `tests/**/*.test.ts(x)`) |
+| **Config file** | `vitest.config.ts` |
+| **Quick run command** | `pnpm exec vitest run tests/<file>.test.ts` (never `pnpm test:run -- …`, which runs the whole suite) |
+| **Full suite command** | `pnpm test:run && pnpm typecheck && pnpm lint` |
+| **Estimated runtime** | ~60 seconds (full suite; fuzz child capped at 15 s) |
+
+---
+
+## Sampling Rate
+
+- **After every task commit:** Run the quick-run command for the touched test files, plus `pnpm typecheck`
+- **After every plan wave:** Run `pnpm test:run`
+- **Before `/gsd-verify-work`:** Full suite must be green
+- **Max feedback latency:** 60 seconds
+
+---
+
+## Per-Task Verification Map
+
+Task IDs are filled in by the planner/executor; rows are keyed by success criterion until then.
+
+| Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
+|---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
+| TBD | TBD | TBD | SC-1 | — | N/A | zsh smoke | `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ file / ❌ cases | ⬜ pending |
+| TBD | TBD | TBD | SC-2 | — | N/A | zsh timing (regression guard, median of 5 < 25 ms, median printed — D-19) | `pnpm exec vitest run tests/zsh-widget.test.ts -t "handoff timing"` | ❌ W0 | ⬜ pending |
+| TBD | TBD | TBD | SC-3 | — | Install form only accepts safe package words | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| TBD | TBD | TBD | SC-4 | — | N/A | unit table (40 spike cases) | `pnpm exec vitest run tests/command-words.test.ts` | ❌ W0 | ⬜ pending |
+| TBD | TBD | TBD | SC-5 | — | Malformed model output cannot hang/crash the client | child-process fuzz | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | ❌ W0 | ⬜ pending |
+| TBD | TBD | TBD | SC-6 | — | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| TBD | TBD | TBD | Compat | — | N/A | unit (stale daemon replaced) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts` | ✅ / ❌ cases | ⬜ pending |
+| TBD | TBD | TBD | Fallback | — | N/A | unit (missing handoff → no chunk, no flags, no error) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+
+*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+
+---
+
+## Wave 0 Requirements
+
+- [ ] `src/shared/command-words.ts`, `src/shared/tool-awareness.ts`, `src/client/tool-handoff.ts`, `src/providers/steering.ts` — throw-on-call stubs with public exports so RED tests pass `tsc --noEmit`
+- [ ] `tests/fixtures/command-words-cases.ts` — port the 40 cases from `.claude/skills/spike-findings-tui-llm/sources/002-candidate-binary-check/cases.mjs`
+- [ ] `tests/fixtures/command-words-fuzz-child.mjs` — modes `fuzz N`, `one <s>`, `deep N`
+- [ ] `tests/command-words.test.ts`, `tests/command-words-fuzz.test.ts`, `tests/tool-awareness.test.ts`, `tests/tool-handoff.test.ts`, `tests/steering.test.ts`, `tests/controls-line.test.tsx`
+
+No framework install is needed.
+
+---
+
+## Manual-Only Verifications
+
+| Behavior | Requirement | Why Manual | Test Instructions |
+|----------|-------------|------------|-------------------|
+| A tool installed in the same shell is treated as installed on the next `??` | SC-1 | Needs a real interactive shell and package manager | In one zsh session: `brew install <tool>`, then type `<intent>??` and confirm candidates using `<tool>` are not flagged |
+| Handoff median vs the ~10 ms target | SC-2 | The automated test is a 25 ms regression guard (D-19); the target is recorded, not asserted | Record the median printed by the `handoff timing` test in VERIFICATION.md |
+
+---
+
+## Validation Sign-Off
+
+- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
+- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
+- [ ] Wave 0 covers all MISSING references
+- [ ] No watch-mode flags
+- [ ] Feedback latency < 60s
+- [ ] `nyquist_compliant: true` set in frontmatter
+
+**Approval:** pending

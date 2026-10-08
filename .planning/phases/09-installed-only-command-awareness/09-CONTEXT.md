@@ -24,6 +24,15 @@ installed list to the model.
   `rehash`, then writes `${(k)commands}` and `${(k)builtins}` (names only, a single `print -rl`, no zsh
   loops, no sorting) into the existing private session tmpdir next to `request.json`. Budget: about 7 ms.
   No Node PATH scan, no daemon-side index.
+  **Amended 2026-10-08 (after research):** the handoff also writes `${(k)functions:#_*}` and
+  `${(k)aliases}` (same single-`print -rl` rule, ~1.6 ms), and these names count as installed, so
+  function-only tools such as `nvm`, `conda`, `sdk` and zoxide's `z` are never falsely flagged. They stay
+  client-side; only catalog members reach the prompt (D-04).
+- **D-19 (added 2026-10-08, SC-2 strictness):** Keep D-01's always-`rehash` handoff (no mtime-gated
+  rehash, no background-subshell write). The measured handoff is ~10–12 ms on this Mac against the
+  ~10 ms target. The automated timing test is a **regression guard**: median of 5 runs < 25 ms (which
+  catches zsh loops/sorting at 136–167 ms). The test prints the measured median so verification can
+  record it. Revisit the mtime fallback only if `??` is perceived as slow.
 - **D-02:** Builtins (from the `$builtins` handoff, never hardcoded), reserved words, `<placeholders>`,
   `$VAR` commands and path commands (`./x.sh`) are never flagged.
 - **D-03:** Command-word extraction uses the spike 002 hand lexer ported to `src/`. It must never hang or
