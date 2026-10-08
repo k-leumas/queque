@@ -885,3 +885,13 @@ describe('runForegroundClient: installed-tool awareness', () => {
     }
   });
 });
+
+describe('buildShellBuffers — install form (09-04, Pitfall 6)', () => {
+  it('lands the cursor on the first placeholder after the install prefix', async () => {
+    const { buildShellBuffers } = await import('../src/client/run-foreground.js');
+    expect(buildShellBuffers('brew install fd && fd <pattern>', 'find files')).toEqual({
+      lbuffer: 'brew install fd && fd ',
+      rbuffer: 'pattern  # find files',
+    });
+  });
+});

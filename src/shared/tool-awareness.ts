@@ -20,7 +20,81 @@ export interface ToolInventory {
 export type DisplayCandidate = CommandCandidate & {
   /** External command words that zsh cannot resolve, in first-seen order. */
   readonly missingTools?: readonly string[];
+  /** Install plan for a flagged candidate (09-04): the Tab install form or why there is none. */
+  readonly install?: InstallPlan;
 };
+
+/** Package managers QueQue can name in an install form (D-11). */
+export type InstallerId = 'brew' | 'apt' | 'dnf' | 'pacman';
+
+/**
+ * Install command prefix per manager. No `-y`/`--noconfirm`: the manager's own confirmation
+ * keeps the user in control (D-11). The form is only ever inserted, never run.
+ */
+export const INSTALL_COMMANDS: Readonly<Record<InstallerId, string>> = {
+  brew: 'brew install',
+  apt: 'sudo apt install',
+  dnf: 'sudo dnf install',
+  pacman: 'sudo pacman -S',
+};
+
+/** Linux managers in preference order; the first one zsh can resolve wins. */
+export const LINUX_INSTALLER_ORDER: readonly InstallerId[] = ['apt', 'dnf', 'pacman'];
+
+/** Only words matching this become installer arguments (T-09-10). */
+export const SAFE_PACKAGE_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._+-]*$/;
+
+/** Why a flagged candidate has no install form. */
+export type InstallBlockReason =
+  | 'no-package-manager'
+  | 'unsafe-package-name'
+  | 'unwrappable-command';
+
+/** The install form for a flagged candidate, or the reason there is none. */
+export interface InstallPlan {
+  /** `<installer> <pkg…> && <command>`, or null when blocked. */
+  readonly form: string | null;
+  /** Deduplicated package names in first-seen order; empty when blocked. */
+  readonly packages: readonly string[];
+  readonly blocked: InstallBlockReason | null;
+}
+
+/**
+ * Binary name → package name where they differ (D-12). Shipped and not user-extendable;
+ * a tool not in the map installs under its own name.
+ */
+export const PACKAGE_ALIASES: ReadonlyMap<string, string> = new Map([]);
+
+/** The installer for this platform, or null when none is available (D-11). */
+export function pickInstaller(
+  _inventory: ToolInventory,
+  _platform: NodeJS.Platform,
+): InstallerId | null {
+  throw new Error('pickInstaller: not implemented');
+}
+
+/** The package that provides `tool` (D-12). */
+export function packageFor(_tool: string): string {
+  throw new Error('packageFor: not implemented');
+}
+
+/** `<installer> <packages> && <command>` with list-safe wrapping, or null when unwrappable. */
+export function buildInstallForm(
+  _command: string,
+  _packages: readonly string[],
+  _installer: InstallerId,
+): string | null {
+  throw new Error('buildInstallForm: not implemented');
+}
+
+/** The install plan for a flagged candidate (D-09..D-12). */
+export function planInstall(
+  _command: string,
+  _missing: readonly string[],
+  _installer: InstallerId | null,
+): InstallPlan {
+  throw new Error('planInstall: not implemented');
+}
 
 /**
  * The single "installed" predicate: a name zsh resolves through `$commands`, functions or aliases.
@@ -53,6 +127,7 @@ export function missingTools(command: string, inventory: ToolInventory): string[
 export function annotateCandidates(
   candidates: readonly CommandCandidate[],
   inventory: ToolInventory | null,
+  _platform: NodeJS.Platform = process.platform,
 ): DisplayCandidate[] {
   if (inventory === null) {
     return candidates.map((candidate) => ({ ...candidate }));
