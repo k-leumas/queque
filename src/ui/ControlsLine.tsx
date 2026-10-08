@@ -8,7 +8,7 @@ export interface ControlsLineProps {
 }
 
 /** Keyboard hints shown below the candidate list. */
-export function ControlsLine(_props: ControlsLineProps = {}): ReactElement {
+export function ControlsLine({ tabHint }: ControlsLineProps = {}): ReactElement {
   return (
     <Box marginTop={1}>
       <Text backgroundColor="ansi256(238)" color="white" bold>
@@ -24,6 +24,17 @@ export function ControlsLine(_props: ControlsLineProps = {}): ReactElement {
       <Text backgroundColor="ansi256(245)" color="black">
         {' accept '}
       </Text>
+      {tabHint !== undefined && (
+        <>
+          <Text dimColor>{' · '}</Text>
+          <Text backgroundColor="ansi256(238)" color="white" bold>
+            {' tab '}
+          </Text>
+          <Text backgroundColor="ansi256(245)" color="black">
+            {` ${tabHint} `}
+          </Text>
+        </>
+      )}
       <Text dimColor>{' · '}</Text>
       <Text backgroundColor="ansi256(238)" color="white" bold>
         {' esc '}

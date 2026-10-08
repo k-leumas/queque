@@ -11,14 +11,50 @@ import type { DisplayCandidate } from '../shared/tool-awareness.js';
  */
 export const MISSING_TOOL_MARK = '⊘';
 
-/** Footer line shown when the selected candidate uses tools that are not installed. */
-export function missingToolsFooterText(candidate: DisplayCandidate, _toggled: boolean): string {
-  return `${MISSING_TOOL_MARK} not installed: ${(candidate.missingTools ?? []).join(', ')}`;
+/**
+ * Footer line for a flagged selected candidate, by install state (D-11, D-14): the packages
+ * while the row shows its install form, otherwise the missing tools plus why Tab is
+ * unavailable when the install plan is blocked.
+ */
+export function missingToolsFooterText(candidate: DisplayCandidate, toggled: boolean): string {
+  const install = candidate.install;
+  if (toggled && install?.form) {
+    return `${MISSING_TOOL_MARK} will install: ${install.packages.join(', ')}`;
+  }
+  const notInstalled = `${MISSING_TOOL_MARK} not installed: ${(candidate.missingTools ?? []).join(', ')}`;
+  switch (install?.blocked) {
+    case 'no-package-manager':
+      return `${notInstalled} — no package manager found`;
+    case 'unsafe-package-name':
+    case 'unwrappable-command':
+      return `${notInstalled} — no safe install command`;
+    default:
+      return notInstalled;
+  }
 }
 
-/** Candidate identity (`command::explanation`) — the row key and the install-toggle key. */
-export function candidateKey(_candidate: CommandCandidate): string {
-  throw new Error('candidateKey: not implemented');
+/** Candidate identity (`command::explanation`) — the row key and the install-toggle key (D-13). */
+export function candidateKey(candidate: CommandCandidate): string {
+  return `${normalizeCommand(candidate.command)}::${candidate.explanation}`;
+}
+
+/** Whether `candidate` currently shows its install form (toggled and a form exists). */
+export function isInstallToggled(
+  candidate: DisplayCandidate,
+  installToggled: ReadonlySet<string> | undefined,
+): boolean {
+  return candidate.install?.form != null && installToggled?.has(candidateKey(candidate)) === true;
+}
+
+/** The command text a row shows: its install form when toggled, else the trimmed command. */
+export function displayedCommand(
+  candidate: DisplayCandidate,
+  installToggled: ReadonlySet<string> | undefined,
+): string {
+  const form = candidate.install?.form;
+  return form != null && isInstallToggled(candidate, installToggled)
+    ? form
+    : normalizeCommand(candidate.command);
 }
 
 /**
@@ -126,7 +162,8 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
       lines += 1;
     } else {
       for (const candidate of visible) {
-        const command = normalizeCommand(candidate.command);
+        // Wrap, destructive check and mark overflow all use the text the row shows.
+        const command = displayedCommand(candidate, input.installToggled);
         const commandLines = wrapText(command, input.contentWidth);
         const explanationLines =
           candidate.explanation.length > 0
@@ -154,26 +191,27 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
     input.candidates !== null && input.error !== true
       ? filterCandidates(input.candidates, input.query)
       : [];
-  const selectedCommand = visible[input.selectedIndex]?.command
-    ? normalizeCommand(visible[input.selectedIndex].command)
+  const selectedCandidate = visible[input.selectedIndex];
+  const selectedCommand = selectedCandidate?.command
+    ? displayedCommand(selectedCandidate, input.installToggled)
     : undefined;
   const showDestructiveWarning =
     selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-  const selectedCandidate = visible[input.selectedIndex];
   const selectedMissingTools = selectedCandidate?.missingTools ?? [];
 
   // Mirrors CandidateSelect's single footer block: one shared marginTop, then the
-  // destructive line and the (possibly wrapped) missing-tool line.
+  // destructive line and the (possibly wrapped) state-specific missing-tool line.
   if (showDestructiveWarning || selectedMissingTools.length > 0) {
     lines += 1; // shared footer marginTop
     if (showDestructiveWarning) {
       lines += 1; // destructive warning text
     }
-    if (selectedMissingTools.length > 0) {
-      lines += wrapText(
-        missingToolsFooterText(selectedCandidate as DisplayCandidate, false),
-        input.contentWidth,
-      ).length;
+    if (selectedCandidate !== undefined && selectedMissingTools.length > 0) {
+      const footer = missingToolsFooterText(
+        selectedCandidate,
+        isInstallToggled(selectedCandidate, input.installToggled),
+      );
+      lines += wrapText(footer, input.contentWidth).length;
     }
   }
 

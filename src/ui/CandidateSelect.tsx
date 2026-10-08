@@ -6,8 +6,11 @@ import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { Modal } from './Modal.js';
 import {
+  candidateKey,
+  displayedCommand,
   estimateCandidateSelectLines,
   filterCandidates,
+  isInstallToggled,
   MISSING_TOOL_MARK,
   missingToolsFooterText,
   wrapText,
@@ -50,6 +53,7 @@ function linePrefix(active: boolean, lineIndex: number): string {
  *
  * D-06: candidates is nullable — null means loading state (spinner shown).
  * D-08: a candidate's optional `missingTools` drives the ⊘ mark and footer; it stays selectable.
+ * D-09: a flagged candidate's optional `install.form` is what Tab switches the row to.
  */
 interface Props {
   candidates: readonly DisplayCandidate[] | null;
@@ -76,7 +80,10 @@ function normalizeCommand(command: string): string {
  *   Enter     — accept selected command
  *   Esc       — cancel and restore shell buffer
  *   Backspace — delete last char from live search query
+ *   Tab       — toggle the install form on a flagged candidate (Shift+Tab too)
  *   Any printable char → live search (appended to query)
+ *
+ * Nothing is ever executed: Enter inserts exactly the text the selected row shows.
  */
 export function CandidateSelect({
   candidates,
@@ -92,6 +99,9 @@ export function CandidateSelect({
   const contentWidth = modalWidth - MODAL_PADDING_X - ROW_GUTTER.length;
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [query, setQuery] = useState(initialQuery ?? '');
+  // Third useState (tests index state by call order): keys (candidateKey) of rows showing
+  // their install form. Eager initial value — the test mock never calls lazy initializers.
+  const [installToggled, setInstallToggled] = useState<ReadonlySet<string>>(new Set());
 
   // If the TTY doesn't support raw mode we can't accept keyboard input — cancel
   // immediately rather than leaving the user with an unresponsive TUI.
@@ -108,6 +118,7 @@ export function CandidateSelect({
   // biome-ignore lint/correctness/useExhaustiveDependencies: candidates is a prop; reset on arrival is intentional
   useEffect(() => {
     setSelectedIndex(0);
+    setInstallToggled(new Set());
     if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
       setQuery('');
     }
@@ -138,6 +149,7 @@ export function CandidateSelect({
         error,
         contentWidth,
         includeDevFooter,
+        installToggled,
       }),
     );
   }, [
@@ -148,6 +160,7 @@ export function CandidateSelect({
     error,
     contentWidth,
     includeDevFooter,
+    installToggled,
     onLayoutLinesChange,
   ]);
 
@@ -166,6 +179,26 @@ export function CandidateSelect({
         return;
       }
 
+      // Tab / Shift+Tab (D-09): toggle the selected flagged row between its command and its
+      // install form. Always consumed so Tab never reaches the search filter.
+      if (key.tab) {
+        if (!candidates) return;
+        const visible = filterCandidates(candidates, query);
+        const selected = visible[selectedIndex] ?? visible[0];
+        if (selected?.install?.form == null) return;
+        const id = candidateKey(selected);
+        setInstallToggled((previous) => {
+          const next = new Set(previous);
+          if (next.has(id)) {
+            next.delete(id);
+          } else {
+            next.add(id);
+          }
+          return next;
+        });
+        return;
+      }
+
       // key.return must be checked before the generic input handler — in raw mode
       // Enter sends '\r' as `input` (truthy), which would otherwise be consumed by
       // setQuery and prevent the accept action from firing.
@@ -173,8 +206,10 @@ export function CandidateSelect({
         const visible = filterCandidates(candidates, query);
         if (visible.length === 0) return;
         const selected = visible[selectedIndex] ?? visible[0];
-        const command = normalizeCommand(selected.command);
-        const explanation = selected.explanation || `see man ${command.split(' ')[0]}`;
+        // Insert exactly what the row shows; the fallback names the original tool, not the installer.
+        const command = displayedCommand(selected, installToggled);
+        const original = normalizeCommand(selected.command);
+        const explanation = selected.explanation || `see man ${original.split(' ')[0]}`;
         onSelect(command, explanation);
         return;
       }
@@ -204,6 +239,7 @@ export function CandidateSelect({
   let showDestructiveWarning = false;
   let selectedMissingTools: readonly string[] = [];
   let selectedCandidate: DisplayCandidate | undefined;
+  let selectedToggled = false;
   if (error === true) {
     content = (
       <Box marginTop={1}>
@@ -218,12 +254,14 @@ export function CandidateSelect({
     );
   } else {
     const visible = filterCandidates(candidates, query);
-    const selectedCommand = visible[selectedIndex]?.command
-      ? normalizeCommand(visible[selectedIndex].command)
+    selectedCandidate = visible[selectedIndex];
+    const selectedCommand = selectedCandidate?.command
+      ? displayedCommand(selectedCandidate, installToggled)
       : undefined;
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-    selectedCandidate = visible[selectedIndex];
     selectedMissingTools = selectedCandidate?.missingTools ?? [];
+    selectedToggled =
+      selectedCandidate !== undefined && isInstallToggled(selectedCandidate, installToggled);
     if (visible.length === 0) {
       content = (
         <Box marginTop={1}>
@@ -235,7 +273,8 @@ export function CandidateSelect({
         <Box flexDirection="column" marginTop={1}>
           {visible.map((candidate, index) => {
             const active = index === selectedIndex;
-            const command = normalizeCommand(candidate.command);
+            // The displayed text (install form when toggled) drives wrapping and the ⚠ check (D-08).
+            const command = displayedCommand(candidate, installToggled);
             const destructive = isDestructiveCommand(command);
             const flagged = (candidate.missingTools?.length ?? 0) > 0;
             const commandLines = wrapText(command, contentWidth);
@@ -244,11 +283,7 @@ export function CandidateSelect({
             const blockLines = [...commandLines, ...explanationLines];
 
             return (
-              <Box
-                key={`${command}::${candidate.explanation}`}
-                flexDirection="column"
-                marginBottom={1}
-              >
+              <Box key={candidateKey(candidate)} flexDirection="column" marginBottom={1}>
                 {blockLines.map((line, lineIndex) => {
                   const isCommandLine = lineIndex < commandLines.length;
                   const isLastCommandLine = isCommandLine && lineIndex === commandLines.length - 1;
@@ -287,6 +322,13 @@ export function CandidateSelect({
     }
   }
 
+  // D-14: the Tab chip only appears while Tab would do something for the selected row.
+  const tabHint: 'install' | 'undo install' | undefined = selectedToggled
+    ? 'undo install'
+    : selectedCandidate?.install?.form != null
+      ? 'install'
+      : undefined;
+
   return (
     <Modal>
       {initialQuery && initialQuery.length > 0 && (
@@ -301,11 +343,11 @@ export function CandidateSelect({
         <Box flexDirection="column" marginTop={1}>
           {showDestructiveWarning && <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>}
           {selectedCandidate !== undefined && selectedMissingTools.length > 0 && (
-            <Text color="cyan">{missingToolsFooterText(selectedCandidate, false)}</Text>
+            <Text color="cyan">{missingToolsFooterText(selectedCandidate, selectedToggled)}</Text>
           )}
         </Box>
       )}
-      <ControlsLine />
+      <ControlsLine tabHint={tabHint} />
       {process.env.QQ_DEV_ROOT != null && (
         <Box justifyContent="flex-end">
           <Text color="yellow">{`dev v${__QUEQUE_VERSION__} ${__QUEQUE_COMMIT__}`}</Text>
