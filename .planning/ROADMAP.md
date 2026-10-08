@@ -257,3 +257,21 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 | 6. Hardening, Privacy Defaults, and Extension Seams | 3/3 | Complete | 2026-06-18 |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
 | 8. Zero-Config Install and Provider Detection | 2/6 | In Progress | - |
+
+### Phase 9: Installed-Only Command Awareness
+
+**Goal:** Suggestions favour tools that are actually installed, and any suggestion that uses a tool the user does not have is visibly flagged "not installed" (never silently dropped). The `??` widget hands zsh's freshly rehashed `$commands` and `$builtins` to the client (~7 ms, always current, including tools installed earlier in the same session); the prompt carries the installed ∩ curated-catalog tool list; each returned candidate's command words are checked against the installed set. Blueprint: `.claude/skills/spike-findings-tui-llm` (spikes 001–003).
+**Requirements**: TBD
+**Depends on:** Phase 6 (prompt + context pipeline). Steering applies to every provider adapter present, including any added by Phase 8.
+**Success Criteria** (what must be TRUE):
+
+  1. A tool installed earlier in the same shell session (e.g. `brew install fd`) is treated as installed on the next `??` without restarting the shell.
+  2. The widget handoff adds no more than ~10 ms to `??` startup on a machine with ~2k PATH commands.
+  3. A candidate that uses a tool not in `$commands` is shown with a "not installed" flag naming the tool; it remains selectable and insertion-only.
+  4. Builtins, reserved words, `<placeholders>`, `$VAR` commands and path commands (`./x.sh`) are never flagged.
+  5. Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout).
+  6. The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter.
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 9 to break down)
