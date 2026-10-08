@@ -2132,3 +2132,5 @@
 | 02:11 | 09-01 Task 2: handoff proof — freshness, functions/aliases, ERR-trap (partial/unwritable/missing), kill switch, placement, shape guard, timing (zsh -f median ~6-8 ms); readToolHandoff fallbacks + counts-only log tests | tests/zsh-widget.test.ts, tests/tool-handoff.test.ts | 54 tests pass | ~12k |
 | 02:13 | 09-01 Task 3 RED: 5 failing estimate cases for flag footer/mark overflow (RED_EVIDENCE_OK) | tests/modal-layout.test.ts | 5 fail as planned | ~4k |
 | 02:13 | 09-01 Task 3 GREEN: estimate counts shared footer block, wrapped flag footer, mark overflow (MARK_COLUMNS=2); MODAL_VIEWPORT_LINES 16->17 | src/ui/modal-layout.ts, src/client/run-foreground.ts | 15/15 modal-layout | ~3k |
+| 02:14 | Created tests/tool-awareness.test.ts | — | ~1083 |
+| 02:14 | 09-01 Task 3 characterization: missingTools/annotateCandidates semantics + dual-mark/shared-footer/flexShrink/Enter render tests, all green first run | tests/tool-awareness.test.ts, tests/candidate-select.test.tsx | 54 pass | ~5k |

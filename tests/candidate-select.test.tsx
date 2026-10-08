@@ -672,4 +672,106 @@ describe('CandidateSelect — missing-tool flag', () => {
     expect(text).toMatch(/fd -e ts\n ⊘/);
     expect(text).toContain('⊘ not installed: fd');
   });
+
+  type Element = { props: Record<string, unknown> & { children?: unknown } };
+
+  /** Every element in the tree (function components are not invoked). */
+  function collectElements(node: unknown): Element[] {
+    if (Array.isArray(node)) {
+      return node.flatMap(collectElements);
+    }
+    if (typeof node === 'object' && node !== null && 'props' in node) {
+      const element = node as Element;
+      return [element, ...collectElements(element.props.children)];
+    }
+    return [];
+  }
+
+  it('shows both marks and both footer lines inside one footer block for a destructive flagged candidate', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    const tree = CandidateSelect({
+      candidates: [{ command: 'sudo fd -e ts', explanation: 'x', missingTools: ['fd'] }],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toMatch(/sudo fd -e ts\n ⚠\n ⊘/);
+    expect(text).toContain('⚠ review carefully — this command may be destructive');
+    expect(text).toContain('⊘ not installed: fd');
+
+    const footers = collectElements(tree).filter((element) => {
+      if (element.props.flexDirection !== 'column' || element.props.marginTop !== 1) return false;
+      const footerText = collectText(element.props.children).join('\n');
+      return (
+        footerText.includes('⚠ review carefully — this command may be destructive') &&
+        footerText.includes('⊘ not installed: fd')
+      );
+    });
+    expect(footers).toHaveLength(1);
+    expect(collectText(footers[0].props.children).join('\n')).not.toContain('sudo fd -e ts');
+  });
+
+  it('gives the gutter prefix and both marks flexShrink 0', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    const tree = CandidateSelect({
+      candidates: [{ command: 'sudo fd -e ts', explanation: 'x', missingTools: ['fd'] }],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+
+    const nonShrinking = collectElements(tree)
+      .filter((element) => element.props.flexShrink === 0)
+      .map((element) => collectText(element.props.children).join(''));
+    expect(nonShrinking).toContain('┌> ');
+    expect(nonShrinking).toContain(' ⚠');
+    expect(nonShrinking).toContain(' ⊘');
+  });
+
+  it('shows no ⊘ for an unflagged candidate', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    const tree = CandidateSelect({
+      candidates: [{ command: 'git status', explanation: 'show status' }],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).not.toContain('⊘');
+  });
+
+  it('shows the not-installed footer only for the selected candidate', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+
+    const tree = CandidateSelect({
+      candidates: [
+        { command: 'ls', explanation: 'list' },
+        { command: 'fd -e ts', explanation: 'find ts files', missingTools: ['fd'] },
+      ],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    });
+
+    const text = collectText(tree).join('\n');
+    expect(text).toMatch(/fd -e ts\n ⊘/);
+    expect(text).not.toContain('not installed:');
+  });
+
+  it('Enter on a flagged candidate inserts its command unchanged', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+
+    CandidateSelect({
+      candidates: [{ command: 'fd -e ts', explanation: 'find ts files', missingTools: ['fd'] }],
+      onSelect,
+      onCancel: vi.fn(),
+    });
+
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('fd -e ts', 'find ts files');
+  });
 });
