@@ -216,3 +216,7 @@ None. No external service configuration is required.
 ---
 *Phase: 09-installed-only-command-awareness*
 *Completed: 2026-10-08*
+
+## Self-Check: PASSED
+
+All created files exist; commits ef3899b, fad6ef3, f11d400, 96d1f08, bb8049b are ancestors of HEAD. Plan verification: steering/claude-provider/claude-cli-provider tests pass, full suite 421/421, typecheck 0 errors, lint exit 0, no 09-03 commit touches src/client, src/context, src/daemon or .wolf.

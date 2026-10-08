@@ -272,7 +272,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
   5. Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout).
   6. The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter.
 
-**Plans:** 2/5 plans executed
+**Plans:** 3/5 plans executed
 
 Plans:
 **Wave 1**
@@ -280,7 +280,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [x] 09-02-PLAN.md — Lexer proof: 40 spike cases as a vitest table, robustness and token-contract cases, child-process fuzz with hard per-input timeouts (wave 2)
-- [ ] 09-03-PLAN.md — Steering: catalog allow list, `installed-tools` chunk (daemon filters unknown names, client checks strictly), `buildSystemPrompt` for the SDK and `claude -p` paths, adapters guard, notes in 08-03/08-04 (wave 2)
+- [x] 09-03-PLAN.md — Steering: catalog allow list, `installed-tools` chunk (daemon filters unknown names, client checks strictly), `buildSystemPrompt` for the SDK and `claude -p` paths, adapters guard, notes in 08-03/08-04 (wave 2)
 - [ ] 09-04-PLAN.md — Tab install form: platform installer, package alias map, guarded install form (no wrap for comments/heredocs), Tab toggle, controls hint (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
