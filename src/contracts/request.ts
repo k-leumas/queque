@@ -1,8 +1,27 @@
 import { z } from 'zod';
+import {
+  CATALOG,
+  CATALOG_SET,
+  INSTALLED_TOOLS_MAX,
+  TOOL_NAME_MAX_LENGTH,
+  TOOL_NAME_RE,
+} from '../shared/tool-catalog.js';
 import { shellRequestSchema } from './shell.js';
 
-// TDD stub (09-03 RED): shape only, no name validation, filtering or refine yet.
-const installedToolsPayloadStub = z.object({ tools: z.array(z.string()) });
+/** Plain tool names only: no spaces, paths, quotes or shell syntax, at most 64 chars each. */
+const toolNamesSchema = z.array(z.string().max(TOOL_NAME_MAX_LENGTH).regex(TOOL_NAME_RE));
+
+/** Keeps the first occurrence of each catalog name, in input order; drops everything else. */
+function keepCatalogNames(tools: string[]): string[] {
+  const seen = new Set<string>();
+  return tools.filter((tool) => {
+    if (!CATALOG_SET.has(tool) || seen.has(tool)) {
+      return false;
+    }
+    seen.add(tool);
+    return true;
+  });
+}
 
 /**
  * Broad intent categories classified before any context gathering.
@@ -69,10 +88,21 @@ export type IntentDecision = z.infer<typeof intentDecisionSchema>;
  * A typed chunk of extra context gathered by an intent-gated provider.
  * Discriminated on `kind` so consumers can narrow safely.
  *
- * D-05/D-06 structural enforcement: neither variant has any field for file
+ * D-05/D-06 structural enforcement: no variant has any field for file
  * content (bytes, text, lines). File names only. A future provider that needs
  * to include file content MUST add a new `kind` variant and will require an
  * explicit privacy review — it cannot sneak content in through the existing variants.
+ *
+ * Phase 9 D-04: the `installed-tools` variant carries public catalog tool names
+ * only (src/shared/tool-catalog.ts), never the full installed list, function or
+ * alias names. This is the lenient schema the daemon parses: it rejects malformed
+ * SHAPES (a string that is not a plain tool name, a name over 64 chars, more than
+ * INSTALLED_TOOLS_MAX entries) but FILTERS unknown VALUES, so a newer client's
+ * catalog addition is dropped by an older daemon instead of making it ignore the
+ * whole request (server.ts drops a failed parse silently, which costs the 800 ms
+ * ack timeout plus a cold fallback). The client checks
+ * `strictInstalledToolsChunkSchema` before sending — that is the guard that turns
+ * a bug pushing the full installed list into a send-time failure.
  */
 export const contextChunkSchema = z.discriminatedUnion('kind', [
   z.object({
@@ -96,15 +126,27 @@ export const contextChunkSchema = z.discriminatedUnion('kind', [
   }),
   z.object({
     kind: z.literal('installed-tools'),
-    payload: installedToolsPayloadStub,
+    payload: z.object({
+      tools: toolNamesSchema.max(INSTALLED_TOOLS_MAX).transform(keepCatalogNames),
+    }),
   }),
 ]);
 
 export type ContextChunk = z.infer<typeof contextChunkSchema>;
 
+/**
+ * Client-side check for the `installed-tools` chunk (09-05 runs it before sending).
+ * Unlike the lenient union variant, any non-catalog name is an error, not a filter.
+ */
 export const strictInstalledToolsChunkSchema = z.object({
   kind: z.literal('installed-tools'),
-  payload: installedToolsPayloadStub,
+  payload: z.object({
+    tools: toolNamesSchema
+      .max(CATALOG.length)
+      .refine((tools) => tools.every((tool) => CATALOG_SET.has(tool)), {
+        message: 'installed-tools may only carry curated catalog names (D-04)',
+      }),
+  }),
 });
 
 export type StrictInstalledToolsChunk = z.infer<typeof strictInstalledToolsChunkSchema>;

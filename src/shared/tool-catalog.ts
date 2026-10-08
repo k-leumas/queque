@@ -71,6 +71,6 @@ export const INSTALLED_TOOLS_MAX = 512;
  * Returns the catalog members for which `isInstalled` is true, sorted.
  * Sorting happens in Node, never in zsh (D-01: looping `$commands` in zsh is slow).
  */
-export function installedCatalogTools(_isInstalled: (name: string) => boolean): string[] {
-  throw new Error('installedCatalogTools: not implemented');
+export function installedCatalogTools(isInstalled: (name: string) => boolean): string[] {
+  return CATALOG.filter((name) => isInstalled(name)).sort();
 }
