@@ -2043,3 +2043,5 @@
 | 20:57 | Created .planning/spikes/003-prompt-steering/catalog.ts | — | ~440 |
 | 20:57 | Created .planning/spikes/003-prompt-steering/compare.ts | — | ~1696 |
 | 20:58 | Session end: 19 writes across 15 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 19 reads | ~117401 tok |
+| 20:59 | Session end: 19 writes across 15 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 19 reads | ~117401 tok |
+| 21:00 | Created .planning/spikes/003-prompt-steering/README.md | — | ~1275 |

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T02:57:41.915Z
-> Files: 349 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T03:00:29.307Z
+> Files: 350 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -636,6 +636,7 @@
 
 - `catalog.ts` — Curated catalog of notable CLI tools that have common alternatives. Variant B sends only (~440 tok)
 - `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1696 tok)
+- `README.md` — Project documentation (~1195 tok)
 
 ## docs/
 
