@@ -521,14 +521,17 @@ expect(stdout.trim().split('\n')).toEqual(['1', '1']);
 | A6 | Debian/Ubuntu names differ (e.g. `fd`→`fd-find`, `bat` binary is `batcat`). A single platform-agnostic map gives brew names on apt | Pattern 9 | Wrong apt package for a few tools. Accepted by D-12 ("fails visibly") |
 | A7 | Native TS stripping has been unflagged since Node 23.6 | State of the Art | None for this repo. Verified on the installed v24.14.1 |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Treat zsh functions and aliases as installed for flagging and steering?**
    - What we know: `nvm` is a function here. `print -rl -- ${(k)functions:#_*} ${(k)aliases}` costs **~1.6 ms**, 494 names. The `:#_*` filter drops completion and private `_qq_*` functions. These names would stay client-side, and only catalog members would ever reach the model.
    - What's unclear: D-01 locks "commands and builtins" only.
    - Recommendation: ask the user. If yes, write a third file `functions.txt` and treat its names as installed, never installable. If no, accept the false flags as documented behaviour.
+   - **RESOLVED (2026-10-08):** user chose yes. D-01 amended in 09-CONTEXT.md: functions (`:#_*`) and aliases are handed off and count as installed.
 2. **SC-2 strictness.** Accept ~10–12 ms with a < 25 ms regression guard, or adopt fallback (a) or (b) from Pitfall 1? Recommendation: ship D-01 as is, record the measured median in VERIFICATION, and revisit only if the user perceives lag.
+   - **RESOLVED (2026-10-08):** user chose the regression guard. Recorded as D-19 in 09-CONTEXT.md (always rehash, median of 5 < 25 ms, median printed).
 3. **Spike 003 is partial** (deferred). The steering wording is a draft. The flag is the safety net whatever the steering quality.
+   - **RESOLVED (deferred):** finishing spike 003 stays out of scope (09-CONTEXT.md Deferred Ideas); plans ship the draft wording with the flag as the safety net.
 
 ## Environment Availability
 
