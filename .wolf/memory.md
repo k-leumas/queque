@@ -2013,3 +2013,6 @@
 |------|--------|---------|---------|--------|
 | 20:06 | Edited tests/claude-cli-provider.test.ts | added 1 condition(s) | ~57 |
 | 20:06 | Lint/typecheck/test before committing CR-01 fix + warm client; biome autofix 3 files, fixed noNonNullAssertion | tests/*, src/daemon/* | 247 tests pass | ~3000 |
+| 20:07 | Session end: 1 writes across 1 files (claude-cli-provider.test.ts) | 0 reads | ~57 tok |
+| 20:18 | Repinned packageManager pnpm 11.8.0 -> 12.6.0 to fix darwin-x64 engine error | package.json, pnpm-lock.yaml | pnpm exec + hooks work | ~1500 |
+| 20:18 | Session end: 1 writes across 1 files (claude-cli-provider.test.ts) | 0 reads | ~57 tok |

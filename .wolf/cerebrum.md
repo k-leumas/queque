@@ -26,8 +26,8 @@
 - Phase 2 should treat context gathering as a pre-provider concern; `src/providers/claude.ts` owning git detection is acceptable as a Phase 1 seam but the planner should remove that coupling before more intents are added.
 
 ## Do-Not-Repeat
+- [2026-10-07] `packageManager` must pin a pnpm that ships a darwin-x64 binary (11.8.0 did not; pnpm then refused every command incl. lefthook hooks). Now pinned to 12.6.0 to match the global install. If pnpm errors with ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY, repin rather than using `pnpm_config_pm_on_fail=ignore`.
 - [2026-10-07] commitlint subject-case rejects subjects starting with an acronym (e.g. "SDK-first ..."). Start the subject with a lowercase word.
-- [2026-10-07] Do not call `pnpm exec` on this host bare: pinned pnpm@11.8.0 has no darwin-x64 binary. Use `pnpm_config_pm_on_fail=ignore` (the npm_config_ form does NOT work; also needed for git commit hooks) or `./node_modules/.bin/<tool>`.
 
 <!-- Mistakes made and corrected. Each entry prevents the same mistake recurring. -->
 <!-- Format: [YYYY-MM-DD] Description of what went wrong and what to do instead. -->

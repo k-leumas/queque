@@ -3034,7 +3034,7 @@
       "error_message": "ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY: Cannot run @pnpm/exe@11.8.0 on this host: it ships no native binary for darwin-x64",
       "file": "package.json",
       "root_cause": "packageManager pins pnpm@11.8.0, which ships no darwin-x64 native binary; global pnpm 12 tries to switch and fails, breaking pnpm exec in lefthook hooks",
-      "fix": "Run hooks/commands with pnpm_config_pm_on_fail=ignore (npm_config_ prefix is ignored), or call ./node_modules/.bin/<tool> directly",
+      "fix": "Repinned packageManager to pnpm@12.6.0 (matches global install, ships darwin-x64); pnpm 12 also writes a packageManagerDependencies section into pnpm-lock.yaml",
       "tags": [
         "pnpm",
         "lefthook",
@@ -3043,7 +3043,7 @@
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-10-08T02:06:36.685Z"
+      "last_seen": "2026-10-08T02:18:17.526Z"
     },
     {
       "id": "bug-190",
