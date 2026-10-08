@@ -9,6 +9,7 @@
 - **Commit planning/context with code:** Treat `.wolf/`, `.planning/`, and `.gsd/` as first-class project artifacts — commit them alongside the code they affect, not as optional or local-only files.
 - **?? latency is the product constraint:** Prefer the smallest change that cuts time-to-candidates. Reject LaunchAgent/login-daemon work — uninstall/plist/Homebrew path is too much surface for a ~2s cold `ensureDaemon` that does not warm Anthropic or skip Node+Ink boot. SDK-first stays; real next win is a warm HTTP client in a long-lived process.
 - **Phase 7 scope — empty-lbuffer only:** User deprioritized event logging, SQLite pattern cache, and precmd proactive suggestions as nice-to-have with uncertain value. Phase 7 should focus on empty-lbuffer ambient `??` (full TUI, Claude with ambient context). Signal priority: failed last command → dirty git → new cwd → nothing obvious.
+- [2026-10-07] Installed-tool awareness: treat zsh `$commands` as the source of truth (no Node PATH scan / daemon index). Suggestions using missing tools are shown flagged "not installed", not dropped.
 
 ## Key Learnings
 
@@ -19,11 +20,18 @@
 - **Stale daemons ignore new IPC:** `ensureDaemon` connect-success is not enough. Pre-fetch daemons pong but swallow `fetch-candidates`; the client then waits 26s. Ping must advertise `fetchCandidates: true`, fetch must ack immediately, and `ensureDaemon` replaces a live pong without the flag. Unanswered ping stays so dumb test sockets are not killed.
 - **Empty `ANTHROPIC_API_KEY=""` is not missing:** `??` does not fall through. Use `usableSecret()` (trim, reject empty) before `.env.local`.
 - **Node `execFile` ignores `stdio`:** `child_process.execFile` / `promisify(execFile)` always spawn with piped stdin. Passing `stdio: ['ignore','pipe','pipe']` is a no-op — `child.stdin` stays writable. Use `spawn` when stdin must be `/dev/null`. Phase 08 CR-01: this can hang `claude -p` for 25s and skip SDK rescue.
+- **Targeted vitest runs:** `pnpm test:run -- tests/x.test.ts` runs the WHOLE suite (the filter is not applied, and `--passWithNoTests` hides typos). Use `pnpm exec vitest run tests/x.test.ts` — it filters and exits 1 on "No test files found".
+- **client-result.test.ts fs mock is narrow:** it mocks `node:fs` with only `writeFileSync`/`realpathSync`. Any module newly reached from `run-foreground.ts`/`fetch-client.ts` that calls `readFileSync` must be mocked in that test (08-03 mocks `provider-pin.js` there).
+- **Daemon resolution throws must stay inside the promise chain:** `server.ts` handles IPC in a socket `data` handler; a synchronous throw there (e.g. resolving an invalid provider pin) escapes and can crash the daemon. Start from `Promise.resolve().then(...)` so it becomes `fetch-error`.
+- **Do not import `src/cli/main.ts` in tests:** it installs process-level `uncaughtException`/`unhandledRejection` handlers that call `process.exit`. Test dispatch through an exported helper instead (08-05 `dispatchInit`).
+- **Phase 8 gap closure (planned 2026-10-07):** 08-03 pin + Ollama, 08-04 OpenAI, 08-05 `qq init provider`, 08-06 failure hint + docs. provider.json schema is gated by a checkpoint:decision (recommended: versioned strict union, no secrets).
 - **Project:** tui-llm
 - Claude Code `/login` stores OAuth in macOS Keychain (not `~/.claude/.credentials.json`). Prototype `detectProvider()` Step 2 only stats the credentials file, so darwin logged-in users miss `claude-cli`. Phase 8 / 08-01 must use platform-aware presence (`claude` on PATH on darwin; file/env elsewhere) — no Keychain read, no `claude -p` probe (200 ms budget).
 - ZLE user-defined widgets run with stdin redirected from `/dev/null`; any foreground TUI client launched from the widget must be reattached to `/dev/tty` explicitly.
 - For shell-return contracts between `zsh` and Node, split-buffer payloads (`lbuffer`/`rbuffer`) are safer than numeric cursor offsets because they avoid cross-runtime Unicode indexing mismatches.
 - Phase 2 should treat context gathering as a pre-provider concern; `src/providers/claude.ts` owning git detection is acceptable as a Phase 1 seam but the planner should remove that coupling before more intents are added.
+- [2026-10-07] zsh `$commands` is stale until `rehash`: new binaries are missing and removed ones linger. `rehash` + refill + `print -rl -- ${(k)commands}` costs ~7 ms (2.2k entries). Never loop or sort `$commands` in zsh (136–167 ms). See .planning/spikes/001.
+- [2026-10-07] shell-quote misses `$(…)` inside double quotes and `<(…)`; sh-syntax 0.7 exposes Cmd nodes only as {Pos,End}. The hand lexer in .planning/spikes/002 is the chosen approach.
 
 ## Do-Not-Repeat
 - [2026-10-07] `packageManager` must pin a pnpm that ships a darwin-x64 binary (11.8.0 did not; pnpm then refused every command incl. lefthook hooks). Now pinned to 12.6.0 to match the global install. If pnpm errors with ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY, repin rather than using `pnpm_config_pm_on_fail=ignore`.
@@ -42,6 +50,8 @@
 - [2026-08-26] Do not use `??` to resolve `ANTHROPIC_API_KEY`. An exported empty string is a present value and blocks `.env.local`. Use `usableSecret()` first.
 - [2026-08-26] Do not spawn `claude -p` when a usable API key exists. CLI-first made `??` ~6s (Claude Code boot). SDK-first for keys; CLI only for `/login`-only users.
 - [2026-08-26] Do not treat a connectable socket as a current daemon. Pre-fetch listeners ignore `fetch-candidates` and stall the client for the full IPC timeout. Require `fetch-accepted` within ~800ms and replace pongs that lack `fetchCandidates: true`. Keep unanswered ping so test dummy servers are not restarted.
+- [2026-10-07] In hand-written lexers, clamp `indexOf(...) === -1` to `s.length` before assigning the cursor; a −1 rewound the cursor and caused an infinite loop on malformed input (spike 002). Fuzz with a per-input timeout.
+- [2026-10-07] Repeated: `docs(spike-001): VALIDATED — ...` failed subject-case. GSD spike verdicts must be lowercase in commit subjects.
 
 ## Decision Log
 
@@ -53,3 +63,5 @@
 - [2026-08-26] 08-02 spawn privacy: keep prompt as last argv (`stdio: ['ignore','pipe','pipe']`). RESEARCH does not prove stdin write+close is safe with `claude -p` (print mode reads stdin; open pipe hangs Ink). Process-list (`ps`) disclosure of the filtered prompt is an accepted risk (T-08-02-07) until a later verified stdin contract.
 - [2026-08-26] Flip D-08: SDK-first when `usableSecret()` finds `ANTHROPIC_API_KEY` in env or `.env.local`; `claude -p` only when no usable key (`/login`). Restores ~1–2s latency for API-key users. `/login`-only stays on CLI spawn.
 - [2026-08-26] Warmup option (b) LaunchAgent reverted. Speed path is `fetch-candidates` in the existing daemon plus a cached Anthropic client. Shell `qq daemon --ensure` prewarm is enough to have that process up. Do not add login plists for this.
+- [2026-10-07] Installed-only commands: widget hands off rehashed `${(k)commands}` + `${(k)builtins}`; client classifies each candidate's command words with a hand lexer and flags missing tools. Prompt-injection of the list is still open (spike 003).
+
