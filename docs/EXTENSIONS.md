@@ -21,6 +21,18 @@ Claude is the silent default: spawn `claude -p` first, then rescue with the Anth
 
 OpenAI, Ollama, and a `~/.config/qq/provider.json` pin are upcoming in 08-03. They are not shipped in 08-02. Changing provider later means re-running the 08-03 picker or editing the pin — not re-detecting the machine on every `??`.
 
+## Prompt steering (Phase 9)
+
+Suggestions favour tools that are installed, whichever provider answers.
+
+- **Builder rule.** Every provider adapter must build its system prompt with `buildSystemPrompt(envelope)` from `src/providers/steering.ts`, never the raw `QUEQUE_SYSTEM` constant. It must keep building its user prompt with `buildPrompt(envelope)` (the Phase 6 privacy filter runs there). Steering lives only in the system prompt: never in the user JSON, and never through sampling parameters.
+- **What reaches the model.** Only `catalog ∩ installed` names from the `installed-tools` envelope chunk. The catalog (`src/shared/tool-catalog.ts`) is a shipped allow list of public tool names, so the full installed list, private binaries, shell functions and aliases never reach a model. `buildSystemPrompt` re-filters to catalog names as defence in depth.
+- **No chunk, no change.** Without an `installed-tools` chunk, `buildSystemPrompt` returns `QUEQUE_SYSTEM` byte-for-byte.
+- **Kill switch.** `QQ_TOOL_AWARENESS=0` turns steering and the "not installed" flag off: the widget writes no handoff files, and the client ignores any that exist.
+- **Guard.** The `adapters` test in `tests/steering.test.ts` fails for any `src/providers/` file that sends a system prompt without `buildSystemPrompt(`, or that calls `buildPrompt(` without it.
+- **Compatibility.** Adding or removing catalog names needs no daemon capability bump: the daemon-side chunk schema filters names it does not know instead of rejecting the request. Changing the chunk's shape (or any other envelope shape) does need a new pong capability flag, like `installedTools` (09-05), so stale daemons are replaced instead of silently dropping requests.
+- **Known side effect.** The widget runs `rehash` on every `??` so `$commands` is current. `rehash` also drops manual `hash name=path` entries.
+
 ## Roadmap expansion
 
 ### Phase 7 — Local learning
