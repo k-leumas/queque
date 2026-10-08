@@ -90,6 +90,10 @@ Conventions not yet established. Will populate as patterns emerge during develop
 Architecture not yet mapped. Follow existing patterns found in the codebase.
 <!-- GSD:architecture-end -->
 
+## Project Skills
+
+- **Spike findings for tui-llm** (implementation patterns, constraints, gotchas) → `Skill("spike-findings-tui-llm")`
+
 <!-- GSD:workflow-start source:GSD defaults -->
 ## GSD Workflow Enforcement
 

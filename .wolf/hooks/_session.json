@@ -96,6 +96,11 @@
       "count": 1,
       "tokens": 4152,
       "first_read": "2026-10-08T02:56:43.278Z"
+    },
+    "/Users/samuel/dev/tui-llm/CLAUDE.md": {
+      "count": 1,
+      "tokens": 1634,
+      "first_read": "2026-10-08T04:49:22.060Z"
     }
   },
   "files_written": [
@@ -218,6 +223,42 @@
       "action": "create",
       "tokens": 1366,
       "at": "2026-10-08T03:00:29.358Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/references/installed-command-handoff.md",
+      "action": "create",
+      "tokens": 962,
+      "at": "2026-10-08T04:49:00.721Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/references/candidate-command-check.md",
+      "action": "create",
+      "tokens": 1161,
+      "at": "2026-10-08T04:49:01.447Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/references/prompt-steering.md",
+      "action": "create",
+      "tokens": 947,
+      "at": "2026-10-08T04:49:02.240Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/SKILL.md",
+      "action": "create",
+      "tokens": 668,
+      "at": "2026-10-08T04:49:03.322Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/spikes/WRAP-UP-SUMMARY.md",
+      "action": "create",
+      "tokens": 501,
+      "at": "2026-10-08T04:49:03.975Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/CLAUDE.md",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-10-08T04:49:26.611Z"
     }
   ],
   "edit_counts": {
@@ -237,11 +278,17 @@
     ".planning/ROADMAP.md": 3,
     ".planning/spikes/003-prompt-steering/catalog.ts": 1,
     ".planning/spikes/003-prompt-steering/compare.ts": 1,
-    ".planning/spikes/003-prompt-steering/README.md": 1
+    ".planning/spikes/003-prompt-steering/README.md": 1,
+    ".claude/skills/spike-findings-tui-llm/references/installed-command-handoff.md": 1,
+    ".claude/skills/spike-findings-tui-llm/references/candidate-command-check.md": 1,
+    ".claude/skills/spike-findings-tui-llm/references/prompt-steering.md": 1,
+    ".claude/skills/spike-findings-tui-llm/SKILL.md": 1,
+    ".planning/spikes/WRAP-UP-SUMMARY.md": 1,
+    "CLAUDE.md": 1
   },
-  "anatomy_hits": 16,
+  "anatomy_hits": 17,
   "anatomy_misses": 2,
   "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 3
+  "stop_count": 4
 }

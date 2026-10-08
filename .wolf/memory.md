@@ -2045,3 +2045,11 @@
 | 20:58 | Session end: 19 writes across 15 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 19 reads | ~117401 tok |
 | 20:59 | Session end: 19 writes across 15 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 19 reads | ~117401 tok |
 | 21:00 | Created .planning/spikes/003-prompt-steering/README.md | — | ~1275 |
+| 21:01 | Session end: 20 writes across 15 files (bench.zsh, rehash-cost.zsh, README.md, MANIFEST.md, cases.mjs) | 19 reads | ~118767 tok |
+| 22:49 | Created .claude/skills/spike-findings-tui-llm/references/installed-command-handoff.md | — | ~898 |
+| 22:49 | Created .claude/skills/spike-findings-tui-llm/references/candidate-command-check.md | — | ~1084 |
+| 22:49 | Created .claude/skills/spike-findings-tui-llm/references/prompt-steering.md | — | ~884 |
+| 22:49 | Created .claude/skills/spike-findings-tui-llm/SKILL.md | — | ~624 |
+| 22:49 | Created .planning/spikes/WRAP-UP-SUMMARY.md | — | ~468 |
+| 22:49 | Edited CLAUDE.md | 2→6 lines | ~45 |
+| 22:49 | spike wrap-up: spike-findings-tui-llm skill (3 refs + sources), WRAP-UP-SUMMARY, CLAUDE.md routing | .claude/skills/spike-findings-tui-llm/, CLAUDE.md | done | ~15k |

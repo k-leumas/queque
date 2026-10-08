@@ -1,0 +1,188 @@
+compdef:153: _comps: assignment to invalid subscript range
+model=claude-sonnet-5 installed=2175 catalog∩installed=55
+catalog∩installed: rg ag ack fzf bat tree jq sqlite3 gdu delta gh docker kubectl ffmpeg ffprobe magick convert identify mogrify sips cwebp pandoc watchman time tldr uv node pnpm yarn npm npx python3 pip3 ruby go cargo rustc tmux zellij screen ssh rsync scp nmap dig nslookup whois traceroute ping cut glow openssl trash pbcopy pbpaste
+
+[C]  3041ms in=10637 cacheRead=0 find all files larger than 100MB in my home directory
+      ✓ find ~ -type f -size +100M
+      ✓ find ~ -type f -size +100M -exec ls -lh {} \;
+      ✓ du -ah ~ | awk '$1 ~ /G$/ || ($1 ~ /M$/ && $1+0 > 100)'
+[A]  2541ms in=325 cacheRead=0 find all files larger than 100MB in my home directory
+      ✓ find ~ -type f -size +100M
+      ✓ find ~ -type f -size +100M -exec ls -lh {} \;
+      ✓ du -ah ~ | awk '$1 ~ /G|[0-9]{3,}M/' | sort -rh
+[D]  2338ms in=170 cacheRead=0 find all files larger than 100MB in my home directory
+      ✓ find ~ -type f -size +100M
+      ✓ find ~ -type f -size +100M -exec ls -lh {} \;
+      ✓ du -ah ~ | awk '$1 ~ /G$/ || ($1 ~ /M$/ && $1+0 > 100)'
+[B]  2338ms in=548 cacheRead=0 find all files larger than 100MB in my home directory
+      ✓ find ~ -type f -size +100M
+      ✓ gdu -x ~
+      ✓ find ~ -type f -size +100M -exec ls -lh {} \;
+[C]  2232ms in=10637 cacheRead=0 show disk usage of each folder here sorted by size
+      ✓ du -sh * | sort -rh
+      ✓ du -sh .[!.]* * 2>/dev/null | sort -rh
+      ✓ gdu -sh * | sort -rh
+[B]  2380ms in=548 cacheRead=0 show disk usage of each folder here sorted by size
+      ✓ gdu .
+      ✓ du -sh */ | sort -hr
+      ✓ du -sh -- * | sort -rh
+[A]  3636ms in=325 cacheRead=0 show disk usage of each folder here sorted by size
+      ✓ du -sh * | sort -rh
+      ✓ du -sh */ | sort -rh
+      ✓ du -d 1 -h . | sort -rh
+[D]  3859ms in=170 cacheRead=10467 show disk usage of each folder here sorted by size
+      ✓ du -sh * | sort -rh
+      ✓ du -sh -- */ | sort -rh
+      ✓ gdu -sh * | sort -rh
+[A]  1807ms in=320 cacheRead=0 pretty print the json file data.json
+      ✓ cat data.json | python3 -m json.tool
+      ✓ jq '.' data.json
+      ✓ python3 -m json.tool data.json
+[C]  1623ms in=10632 cacheRead=0 pretty print the json file data.json
+      ✓ jq . data.json
+      ✓ python3 -m json.tool data.json
+[B]  1694ms in=543 cacheRead=0 pretty print the json file data.json
+      ✓ jq . data.json
+      ✓ bat data.json
+      ✓ python3 -m json.tool data.json
+[D]  1667ms in=165 cacheRead=10467 pretty print the json file data.json
+      ✓ jq . data.json
+      ✓ python3 -m json.tool data.json
+      ✓ cat data.json | json_pp
+[D]  2745ms in=166 cacheRead=10467 search for TODO in all typescript files
+      ✓ rg -n 'TODO' -g '*.ts' -g '*.tsx'
+      ✓ grep -rn 'TODO' --include='*.ts' --include='*.tsx' .
+      ✓ ag 'TODO' --ts
+[B]  2055ms in=544 cacheRead=0 search for TODO in all typescript files
+      ✓ rg --type ts 'TODO'
+      ✓ rg -g '*.ts' -g '*.tsx' 'TODO'
+      ✓ ag --ts 'TODO'
+[A]  2330ms in=321 cacheRead=0 search for TODO in all typescript files
+      ✓ grep -rn "TODO" --include=\*.ts .
+      ✓ rg "TODO" -t ts
+      ✓ grep -rn "TODO" --include=\*.tsx --include=\*.ts .
+[C]  3039ms in=10633 cacheRead=0 search for TODO in all typescript files
+      ✓ rg "TODO" -t ts
+      ✓ rg "TODO" -g "*.ts" -g "*.tsx"
+      ✓ grep -rn "TODO" --include="*.ts" .
+[A]  2173ms in=319 cacheRead=0 show what process is using port 3000
+      ✓ lsof -i :3000
+      ✓ lsof -nP -i :3000 | grep LISTEN
+      ✓ sudo lsof -i :3000
+[B]  2403ms in=542 cacheRead=0 show what process is using port 3000
+      ✓ lsof -i :3000
+      ✓ lsof -nP -iTCP:3000 -sTCP:LISTEN
+      ✓ nmap -p 3000 localhost
+[C]  2301ms in=10631 cacheRead=0 show what process is using port 3000
+      ✓ lsof -nP -iTCP:3000 -sTCP:LISTEN
+      ✓ lsof -i :3000
+      ✓ netstat -anv | grep 3000
+[D]  2429ms in=164 cacheRead=10467 show what process is using port 3000
+      ✓ lsof -nP -iTCP:3000 -sTCP:LISTEN
+      ✓ lsof -i :3000
+      ✓ netstat -anv | grep 3000
+[A]  2059ms in=322 cacheRead=0 monitor cpu and memory usage live
+      ✓ top -o cpu
+      ⚑ htop   (missing: htop)
+      ✓ top -o mem
+[B]  2048ms in=545 cacheRead=0 monitor cpu and memory usage live
+      ✓ top
+      ✓ top -o cpu
+      ✓ top -o mem
+[D]  1818ms in=167 cacheRead=10467 monitor cpu and memory usage live
+      ✓ top
+      ⚑ htop   (missing: htop)
+      ✓ vm_stat 1
+[C]  3329ms in=10634 cacheRead=0 monitor cpu and memory usage live
+      ✓ top
+      ✓ top -o cpu
+      ✓ watch -n 1 vm_stat
+[C] 10994ms in=10630 cacheRead=0 list files with git status and icons
+      ✓ git status --short --branch
+      ✓ ls -la
+      ⚑ eza -la --icons --git   (missing: eza)
+[D]  5450ms in=- cacheRead=- list files with git status and icons
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2CgtL4T9N8Y9dVrYdj"}
+[B]   313ms in=- cacheRead=- list files with git status and icons
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2D69osbJbeSeXY91xH"}
+[A]   200ms in=- cacheRead=- list files with git status and icons
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2D7Ugm3fNF1Aeywh4M"}
+[D]   197ms in=- cacheRead=- send a POST request with a json body to localhost:8080/api
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2D8LmhnSgu7Q45vJGz"}
+[C]   208ms in=- cacheRead=- send a POST request with a json body to localhost:8080/api
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2D9D7isQaQTmMsVbzQ"}
+[A]   210ms in=- cacheRead=- send a POST request with a json body to localhost:8080/api
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DA4i4Q5tjyuZNMpVa"}
+[B]   196ms in=- cacheRead=- send a POST request with a json body to localhost:8080/api
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DAxnM8fMN5a2MAa6k"}
+[B]   157ms in=- cacheRead=- convert video.mov to mp4
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DBpP56wc5CqzLZm8W"}
+[D]   162ms in=- cacheRead=- convert video.mov to mp4
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DCWJei5VBiNZQvcYv"}
+[C]   197ms in=- cacheRead=- convert video.mov to mp4
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DDAkGV5DEXW7oFMZq"}
+[A]   215ms in=- cacheRead=- convert video.mov to mp4
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DE2aYBehS6xP7xcjb"}
+[C]   241ms in=- cacheRead=- resize all png images in this folder to 50%
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DExtLG2MDt44HYUoR"}
+[A]   196ms in=- cacheRead=- resize all png images in this folder to 50%
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DFxvUoiyV1CGhRpCF"}
+[D]   204ms in=- cacheRead=- resize all png images in this folder to 50%
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DGq1QYpsXpvyjmkAZ"}
+[B]   148ms in=- cacheRead=- resize all png images in this folder to 50%
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DHfc3nE9ExevSrvtu"}
+[A]   199ms in=- cacheRead=- show a tree of this directory ignoring node_modules
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DJLJD95bChZihH4Ey"}
+[D]   216ms in=- cacheRead=- show a tree of this directory ignoring node_modules
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DKCshRUtueKtwX57C"}
+[B]   157ms in=- cacheRead=- show a tree of this directory ignoring node_modules
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DL6xNC55dbiGxqXAm"}
+[C]   196ms in=- cacheRead=- show a tree of this directory ignoring node_modules
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DLktXXQDLpW2q2mhF"}
+[C]   329ms in=- cacheRead=- find and delete all .DS_Store files
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DMczWxxrkg5DFMRq4"}
+[A]   297ms in=- cacheRead=- find and delete all .DS_Store files
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DPMfVzFJAranvpfAi"}
+[B]   206ms in=- cacheRead=- find and delete all .DS_Store files
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DQMw7hCLxZvgBEEbN"}
+[D]   204ms in=- cacheRead=- find and delete all .DS_Store files
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DRBJXMcGU9ThncgWq"}
+[A]   310ms in=- cacheRead=- watch src for changes and rerun the tests
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DS2AC1EvgjmYTDusk"}
+[D]   234ms in=- cacheRead=- watch src for changes and rerun the tests
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DTUTaHxzJiteSeAC3"}
+[B]   194ms in=- cacheRead=- watch src for changes and rerun the tests
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DUMoAy2zanXX9RFri"}
+[C]   203ms in=- cacheRead=- watch src for changes and rerun the tests
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DVD8xXozpadXnkk5Y"}
+[C]   154ms in=- cacheRead=- benchmark how long two commands take
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DW5j6i2sPYdmPzTij"}
+[D]   196ms in=- cacheRead=- benchmark how long two commands take
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DWjREpKC2xpG2DcL7"}
+[B]   204ms in=- cacheRead=- benchmark how long two commands take
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DXbGTtvwKAr75divX"}
+[A]   201ms in=- cacheRead=- benchmark how long two commands take
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DYSN2Rn7a9dvTEb5N"}
+[B]   213ms in=- cacheRead=- view data.csv as a table in the terminal
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DZLBnqiPA5XRonc77"}
+[D]   209ms in=- cacheRead=- view data.csv as a table in the terminal
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2DaEkxtYmeBKJmXExg"}
+[C]   209ms in=- cacheRead=- view data.csv as a table in the terminal
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2Db8Lqr4phLxTeKsUP"}
+[A]   213ms in=- cacheRead=- view data.csv as a table in the terminal
+      ERROR 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cfp2Dc1fzRfLR84MJxxpa"}
+node:fs:2413
+    return binding.writeFileUtf8(
+                   ^
+
+Error: ENOENT: no such file or directory, open '/Users/samuel/dev/tui-llm/.planning/spikes/003-prompt-steering/out/results/run.raw.json'
+    at writeFileSync (node:fs:2413:20)
+    at main (file:///Users/samuel/dev/tui-llm/.planning/spikes/003-prompt-steering/out/compare.js:698:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/Users/samuel/dev/tui-llm/.planning/spikes/003-prompt-steering/out/results/run.raw.json'
+}
+
+Node.js v24.14.1

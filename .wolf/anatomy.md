@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T03:00:29.307Z
-> Files: 350 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T04:49:26.588Z
+> Files: 355 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -124,7 +124,7 @@
 - `.gitignore` — Git ignore rules (~54 tok)
 - `.releaserc.json` (~343 tok)
 - `biome.json` (~213 tok)
-- `CLAUDE.md` — OpenWolf (~1634 tok)
+- `CLAUDE.md` — OpenWolf (~1668 tok)
 - `CONTRIBUTING.md` — Contributing (~1150 tok)
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
@@ -141,6 +141,16 @@
 ## .claude/rules/
 
 - `openwolf.md` (~313 tok)
+
+## .claude/skills/spike-findings-tui-llm/
+
+- `SKILL.md` — Project: tui-llm (QueQue) (~585 tok)
+
+## .claude/skills/spike-findings-tui-llm/references/
+
+- `candidate-command-check.md` — Candidate Command Check (flag suggestions that use missing tools) (~1016 tok)
+- `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
+- `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
 ## .claude/worktrees/agent-a19c27e461de31bc0/
 
@@ -618,6 +628,7 @@
 ## .planning/spikes/
 
 - `MANIFEST.md` — Spike Manifest (~258 tok)
+- `WRAP-UP-SUMMARY.md` — Spike Wrap-Up Summary (~438 tok)
 
 ## .planning/spikes/001-zsh-commands-handoff/
 
@@ -751,3 +762,16 @@
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)
+
+## .claude/skills/spike-findings-tui-llm/
+- `SKILL.md` — Spike findings blueprint index: installed-only-commands requirements + feature areas (~600 tok)
+- `references/installed-command-handoff.md` — zsh rehash + $commands handoff recipe, ~7 ms (~900 tok)
+- `references/candidate-command-check.md` — hand lexer to flag candidates using missing tools (~1100 tok)
+- `references/prompt-steering.md` — installed∩catalog prompt list vs full list (PARTIAL) (~1000 tok)
+- `sources/` — copies of spike 001–003 scripts and READMEs
+
+## .planning/spikes/
+- `MANIFEST.md` — spike index + installed-only-commands requirements (~500 tok)
+- `CONVENTIONS.md` — how we spike: zsh timing, spike-local deps, tsup bundling (~400 tok)
+- `WRAP-UP-SUMMARY.md` — wrap-up summary of spikes 001–003 (~500 tok)
+
