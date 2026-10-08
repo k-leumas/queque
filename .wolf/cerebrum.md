@@ -2,7 +2,7 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-08-26
+> Last updated: 2026-10-08
 
 ## User Preferences
 
@@ -45,6 +45,12 @@
 - [2026-10-08] Spike 002 `extract.mjs:77` (`v += s[++i]` inside double quotes) appends the text `undefined` at end of input: `"rg\` lexes as `rgundefined`. Every escape read in the port needs `?? ''`.
 - [2026-10-08] `rehash` (= `hash -r`) also drops manual `hash name=path` entries (verified). `⊘` U+2298 is East Asian Width N (Unicode 16) and width 1 in Ink's string-width — not an ambiguous-width glyph.
 - [2026-10-08] Ink 7 `<Text>` accepts no layout props (it hardcodes `flexShrink: 1`). To keep a gutter or mark from shrinking in a row, wrap it in `<Box flexShrink={0}>`.
+- [2026-10-08] Per-process child cost on this machine is ~120 ms for bare Node plus ~110 ms to type-strip the lexer; per-input 1 s hard kills in the lexer fuzz have ~4x headroom (less under load).
+- [2026-10-08] Biome flags zsh `${…}` inside single-quoted JS strings with `noTemplateCurlyInString`. Suppress with a reasoned `biome-ignore`; never rewrite the shell text.
+- [2026-10-08] IPC schemas filter unknown VALUES (zod transform) and reject only unknown SHAPES. The `installed-tools` variant drops non-catalog names instead of failing ipcRequestSchema, so catalog CONTENT edits need no daemon restart.
+- [2026-10-08] Envelope SHAPE changes (new chunk kind/field) require a pong capability bump in server.ts + ipc.ts + `pingDaemonFetchCap` (bootstrap.ts), or old daemons silently drop the envelope (800 ms ack timeout + cold fallback per `??`). `installedTools` is the second flag after `fetchCandidates`; catalog CONTENT changes do not need one.
+- [2026-10-08] Every src/providers/ adapter must build its system prompt with `buildSystemPrompt(envelope)` from steering.ts (never raw `QUEQUE_SYSTEM`); tests/steering.test.ts "adapters" scans the directory and fails otherwise.
+- [2026-10-08] CandidateSelect's third `useState` is the install toggle (`stateValues[2]` / `stateSetters[2]` in tests), after selectedIndex (0) and query (1). New state goes after it.
 
 ## Do-Not-Repeat
 - [2026-10-08] In the Claude Code Bash tool, `git` is a shell function from a shell snapshot: `git ls-files --error-unmatch` and `git check-ignore` returned 0 for untracked paths. Use the real binary (`/usr/local/bin/git`, or `whence -p git`) when an exit status decides tracked/ignored.
@@ -66,6 +72,7 @@
 - [2026-08-26] Do not treat a connectable socket as a current daemon. Pre-fetch listeners ignore `fetch-candidates` and stall the client for the full IPC timeout. Require `fetch-accepted` within ~800ms and replace pongs that lack `fetchCandidates: true`. Keep unanswered ping so test dummy servers are not restarted.
 - [2026-10-07] In hand-written lexers, clamp `indexOf(...) === -1` to `s.length` before assigning the cursor; a −1 rewound the cursor and caused an infinite loop on malformed input (spike 002). Fuzz with a per-input timeout.
 - [2026-10-07] Repeated: `docs(spike-001): VALIDATED — ...` failed subject-case. GSD spike verdicts must be lowercase in commit subjects.
+- [2026-10-08] Vitest `--reporter=tap-flat` emits multi-line `toEqual` diffs unindented (malformed TAP), so gsd `tdd-red-evidence` returns `invalid_record` / "Non-TAP data". Pick a RED target whose assertion message is a single line (`toBe` on a scalar) and run it with `-t`.
 
 ## Decision Log
 
@@ -81,4 +88,4 @@
 - [2026-10-07] Installed-only commands: widget hands off rehashed `${(k)commands}` + `${(k)builtins}`; client classifies each candidate's command words with a hand lexer and flags missing tools. Prompt-injection of the list is still open (spike 003).
 - [2026-10-08] Phase 9 reviews round 1: the daemon-side `installed-tools` schema FILTERS unknown catalog names (zod transform) instead of rejecting the request, and the client checks strictly (`strictInstalledToolsChunkSchema`). Rule: IPC schemas reject unknown shapes but filter unknown values; only shape changes need a pong capability bump. The build-hash-in-pong alternative was deferred (would restart the daemon on every dev rebuild).
 - [2026-10-08] Phase 9 wave 2 (09-02/03/04) runs in parallel worktrees and the OpenWolf hooks rewrite `.wolf/anatomy.md` and `memory.md` on every write, so wave-2 plans commit no `.wolf/` file; they list entries in their SUMMARY and 09-05 (alone in wave 3) applies them.
-
+- [2026-10-08] Phase 9 steering wording (draft, spike 003 partial): system prompt gets "Notable command-line tools installed on this machine (standard system utilities are also present): …", "Prefer installed tools. A tool that is not installed is acceptable only when it is clearly better for the task.", "At least one candidate must use only installed tools or standard system utilities.", "Never include install steps …". System prompt only; no sampling params; user prompt unchanged.

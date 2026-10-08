@@ -79,6 +79,58 @@ describe('daemon fetch-candidates IPC', () => {
     expect(candidates).toEqual([{ command: 'echo hi', explanation: '' }]);
   });
 
+  it('accepts an envelope carrying an installed-tools chunk', async () => {
+    fetchMock.mockResolvedValue([{ command: 'fd -e ts', explanation: 'Find TS files' }]);
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    testServer = await startDaemonServer(socketPath);
+
+    const envelope: ContextEnvelope = {
+      ...buildEnvelope(),
+      extras: [{ kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } }],
+    };
+    const candidates = await requestDaemonFetch(socketPath, envelope);
+    expect(candidates).toEqual([{ command: 'fd -e ts', explanation: 'Find TS files' }]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const received = fetchMock.mock.calls[0]?.[0] as ContextEnvelope;
+    expect(received.extras).toEqual([
+      { kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } },
+    ]);
+  });
+
+  it('filters a catalog name the daemon does not know instead of dropping the request', async () => {
+    // Catalog drift: a newer client may send a name this daemon's catalog lacks.
+    fetchMock.mockResolvedValue([{ command: 'fd -e ts', explanation: 'Find TS files' }]);
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    testServer = await startDaemonServer(socketPath);
+
+    const envelope = {
+      ...buildEnvelope(),
+      extras: [{ kind: 'installed-tools', payload: { tools: ['fd', 'qqfuturetool'] } }],
+    } as ContextEnvelope;
+    const candidates = await requestDaemonFetch(socketPath, envelope);
+    expect(candidates).toEqual([{ command: 'fd -e ts', explanation: 'Find TS files' }]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const received = fetchMock.mock.calls[0]?.[0] as ContextEnvelope;
+    const chunk = received.extras.find((c) => c.kind === 'installed-tools');
+    expect(chunk).toBeDefined();
+    expect((chunk?.payload as { tools: string[] }).tools).toEqual(['fd']);
+  });
+
+  it('ignores a structurally malformed installed-tools chunk', async () => {
+    fetchMock.mockResolvedValue([{ command: 'echo hi', explanation: '' }]);
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    testServer = await startDaemonServer(socketPath);
+
+    const envelope = {
+      ...buildEnvelope(),
+      extras: [{ kind: 'installed-tools', payload: { tools: ['rm -rf ~'] } }],
+    } as ContextEnvelope;
+    const started = Date.now();
+    await expect(requestDaemonFetch(socketPath, envelope)).rejects.toThrow(/not accepted/);
+    expect(Date.now() - started).toBeLessThan(2000);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
   it('fails fast when the listener never acks fetch-candidates', async () => {
     testServer = await new Promise<net.Server>((resolve, reject) => {
       const server = net.createServer((socket) => {

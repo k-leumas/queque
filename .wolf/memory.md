@@ -2135,3 +2135,24 @@
 | 02:14 | Created tests/tool-awareness.test.ts | — | ~1083 |
 | 02:14 | 09-01 Task 3 characterization: missingTools/annotateCandidates semantics + dual-mark/shared-footer/flexShrink/Enter render tests, all green first run | tests/tool-awareness.test.ts, tests/candidate-select.test.tsx | 54 pass | ~5k |
 | 02:16 | Created .planning/phases/09-installed-only-command-awareness/09-01-SUMMARY.md | — | ~3804 |
+| 02:26 | Session end: 10 writes across 8 files (queque.zsh, command-words.ts, tool-awareness.ts, tool-handoff.ts, run-foreground.ts) | 7 reads | ~35390 tok |
+| 02:27 | Created src/shared/tool-catalog.ts | — | ~965 |
+| 02:28 | Created src/providers/steering.ts | — | ~258 |
+| 02:28 | Created tests/steering.test.ts | — | ~2165 |
+| 02:31 | Edited docs/EXTENSIONS.md | expanded (+12 lines) | ~559 |
+| 02:33 | Created .planning/phases/09-installed-only-command-awareness/09-03-SUMMARY.md | — | ~3946 |
+| 02:34 | Session end: 15 writes across 13 files (queque.zsh, command-words.ts, tool-awareness.ts, tool-handoff.ts, run-foreground.ts) | 10 reads | ~53174 tok |
+| 02:41 | Edited src/ui/modal-layout.ts | modified displayedCommand() | ~294 |
+| 02:43 | Created .planning/phases/09-installed-only-command-awareness/09-04-SUMMARY.md | — | ~4145 |
+| 02:45 | Session end: 17 writes across 15 files (queque.zsh, command-words.ts, tool-awareness.ts, tool-handoff.ts, run-foreground.ts) | 11 reads | ~67114 tok |
+| 02:46 | Edited src/contracts/ipc.ts | 2→4 lines | ~52 |
+| 02:46 | Edited src/daemon/server.ts | inline fix | ~27 |
+| 02:46 | Edited src/daemon/server.ts | inline fix | ~25 |
+| 02:46 | Edited src/daemon/bootstrap.ts | expanded (+7 lines) | ~203 |
+| 02:46 | Edited src/daemon/bootstrap.ts | 1→3 lines | ~42 |
+| 02:46 | Edited src/daemon/bootstrap.ts | 4→6 lines | ~129 |
+| 02:46 | Edited tests/daemon-bootstrap.test.ts | added optional chaining | ~558 |
+| 02:46 | Edited tests/daemon-bootstrap.test.ts | 1→5 lines | ~36 |
+| 02:46 | Edited tests/daemon-fetch.test.ts | added optional chaining | ~752 |
+| 02:47 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/bfcd8582-1d9e-4239-ab43-ac5eb24bc6ae/scratchpad/wolf_task1.py | — | ~3070 |
+| 02:47 | 09-05 T1: applied wave-2 .wolf entries (09-02/03/04); pong installedTools capability; pingDaemonFetchCap needs both flags; drift/malformed daemon tests | src/contracts/ipc.ts, src/daemon/server.ts, src/daemon/bootstrap.ts, tests/daemon-bootstrap.test.ts, tests/daemon-fetch.test.ts, .wolf/* | 14/14 targeted tests pass, typecheck clean | ~9000 |

@@ -8,7 +8,7 @@ import { appendDebugLog } from '../shared/debug-log.js';
  * Starts the daemon Unix-socket server.
  *
  * Handles newline-delimited JSON IPC messages. Supported requests:
- *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true}
+ *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true}
  *   {kind: 'ensure-session'}    → {kind: 'session-ready', socketPath}
  *   {kind: 'run-query'}         → {kind: 'query-accepted', requestId}
  *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'} then {kind: 'candidates'} | {kind: 'fetch-error'}
@@ -69,7 +69,7 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
 
           switch (req.kind) {
             case 'ping': {
-              writeJson({ kind: 'pong', fetchCandidates: true });
+              writeJson({ kind: 'pong', fetchCandidates: true, installedTools: true });
               void appendDebugLog('daemon', 'replied pong');
               break;
             }

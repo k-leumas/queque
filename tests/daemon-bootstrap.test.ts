@@ -108,6 +108,61 @@ describe('daemon bootstrap', () => {
     }
   });
 
+  it('replaces a live daemon whose pong lacks installedTools', async () => {
+    // Pre-Phase-9 daemon: fetch-capable, but drops envelopes carrying the
+    // installed-tools chunk because its schema cannot validate them.
+    const legacyServer = net.createServer((socket) => {
+      socket.on('data', (chunk) => {
+        const line = chunk.toString();
+        if (line.includes('"ping"')) {
+          socket.write(`${JSON.stringify({ kind: 'pong', fetchCandidates: true })}\n`);
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      legacyServer.listen(socketPath, () => resolve());
+      legacyServer.once('error', reject);
+    });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+    try {
+      await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+    } finally {
+      legacyServer.close();
+      legacyServer.unref();
+    }
+  });
+
+  it('keeps a live daemon whose pong has both capabilities', async () => {
+    testServer = net.createServer((socket) => {
+      socket.on('data', (chunk) => {
+        const line = chunk.toString();
+        if (line.includes('"ping"')) {
+          socket.write(
+            `${JSON.stringify({ kind: 'pong', fetchCandidates: true, installedTools: true })}\n`,
+          );
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      testServer?.listen(socketPath, () => resolve());
+      testServer?.once('error', reject);
+    });
+
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+    await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+    expect(spawnFn).not.toHaveBeenCalled();
+  });
+
   it('spawns the daemon when no socket file exists', async () => {
     // Make spawn create the socket so ensureDaemon poll loop can connect
     spawnFn.mockImplementation(() => {
@@ -189,6 +244,10 @@ describe('daemon server', () => {
       setTimeout(() => reject(new Error('timeout waiting for pong')), 2000);
     });
 
-    expect(JSON.parse(result)).toEqual({ kind: 'pong', fetchCandidates: true });
+    expect(JSON.parse(result)).toEqual({
+      kind: 'pong',
+      fetchCandidates: true,
+      installedTools: true,
+    });
   });
 });

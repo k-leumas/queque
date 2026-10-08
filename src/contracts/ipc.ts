@@ -34,6 +34,8 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('pong'),
     fetchCandidates: z.literal(true).optional(),
+    // Daemon accepts envelopes carrying the `installed-tools` chunk (Phase 9).
+    installedTools: z.literal(true).optional(),
   }),
   z.object({
     kind: z.literal('session-ready'),

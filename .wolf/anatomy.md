@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:16:30.290Z
-> Files: 380 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:47:33.397Z
+> Files: 386 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -541,7 +541,9 @@
 - `09-01-SUMMARY.md` — Phase 9 Plan 01: Installed-Tool Awareness Tracer Summary (~3567 tok)
 - `09-02-PLAN.md` — Wave 2: 40 spike-002 lexer cases, robustness + token-contract cases, child-process fuzz (maxBuffer, per-case timeouts); no .wolf commits (~5997 tok)
 - `09-03-PLAN.md` — Wave 2: tool catalog, lenient daemon-side / strict client-side installed-tools schemas, steering.ts buildSystemPrompt, adapters guard, 08-03/08-04 notes (~9570 tok)
+- `09-03-SUMMARY.md` — Phase 9 Plan 03: Installed-Tools Prompt Steering Summary (~3699 tok)
 - `09-04-PLAN.md` — Wave 2: installer/package map/install form (comment/heredoc block), Tab toggle, ControlsLine tabHint via element tree (~9205 tok)
+- `09-04-SUMMARY.md` — Phase 9 Plan 04: Tab Install Form Summary (~3886 tok)
 - `09-05-PLAN.md` — Wave 3: apply wave-2 .wolf entries, pong installedTools, catalog-drift test, client sends strict chunk, human check (real-shell timing, Zellij kill switch) (~8056 tok)
 - `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2940 tok)
 - `09-DISCUSS-CHECKPOINT.json` (~587 tok)
@@ -675,7 +677,7 @@
 ## docs/
 
 - `config.example.json` (~65 tok)
-- `EXTENSIONS.md` — QueQue Extension Seams (~932 tok)
+- `EXTENSIONS.md` — QueQue Extension Seams (~1397 tok)
 - `RELEASING.md` — Release Process (~1183 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
 - `SYSTEM_DESIGN.md` — System Design (~2615 tok)
@@ -720,24 +722,26 @@
 ## src/contracts/
 
 - `candidates.ts` — Zod schemas: commandCandidateSchema, candidateListSchema (~104 tok)
-- `ipc.ts` — IPC request — sent from the foreground client to the daemon over a Unix socket. (~417 tok)
+- `ipc.ts` — IPC request/response schemas; pong capability flags `fetchCandidates` and `installedTools` (Phase 9). (~450 tok)
+- `request.ts` — Intent/base-context/envelope schemas; `contextChunkSchema` incl. the lenient `installed-tools` variant (filters non-catalog names, rejects non-name strings and > 512 entries) and the client-side `strictInstalledToolsChunkSchema`. (~1500 tok)
 - `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
 
 ## src/daemon/
 
-- `bootstrap.ts` — Ensures a current daemon: ping `fetchCandidates`, replace stale pongs, spawn if needed. (~2039 tok)
+- `bootstrap.ts` — Ensures a current daemon: ping must advertise `fetchCandidates` AND `installedTools` (else replace the stale listener; no reply = keep), spawn if needed. (~2200 tok)
 - `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`. (~1100 tok)
-- `server.ts` — Starts the daemon Unix-socket server. (~1308 tok)
+- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates: true, installedTools: true}`; drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter. (~1310 tok)
 
 ## src/providers/
 
-- `claude-cli.ts` — Spawns `claude -p` print mode and parses stdout with the shared candidate contract. (~463 tok)
+- `claude-cli.ts` — Spawns `claude -p` print mode (`--system-prompt` from `buildSystemPrompt(envelope)`) and parses stdout with the shared candidate contract. (~480 tok)
 - `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`. (~900 tok)
 - `claude-exec.ts` — Options for `execFileAsync`. Built on `spawn` so `stdio` is actually applied — (~1256 tok)
-- `claude.ts` — Returns a reused Anthropic SDK client for this process. (~1979 tok)
+- `claude.ts` — Reused Anthropic SDK client; re-exports `QUEQUE_SYSTEM`; SDK `system` comes from `buildSystemPrompt(envelope)`. (~1979 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
+- `steering.ts` — `QUEQUE_SYSTEM` (moved from claude.ts), `buildSteeringText(tools)` (catalog re-filter, dedupe, sort, 4 lines D-15/16/17), `buildSystemPrompt(envelope)` (filterContextEnvelope first; byte-identical without the chunk). (~700 tok)
 
 ## src/registry/
 
@@ -752,14 +756,15 @@
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~1276 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
-- `tool-awareness.ts` — ToolInventory, DisplayCandidate, isInstalled (commands|functions+aliases), missingTools, annotateCandidates (order-preserving, never drops) (~750 tok)
+- `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), `PACKAGE_ALIASES`/`packageFor`, `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
+- `tool-catalog.ts` — Shipped 196-name allow list of notable CLI tools (spike 003 seed, frozen), `CATALOG_SET`, `installedCatalogTools(isInstalled)` (sorted in Node), shape constants `TOOL_NAME_RE` / `TOOL_NAME_MAX_LENGTH` (64) / `INSTALLED_TOOLS_MAX` (512). Zero imports. (~1000 tok)
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~2839 tok)
-- `ControlsLine.tsx` — Keyboard hints shown below the candidate list. (~248 tok)
+- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Enter inserts the displayed text; footer shows install state; passes `tabHint` to ControlsLine. (~3200 tok)
+- `ControlsLine.tsx` — Keyboard hints below the candidate list; optional `tabHint` (`install` | `undo install`) chips between accept and cancel. (~300 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
-- `modal-layout.ts` — Wraps text to fit within maxWidth, breaking on whitespace and hard-splitting long tokens. (~1056 tok)
+- `modal-layout.ts` — Wrapping/row layout; ⊘ mark, `candidateKey`, `displayedCommand`, `isInstallToggled`, state-aware `missingToolsFooterText(candidate, toggled)`, `installToggled` layout input. (~2500 tok)
 - `Modal.tsx` — Modal (~223 tok)
 - `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
@@ -770,9 +775,12 @@
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~7766 tok)
+- `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms; 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
+- `command-words.test.ts` — Spike 002 40-case table (zsh -f `${(k)builtins}` builtins), kind classification, D-06 install words, robustness (8193 chars, prototype keys, `"rg\`), frozen lexHand op/redir/comment token contract for 09-04. (~1700 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
-- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1741 tok)
-- `daemon-fetch.test.ts` — Declares buildEnvelope (~903 tok)
+- `controls-line.test.tsx` — Calls `ControlsLine(props)` directly and flattens its element tree; asserts no tab chip without a hint, the exact chip order with `tabHint: 'install'`, and the `undo install` chip. (~500 tok)
+- `daemon-bootstrap.test.ts` — ensureDaemon keep/replace/spawn cases incl. pongs lacking `fetchCandidates` or `installedTools`; server pong advertises both flags. (~2300 tok)
+- `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s). (~1600 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
 - `env-file.test.ts` — Declares root (~862 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
@@ -786,7 +794,13 @@
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
+- `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d). (~2300 tok)
 - `tool-awareness.test.ts` — Characterization tests for the shipped missing-tool semantics (09-01 Task 1). (~1083 tok)
 - `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)
+
+## tests/fixtures/
+
+- `command-words-cases.ts` — `COMMAND_WORD_CASES` / `CommandWordCase`: the 40 spike 002 cases verbatim; `stretch` is a label, not an opt-out. (~900 tok)
+- `command-words-fuzz-child.mjs` — Fuzz child that imports `src/shared/command-words.ts` via Node 24 type stripping; modes `fuzz <count> [seed]` (mulberry32), `one <input>`, `deep <n>`; exit 0 ok / 2 slow / 3 undefined leak / 64 unknown mode. (~800 tok)

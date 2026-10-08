@@ -36,11 +36,18 @@ function tryConnect(socketPath: string): Promise<boolean> {
 }
 
 /**
- * Whether the listener on `socketPath` can handle `fetch-candidates`.
+ * Whether the listener on `socketPath` can handle the current `fetch-candidates`
+ * envelope.
  *
- * - `yes`: pong includes `fetchCandidates: true`
- * - `no`: pong without that flag (pre-fetch production daemon — replace it)
- * - `unknown`: no reply (tests' dumb `net.createServer`, or a hung socket — keep)
+ * - `yes`: pong includes both `fetchCandidates: true` and `installedTools: true`
+ * - `no`: pong missing either flag (older production daemon — replace it). Such a
+ *   daemon silently drops `fetch-candidates` envelopes it cannot validate, which
+ *   costs the 800 ms ack timeout plus a cold in-process fetch on every `??`.
+ * - `unknown`: no reply, timeout or unparseable reply (tests' dumb
+ *   `net.createServer`, or a hung socket — keep)
+ *
+ * Envelope SHAPE changes (a new chunk kind or field) need a new pong flag here;
+ * catalog CONTENT changes do not, because the daemon filters unknown names.
  */
 export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | 'unknown'> {
   return new Promise((resolve) => {
@@ -86,7 +93,9 @@ export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | '
         done('unknown');
         return;
       }
-      done(response.data.fetchCandidates === true ? 'yes' : 'no');
+      const current =
+        response.data.fetchCandidates === true && response.data.installedTools === true;
+      done(current ? 'yes' : 'no');
     });
 
     client.on('error', () => {
@@ -192,10 +201,12 @@ function spawnDaemon(socketPath: string): void {
  * Ensures a qq daemon is running at `socketPath`.
  *
  * Algorithm:
- *   1. Try to connect. If it succeeds, ping. Keep listeners that ack fetch
- *      capability or do not reply (test sockets). Replace a live pong without
- *      `fetchCandidates` — those daemons swallow `fetch-candidates` and stall
- *      the client.
+ *   1. Try to connect. If it succeeds, ping. Keep listeners that advertise every
+ *      capability or do not reply (test sockets). Replace a live pong lacking
+ *      either `fetchCandidates` or `installedTools` — such a daemon silently
+ *      drops `fetch-candidates` envelopes it cannot validate and stalls the
+ *      client. Envelope SHAPE changes need a new pong flag; catalog CONTENT
+ *      changes do not (the daemon filters unknown names).
  *   2. If the socket file exists but the connect failed, unlink it (stale socket).
  *   3. Spawn `qq daemon --socket <path>` as a detached, unreferenced child.
  *   4. Poll until the new daemon starts listening, then return.
