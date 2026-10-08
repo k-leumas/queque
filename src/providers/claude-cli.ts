@@ -6,19 +6,10 @@ import {
   parseCandidates,
   QUEQUE_SYSTEM,
 } from './claude.js';
-import { execFileAsync } from './claude-exec.js';
+import { type ExecFileAsyncOptions, execFileAsync } from './claude-exec.js';
 import type { LLMAdapter } from './provider.js';
 
 const CLI_BUDGET_MS = 25_000;
-
-type ClaudeExecOptions = Parameters<typeof execFileAsync>[2] & {
-  stdio?: Array<'ignore' | 'pipe' | 'inherit'>;
-  killSignal?: NodeJS.Signals;
-  maxBuffer?: number;
-  windowsHide?: boolean;
-  shell?: boolean;
-  encoding?: BufferEncoding;
-};
 
 /**
  * Spawns `claude -p` print mode and parses stdout with the shared candidate contract.
@@ -41,7 +32,7 @@ export async function fetchClaudeCliCandidates(
     QUEQUE_SYSTEM,
     prompt,
   ];
-  const options: ClaudeExecOptions = {
+  const options: ExecFileAsyncOptions = {
     encoding: 'utf8',
     timeout: remainingBudgetMs,
     killSignal: 'SIGTERM',
