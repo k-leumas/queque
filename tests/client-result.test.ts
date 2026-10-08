@@ -5,6 +5,9 @@ import * as path from 'node:path';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { TOOL_HANDOFF_FILES } from '../src/client/tool-handoff.js';
+import type { ContextEnvelope } from '../src/contracts/request.js';
+import { CATALOG_SET } from '../src/shared/tool-catalog.js';
 
 // ---------------------------------------------------------------------------
 // Mock ensureDaemon so tests don't actually launch a daemon
@@ -745,8 +748,11 @@ describe('runForegroundClient: installed-tool awareness', () => {
          mkdir -p "$QQ_TEST_DIR/bin"
          print -r -- '#!/bin/sh' > "$QQ_TEST_DIR/bin/qqpresenttool"
          chmod +x "$QQ_TEST_DIR/bin/qqpresenttool"
+         print -r -- '#!/bin/sh' > "$QQ_TEST_DIR/bin/fd"
+         chmod +x "$QQ_TEST_DIR/bin/fd"
          path=("$QQ_TEST_DIR/bin" /usr/bin /bin)
          qqfntool() { :; }
+         nvm() { :; }
          _qq_write_tool_handoff "$QQ_TEST_DIR"`,
       ],
       { encoding: 'utf8', env: { ...process.env, QQ_TEST_DIR: dir }, timeout: 5000 },
@@ -883,6 +889,56 @@ describe('runForegroundClient: installed-tool awareness', () => {
         expect(tool).not.toContain('undefined');
       }
     }
+  });
+
+  /** The envelope the adapter actually received (in-process fallback: no daemon socket). */
+  function receivedEnvelope(): ContextEnvelope {
+    expect(fetchCandidatesMock).toHaveBeenCalledTimes(1);
+    return fetchCandidatesMock.mock.calls[0][0] as ContextEnvelope;
+  }
+
+  it('sends only installed catalog tools in the envelope', async () => {
+    writeRealHandoff(tmpDir);
+    fetchCandidatesMock.mockResolvedValue([{ command: 'fd -e ts', explanation: 'find' }]);
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const envelope = receivedEnvelope();
+    const chunks = envelope.extras.filter((chunk) => chunk.kind === 'installed-tools');
+    expect(chunks).toHaveLength(1);
+    const tools = (chunks[0].payload as { tools: string[] }).tools;
+    expect(tools).toContain('fd');
+    // D-01 amended: a function-only name counts as installed.
+    expect(tools).toContain('nvm');
+    expect(tools).not.toContain('qqpresenttool');
+    expect(tools).not.toContain('qqfntool');
+    for (const tool of tools) {
+      expect(CATALOG_SET.has(tool)).toBe(true);
+    }
+    expect(tools).toEqual([...tools].sort());
+
+    const { buildSystemPrompt } = await import('../src/providers/steering.js');
+    const system = buildSystemPrompt(envelope);
+    expect(system).toContain('fd');
+    expect(system).toContain('nvm');
+    expect(system).toContain('standard system utilities are also present');
+    expect(system).not.toContain('qqpresenttool');
+  });
+
+  it('sends no installed-tools chunk without the handoff', async () => {
+    for (const file of Object.values(TOOL_HANDOFF_FILES)) {
+      expect(fs.existsSync(path.join(tmpDir, file))).toBe(false);
+    }
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: 'status' }]);
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const envelope = receivedEnvelope();
+    expect(envelope.extras.some((chunk) => chunk.kind === 'installed-tools')).toBe(false);
+    const { buildSystemPrompt, QUEQUE_SYSTEM } = await import('../src/providers/steering.js');
+    expect(buildSystemPrompt(envelope)).toBe(QUEQUE_SYSTEM);
   });
 });
 

@@ -2156,3 +2156,9 @@
 | 02:46 | Edited tests/daemon-fetch.test.ts | added optional chaining | ~752 |
 | 02:47 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/bfcd8582-1d9e-4239-ab43-ac5eb24bc6ae/scratchpad/wolf_task1.py | — | ~3070 |
 | 02:47 | 09-05 T1: applied wave-2 .wolf entries (09-02/03/04); pong installedTools capability; pingDaemonFetchCap needs both flags; drift/malformed daemon tests | src/contracts/ipc.ts, src/daemon/server.ts, src/daemon/bootstrap.ts, tests/daemon-bootstrap.test.ts, tests/daemon-fetch.test.ts, .wolf/* | 14/14 targeted tests pass, typecheck clean | ~9000 |
+| 02:48 | Edited src/client/run-foreground.ts | 2→6 lines | ~54 |
+| 02:48 | Edited src/client/run-foreground.ts | added 1 import(s) | ~48 |
+| 02:48 | Edited src/client/run-foreground.ts | added 2 condition(s) | ~372 |
+| 02:48 | Edited src/client/run-foreground.ts | inline fix | ~28 |
+| 02:49 | Edited tests/client-result.test.ts | added 3 import(s) | ~78 |
+| 02:50 | 09-05 T2: client appends strict-validated installed-tools chunk (catalog ∩ installed) before fetchCandidatesForUi; envelope + buildSystemPrompt tests | src/client/run-foreground.ts, tests/client-result.test.ts | 483/483 tests, typecheck clean | ~6000 |

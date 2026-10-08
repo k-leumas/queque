@@ -3257,6 +3257,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-08T08:47:44.000Z"
+    },
+    {
+      "id": "bug-203",
+      "timestamp": "2026-10-08T08:48:34.787Z",
+      "error_message": "Type error",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-08T08:48:34.787Z"
     }
   ]
 }

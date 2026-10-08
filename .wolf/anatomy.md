@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:47:33.397Z
-> Files: 386 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T08:49:17.158Z
+> Files: 391 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -711,7 +711,7 @@
 ## src/client/
 
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~4048 tok)
+- `run-foreground.ts` — Foreground client: request parse, tool handoff read, `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk appended before fetch; logs counts only), Ink modal, ⊘ annotation, buildShellBuffers. (~4400 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Default max floating pane height when QQ_PANE_HEIGHT is unset or invalid. (~694 tok)
 
@@ -774,7 +774,7 @@
 - `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)
-- `client-result.test.ts` — --------------------------------------------------------------------------- (~7766 tok)
+- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM). (~8300 tok)
 - `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms; 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
 - `command-words.test.ts` — Spike 002 40-case table (zsh -f `${(k)builtins}` builtins), kind classification, D-06 install words, robustness (8193 chars, prototype keys, `"rg\`), frozen lexHand op/redir/comment token contract for 09-04. (~1700 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)

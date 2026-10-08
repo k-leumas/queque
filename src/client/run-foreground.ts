@@ -4,14 +4,19 @@ import * as tty from 'node:tty';
 import { render } from 'ink';
 import React from 'react';
 import { gatherContext } from '../context/pipeline.js';
-import type { NormalizedRequest } from '../contracts/request.js';
+import {
+  type ContextEnvelope,
+  type NormalizedRequest,
+  strictInstalledToolsChunkSchema,
+} from '../contracts/request.js';
 import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { fetchCandidatesForUi } from '../daemon/fetch-client.js';
 import { classifyIntent } from '../intent/router.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
-import { annotateCandidates } from '../shared/tool-awareness.js';
+import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
+import { installedCatalogTools } from '../shared/tool-catalog.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { writeShellResult } from './result-writer.js';
 import { readToolHandoff } from './tool-handoff.js';
@@ -40,6 +45,39 @@ export function buildShellBuffers(
     };
   }
   return { lbuffer: command, rbuffer: comment };
+}
+
+/**
+ * Appends the `installed-tools` steering chunk (Phase 9 D-04) to the envelope.
+ *
+ * Only `catalog ∩ installed` is sent, never the full inventory. The chunk is
+ * validated with the strict client-side schema first; a chunk that fails is
+ * dropped and logged by issue count only — never tool names, the payload or
+ * zod's issue messages, which can echo values. No inventory (old widget,
+ * QQ_TOOL_AWARENESS=0) leaves the envelope untouched, so prompts stay
+ * byte-identical to pre-phase behaviour.
+ */
+function withInstalledToolsChunk(
+  envelope: ContextEnvelope,
+  inventory: ToolInventory | null,
+): ContextEnvelope {
+  if (inventory === null) {
+    return envelope;
+  }
+  const parsed = strictInstalledToolsChunkSchema.safeParse({
+    kind: 'installed-tools',
+    payload: { tools: installedCatalogTools((name) => isInstalled(inventory, name)) },
+  });
+  if (!parsed.success) {
+    void appendDebugLog('client', 'installed-tools chunk rejected', {
+      issues: parsed.error.issues.length,
+    });
+    return envelope;
+  }
+  void appendDebugLog('client', 'installed-tools chunk', {
+    steered: parsed.data.payload.tools.length,
+  });
+  return { ...envelope, extras: [...envelope.extras, parsed.data] };
 }
 
 /** Prefixes FIFO error copy once so adapter `QueQue:` messages are not doubled. */
@@ -148,7 +186,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           intent: decision.intent,
           confidence: decision.confidence,
         };
-        const envelope = await gatherContext(normalized);
+        const envelope = withInstalledToolsChunk(await gatherContext(normalized), toolInventory);
         void appendDebugLog('client', 'context gathered', {
           extraCount: envelope.extras.length,
         });
