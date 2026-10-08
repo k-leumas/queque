@@ -1,6 +1,9 @@
 import { z } from 'zod';
 import { shellRequestSchema } from './shell.js';
 
+// TDD stub (09-03 RED): shape only, no name validation, filtering or refine yet.
+const installedToolsPayloadStub = z.object({ tools: z.array(z.string()) });
+
 /**
  * Broad intent categories classified before any context gathering.
  * Kept intentionally coarse for MVP — see RESEARCH.md for rationale.
@@ -91,9 +94,20 @@ export const contextChunkSchema = z.discriminatedUnion('kind', [
       apparentFilename: z.string().nullable(),
     }),
   }),
+  z.object({
+    kind: z.literal('installed-tools'),
+    payload: installedToolsPayloadStub,
+  }),
 ]);
 
 export type ContextChunk = z.infer<typeof contextChunkSchema>;
+
+export const strictInstalledToolsChunkSchema = z.object({
+  kind: z.literal('installed-tools'),
+  payload: installedToolsPayloadStub,
+});
+
+export type StrictInstalledToolsChunk = z.infer<typeof strictInstalledToolsChunkSchema>;
 
 /**
  * Fully assembled context passed to the provider adapter.
