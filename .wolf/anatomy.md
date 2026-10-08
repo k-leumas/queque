@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T04:49:26.588Z
-> Files: 355 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T05:41:05.929Z
+> Files: 365 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -144,7 +144,11 @@
 
 ## .claude/skills/spike-findings-tui-llm/
 
+- `references/candidate-command-check.md` — hand lexer to flag candidates using missing tools (~1100 tok)
+- `references/installed-command-handoff.md` — zsh rehash + $commands handoff recipe, ~7 ms (~900 tok)
+- `references/prompt-steering.md` — installed∩catalog prompt list vs full list (PARTIAL) (~1000 tok)
 - `SKILL.md` — Project: tui-llm (QueQue) (~585 tok)
+- `SKILL.md` — Spike findings blueprint index: installed-only-commands requirements + feature areas (~600 tok)
 
 ## .claude/skills/spike-findings-tui-llm/references/
 
@@ -531,6 +535,12 @@
 - `COVERAGE.md` — API coverage matrix (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) for the seal-time gate (~1900 tok)
 - `COVERAGE.md` — API Coverage — Phase 08 (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) (~1524 tok)
 
+## .planning/phases/09-installed-only-command-awareness/
+
+- `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2732 tok)
+- `09-DISCUSS-CHECKPOINT.json` (~587 tok)
+- `09-DISCUSSION-LOG.md` — Phase 9: Installed-Only Command Awareness - Discussion Log (~1131 tok)
+
 ## .planning/quick/20260522-selection-summary-and-history/
 
 - `PLAN.md` — Quick Task: Selection Summary and History (~824 tok)
@@ -627,8 +637,11 @@
 
 ## .planning/spikes/
 
+- `CONVENTIONS.md` — how we spike: zsh timing, spike-local deps, tsup bundling (~400 tok)
 - `MANIFEST.md` — Spike Manifest (~258 tok)
+- `MANIFEST.md` — spike index + installed-only-commands requirements (~500 tok)
 - `WRAP-UP-SUMMARY.md` — Spike Wrap-Up Summary (~438 tok)
+- `WRAP-UP-SUMMARY.md` — wrap-up summary of spikes 001–003 (~500 tok)
 
 ## .planning/spikes/001-zsh-commands-handoff/
 
@@ -762,16 +775,3 @@
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)
-
-## .claude/skills/spike-findings-tui-llm/
-- `SKILL.md` — Spike findings blueprint index: installed-only-commands requirements + feature areas (~600 tok)
-- `references/installed-command-handoff.md` — zsh rehash + $commands handoff recipe, ~7 ms (~900 tok)
-- `references/candidate-command-check.md` — hand lexer to flag candidates using missing tools (~1100 tok)
-- `references/prompt-steering.md` — installed∩catalog prompt list vs full list (PARTIAL) (~1000 tok)
-- `sources/` — copies of spike 001–003 scripts and READMEs
-
-## .planning/spikes/
-- `MANIFEST.md` — spike index + installed-only-commands requirements (~500 tok)
-- `CONVENTIONS.md` — how we spike: zsh timing, spike-local deps, tsup bundling (~400 tok)
-- `WRAP-UP-SUMMARY.md` — wrap-up summary of spikes 001–003 (~500 tok)
-

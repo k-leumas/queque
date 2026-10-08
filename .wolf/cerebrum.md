@@ -10,6 +10,8 @@
 - **?? latency is the product constraint:** Prefer the smallest change that cuts time-to-candidates. Reject LaunchAgent/login-daemon work — uninstall/plist/Homebrew path is too much surface for a ~2s cold `ensureDaemon` that does not warm Anthropic or skip Node+Ink boot. SDK-first stays; real next win is a warm HTTP client in a long-lived process.
 - **Phase 7 scope — empty-lbuffer only:** User deprioritized event logging, SQLite pattern cache, and precmd proactive suggestions as nice-to-have with uncertain value. Phase 7 should focus on empty-lbuffer ambient `??` (full TUI, Claude with ambient context). Signal priority: failed last command → dirty git → new cwd → nothing obvious.
 - [2026-10-07] Installed-tool awareness: treat zsh `$commands` as the source of truth (no Node PATH scan / daemon index). Suggestions using missing tools are shown flagged "not installed", not dropped.
+- [2026-10-07] Don't design handling for edge cases the prompt already prevents (e.g. use-before-install, wrong-OS installer). The user calls these 'malformed command sets'; judge them with the normal rules.
+- [2026-10-07] Install commands are never part of model candidates; they appear only via Tab on a flagged candidate. Keep the model's candidate order (no re-sorting of flagged items).
 
 ## Key Learnings
 
