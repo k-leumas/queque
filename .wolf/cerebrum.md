@@ -39,6 +39,8 @@
 - [2026-10-08] `nvm` (and conda/sdk/zoxide `z`) are zsh functions, not `$commands` entries — D-01 handoff flags them "not installed". `${(k)functions:#_*} ${(k)aliases}` costs ~1.6 ms if ever handed off.
 - [2026-10-08] zsh `$commands` handoff measured 10–12 ms on this Mac (spike said 7 ms); refill dominates. Use a <25 ms regression guard in tests, not a hard 10 ms assert.
 - [2026-10-08] Node 24 native type stripping lets a `.mjs` test child import a zero-import, erasable-syntax `.ts` source file directly (used for the lexer fuzz child with spawnSync timeout).
+- [2026-10-08] Spike 002 `extract.mjs` looks up `WRAPPERS[w]` on a plain object, so command words like `constructor`/`toString` resolve to Object.prototype members, get treated as wrappers, and then throw on `.has`. The src/ port must use `Map`/`Set` membership (`.has`) for every word-keyed table.
+- [2026-10-08] CandidateSelect tests mock `useState` by call order and store the initial argument verbatim (lazy initializers are never called) — new state must be appended after `query` and given an eager initial value.
 
 ## Do-Not-Repeat
 - [2026-10-07] `packageManager` must pin a pnpm that ships a darwin-x64 binary (11.8.0 did not; pnpm then refused every command incl. lefthook hooks). Now pinned to 12.6.0 to match the global install. If pnpm errors with ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY, repin rather than using `pnpm_config_pm_on_fail=ignore`.
@@ -70,5 +72,6 @@
 - [2026-08-26] 08-02 spawn privacy: keep prompt as last argv (`stdio: ['ignore','pipe','pipe']`). RESEARCH does not prove stdin write+close is safe with `claude -p` (print mode reads stdin; open pipe hangs Ink). Process-list (`ps`) disclosure of the filtered prompt is an accepted risk (T-08-02-07) until a later verified stdin contract.
 - [2026-08-26] Flip D-08: SDK-first when `usableSecret()` finds `ANTHROPIC_API_KEY` in env or `.env.local`; `claude -p` only when no usable key (`/login`). Restores ~1–2s latency for API-key users. `/login`-only stays on CLI spawn.
 - [2026-08-26] Warmup option (b) LaunchAgent reverted. Speed path is `fetch-candidates` in the existing daemon plus a cached Anthropic client. Shell `qq daemon --ensure` prewarm is enough to have that process up. Do not add login plists for this.
+- [2026-10-08] Phase 9 plan shape: tracer = flag path (zsh handoff → reader → lexer → ⊘ flag); the `installed-tools` envelope chunk is only sent in 09-05 together with the pong `installedTools` capability bump, so no client ever sends a chunk an old daemon would silently drop. Flags/install plans are a UI-local `DisplayCandidate`, never the IPC candidate contract.
 - [2026-10-07] Installed-only commands: widget hands off rehashed `${(k)commands}` + `${(k)builtins}`; client classifies each candidate's command words with a hand lexer and flags missing tools. Prompt-injection of the list is still open (spike 003).
 

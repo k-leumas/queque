@@ -38,18 +38,18 @@ created: "2026-10-08"
 
 ## Per-Task Verification Map
 
-Task IDs are filled in by the planner/executor; rows are keyed by success criterion until then.
+Task IDs filled in by the planner (2026-10-08). Rows stay keyed by success criterion; the end-to-end tracer is 09-01-T1 (`pnpm exec vitest run tests/client-result.test.ts tests/candidate-select.test.tsx`), and the manual SC-1/SC-2 checks run in the 09-05-T3 human checkpoint.
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| TBD | TBD | TBD | SC-1 | — | N/A | zsh smoke | `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ file / ❌ cases | ⬜ pending |
-| TBD | TBD | TBD | SC-2 | — | N/A | zsh timing (regression guard, median of 5 < 25 ms, median printed — D-19) | `pnpm exec vitest run tests/zsh-widget.test.ts -t "handoff timing"` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | SC-3 | — | Install form only accepts safe package words | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ❌ W0 / ✅ | ⬜ pending |
-| TBD | TBD | TBD | SC-4 | — | N/A | unit table (40 spike cases) | `pnpm exec vitest run tests/command-words.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | SC-5 | — | Malformed model output cannot hang/crash the client | child-process fuzz | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | ❌ W0 | ⬜ pending |
-| TBD | TBD | TBD | SC-6 | — | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ❌ W0 / ✅ | ⬜ pending |
-| TBD | TBD | TBD | Compat | — | N/A | unit (stale daemon replaced) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts` | ✅ / ❌ cases | ⬜ pending |
-| TBD | TBD | TBD | Fallback | — | N/A | unit (missing handoff → no chunk, no flags, no error) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| 09-01-T2 (+T1 e2e) | 09-01 | 1 | SC-1 | T-09-03 | N/A | zsh smoke | `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ file / ❌ cases | ⬜ pending |
+| 09-01-T2 | 09-01 | 1 | SC-2 | — | N/A | zsh timing (regression guard, median of 5 < 25 ms, median printed — D-19) | `pnpm exec vitest run tests/zsh-widget.test.ts -t "handoff timing"` | ❌ W0 | ⬜ pending |
+| 09-01-T1, 09-01-T3, 09-04-T1, 09-04-T2 | 09-01, 09-04 | 1, 2 | SC-3 | T-09-10, T-09-11 | Install form only accepts safe package words | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| 09-02-T1 (+09-01-T3) | 09-02 | 2 | SC-4 | — | N/A | unit table (40 spike cases) | `pnpm exec vitest run tests/command-words.test.ts` | ❌ W0 | ⬜ pending |
+| 09-02-T2 | 09-02 | 2 | SC-5 | T-09-01, T-09-05 | Malformed model output cannot hang/crash the client | child-process fuzz | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | ❌ W0 | ⬜ pending |
+| 09-03-T1, 09-03-T2, 09-05-T2 | 09-03, 09-05 | 2, 3 | SC-6 | T-09-07, T-09-08, T-09-15 | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ❌ W0 / ✅ | ⬜ pending |
+| 09-05-T1 | 09-05 | 3 | Compat | T-09-14 | N/A | unit (stale daemon replaced) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts` | ✅ / ❌ cases | ⬜ pending |
+| 09-01-T1, 09-01-T2 | 09-01 | 1 | Fallback | T-09-02 | N/A | unit (missing handoff → no chunk, no flags, no error) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` | ❌ W0 / ✅ | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T05:41:05.929Z
-> Files: 365 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-08T06:36:41.307Z
+> Files: 374 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -415,7 +415,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~4171 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~4789 tok)
 - `STATE.md` — Project State (~2442 tok)
 
 ## .planning/notes/
@@ -537,9 +537,18 @@
 
 ## .planning/phases/09-installed-only-command-awareness/
 
-- `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2732 tok)
+- `09-01-PLAN.md` — Wave 1 tracer: zsh handoff → tool-handoff reader → command-words lexer port → ⊘ not-installed flag; handoff/timing/flag tests (~10129 tok)
+- `09-02-PLAN.md` — Wave 2: 40 spike-002 lexer cases + child-process fuzz with hard timeouts (~3976 tok)
+- `09-03-PLAN.md` — Wave 2: tool catalog, installed-tools chunk refine, steering.ts buildSystemPrompt, adapters guard (~5587 tok)
+- `09-04-PLAN.md` — Wave 2: installer/package map/install form, Tab toggle, ControlsLine tab hint (~6534 tok)
+- `09-05-PLAN.md` — Wave 3: pong installedTools capability, client sends chunk, human-verify checkpoint (~5325 tok)
+- `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2940 tok)
 - `09-DISCUSS-CHECKPOINT.json` (~587 tok)
 - `09-DISCUSSION-LOG.md` — Phase 9: Installed-Only Command Awareness - Discussion Log (~1131 tok)
+- `09-PATTERNS.md` — Phase 9: Installed-Only Command Awareness - Pattern Map (~3875 tok)
+- `09-RESEARCH.md` — Phase 9: Installed-Only Command Awareness - Research (~13208 tok)
+- `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1217 tok)
+- `COVERAGE.md` — No external API integration declaration for Phase 9 (~44 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
