@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: 09
 current_phase_name: Installed-Only Command Awareness
 status: executing
-stopped_at: Completed 09-01-PLAN.md
-last_updated: "2026-10-08T08:16:50.633Z"
+stopped_at: Completed 09-02-PLAN.md
+last_updated: "2026-10-08T08:26:01.321Z"
 last_activity: 2026-10-08
 last_activity_desc: Phase 09 execution started
-state_head: 57bb3c7fd788fda1e3efcc67c5eb793b245dc1c6
+state_head: 6e6d58cb6622bac0b48eaecc30fdc0b0bc805267
 progress:
   total_phases: 11
   completed_phases: 8
   total_plans: 32
-  completed_plans: 24
+  completed_plans: 25
 milestone_name: milestone
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-04-30)
 ## Current Position
 
 Phase: 09 (Installed-Only Command Awareness) — EXECUTING
-Plan: 2 of 5
+Plan: 3 of 5
 Next: Phase 09 wave 2 — 09-02, 09-03, 09-04 (parallel); then 09-05
 Status: Ready to execute
 Last activity: 2026-10-08 — Phase 09 execution started
@@ -66,6 +66,7 @@ Progress: [████████░░] 80% (8/10 phases with plans in progre
 | Plan | Duration | Tasks | Files |
 |------|----------|-------|-------|
 | Phase 09 P01 | 11min | 3 tasks | 13 files |
+| Phase 09 P02 | 6min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -102,6 +103,8 @@ Recent decisions affecting current work:
 - Warm client: daemon `fetch-candidates` IPC + cached Anthropic SDK; Ink stays in the foreground client; no LaunchAgent
 - [Phase 09]: 09-01: Ink Text takes no layout props; gutter and ⊘/⚠ marks use <Box flexShrink={0}> wrappers
 - [Phase 09]: 09-01: handoff files commands/builtins/functions.txt are a fixed widget-client contract; zsh -f handoff median ~6-8 ms
+- [Phase 09]: 09-02: lexer needed no fix; 40/40 spike cases, 25k fuzz, crafted and deep runs pass; lexHand op/redir/comment token contract locked by tests for 09-04
+- [Phase 09]: 09-02: fuzz child imports src/shared/command-words.ts via Node 24 type stripping; crafted inputs keep a hard 1 s kill per child (about 180 ms typical, flake risk under heavy load)
 
 ### Pending Todos
 
@@ -141,6 +144,6 @@ None yet.
 
 Last activity: 2026-08-26 — completed 08-02 Claude CLI-first fetch with SDK rescue
 
-Last session: 2026-10-08T08:16:50.344Z
-Stopped at: Completed 09-01-PLAN.md
+Last session: 2026-10-08T08:26:01.071Z
+Stopped at: Completed 09-02-PLAN.md
 Resume file: None
