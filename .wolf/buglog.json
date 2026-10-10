@@ -3478,6 +3478,24 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-10T20:00:48Z"
+    },
+    {
+      "id": "bug-215",
+      "timestamp": "2026-10-10T20:02:58Z",
+      "error_message": "09-REVIEW WR-04: after Tab, typing `brew` (visible in the install form) hides the toggled row; filter and Tab toggle disagree on what a row is",
+      "file": "src/ui/modal-layout.ts",
+      "root_cause": "filterCandidates matched candidate.command while a toggled row shows and inserts install.form",
+      "fix": "filterCandidates takes the installToggled set and matches displayedCommand(); CandidateSelect and the layout estimate pass it; tests lock in that a hidden row keeps its toggle",
+      "tags": [
+        "ui",
+        "search-filter",
+        "install-toggle",
+        "phase-9",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T20:02:58Z"
     }
   ]
 }

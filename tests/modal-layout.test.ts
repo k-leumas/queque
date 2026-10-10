@@ -43,6 +43,20 @@ describe('filterCandidates', () => {
       { command: 'fd -e ts', explanation: 'find', missingTools: ['fd'] },
     ]);
   });
+
+  it('matches the install form a toggled row shows, not only its command (WR-04)', () => {
+    const flagged: DisplayCandidate = {
+      command: 'fd -e ts',
+      explanation: 'find',
+      missingTools: ['fd'],
+      install: { form: 'brew install fd && fd -e ts', packages: ['fd'], blocked: null },
+    };
+    const list = [flagged, { command: 'git diff', explanation: 'diff' }];
+    const toggled = new Set([candidateKey(flagged)]);
+    expect(filterCandidates(list, 'brew', toggled)).toEqual([flagged]);
+    expect(filterCandidates(list, 'brew')).toEqual([]);
+    expect(filterCandidates(list, 'fd -e', toggled)).toEqual([flagged]);
+  });
 });
 
 describe('estimateCandidateSelectLines', () => {

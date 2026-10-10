@@ -1054,6 +1054,67 @@ describe('CandidateSelect — Tab install form', () => {
     expect(text).toMatch(/brew install fd && fd -e ts\n.{3}\nⓘ/);
   });
 
+  it('typing text from the shown install form keeps the toggled row visible (WR-04)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const props = {
+      candidates: [{ command: 'ls -la', explanation: 'list' }, flagged],
+      onSelect,
+      onCancel: vi.fn(),
+    };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+    for (const ch of 'brew') {
+      stateCallCount = 0;
+      CandidateSelect(props);
+      capturedInputHandler?.(ch, zeroKeys);
+    }
+    stateValues[0] = 0;
+    stateCallCount = 0;
+    const text = collectText(CandidateSelect(props)).join('\n');
+
+    expect(stateValues[1]).toBe('brew');
+    expect(text).not.toContain('ls -la');
+    expect(text).toMatch(/brew install fd && fd -e ts\n.{3}\nⓘ/);
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+    expect(onSelect).toHaveBeenCalledWith('brew install fd && fd -e ts', 'find ts files');
+  });
+
+  it('a row hidden by the query keeps its toggle and returns toggled (WR-04)', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = {
+      candidates: [flagged, { command: 'ls -la', explanation: 'list' }],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    };
+
+    CandidateSelect(props);
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('l', zeroKeys);
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('s', zeroKeys);
+    stateValues[0] = 0;
+    stateCallCount = 0;
+    expect(collectText(CandidateSelect(props)).join('\n')).not.toContain('fd -e ts');
+
+    capturedInputHandler?.('', { ...zeroKeys, backspace: true });
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('', { ...zeroKeys, backspace: true });
+    stateValues[0] = 0;
+    stateCallCount = 0;
+    const text = collectText(CandidateSelect(props)).join('\n');
+    expect(stateValues[1]).toBe('');
+    expect(text).toContain('brew install fd && fd -e ts');
+  });
+
   it('renders ControlsLine without a tab hint, toggled or not', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const { ControlsLine } = await import('../src/ui/ControlsLine.js');
