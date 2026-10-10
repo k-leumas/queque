@@ -13,7 +13,7 @@ findings:
     title: "Wrapper operands are misread: `watch 'cmd'` is flagged, and long options produce an install form for an unrelated package"
   - id: WR-01
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Package alias map uses Homebrew names but is applied to apt/dnf/pacman"
   - id: WR-02
     severity: warning
@@ -21,11 +21,11 @@ findings:
     title: "Viewport-reserve comment describes a shared footer margin that the code doesn't have, and the 17-line reserve is short when both footers show"
   - id: WR-03
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Wall-clock asserts make the tests flaky under parallel load"
   - id: WR-04
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Install-form toggle and the search filter disagree on what a row \"is\""
   - id: WR-05
     severity: warning
@@ -51,9 +51,9 @@ findings:
     severity: info
     disposition: open
     title: "Steering guard test is marker-based and easy to bypass"
-open: 12
+open: 9
 total: 12
-recorded: 2026-10-10T19:41:05.934Z
+recorded: 2026-10-10T20:11:28.230Z
 ---
 
 # Phase 09: Code Review Disposition
@@ -62,10 +62,10 @@ recorded: 2026-10-10T19:41:05.934Z
 |---------|----------|-------------|--------|
 | CR-01 | critical | open | - |
 | CR-02 | critical | open | - |
-| WR-01 | warning | open | - |
+| WR-01 | warning | fixed | 09-REVIEW-FIX.md |
 | WR-02 | warning | open | - |
-| WR-03 | warning | open | - |
-| WR-04 | warning | open | - |
+| WR-03 | warning | fixed | 09-REVIEW-FIX.md |
+| WR-04 | warning | fixed | 09-REVIEW-FIX.md |
 | WR-05 | warning | open | - |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
