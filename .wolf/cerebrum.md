@@ -53,6 +53,9 @@
 - [2026-10-08] Every src/providers/ adapter must build its system prompt with `buildSystemPrompt(envelope)` from steering.ts (never raw `QUEQUE_SYSTEM`); tests/steering.test.ts "adapters" scans the directory and fails otherwise.
 - [2026-10-08] CandidateSelect's third `useState` is the install toggle (`stateValues[2]` / `stateSetters[2]` in tests), after selectedIndex (0) and query (1). New state goes after it.
 - [2026-10-10] User's ~/.zshrc sources the dev widget then the Homebrew widget (/usr/local/share/queque/queque.zsh) last, so the brew widget wins even in dev mode. Live-UAT of new widget behavior: first check /tmp/qq-debug.log for `tool handoff unavailable ENOENT`; fix in-shell with `qq_dev`.
+- OpenWolf post-write hooks write into `$CLAUDE_PROJECT_DIR/.wolf` (main checkout) for every Edit/Write, even for files in `.claude/worktrees/…`, and auto-append buglog entries. A worktree-based fixer would record worktree paths in anatomy.md and collide with the dirty main `.wolf` files on fast-forward; the 09 review fixer worked in the main checkout instead.
+- Package aliases are per installer (`PACKAGE_ALIASES[installer]`, values may be `null`): a tool with a Homebrew alias but no verified Linux entry is blocked as `unknown-package`, never installed under its own name; apt `fd`/`bat` are blocked because Debian renames the binaries (`fdfind`/`batcat`).
+- Lexer regression cases from reviews go in `REVIEW_CASES` (tests/fixtures/command-words-cases.ts), not `COMMAND_WORD_CASES` — the spike table is a verbatim copy locked at 40 cases by a count test.
 
 ## Do-Not-Repeat
 - [2026-10-08] In the Claude Code Bash tool, `git` is a shell function from a shell snapshot: `git ls-files --error-unmatch` and `git check-ignore` returned 0 for untracked paths. Use the real binary (`/usr/local/bin/git`, or `whence -p git`) when an exit status decides tracked/ignored.
@@ -76,6 +79,7 @@
 - [2026-10-07] Repeated: `docs(spike-001): VALIDATED — ...` failed subject-case. GSD spike verdicts must be lowercase in commit subjects.
 - [2026-10-08] Vitest `--reporter=tap-flat` emits multi-line `toEqual` diffs unindented (malformed TAP), so gsd `tdd-red-evidence` returns `invalid_record` / "Non-TAP data". Pick a RED target whose assertion message is a single line (`toBe` on a scalar) and run it with `-t`.
 - [2026-10-10] Don't put per-selection status text (e.g. `not installed: fd`, `will install: fd`) in a conditional footer of CandidateSelect — it changes modal height on arrow keys (user-reported jump). The pre-existing destructive ⚠ footer is the only exception so far.
+- [2026-10-10] commitlint subject-case also rejects subjects starting with a review ID (`fix(09): CR-01 …`). Put the ID at the end: `fix(09): skip heredoc bodies … (CR-01)`.
 
 ## Decision Log
 

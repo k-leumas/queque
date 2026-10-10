@@ -89,6 +89,12 @@
       "action": "edit",
       "tokens": 188,
       "at": "2026-10-10T19:55:40.064Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-REVIEW-FIX.md",
+      "action": "create",
+      "tokens": 3136,
+      "at": "2026-10-10T20:10:30.920Z"
     }
   ],
   "edit_counts": {
@@ -96,7 +102,8 @@
     ".planning/phases/09-installed-only-command-awareness/09-REVIEW.md": 1,
     "src/shared/command-words.ts": 7,
     "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py": 1,
-    "tests/tool-awareness.test.ts": 1
+    "tests/tool-awareness.test.ts": 1,
+    ".planning/phases/09-installed-only-command-awareness/09-REVIEW-FIX.md": 1
   },
   "anatomy_hits": 1,
   "anatomy_misses": 3,
