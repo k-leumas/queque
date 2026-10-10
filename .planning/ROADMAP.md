@@ -285,3 +285,14 @@ Plans:
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [x] 09-05-PLAN.md — Apply wave-2 OpenWolf entries; send the chunk across IPC with a stale-daemon capability bump and a catalog-drift test; human check of the live `??` flow incl. real-shell timing and the Zellij kill switch (wave 3)
+
+## Backlog
+
+### Phase 999.1: Model-supplied install package names (BACKLOG)
+
+**Goal:** [Captured for future planning] Send the OS and detected package manager in the envelope; each candidate returns optional `packages: [{tool, package}]` for the tools it uses. The client still builds the install form locally (SAFE_PACKAGE_NAME_RE, no `-y`, insert-only), using the model's name for missing tools, falling back to `PACKAGE_ALIASES`, else no install form. Needs the candidate schema, both adapters' output formats (SDK and `claude -p`), and a pong capability flag so stale daemons get replaced. Replaces the hand-typed Linux alias names (phase 9 WR-01).
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
