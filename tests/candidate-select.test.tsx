@@ -1084,6 +1084,37 @@ describe('CandidateSelect — Tab install form', () => {
     expect(onSelect).toHaveBeenCalledWith('brew install fd && fd -e ts', 'find ts files');
   });
 
+  it('keeps a row matched by its install form visible after Tab undoes it', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = {
+      candidates: [{ command: 'ls -la', explanation: 'list' }, flagged],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    };
+
+    CandidateSelect(props);
+    for (const ch of 'brew') {
+      stateCallCount = 0;
+      CandidateSelect(props);
+      capturedInputHandler?.(ch, zeroKeys);
+    }
+    stateValues[0] = 0;
+    stateCallCount = 0;
+    expect(collectText(CandidateSelect(props)).join('\n')).toMatch(/fd -e ts\n.{3}\nⓘ/);
+
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    expect(collectText(CandidateSelect(props)).join('\n')).toContain('brew install fd && fd -e ts');
+
+    capturedInputHandler?.('', tab);
+    stateCallCount = 0;
+    const text = collectText(CandidateSelect(props)).join('\n');
+    expect(stateValues[1]).toBe('brew');
+    expect(text).not.toContain('brew install fd');
+    expect(text).toMatch(/fd -e ts\n.{3}\nⓘ/);
+    expect(text).not.toContain('ls -la');
+  });
+
   it('a row hidden by the query keeps its toggle and returns toggled (WR-04)', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const props = {

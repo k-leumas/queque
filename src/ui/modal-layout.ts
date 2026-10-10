@@ -103,21 +103,23 @@ function normalizeCommand(command: string): string {
 }
 
 /**
- * Filter candidates by case-insensitive substring match on the command text each row shows:
- * its install form when toggled (`installToggled`), else its command. Typing text the user can
- * see never hides the row. A hidden row keeps its toggle (keyed by `candidateKey`), so it
- * comes back as it was when the query is cleared.
+ * Filter candidates by case-insensitive substring match on a row's command or, for a flagged
+ * row, its install form. Matching both regardless of the Tab toggle means pressing Tab never
+ * shows or hides a row: typing text from the install form keeps the row visible after Tab
+ * undoes it. A hidden row keeps its toggle (keyed by `candidateKey`), so it comes back as it
+ * was when the query is cleared.
  * Returns the full list unchanged when query is empty or falsy.
  */
 export function filterCandidates<T extends DisplayCandidate>(
   candidates: readonly T[],
   query: string,
-  installToggled?: ReadonlySet<string>,
 ): readonly T[] {
   if (!query) return candidates;
   const lower = query.toLowerCase();
-  return candidates.filter((c) =>
-    displayedCommand(c, installToggled).toLowerCase().includes(lower),
+  return candidates.filter(
+    (c) =>
+      c.command.toLowerCase().includes(lower) ||
+      (c.install?.form?.toLowerCase().includes(lower) ?? false),
   );
 }
 
@@ -170,7 +172,7 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
   } else if (input.candidates === null) {
     lines += 1; // LoadingSpinner
   } else {
-    const visible = filterCandidates(input.candidates, input.query, input.installToggled);
+    const visible = filterCandidates(input.candidates, input.query);
     if (visible.length === 0) {
       lines += 1;
     } else {
@@ -198,7 +200,7 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
 
   const visible =
     input.candidates !== null && input.error !== true
-      ? filterCandidates(input.candidates, input.query, input.installToggled)
+      ? filterCandidates(input.candidates, input.query)
       : [];
   const selectedCandidate = visible[input.selectedIndex];
   const selectedCommand = selectedCandidate?.command

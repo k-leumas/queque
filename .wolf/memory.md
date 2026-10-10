@@ -2206,3 +2206,5 @@
 | 14:02 | WR-04: search filter matches the text a row shows (install form when toggled); hidden rows keep their toggle; arrival effect still filters plain commands | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 72 ui tests pass | ~4k |
 | 14:04 | WR-05: lookupOnly made live: `command -v|-V` and type/which/whence/where skip operands until the next operator; dead line-428 check removed | src/shared/command-words.ts, tests/fixtures/command-words-cases.ts | 140 tests pass | ~3k |
 | 14:10 | Created .planning/phases/09-installed-only-command-awareness/09-REVIEW-FIX.md | — | ~2927 |
+| 14:15 | Session end: 12 writes across 6 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~15682 tok |
+| 14:30 | Search matches command or install form regardless of Tab toggle (row stays visible after undo) | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 74 ui tests pass | ~4k |

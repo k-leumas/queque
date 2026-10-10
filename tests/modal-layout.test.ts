@@ -44,7 +44,7 @@ describe('filterCandidates', () => {
     ]);
   });
 
-  it('matches the install form a toggled row shows, not only its command (WR-04)', () => {
+  it('matches a row by its command or its install form, toggled or not (WR-04)', () => {
     const flagged: DisplayCandidate = {
       command: 'fd -e ts',
       explanation: 'find',
@@ -52,10 +52,9 @@ describe('filterCandidates', () => {
       install: { form: 'brew install fd && fd -e ts', packages: ['fd'], blocked: null },
     };
     const list = [flagged, { command: 'git diff', explanation: 'diff' }];
-    const toggled = new Set([candidateKey(flagged)]);
-    expect(filterCandidates(list, 'brew', toggled)).toEqual([flagged]);
-    expect(filterCandidates(list, 'brew')).toEqual([]);
-    expect(filterCandidates(list, 'fd -e', toggled)).toEqual([flagged]);
+    expect(filterCandidates(list, 'brew')).toEqual([flagged]);
+    expect(filterCandidates(list, 'fd -e')).toEqual([flagged]);
+    expect(filterCandidates(list, 'git')).toEqual([list[1]]);
   });
 });
 

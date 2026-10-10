@@ -184,7 +184,7 @@ export function CandidateSelect({
       // install form. Always consumed so Tab never reaches the search filter.
       if (key.tab) {
         if (!candidates) return;
-        const visible = filterCandidates(candidates, query, installToggled);
+        const visible = filterCandidates(candidates, query);
         const selected = visible[selectedIndex] ?? visible[0];
         if (selected?.install?.form == null) return;
         const id = candidateKey(selected);
@@ -204,7 +204,7 @@ export function CandidateSelect({
       // Enter sends '\r' as `input` (truthy), which would otherwise be consumed by
       // setQuery and prevent the accept action from firing.
       if (key.return && candidates) {
-        const visible = filterCandidates(candidates, query, installToggled);
+        const visible = filterCandidates(candidates, query);
         if (visible.length === 0) return;
         const selected = visible[selectedIndex] ?? visible[0];
         // Insert exactly what the row shows; the fallback names the original tool, not the installer.
@@ -222,13 +222,13 @@ export function CandidateSelect({
 
       // Navigation: guard against null candidates
       if (key.upArrow && candidates) {
-        const visible = filterCandidates(candidates, query, installToggled);
+        const visible = filterCandidates(candidates, query);
         setSelectedIndex((i) => (i === 0 ? visible.length - 1 : i - 1));
         return;
       }
 
       if (key.downArrow && candidates) {
-        const visible = filterCandidates(candidates, query, installToggled);
+        const visible = filterCandidates(candidates, query);
         setSelectedIndex((i) => (i + 1) % visible.length);
         return;
       }
@@ -253,7 +253,7 @@ export function CandidateSelect({
       </Box>
     );
   } else {
-    const visible = filterCandidates(candidates, query, installToggled);
+    const visible = filterCandidates(candidates, query);
     selectedCandidate = visible[selectedIndex];
     const selectedCommand = selectedCandidate?.command
       ? displayedCommand(selectedCandidate, installToggled)
