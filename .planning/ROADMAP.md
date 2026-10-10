@@ -272,7 +272,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
   5. Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout).
   6. The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter.
 
-**Plans:** 4/5 plans executed
+**Plans:** 5/5 plans executed
 
 Plans:
 **Wave 1**
@@ -284,4 +284,4 @@ Plans:
 - [x] 09-04-PLAN.md — Tab install form: platform installer, package alias map, guarded install form (no wrap for comments/heredocs), Tab toggle, controls hint (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 09-05-PLAN.md — Apply wave-2 OpenWolf entries; send the chunk across IPC with a stale-daemon capability bump and a catalog-drift test; human check of the live `??` flow incl. real-shell timing and the Zellij kill switch (wave 3)
+- [x] 09-05-PLAN.md — Apply wave-2 OpenWolf entries; send the chunk across IPC with a stale-daemon capability bump and a catalog-drift test; human check of the live `??` flow incl. real-shell timing and the Zellij kill switch (wave 3)
