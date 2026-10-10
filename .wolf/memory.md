@@ -2208,3 +2208,9 @@
 | 14:10 | Created .planning/phases/09-installed-only-command-awareness/09-REVIEW-FIX.md | — | ~2927 |
 | 14:15 | Session end: 12 writes across 6 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~15682 tok |
 | 14:30 | Search matches command or install form regardless of Tab toggle (row stays visible after undo) | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 74 ui tests pass | ~4k |
+| 14:23 | Session end: 12 writes across 6 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~15682 tok |
+| 14:23 | Session end: 12 writes across 6 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~15682 tok |
+| 14:24 | Created .planning/phases/09-installed-only-command-awareness/09-VERIFICATION.md | — | ~7978 |
+| 14:46 | Session end: 13 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~24229 tok |
+| 14:49 | Session end: 13 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~24229 tok |
+| 14:40 | apt kubectl alias → null (blocked as unknown-package) | src/shared/tool-awareness.ts, tests/tool-awareness.test.ts | 47 tests pass | ~2k |

@@ -161,7 +161,8 @@ describe('packageFor and PACKAGE_ALIASES (D-12)', () => {
   });
 
   it('uses each Linux manager its own package names (WR-01)', () => {
-    expect(packageFor('kubectl', 'apt')).toBe('kubectl');
+    // Not in Debian/Ubuntu main (needs the Kubernetes apt repo), so no package is named.
+    expect(packageFor('kubectl', 'apt')).toBeNull();
     expect(packageFor('kubectl', 'dnf')).toBe('kubernetes-client');
     expect(packageFor('kubectl', 'pacman')).toBe('kubectl');
     expect(packageFor('dig', 'apt')).toBe('bind9-dnsutils');
@@ -347,6 +348,11 @@ describe('planInstall — blocked plans (T-09-10, T-09-20)', () => {
       blocked: 'unknown-package',
     });
     expect(planInstall('fd x | rg y', ['fd', 'rg'], 'apt')).toEqual({
+      form: null,
+      packages: [],
+      blocked: 'unknown-package',
+    });
+    expect(planInstall('kubectl get pods', ['kubectl'], 'apt')).toEqual({
       form: null,
       packages: [],
       blocked: 'unknown-package',

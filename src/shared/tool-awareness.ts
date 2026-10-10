@@ -121,7 +121,8 @@ const APT_PACKAGES: ReadonlyMap<string, string | null> = new Map([
   ['vd', 'visidata'],
   ['mlr', 'miller'],
   ['csvlook', 'csvkit'],
-  ['kubectl', 'kubectl'],
+  // Not in Debian/Ubuntu main; needs the Kubernetes apt repository, so offer no install form.
+  ['kubectl', null],
   ['dig', 'bind9-dnsutils'],
   ['tldr', 'tldr'],
   ['aws', 'awscli'],
