@@ -5,6 +5,7 @@ import {
   estimateCandidateSelectLines,
   explanationText,
   filterCandidates,
+  MODAL_VIEWPORT_LINES,
   missingToolsLegend,
   wrapText,
 } from '../src/ui/modal-layout.js';
@@ -89,6 +90,26 @@ describe('estimateCandidateSelectLines', () => {
       initialQuery: 'list files',
     });
     expect(withHeader).toBe(without + 1);
+  });
+});
+
+describe('MODAL_VIEWPORT_LINES (WR-02)', () => {
+  it('fits 3 two-line candidates with the header, the ⚠ footer and the ⓘ legend', () => {
+    const lines = estimateCandidateSelectLines({
+      candidates: [
+        { command: 'rm -rf build', explanation: 'remove the build dir' },
+        { command: 'fd -e ts', explanation: 'find ts files', missingTools: ['fd'] },
+        { command: 'ls -la', explanation: 'list files' },
+      ],
+      initialQuery: 'clean up',
+      query: '',
+      selectedIndex: 0,
+      contentWidth: 75,
+      includeDevFooter: false,
+    });
+    // Both footers show and each has its own marginTop: 1+1+1+9+2+2+2.
+    expect(lines).toBe(18);
+    expect(lines).toBeLessThanOrEqual(MODAL_VIEWPORT_LINES);
   });
 });
 

@@ -115,6 +115,17 @@ export function filterCandidates<T extends CommandCandidate>(
   return candidates.filter((c) => normalizeCommand(c.command).toLowerCase().includes(lower));
 }
 
+/**
+ * Lines the inline (non-Zellij) client scrolls up before the modal renders, so prior terminal
+ * content stays visible above it. Sized for the typical tallest modal: query header (1) +
+ * filter (1) + content marginTop (1) + 3 two-line candidates with marginBottom (9) + the
+ * destructive ⚠ footer (marginTop + line = 2) + the ⓘ legend (marginTop + line = 2) +
+ * controls (marginTop + line = 2) = 18. The two footers are separate boxes with their own
+ * margins, so each adds two lines. A fixed approximation written before candidates arrive:
+ * 5-candidate lists, wrapped rows or a wrapped legend can exceed it.
+ */
+export const MODAL_VIEWPORT_LINES = 18;
+
 /** Input for estimating how many terminal rows the candidate modal occupies. */
 export interface CandidateSelectLayoutInput {
   candidates: readonly DisplayCandidate[] | null;

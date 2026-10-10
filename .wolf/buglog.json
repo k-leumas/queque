@@ -3440,6 +3440,24 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-10T19:58:10Z"
+    },
+    {
+      "id": "bug-213",
+      "timestamp": "2026-10-10T19:59:38Z",
+      "error_message": "09-REVIEW WR-02: viewport reserve comment claims the destructive and missing-tool footers share one margin; 3 two-line candidates + header + both footers = 18 rows > 17 reserved",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Comment and 17-line reserve were left over from the dropped missingToolsFooterText design; CandidateSelect renders the ⚠ footer and the ⓘ legend as separate marginTop boxes",
+      "fix": "MODAL_VIEWPORT_LINES = 18 exported from src/ui/modal-layout.ts with the actual row count documented; run-foreground imports it; test asserts the worst typical layout estimate fits",
+      "tags": [
+        "layout",
+        "viewport",
+        "stale-comment",
+        "phase-9",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T19:59:38Z"
     }
   ]
 }

@@ -2201,3 +2201,4 @@
 | 13:55 | Edited tests/tool-awareness.test.ts | added optional chaining | ~188 |
 | 13:56 | CR-02: wrapper long options (`sudo --user root`), `--opt=value`, quoted watch operands and `command -p`/`exec -a` options no longer misread as programs; watch -d takes no value | src/shared/command-words.ts, tests | 129 tests pass | ~6k |
 | 13:58 | WR-01: package aliases keyed by installer; Linux never gets Homebrew formula names (kubernetes-cli, bind, gnu-sed), apt fd/bat blocked (fdfind/batcat), new blocked reason unknown-package | src/shared/tool-awareness.ts, tests | 114 tests pass | ~6k |
+| 13:59 | WR-02: inline scroll reserve 17 -> 18 (⚠ footer and ⓘ legend each have their own margin); constant moved to modal-layout.ts with the real row count; stale shared-margin comment removed | src/ui/modal-layout.ts, src/client/run-foreground.ts, tests/modal-layout.test.ts | 50 tests pass | ~3k |

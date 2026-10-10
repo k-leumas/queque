@@ -18,6 +18,7 @@ import { socketPathForUid } from '../shared/socket-path.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
+import { MODAL_VIEWPORT_LINES } from '../ui/modal-layout.js';
 import { writeShellResult } from './result-writer.js';
 import { readToolHandoff } from './tool-handoff.js';
 import { syncZellijFloatingPaneHeight } from './zellij-pane-resize.js';
@@ -235,15 +236,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           return;
         }
 
-        // Reserve as many lines as the TUI typically needs: header + filter + up to 3
-        // candidates × 3 rows + one shared footer block (marginTop + destructive line +
-        // missing-tool line) + controls + buffer = 17. The destructive and missing-tool
-        // footers share one margin, so flags grow the reserve by one line, not four.
-        // This scrolls previous terminal content up by only 17 lines so it stays visible
-        // above the TUI, rather than filling the whole screen. It is a fixed approximation
-        // written before candidates arrive (5-candidate lists can exceed it).
+        // Reserve MODAL_VIEWPORT_LINES (see modal-layout.ts for the row count) so only that
+        // many lines of previous terminal content scroll up and the rest stays visible above
+        // the TUI, rather than filling the whole screen.
         // Skipped in Zellij: the floating pane starts with a clean screen.
-        const MODAL_VIEWPORT_LINES = 17;
         if (ttyWriteStream && !inZellij) {
           ttyWriteStream.write('\n'.repeat(MODAL_VIEWPORT_LINES));
           ttyWriteStream.write(`\x1b[${MODAL_VIEWPORT_LINES}A`);
