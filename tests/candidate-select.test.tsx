@@ -968,6 +968,7 @@ describe('CandidateSelect — Tab install form', () => {
     for (const blocked of [
       'no-package-manager',
       'unsafe-package-name',
+      'unknown-package',
       'unwrappable-command',
     ] as const) {
       resetState();

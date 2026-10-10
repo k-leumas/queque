@@ -2200,3 +2200,4 @@
 | 13:53 | CR-01: lexer skips heredoc bodies and removes `\`-newline continuations (no false ⓘ on cat <<EOF / multi-line sudo) | src/shared/command-words.ts, tests | 72 lexer tests pass | ~6k |
 | 13:55 | Edited tests/tool-awareness.test.ts | added optional chaining | ~188 |
 | 13:56 | CR-02: wrapper long options (`sudo --user root`), `--opt=value`, quoted watch operands and `command -p`/`exec -a` options no longer misread as programs; watch -d takes no value | src/shared/command-words.ts, tests | 129 tests pass | ~6k |
+| 13:58 | WR-01: package aliases keyed by installer; Linux never gets Homebrew formula names (kubernetes-cli, bind, gnu-sed), apt fd/bat blocked (fdfind/batcat), new blocked reason unknown-package | src/shared/tool-awareness.ts, tests | 114 tests pass | ~6k |

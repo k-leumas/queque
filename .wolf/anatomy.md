@@ -762,7 +762,7 @@
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~1276 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
-- `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), `PACKAGE_ALIASES`/`packageFor`, `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
+- `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), per-installer `PACKAGE_ALIASES` (brew/apt/dnf/pacman maps; null = no package installs that binary) + `packageFor(tool, installer)` (Homebrew-aliased tools with no Linux entry are null, never guessed), `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/unknown packages/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
 - `tool-catalog.ts` — Shipped 196-name allow list of notable CLI tools (spike 003 seed, frozen), `CATALOG_SET`, `installedCatalogTools(isInstalled)` (sorted in Node), shape constants `TOOL_NAME_RE` / `TOOL_NAME_MAX_LENGTH` (64) / `INSTALLED_TOOLS_MAX` (512). Zero imports. (~1000 tok)
 
 ## src/ui/

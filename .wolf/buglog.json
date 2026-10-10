@@ -3420,6 +3420,26 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-10T19:56:31Z"
+    },
+    {
+      "id": "bug-212",
+      "timestamp": "2026-10-10T19:58:10Z",
+      "error_message": "09-REVIEW WR-01: Homebrew package aliases applied to apt/dnf/pacman (kubectl -> kubernetes-cli, dig -> bind, ag -> the_silver_searcher, gsed -> gnu-sed on Linux)",
+      "file": "src/shared/tool-awareness.ts",
+      "root_cause": "PACKAGE_ALIASES was one Homebrew-named map and packageFor ignored the installer, so Linux install forms named packages that do not exist (or are different packages) there",
+      "fix": "PACKAGE_ALIASES is now a Record<InstallerId, Map<string, string|null>>; packageFor(tool, installer) returns null for a Homebrew-aliased tool with no verified entry for that manager and for apt fd/bat (binary renamed); planInstall blocks with 'unknown-package'",
+      "tags": [
+        "install-form",
+        "package-manager",
+        "apt",
+        "dnf",
+        "pacman",
+        "phase-9",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T19:58:10Z"
     }
   ]
 }

@@ -48,6 +48,7 @@ export const SAFE_PACKAGE_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._+-]*$/;
 export type InstallBlockReason =
   | 'no-package-manager'
   | 'unsafe-package-name'
+  | 'unknown-package'
   | 'unwrappable-command';
 
 /** The install form for a flagged candidate, or the reason there is none. */
@@ -60,10 +61,10 @@ export interface InstallPlan {
 }
 
 /**
- * Binary name → package name where they differ (D-12). Shipped and not user-extendable;
- * a tool not in the map installs under its own name.
+ * Homebrew formula per binary where they differ (D-12). Shipped and not user-extendable.
+ * `null`: no formula installs a binary of that name (Debian-only names), so no form is offered.
  */
-export const PACKAGE_ALIASES: ReadonlyMap<string, string> = new Map([
+const BREW_PACKAGES: ReadonlyMap<string, string | null> = new Map([
   ['rg', 'ripgrep'],
   ['delta', 'git-delta'],
   ['nvim', 'neovim'],
@@ -94,10 +95,100 @@ export const PACKAGE_ALIASES: ReadonlyMap<string, string> = new Map([
   ['rga', 'ripgrep-all'],
   ['tldr', 'tealdeer'],
   ['aws', 'awscli'],
-  // Debian binary names: they only appear where the Debian package is the right one.
+  // Debian binary names: Homebrew installs these tools as `fd` and `bat`.
+  ['fdfind', null],
+  ['batcat', null],
+]);
+
+/**
+ * Debian/Ubuntu packages. `fd` and `bat` are `null`: their packages (`fd-find`, `bat`) install
+ * the binaries as `fdfind` and `batcat`, so `&& fd …` would still fail after the install.
+ */
+const APT_PACKAGES: ReadonlyMap<string, string | null> = new Map([
+  ['rg', 'ripgrep'],
+  ['delta', 'git-delta'],
+  ['nvim', 'neovim'],
+  ['convert', 'imagemagick'],
+  ['identify', 'imagemagick'],
+  ['mogrify', 'imagemagick'],
+  ['ag', 'silversearcher-ag'],
+  ['timeout', 'coreutils'],
+  ['nproc', 'coreutils'],
+  ['sha256sum', 'coreutils'],
+  ['ffprobe', 'ffmpeg'],
+  ['http', 'httpie'],
+  ['https', 'httpie'],
+  ['vd', 'visidata'],
+  ['mlr', 'miller'],
+  ['csvlook', 'csvkit'],
+  ['kubectl', 'kubectl'],
+  ['dig', 'bind9-dnsutils'],
+  ['tldr', 'tldr'],
+  ['aws', 'awscli'],
   ['fdfind', 'fd-find'],
   ['batcat', 'bat'],
+  ['fd', null],
+  ['bat', null],
 ]);
+
+/** Fedora packages. */
+const DNF_PACKAGES: ReadonlyMap<string, string | null> = new Map([
+  ['rg', 'ripgrep'],
+  ['delta', 'git-delta'],
+  ['nvim', 'neovim'],
+  ['magick', 'ImageMagick'],
+  ['convert', 'ImageMagick'],
+  ['identify', 'ImageMagick'],
+  ['mogrify', 'ImageMagick'],
+  ['ag', 'the_silver_searcher'],
+  ['timeout', 'coreutils'],
+  ['nproc', 'coreutils'],
+  ['sha256sum', 'coreutils'],
+  ['http', 'httpie'],
+  ['https', 'httpie'],
+  ['mlr', 'miller'],
+  ['kubectl', 'kubernetes-client'],
+  ['dig', 'bind-utils'],
+  ['tldr', 'tealdeer'],
+  ['fd', 'fd-find'],
+]);
+
+/** Arch Linux packages. */
+const PACMAN_PACKAGES: ReadonlyMap<string, string | null> = new Map([
+  ['rg', 'ripgrep'],
+  ['delta', 'git-delta'],
+  ['nvim', 'neovim'],
+  ['magick', 'imagemagick'],
+  ['convert', 'imagemagick'],
+  ['identify', 'imagemagick'],
+  ['mogrify', 'imagemagick'],
+  ['ag', 'the_silver_searcher'],
+  ['timeout', 'coreutils'],
+  ['nproc', 'coreutils'],
+  ['sha256sum', 'coreutils'],
+  ['ffprobe', 'ffmpeg'],
+  ['btm', 'bottom'],
+  ['difft', 'difftastic'],
+  ['http', 'httpie'],
+  ['https', 'httpie'],
+  ['mlr', 'miller'],
+  ['kubectl', 'kubectl'],
+  ['dig', 'bind'],
+  ['rga', 'ripgrep-all'],
+  ['tldr', 'tealdeer'],
+  ['aws', 'aws-cli'],
+]);
+
+/**
+ * Binary name → package name per installer, where they differ (D-12). Shipped and not
+ * user-extendable. A `null` value means no package of this manager installs that binary name.
+ */
+export const PACKAGE_ALIASES: Readonly<Record<InstallerId, ReadonlyMap<string, string | null>>> = {
+  brew: BREW_PACKAGES,
+  apt: APT_PACKAGES,
+  dnf: DNF_PACKAGES,
+  pacman: PACMAN_PACKAGES,
+};
 
 /** List operators after which a failed install would still run the user's command (T-09-11). */
 const LIST_OPS: ReadonlySet<string> = new Set([';', '||', '&', ';;']);
@@ -123,9 +214,17 @@ export function pickInstaller(
   return null;
 }
 
-/** The package that provides `tool` (D-12). */
-export function packageFor(tool: string): string {
-  return PACKAGE_ALIASES.get(tool) ?? tool;
+/**
+ * The package of `installer` that provides `tool`, or null when there is none we can name (D-12).
+ * A tool with a Homebrew alias but no entry for a Linux manager is null rather than its own
+ * name: the binary and package names are known to differ, so the plain name could name a
+ * different real package or none. Any other tool installs under its own name.
+ */
+export function packageFor(tool: string, installer: InstallerId): string | null {
+  const aliases = PACKAGE_ALIASES[installer];
+  if (aliases.has(tool)) return aliases.get(tool) ?? null;
+  if (installer !== 'brew' && BREW_PACKAGES.has(tool)) return null;
+  return tool;
 }
 
 /**
@@ -163,7 +262,9 @@ export function planInstall(
   if (missing.some((word) => !SAFE_PACKAGE_NAME_RE.test(word))) {
     return BLOCKED_PLAN('unsafe-package-name');
   }
-  const packages = [...new Set(missing.map(packageFor))];
+  const resolved = missing.map((tool) => packageFor(tool, installer));
+  if (resolved.some((name) => name === null)) return BLOCKED_PLAN('unknown-package');
+  const packages = [...new Set(resolved.filter((name): name is string => name !== null))];
   const form = buildInstallForm(command, packages, installer);
   if (form === null) return BLOCKED_PLAN('unwrappable-command');
   return { form, packages, blocked: null };

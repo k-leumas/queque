@@ -136,29 +136,83 @@ describe('pickInstaller (D-11)', () => {
 });
 
 describe('packageFor and PACKAGE_ALIASES (D-12)', () => {
-  it('maps known binaries to their package', () => {
-    expect(packageFor('rg')).toBe('ripgrep');
-    expect(packageFor('magick')).toBe('imagemagick');
-    expect(packageFor('convert')).toBe('imagemagick');
-    expect(packageFor('nvim')).toBe('neovim');
-    expect(packageFor('http')).toBe('httpie');
-    expect(packageFor('fdfind')).toBe('fd-find');
-    expect(packageFor('timeout')).toBe('coreutils');
-    expect(packageFor('gdate')).toBe('coreutils');
-    expect(packageFor('nproc')).toBe('coreutils');
-    expect(packageFor('sha256sum')).toBe('coreutils');
-    expect(packageFor('gsed')).toBe('gnu-sed');
+  it('maps known binaries to their Homebrew formula', () => {
+    expect(packageFor('rg', 'brew')).toBe('ripgrep');
+    expect(packageFor('magick', 'brew')).toBe('imagemagick');
+    expect(packageFor('convert', 'brew')).toBe('imagemagick');
+    expect(packageFor('nvim', 'brew')).toBe('neovim');
+    expect(packageFor('http', 'brew')).toBe('httpie');
+    expect(packageFor('timeout', 'brew')).toBe('coreutils');
+    expect(packageFor('gdate', 'brew')).toBe('coreutils');
+    expect(packageFor('nproc', 'brew')).toBe('coreutils');
+    expect(packageFor('sha256sum', 'brew')).toBe('coreutils');
+    expect(packageFor('gsed', 'brew')).toBe('gnu-sed');
+    expect(packageFor('kubectl', 'brew')).toBe('kubernetes-cli');
+    expect(packageFor('dig', 'brew')).toBe('bind');
   });
 
-  it('installs an unmapped tool under its own name', () => {
-    expect(packageFor('fd')).toBe('fd');
-    expect(packageFor('constructor')).toBe('constructor');
+  it('installs an unmapped tool under its own name on every manager', () => {
+    for (const installer of ['brew', 'apt', 'dnf', 'pacman'] as const) {
+      expect(packageFor('xh', installer)).toBe('xh');
+      expect(packageFor('constructor', installer)).toBe('constructor');
+    }
+    expect(packageFor('fd', 'brew')).toBe('fd');
+    expect(packageFor('fd', 'pacman')).toBe('fd');
   });
 
-  it('every alias value is a safe package name', () => {
-    expect(PACKAGE_ALIASES.size).toBeGreaterThanOrEqual(30);
-    for (const value of PACKAGE_ALIASES.values()) {
-      expect(value).toMatch(SAFE_PACKAGE_NAME_RE);
+  it('uses each Linux manager its own package names (WR-01)', () => {
+    expect(packageFor('kubectl', 'apt')).toBe('kubectl');
+    expect(packageFor('kubectl', 'dnf')).toBe('kubernetes-client');
+    expect(packageFor('kubectl', 'pacman')).toBe('kubectl');
+    expect(packageFor('dig', 'apt')).toBe('bind9-dnsutils');
+    expect(packageFor('dig', 'dnf')).toBe('bind-utils');
+    expect(packageFor('dig', 'pacman')).toBe('bind');
+    expect(packageFor('ag', 'apt')).toBe('silversearcher-ag');
+    expect(packageFor('ag', 'dnf')).toBe('the_silver_searcher');
+    expect(packageFor('fdfind', 'apt')).toBe('fd-find');
+    expect(packageFor('batcat', 'apt')).toBe('bat');
+    expect(packageFor('fd', 'dnf')).toBe('fd-find');
+    expect(packageFor('rg', 'apt')).toBe('ripgrep');
+    expect(packageFor('timeout', 'dnf')).toBe('coreutils');
+  });
+
+  it('names no package where the Homebrew name would be wrong or the binary differs (WR-01)', () => {
+    // macOS-only names: no Linux package installs gsed/gtimeout/gdate/gtime.
+    for (const installer of ['apt', 'dnf', 'pacman'] as const) {
+      expect(packageFor('gsed', installer)).toBeNull();
+      expect(packageFor('gtimeout', installer)).toBeNull();
+      expect(packageFor('gdate', installer)).toBeNull();
+      expect(packageFor('gtime', installer)).toBeNull();
+    }
+    // apt's fd-find/bat install fdfind/batcat, so `&& fd`/`&& bat` would still fail.
+    expect(packageFor('fd', 'apt')).toBeNull();
+    expect(packageFor('bat', 'apt')).toBeNull();
+    // Debian binary names have no Homebrew formula.
+    expect(packageFor('fdfind', 'brew')).toBeNull();
+    expect(packageFor('batcat', 'brew')).toBeNull();
+    // A Homebrew alias with no verified entry for this manager is never guessed.
+    expect(packageFor('magick', 'apt')).toBeNull();
+    expect(packageFor('vd', 'pacman')).toBeNull();
+  });
+
+  it('never emits a Homebrew-only formula name on a Linux manager', () => {
+    for (const installer of ['apt', 'dnf', 'pacman'] as const) {
+      for (const tool of ['kubectl', 'dig', 'ag', 'gsed', 'gtimeout', 'gdate', 'gtime']) {
+        const pkg = packageFor(tool, installer);
+        if (pkg === null) continue;
+        expect(['kubernetes-cli', 'gnu-sed', 'gnu-time']).not.toContain(pkg);
+        if (installer !== 'pacman') expect(pkg).not.toBe('bind');
+        if (installer === 'apt') expect(pkg).not.toBe('the_silver_searcher');
+      }
+    }
+  });
+
+  it('every alias value is a safe package name or null', () => {
+    expect(PACKAGE_ALIASES.brew.size).toBeGreaterThanOrEqual(30);
+    for (const installer of ['brew', 'apt', 'dnf', 'pacman'] as const) {
+      for (const value of PACKAGE_ALIASES[installer].values()) {
+        if (value !== null) expect(value).toMatch(SAFE_PACKAGE_NAME_RE);
+      }
     }
   });
 });
@@ -280,6 +334,22 @@ describe('planInstall — blocked plans (T-09-10, T-09-20)', () => {
       form: null,
       packages: [],
       blocked: 'unsafe-package-name',
+    });
+  });
+
+  it('blocks when the manager has no package we can name (WR-01)', () => {
+    expect(planInstall('dig example.com', ['dig'], 'apt').form).toBe(
+      'sudo apt install bind9-dnsutils && dig example.com',
+    );
+    expect(planInstall('gsed -i s/a/b/ f', ['gsed'], 'apt')).toEqual({
+      form: null,
+      packages: [],
+      blocked: 'unknown-package',
+    });
+    expect(planInstall('fd x | rg y', ['fd', 'rg'], 'apt')).toEqual({
+      form: null,
+      packages: [],
+      blocked: 'unknown-package',
     });
   });
 
