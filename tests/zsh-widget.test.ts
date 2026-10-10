@@ -910,26 +910,35 @@ describe('handoff timing', () => {
     // Inherited PATH: a realistic ~2k-command table. `zsh -f` has almost no functions or
     // aliases, so this understates the real interactive shell; 09-05's human check records
     // the real-shell number. This is a regression guard, not the SC-2 evidence itself.
-    const result = runZsh(`
-      zmodload zsh/datetime
-      d=$(mktemp -d)
-      typeset -F start
-      repeat 5; do
-        start=$EPOCHREALTIME
-        _qq_write_tool_handoff "$d"
-        print -r -- "ms=$(( (EPOCHREALTIME - start) * 1000 ))"
-      done
-      rm -rf "$d"
-    `);
-    expect(result.status).toBe(0);
-    const samples = result.stdout
-      .split('\n')
-      .filter((line) => line.startsWith('ms='))
-      .map((line) => Number.parseFloat(line.slice(3)))
-      .sort((a, b) => a - b);
-    expect(samples).toHaveLength(5);
-    const median = samples[2];
-    console.log(`handoff median ms: ${median.toFixed(2)}`);
-    expect(median).toBeLessThan(25);
+    const medianOfFive = (): number => {
+      const result = runZsh(`
+        zmodload zsh/datetime
+        d=$(mktemp -d)
+        typeset -F start
+        repeat 5; do
+          start=$EPOCHREALTIME
+          _qq_write_tool_handoff "$d"
+          print -r -- "ms=$(( (EPOCHREALTIME - start) * 1000 ))"
+        done
+        rm -rf "$d"
+      `);
+      expect(result.status).toBe(0);
+      const samples = result.stdout
+        .split('\n')
+        .filter((line) => line.startsWith('ms='))
+        .map((line) => Number.parseFloat(line.slice(3)))
+        .sort((a, b) => a - b);
+      expect(samples).toHaveLength(5);
+      return samples[2];
+    };
+    // WR-03: parallel vitest workers (spawn-heavy fuzz children) can stall one batch. Up to
+    // 3 batches; the best median must meet the guard. A real regression fails every batch.
+    const medians: number[] = [];
+    for (let attempt = 0; attempt < 3; attempt++) {
+      medians.push(medianOfFive());
+      if (Math.min(...medians) < 25) break;
+    }
+    console.log(`handoff median ms per batch: ${medians.map((m) => m.toFixed(2)).join(', ')}`);
+    expect(Math.min(...medians)).toBeLessThan(25);
   });
 });

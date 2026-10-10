@@ -781,7 +781,7 @@
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)
 - `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM). (~8300 tok)
-- `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms; 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
+- `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms (best of up to 3 runs, logged); 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
 - `command-words.test.ts` — Spike 002 40-case table + 09-REVIEW regression table (zsh -f `${(k)builtins}` builtins), kind classification, D-06 install words, robustness (8193 chars, prototype keys, `"rg\`), frozen lexHand op/redir/comment token contract incl. heredoc-body and continuation tokens. (~1700 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
 - `controls-line.test.tsx` — Calls `ControlsLine(props)` directly and flattens its element tree; asserts no tab chip without a hint, the exact chip order with `tabHint: 'install'`, and the `undo install` chip. (~500 tok)

@@ -3458,6 +3458,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-10T19:59:38Z"
+    },
+    {
+      "id": "bug-214",
+      "timestamp": "2026-10-10T20:00:48Z",
+      "error_message": "09-REVIEW WR-03: zsh handoff median < 25 ms and deep-nesting < 100 ms wall-clock asserts flake under parallel vitest load (handoff guard failed once under full-suite load, 13.95 ms alone)",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "Single-sample wall-clock bounds measured while spawn-heavy suites run in parallel workers; one stalled batch fails the guard although the code is fast",
+      "fix": "Both asserts measure up to 3 batches/runs and assert the best one meets the unchanged bound (a real regression fails every batch); per-batch values are logged",
+      "tags": [
+        "flaky",
+        "timing",
+        "test-infra",
+        "phase-9",
+        "code-review"
+      ],
+      "related_bugs": [
+        "bug-206"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T20:00:48Z"
     }
   ]
 }
