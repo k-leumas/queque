@@ -248,6 +248,32 @@ describe('missingToolsLegend', () => {
       ]),
     ).toBe('ⓘ not installed: fd, rg, dust');
   });
+
+  it('says what Tab does when a visible flagged row has an install form', () => {
+    expect(
+      missingToolsLegend([
+        {
+          command: 'dust',
+          explanation: 'sizes',
+          missingTools: ['dust'],
+          install: { form: 'brew install dust && dust', packages: ['dust'], blocked: null },
+        },
+      ]),
+    ).toBe('ⓘ not installed: dust · tab prepends the install command');
+  });
+
+  it('leaves Tab out when no visible flagged row can be installed', () => {
+    expect(
+      missingToolsLegend([
+        {
+          command: 'dust',
+          explanation: 'sizes',
+          missingTools: ['dust'],
+          install: { form: null, packages: [], blocked: 'no-package-manager' },
+        },
+      ]),
+    ).toBe('ⓘ not installed: dust');
+  });
 });
 
 describe('candidateKey', () => {

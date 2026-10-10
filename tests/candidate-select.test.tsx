@@ -865,7 +865,7 @@ describe('CandidateSelect — Tab install form', () => {
     stateCallCount = 0;
     let text = collectText(CandidateSelect(props)).join('\n');
     expect(text).toMatch(/brew install fd && fd -e ts\n.{3}\nⓘ\n find ts files/);
-    expect(text).toContain('ⓘ\n not installed: fd');
+    expect(text).toContain('ⓘ\n not installed: fd · tab prepends the install command');
 
     capturedInputHandler?.('', tab);
     stateCallCount = 0;

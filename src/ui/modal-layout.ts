@@ -18,10 +18,16 @@ export function explanationText(candidate: DisplayCandidate): string {
     : MISSING_TOOL_MARK;
 }
 
-/** Legend for the mark, or undefined when no visible candidate is flagged. */
+/**
+ * Legend for the mark, or undefined when no visible candidate is flagged. It names the missing
+ * tools and, when Tab can act on at least one visible row, says what Tab does (D-14).
+ */
 export function missingToolsLegend(visible: readonly DisplayCandidate[]): string | undefined {
   const tools = [...new Set(visible.flatMap((candidate) => candidate.missingTools ?? []))];
-  return tools.length > 0 ? `${MISSING_TOOL_MARK} not installed: ${tools.join(', ')}` : undefined;
+  if (tools.length === 0) return undefined;
+  const legend = `${MISSING_TOOL_MARK} not installed: ${tools.join(', ')}`;
+  const installable = visible.some((candidate) => candidate.install?.form != null);
+  return installable ? `${legend} · tab prepends the install command` : legend;
 }
 
 /** Candidate identity (`command::explanation`) — the row key and the install-toggle key (D-13). */
