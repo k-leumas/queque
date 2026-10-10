@@ -83,13 +83,20 @@
       "action": "create",
       "tokens": 676,
       "at": "2026-10-10T19:52:58.118Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/tool-awareness.test.ts",
+      "action": "edit",
+      "tokens": 188,
+      "at": "2026-10-10T19:55:40.064Z"
     }
   ],
   "edit_counts": {
     ".planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md": 1,
     ".planning/phases/09-installed-only-command-awareness/09-REVIEW.md": 1,
     "src/shared/command-words.ts": 7,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py": 1
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py": 1,
+    "tests/tool-awareness.test.ts": 1
   },
   "anatomy_hits": 1,
   "anatomy_misses": 3,

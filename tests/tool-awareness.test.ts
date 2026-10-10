@@ -316,6 +316,20 @@ describe('annotateCandidates — install plans', () => {
     expect('install' in annotated[1]).toBe(false);
   });
 
+  it('never offers to install a wrapper option value (CR-02: sudo --user root)', () => {
+    const annotated = annotateCandidates(
+      [
+        { command: 'sudo --user root fd x', explanation: 'as root' },
+        { command: "watch -n 2 'kubectl get pods'", explanation: 'pods' },
+      ],
+      inv({ commands: ['brew', 'sudo', 'watch', 'kubectl'] }),
+      'darwin',
+    );
+    expect(annotated[0].missingTools).toEqual(['fd']);
+    expect(annotated[0].install?.form).toBe('brew install fd && sudo --user root fd x');
+    expect('missingTools' in annotated[1]).toBe(false);
+  });
+
   it('marks flagged candidates blocked when no manager exists', () => {
     const annotated = annotateCandidates(
       [{ command: 'fd -e ts', explanation: 'flagged' }],

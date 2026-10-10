@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-10T19:52:58.087Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-10T19:55:40.022Z
 > Files: 394 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -756,7 +756,7 @@
 
 ## src/shared/
 
-- `command-words.ts` — Hand lexer (`lexHand`: quotes, escapes, `\`-newline continuations removed, heredoc bodies skipped up to the delimiter line, substitutions, redirs, placeholders, comments) + `commandWords` classifier (wrappers, reserved words, builtins) + safe `extractCommandWords` (Phase 9, D-03). (~4666 tok)
+- `command-words.ts` — Hand lexer (`lexHand`: quotes, escapes, `\`-newline continuations removed, heredoc bodies skipped up to the delimiter line, substitutions, redirs, placeholders, comments) + `commandWords` classifier (WRAPPERS with short+long value options, PRECOMMAND_OPTIONS for `exec`/`command`, quoted wrapper operands with whitespace recursed as command strings, reserved words, builtins) + safe `extractCommandWords` (Phase 9, D-03). (~4666 tok)
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~668 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
@@ -801,7 +801,7 @@
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d). (~2300 tok)
-- `tool-awareness.test.ts` — Characterization tests for the shipped missing-tool semantics (09-01 Task 1). (~1083 tok)
+- `tool-awareness.test.ts` — Characterization tests for missing-tool semantics, installer choice, package aliases, install forms/wrapping/blocked plans and annotateCandidates (incl. CR-02: no install form for a wrapper option value such as `sudo --user root`). (~3573 tok)
 - `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — Declares spawnMock (~671 tok)
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)

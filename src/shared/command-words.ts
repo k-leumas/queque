@@ -320,21 +320,75 @@ const SHELLS = new Set(['bash', 'sh', 'zsh', 'dash', 'ksh', 'fish']);
 const FIND_EXEC = new Set(['-exec', '-execdir', '-ok', '-okdir']);
 
 // Wrappers: external programs whose first non-option operand is another program.
-// Value = options that take a separate argument. A Map, never a plain object: words such as
-// `constructor` must not resolve to Object.prototype members.
+// Value = options that take a SEPARATE argument, short and long (`--user root`). `--opt=value`
+// and any unlisted option are flags with no separate argument. Long options whose argument is
+// optional (`xargs --max-lines[=N]`, `--replace[=S]`, `--eof[=S]`, `watch -d/--differences[=P]`)
+// never take the next word, so they are deliberately not listed. A Map, never a plain object:
+// words such as `constructor` must not resolve to Object.prototype members.
 const WRAPPERS: Map<string, ReadonlySet<string>> = new Map([
-  ['sudo', new Set(['-u', '-g', '-h', '-p', '-C', '-D', '-r', '-t', '-U', '-T'])],
+  [
+    'sudo',
+    new Set([
+      '-u',
+      '-g',
+      '-h',
+      '-p',
+      '-C',
+      '-D',
+      '-r',
+      '-t',
+      '-U',
+      '-T',
+      '--user',
+      '--group',
+      '--host',
+      '--prompt',
+      '--chdir',
+      '--role',
+      '--type',
+      '--close-from',
+      '--other-user',
+      '--command-timeout',
+    ]),
+  ],
   ['doas', new Set(['-u', '-C'])],
-  ['env', new Set(['-u', '-C', '-S', '-P'])],
+  ['env', new Set(['-u', '-C', '-S', '-P', '--unset', '--chdir', '--split-string'])],
   ['nohup', new Set<string>()],
-  ['nice', new Set(['-n'])],
-  ['timeout', new Set(['-s', '-k'])],
-  ['gtimeout', new Set(['-s', '-k'])],
-  ['xargs', new Set(['-n', '-P', '-L', '-I', '-d', '-E', '-s', '-a', '-J', '-R', '-S'])],
-  ['watch', new Set(['-n', '-d', '--interval'])],
-  ['stdbuf', new Set<string>()],
+  ['nice', new Set(['-n', '--adjustment'])],
+  ['timeout', new Set(['-s', '-k', '--signal', '--kill-after'])],
+  ['gtimeout', new Set(['-s', '-k', '--signal', '--kill-after'])],
+  [
+    'xargs',
+    new Set([
+      '-n',
+      '-P',
+      '-L',
+      '-I',
+      '-d',
+      '-E',
+      '-s',
+      '-a',
+      '-J',
+      '-R',
+      '-S',
+      '--max-args',
+      '--max-procs',
+      '--max-chars',
+      '--delimiter',
+      '--arg-file',
+      '--process-slot-var',
+    ]),
+  ],
+  ['watch', new Set(['-n', '--interval'])],
+  ['stdbuf', new Set(['-i', '-o', '-e', '--input', '--output', '--error'])],
   ['caffeinate', new Set(['-t', '-w'])],
-  ['ionice', new Set(['-c', '-n', '-p'])],
+  ['ionice', new Set(['-c', '-n', '-p', '--class', '--classdata', '--pid'])],
+]);
+// zsh precommand builtins that take options before the command: `exec -a NAME cmd`,
+// `command -p cmd` (`command -v|-V` is a lookup and handled separately). Same value contract.
+const PRECOMMAND_OPTIONS: Map<string, ReadonlySet<string>> = new Map([
+  ['exec', new Set(['-a'])],
+  ['command', new Set<string>()],
 ]);
 // DURATION before the command.
 const NEEDS_POSITIONAL: Map<string, number> = new Map([
@@ -417,7 +471,8 @@ export function commandWords(
 
     if (wrapper) {
       if (w.startsWith('-') && !tok.quoted) {
-        if (WRAPPERS.get(wrapper.name)?.has(w)) skipNextWord = true;
+        const takesValue = WRAPPERS.get(wrapper.name) ?? PRECOMMAND_OPTIONS.get(wrapper.name);
+        if (takesValue?.has(w)) skipNextWord = true;
         continue;
       }
       if (wrapper.name === 'env' && ASSIGN_RE.test(w)) continue;
@@ -426,6 +481,14 @@ export function commandWords(
         continue;
       }
       wrapper = null;
+      if (tok.quoted && /\s/.test(w)) {
+        // `watch -n 2 'kubectl get pods'`: a quoted operand with whitespace is a whole command
+        // string, not a program name. Its programs are checked; the rest are arguments.
+        recurse(w);
+        expect = false;
+        prev = w;
+        continue;
+      }
     }
 
     if (ASSIGN_RE.test(tok.lead ?? w) && (current === null || WRAPPERS.has(current))) continue;
@@ -466,6 +529,8 @@ export function commandWords(
       out.push({ word: w, kind: 'builtin' });
       if (w === 'exec' || w === 'builtin' || w === 'noglob' || w === 'nocorrect' || w === '-') {
         expect = true;
+        // `exec -a NAME cmd` / `exec -cl cmd`: skip the options before the command.
+        if (PRECOMMAND_OPTIONS.has(w)) wrapper = { name: w, positionalLeft: 0 };
         continue;
       }
       if (w === 'command') {
@@ -477,6 +542,8 @@ export function commandWords(
           continue;
         }
         expect = true;
+        // `command -p cmd`: skip the options before the command.
+        wrapper = { name: w, positionalLeft: 0 };
         continue;
       }
       current = w;

@@ -87,4 +87,22 @@ export const REVIEW_CASES: readonly { id: string; cmd: string; expect: readonly 
   { id: 'CR-01', cmd: 'sudo \\\n  apt update', expect: ['sudo', 'apt'] },
   { id: 'CR-01', cmd: 'rg TODO \\\n  | head', expect: ['rg', 'head'] },
   { id: 'CR-01', cmd: 'echo "a \\\nb" | fd x', expect: ['fd'] },
+  // CR-02: a quoted wrapper operand with whitespace is a command string.
+  { id: 'CR-02', cmd: "watch -n 2 'kubectl get pods'", expect: ['watch', 'kubectl'] },
+  { id: 'CR-02', cmd: "watch -n 1 'ls -la'", expect: ['watch', 'ls'] },
+  { id: 'CR-02', cmd: 'watch "df -h | grep disk"', expect: ['watch', 'df', 'grep'] },
+  { id: 'CR-02', cmd: 'watch -d kubectl get pods', expect: ['watch', 'kubectl'] },
+  // CR-02: long wrapper options with a separate value; --opt=value takes no word.
+  { id: 'CR-02', cmd: 'sudo --user root fd x', expect: ['sudo', 'fd'] },
+  { id: 'CR-02', cmd: 'sudo --user=root fd x', expect: ['sudo', 'fd'] },
+  { id: 'CR-02', cmd: 'xargs --max-args 1 rm', expect: ['xargs', 'rm'] },
+  { id: 'CR-02', cmd: 'xargs --max-lines rm', expect: ['xargs', 'rm'] },
+  { id: 'CR-02', cmd: 'timeout --signal KILL 5 curl x', expect: ['timeout', 'curl'] },
+  { id: 'CR-02', cmd: 'nice --adjustment 10 tar -czf a.tgz d', expect: ['nice', 'tar'] },
+  { id: 'CR-02', cmd: 'env --chdir /tmp --unset FOO ls', expect: ['env', 'ls'] },
+  { id: 'CR-02', cmd: 'sudo --preserve-env fd x', expect: ['sudo', 'fd'] },
+  // CR-02: options of the `command` and `exec` precommands.
+  { id: 'CR-02', cmd: 'command -p ls', expect: ['ls'] },
+  { id: 'CR-02', cmd: 'exec -a name fd', expect: ['fd'] },
+  { id: 'CR-02', cmd: 'exec -cl zsh', expect: ['zsh'] },
 ];

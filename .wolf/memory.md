@@ -2198,3 +2198,5 @@
 | 13:49 | Edited src/shared/command-words.ts | 2→3 lines | ~82 |
 | 13:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py | — | ~676 |
 | 13:53 | CR-01: lexer skips heredoc bodies and removes `\`-newline continuations (no false ⓘ on cat <<EOF / multi-line sudo) | src/shared/command-words.ts, tests | 72 lexer tests pass | ~6k |
+| 13:55 | Edited tests/tool-awareness.test.ts | added optional chaining | ~188 |
+| 13:56 | CR-02: wrapper long options (`sudo --user root`), `--opt=value`, quoted watch operands and `command -p`/`exec -a` options no longer misread as programs; watch -d takes no value | src/shared/command-words.ts, tests | 129 tests pass | ~6k |

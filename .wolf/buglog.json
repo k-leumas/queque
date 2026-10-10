@@ -3381,6 +3381,45 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-10T19:53:30Z"
+    },
+    {
+      "id": "bug-210",
+      "timestamp": "2026-10-10T19:55:40.067Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/tool-awareness.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T19:55:40.067Z"
+    },
+    {
+      "id": "bug-211",
+      "timestamp": "2026-10-10T19:56:31Z",
+      "error_message": "09-REVIEW CR-02: `sudo --user root fd x` -> missingTools [root] with install form `brew install root && ...`; `watch -n 2 'kubectl get pods'` -> missingTools ['kubectl get pods']; `command -p ls` flagged -p",
+      "file": "src/shared/command-words.ts",
+      "root_cause": "Wrapper option tables listed only short options, so a long option's separate value became the program; a quoted whole-command operand of watch was classified as one program name; options after the command/exec precommands were taken as the command",
+      "fix": "Added long value-taking options per wrapper (optional-arg forms deliberately excluded, watch -d removed), PRECOMMAND_OPTIONS for exec/command, and recursion into a quoted wrapper operand containing whitespace",
+      "tags": [
+        "lexer",
+        "wrapper",
+        "sudo",
+        "watch",
+        "install-form",
+        "false-positive",
+        "phase-9",
+        "code-review"
+      ],
+      "related_bugs": [
+        "bug-209"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T19:56:31Z"
     }
   ]
 }
