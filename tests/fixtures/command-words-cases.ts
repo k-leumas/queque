@@ -105,4 +105,12 @@ export const REVIEW_CASES: readonly { id: string; cmd: string; expect: readonly 
   { id: 'CR-02', cmd: 'command -p ls', expect: ['ls'] },
   { id: 'CR-02', cmd: 'exec -a name fd', expect: ['fd'] },
   { id: 'CR-02', cmd: 'exec -cl zsh', expect: ['zsh'] },
+  // WR-05: lookup builtins name programs, they never run them; the next command still counts.
+  { id: 'WR-05', cmd: 'command -v fd && fd x', expect: ['fd'] },
+  { id: 'WR-05', cmd: 'command -V fd rg; rg y', expect: ['rg'] },
+  { id: 'WR-05', cmd: 'command -v "$(fd x)"', expect: ['fd'] },
+  { id: 'WR-05', cmd: 'type fd', expect: [] },
+  { id: 'WR-05', cmd: 'which fd rg || brew install fd', expect: ['brew'] },
+  { id: 'WR-05', cmd: 'whence -p fd', expect: [] },
+  { id: 'WR-05', cmd: 'type -p find -exec rm', expect: [] },
 ];

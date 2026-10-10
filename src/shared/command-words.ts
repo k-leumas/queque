@@ -396,6 +396,9 @@ const NEEDS_POSITIONAL: Map<string, number> = new Map([
   ['gtimeout', 1],
 ]);
 
+// Builtins whose operands are names to look up (only when the handoff lists them as builtins).
+const LOOKUP_BUILTINS: ReadonlySet<string> = new Set(['type', 'which', 'whence', 'where']);
+
 const ASSIGN_RE = /^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])?\+?=/;
 
 /**
@@ -421,7 +424,9 @@ export function commandWords(
   let prev: string | null = null; // previous word in this simple command
   let wrapper: { name: string; positionalLeft: number } | null = null;
   let skipUntil: string | null = null; // 'do' after for-loops, ']]' after [[
-  let lookupOnly = false; // `command -v x`, `type x`, `which x`
+  // `command -v|-V x`, `type x`, `which x`, `whence x`, `where x`: every word up to the next
+  // operator is a name to look up, never a program to run. Cleared by reset().
+  let lookupOnly = false;
 
   const reset = (): void => {
     expect = true;
@@ -448,6 +453,12 @@ export function commandWords(
       continue;
     }
     const w = tok.v;
+
+    if (lookupOnly) {
+      // Substitutions in the operands still ran above; the operands themselves are names.
+      prev = w;
+      continue;
+    }
 
     if (skipUntil) {
       if (w === skipUntil && !tok.quoted) {
@@ -537,7 +548,6 @@ export function commandWords(
         const next = tokens[k + 1];
         if (next?.t === 'word' && /^-[vV]$/.test(next.v)) {
           lookupOnly = true;
-          skipNextWord = true;
           expect = false;
           continue;
         }
@@ -546,10 +556,10 @@ export function commandWords(
         wrapper = { name: w, positionalLeft: 0 };
         continue;
       }
+      if (LOOKUP_BUILTINS.has(w)) lookupOnly = true;
       current = w;
       continue;
     }
-    if (lookupOnly) continue;
 
     out.push({ word: w, kind: 'external' });
     current = w;

@@ -3496,6 +3496,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-10T20:02:58Z"
+    },
+    {
+      "id": "bug-216",
+      "timestamp": "2026-10-10T20:04:16Z",
+      "error_message": "09-REVIEW WR-05: `lookupOnly` was dead (`if (lookupOnly) continue;` unreachable); `command -v x` operands were skipped only because expect was false, type/which had no lookup handling",
+      "file": "src/shared/command-words.ts",
+      "root_cause": "command -v set lookupOnly together with expect=false, and every path that set expect true again also cleared lookupOnly, so the check after the builtin branch could never run",
+      "fix": "lookupOnly is checked right after each word's substitutions are recursed and skips every operand until the next operator; set by `command -v|-V` and by the LOOKUP_BUILTINS type/which/whence/where; WR-05 fixture cases lock it in",
+      "tags": [
+        "lexer",
+        "dead-code",
+        "lookup",
+        "phase-9",
+        "code-review"
+      ],
+      "related_bugs": [
+        "bug-211"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T20:04:16Z"
     }
   ]
 }
