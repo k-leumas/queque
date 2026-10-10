@@ -69,3 +69,22 @@ export const COMMAND_WORD_CASES: readonly CommandWordCase[] = [
   { cmd: '! grep -q foo file && echo missing', expect: ['grep'], tier: 'core' },
   { cmd: 'sudo -E env PATH=$PATH ncdu /', expect: ['sudo', 'env', 'ncdu'], tier: 'core' },
 ];
+
+/**
+ * Regression cases from the Phase 9 code review (09-REVIEW.md). Kept apart from the spike table
+ * so that table stays a verbatim copy. Same contract: every external word, in order.
+ */
+export const REVIEW_CASES: readonly { id: string; cmd: string; expect: readonly string[] }[] = [
+  // CR-01: heredoc bodies are data, not commands.
+  { id: 'CR-01', cmd: 'cat <<EOF\nhello world\nEOF', expect: ['cat'] },
+  { id: 'CR-01', cmd: "cat > out.txt <<'EOF'\nfoo bar\nbaz\nEOF", expect: ['cat'] },
+  { id: 'CR-01', cmd: 'cat <<"EOF" | wc -l\nfoo\nEOF\nfd x', expect: ['cat', 'wc', 'fd'] },
+  { id: 'CR-01', cmd: 'cat <<-EOF\n\tfoo\n\tEOF\nfd x', expect: ['cat', 'fd'] },
+  { id: 'CR-01', cmd: 'cat <<A <<B\na1\nA\nb1\nB\nfd x', expect: ['cat', 'fd'] },
+  { id: 'CR-01', cmd: 'cat <<EOF\nnever closed', expect: ['cat'] },
+  // CR-01: a `\`-newline continuation joins lines; it is not a command.
+  { id: 'CR-01', cmd: 'FOO=1 \\\n  fd x', expect: ['fd'] },
+  { id: 'CR-01', cmd: 'sudo \\\n  apt update', expect: ['sudo', 'apt'] },
+  { id: 'CR-01', cmd: 'rg TODO \\\n  | head', expect: ['rg', 'head'] },
+  { id: 'CR-01', cmd: 'echo "a \\\nb" | fd x', expect: ['fd'] },
+];

@@ -13,7 +13,7 @@ import {
   lexHand,
   MAX_COMMAND_LENGTH,
 } from '../src/shared/command-words.js';
-import { COMMAND_WORD_CASES } from './fixtures/command-words-cases.js';
+import { COMMAND_WORD_CASES, REVIEW_CASES } from './fixtures/command-words-cases.js';
 
 let builtins: ReadonlySet<string> = new Set();
 
@@ -55,6 +55,12 @@ describe('spike 002 accuracy table (SC-4)', () => {
   });
 
   it.each(COMMAND_WORD_CASES)('[$tier] $cmd', ({ cmd, expect: want }) => {
+    expect(externals(cmd)).toEqual(want);
+  });
+});
+
+describe('code review regression cases (09-REVIEW)', () => {
+  it.each(REVIEW_CASES)('[$id] $cmd', ({ cmd, expect: want }) => {
     expect(externals(cmd)).toEqual(want);
   });
 });
@@ -171,6 +177,16 @@ describe('lexHand token contract (frozen for 09-04)', () => {
   it('a heredoc yields a << redir token', () => {
     const tokens = lexHand('cat <<EOF\nhi\nEOF');
     expect(tokens).toContainEqual({ t: 'redir', v: '<<' });
+  });
+
+  it('a heredoc body is not lexed; the newline after the operator line is still an op', () => {
+    const tokens = lexHand('cat <<EOF\nhello world\nEOF\nls');
+    expect(tokens.map((t) => t.v)).toEqual(['cat', '<<', 'EOF', ';', 'ls']);
+  });
+
+  it('a backslash-newline continuation yields no token and no text', () => {
+    expect(lexHand('sudo \\\n  apt update').map((t) => t.v)).toEqual(['sudo', 'apt', 'update']);
+    expect(lexHand('f\\\nd x').map((t) => t.v)).toEqual(['fd', 'x']);
   });
 
   it('a trailing # comment is one comment token and is ignored by command words', () => {

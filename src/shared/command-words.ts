@@ -6,7 +6,8 @@
  *
  * - `lexHand(s)` — zsh-ish lexer: quotes, `\` escapes, `$( )`, backticks and `<( )` recorded as
  *   nested command text, `$(( ))` / `${ }` skipped, redirections, QueQue `<placeholders>`, and
- *   `#` comments emitted as `comment` tokens.
+ *   `#` comments emitted as `comment` tokens. `\`-newline continuations are removed and heredoc
+ *   bodies (`<<EOF` / `<<-EOF` up to the delimiter line) are skipped as data, never lexed.
  * - `commandWords(tokens, builtins)` — finds every program a command would run and classifies it.
  * - `extractCommandWords(command, builtins)` — the safe entry point: input cap plus try/catch.
  *
@@ -80,14 +81,49 @@ function scanBalanced(s: string, i: number, open: string, close: string): number
   return s.length;
 }
 
+/** A heredoc whose body starts after the next newline. */
+interface PendingHeredoc {
+  delim: string;
+  /** `<<-`: leading tabs are stripped before comparing a line with the delimiter. */
+  stripTabs: boolean;
+}
+
+/**
+ * Index just past the body of each pending heredoc, starting at `i` (the start of the line
+ * after the heredoc operator's line). A body runs up to and including the line equal to its
+ * delimiter; an unterminated body runs to the end of input. Bodies are data, never lexed.
+ */
+function skipHeredocBodies(s: string, i: number, pending: readonly PendingHeredoc[]): number {
+  let at = i;
+  for (const { delim, stripTabs } of pending) {
+    while (at < s.length) {
+      const found = s.indexOf('\n', at);
+      const end = found < 0 ? s.length : found;
+      const line = s.slice(at, end);
+      at = found < 0 ? s.length : found + 1;
+      if ((stripTabs ? line.replace(/^\t+/, '') : line) === delim) break;
+    }
+  }
+  return at;
+}
+
 /** Lexes a shell command string into word, operator, redirection and comment tokens. */
 export function lexHand(s: string): ShellToken[] {
   const tokens: ShellToken[] = [];
+  // Heredocs whose delimiter word has been read; their bodies start after the next newline.
+  const pendingHeredocs: PendingHeredoc[] = [];
+  // Set by `<<` / `<<-` until the delimiter word arrives: whether that heredoc strips tabs.
+  let heredocStripTabs: boolean | null = null;
   let i = 0;
   while (i < s.length) {
     const c = s[i];
     if (c === ' ' || c === '\t') {
       i++;
+      continue;
+    }
+    if (c === '\\' && s[i + 1] === '\n') {
+      // Line continuation: removed by the shell, so it is neither text nor a separator.
+      i += 2;
       continue;
     }
     if (c === '#') {
@@ -102,6 +138,11 @@ export function lexHand(s: string): ShellToken[] {
     if (c === '\n') {
       tokens.push({ t: 'op', v: ';' });
       i++;
+      heredocStripTabs = null;
+      if (pendingHeredocs.length > 0) {
+        i = skipHeredocBodies(s, i, pendingHeredocs);
+        pendingHeredocs.length = 0;
+      }
       continue;
     }
 
@@ -131,6 +172,7 @@ export function lexHand(s: string): ShellToken[] {
     if (rd && (rd[1] === '' || /\s|^$/.test(s[i - 1] ?? ''))) {
       tokens.push({ t: 'redir', v: rd[0] });
       i += rd[0].length;
+      if (rd[2] === '<<' || rd[2] === '<<-') heredocStripTabs = rd[2] === '<<-';
       // `>&1` / `2>&-` targets are fd numbers glued to the operator.
       if (/&$/.test(rd[2] ?? '') && /[\d-]/.test(s[i] ?? '')) {
         while (/[\d-]/.test(s[i] ?? '')) i++;
@@ -155,6 +197,11 @@ export function lexHand(s: string): ShellToken[] {
       const ch = s[i];
       if (ch === ' ' || ch === '\t' || OP_CHARS.has(ch)) break;
       if ((ch === '<' || ch === '>') && i !== start) break;
+      if (ch === '\\' && s[i + 1] === '\n') {
+        // Line continuation: no text and no word break (`fd\<newline>  x` is `fd x`).
+        i += 2;
+        continue;
+      }
       if ((ch === '\\' || ch === "'" || ch === '"') && lead === null) lead = v;
       if (ch === '\\') {
         v += s[i + 1] ?? '';
@@ -173,6 +220,11 @@ export function lexHand(s: string): ShellToken[] {
         quoted = true;
         for (i++; i < s.length && s[i] !== '"'; i++) {
           if (s[i] === '\\') {
+            if (s[i + 1] === '\n') {
+              // Line continuation inside double quotes is removed too.
+              i++;
+              continue;
+            }
             // `"rg\` at end of input: the escape has no next character.
             v += s[++i] ?? '';
             continue;
@@ -232,6 +284,11 @@ export function lexHand(s: string): ShellToken[] {
       i++;
     }
     tokens.push({ t: 'word', v, subs, quoted, dynamic, lead: lead ?? v });
+    if (heredocStripTabs !== null) {
+      // The heredoc delimiter: quotes are already removed (`'EOF'` and `"EOF"` end at `EOF`).
+      pendingHeredocs.push({ delim: v, stripTabs: heredocStripTabs });
+      heredocStripTabs = null;
+    }
   }
   return tokens;
 }

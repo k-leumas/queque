@@ -2184,3 +2184,17 @@
 | 13:20 | Legend now explains Tab prepends the install command (only when installable) | src/ui/modal-layout.ts, tests | 68 ui tests pass | ~3k |
 | 13:30 | Legend drops tool names: 'ⓘ not installed[ · tab prepends the install command]' | src/ui/modal-layout.ts, tests | 68 ui tests pass | ~3k |
 | 13:40 | Removed tab chip from ControlsLine (legend explains Tab) | src/ui/ControlsLine.tsx, src/ui/CandidateSelect.tsx, tests | 69 ui tests pass | ~4k |
+| 13:26 | Created .planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md | — | ~2277 |
+| 13:27 | Session end: 1 writes across 1 files (09-05-SUMMARY.md) | 2 reads | ~2440 tok |
+| 13:39 | Created .planning/phases/09-installed-only-command-awareness/09-REVIEW.md | — | ~4122 |
+| 13:44 | Session end: 2 writes across 2 files (09-05-SUMMARY.md, 09-REVIEW.md) | 4 reads | ~10720 tok |
+| 13:44 | Session end: 2 writes across 2 files (09-05-SUMMARY.md, 09-REVIEW.md) | 4 reads | ~10720 tok |
+| 13:49 | Edited src/shared/command-words.ts | added 2 condition(s) | ~487 |
+| 13:49 | Edited src/shared/command-words.ts | added 1 condition(s) | ~76 |
+| 13:49 | Edited src/shared/command-words.ts | added 1 condition(s) | ~43 |
+| 13:49 | Edited src/shared/command-words.ts | added 1 condition(s) | ~97 |
+| 13:49 | Edited src/shared/command-words.ts | added 1 condition(s) | ~86 |
+| 13:49 | Edited src/shared/command-words.ts | added 1 condition(s) | ~91 |
+| 13:49 | Edited src/shared/command-words.ts | 2→3 lines | ~82 |
+| 13:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py | — | ~676 |
+| 13:53 | CR-01: lexer skips heredoc bodies and removes `\`-newline continuations (no false ⓘ on cat <<EOF / multi-line sudo) | src/shared/command-words.ts, tests | 72 lexer tests pass | ~6k |
