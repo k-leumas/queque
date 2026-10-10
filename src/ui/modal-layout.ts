@@ -4,34 +4,12 @@ import type { DisplayCandidate } from '../shared/tool-awareness.js';
 
 /**
  * Mark shown after the last command line of a candidate that uses a tool zsh cannot resolve
- * (D-08, glyph choice is Claude's Discretion per CONTEXT). U+2298 has East Asian Width N in
- * Unicode 16 and width 1 in Ink's string-width, so it occupies one column. Rendered cyan,
- * distinct from the yellow destructive ⚠. Lives here, not in CandidateSelect.tsx, so the line
- * estimate can measure the same footer text without an import cycle.
+ * (D-08). U+24D8 (circled i) is East Asian Width A, measured as one column by Ink's
+ * string-width, so it occupies one column. Rendered cyan, distinct from the yellow destructive
+ * ⚠. There is deliberately no missing-tool footer line: a footer that appears only for flagged
+ * rows makes the modal jump as the selection moves; the Tab chip carries the install action.
  */
-export const MISSING_TOOL_MARK = '⊘';
-
-/**
- * Footer line for a flagged selected candidate, by install state (D-11, D-14): the packages
- * while the row shows its install form, otherwise the missing tools plus why Tab is
- * unavailable when the install plan is blocked.
- */
-export function missingToolsFooterText(candidate: DisplayCandidate, toggled: boolean): string {
-  const install = candidate.install;
-  if (toggled && install?.form) {
-    return `${MISSING_TOOL_MARK} will install: ${install.packages.join(', ')}`;
-  }
-  const notInstalled = `${MISSING_TOOL_MARK} not installed: ${(candidate.missingTools ?? []).join(', ')}`;
-  switch (install?.blocked) {
-    case 'no-package-manager':
-      return `${notInstalled} — no package manager found`;
-    case 'unsafe-package-name':
-    case 'unwrappable-command':
-      return `${notInstalled} — no safe install command`;
-    default:
-      return notInstalled;
-  }
-}
+export const MISSING_TOOL_MARK = 'ⓘ';
 
 /** Candidate identity (`command::explanation`) — the row key and the install-toggle key (D-13). */
 export function candidateKey(candidate: CommandCandidate): string {
@@ -134,7 +112,7 @@ export interface CandidateSelectLayoutInput {
 
 /**
  * Columns one inline mark takes after the last command line: a space plus a one-column glyph
- * (⚠ or ⊘). Estimate-only — render spacing stays in Ink props.
+ * (⚠ or ⓘ). Estimate-only — render spacing stays in Ink props.
  */
 const MARK_COLUMNS = 2;
 
@@ -197,22 +175,10 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
     : undefined;
   const showDestructiveWarning =
     selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-  const selectedMissingTools = selectedCandidate?.missingTools ?? [];
 
-  // Mirrors CandidateSelect's single footer block: one shared marginTop, then the
-  // destructive line and the (possibly wrapped) state-specific missing-tool line.
-  if (showDestructiveWarning || selectedMissingTools.length > 0) {
-    lines += 1; // shared footer marginTop
-    if (showDestructiveWarning) {
-      lines += 1; // destructive warning text
-    }
-    if (selectedCandidate !== undefined && selectedMissingTools.length > 0) {
-      const footer = missingToolsFooterText(
-        selectedCandidate,
-        isInstallToggled(selectedCandidate, input.installToggled),
-      );
-      lines += wrapText(footer, input.contentWidth).length;
-    }
+  if (showDestructiveWarning) {
+    lines += 1; // footer marginTop
+    lines += 1; // destructive warning text
   }
 
   lines += 1; // ControlsLine marginTop

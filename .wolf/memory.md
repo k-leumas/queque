@@ -2162,3 +2162,20 @@
 | 02:48 | Edited src/client/run-foreground.ts | inline fix | ~28 |
 | 02:49 | Edited tests/client-result.test.ts | added 3 import(s) | ~78 |
 | 02:50 | 09-05 T2: client appends strict-validated installed-tools chunk (catalog ∩ installed) before fetchCandidatesForUi; envelope + buildSystemPrompt tests | src/client/run-foreground.ts, tests/client-result.test.ts | 483/483 tests, typecheck clean | ~6000 |
+| 02:51 | Session end: 32 writes across 22 files (queque.zsh, command-words.ts, tool-awareness.ts, tool-handoff.ts, run-foreground.ts) | 12 reads | ~80644 tok |
+
+## Session: 2026-10-08 10:08
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-10 12:29
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-10 12:36
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:45 | 09-05 checkpoint fix: ⊘→ⓘ mark, removed missing-tool footer (layout jump) | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 478 tests ok except pre-existing fuzz spawn-timeout flake | ~8k |

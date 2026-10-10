@@ -4,7 +4,6 @@ import {
   candidateKey,
   estimateCandidateSelectLines,
   filterCandidates,
-  missingToolsFooterText,
   wrapText,
 } from '../src/ui/modal-layout.js';
 
@@ -99,7 +98,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
     includeDevFooter: false,
   };
 
-  it('adds 2 rows (marginTop + footer line) when the selected candidate is flagged', () => {
+  it('adds no rows when the selected candidate is flagged (no missing-tool footer)', () => {
     const plain = estimateCandidateSelectLines({
       ...base,
       candidates: [{ command: 'git status', explanation: 'show status' }],
@@ -108,10 +107,10 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
       ...base,
       candidates: [{ command: 'git status', explanation: 'show status', missingTools: ['git'] }],
     });
-    expect(flagged).toBe(plain + 2);
+    expect(flagged).toBe(plain);
   });
 
-  it('adds 3 rows over the plain baseline when the selected candidate is destructive and flagged', () => {
+  it('adds only the destructive footer rows when the selected candidate is destructive and flagged', () => {
     const plain = estimateCandidateSelectLines({
       ...base,
       candidates: [{ command: 'git status', explanation: 'show status' }],
@@ -126,8 +125,8 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
         { command: 'rm -rf /tmp/foo', explanation: 'remove files', missingTools: ['rm'] },
       ],
     });
-    expect(both).toBe(plain + 3);
-    expect(both).toBe(destructiveOnly + 1);
+    expect(both).toBe(plain + 2);
+    expect(both).toBe(destructiveOnly);
   });
 
   it('adds no footer rows for a flagged candidate that is not selected', () => {
@@ -151,7 +150,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
   it('adds 1 row when the mark no longer fits on the last command line', () => {
     const narrow = { ...base, contentWidth: 20 };
     const selected = { command: 'ls', explanation: 'list' };
-    // 19 columns + ' ⊘' (2) = 21 > 20 → Ink wraps the command text → one extra row.
+    // 19 columns + ' ⓘ' (2) = 21 > 20 → Ink wraps the command text → one extra row.
     const longLine = 'abcdefghij-klmnopqr';
     const withoutMark = estimateCandidateSelectLines({
       ...narrow,
@@ -183,7 +182,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
   it('adds 1 row when both marks no longer fit (length + 4 > contentWidth)', () => {
     const narrow = { ...base, contentWidth: 20 };
     const selected = { command: 'ls', explanation: 'list' };
-    // 17 columns: ' ⚠' alone fits (19), ' ⚠ ⊘' does not (21).
+    // 17 columns: ' ⚠' alone fits (19), ' ⚠ ⓘ' does not (21).
     const destructiveLine = 'rm -rf /tmp/foo12';
     const destructiveOnly = estimateCandidateSelectLines({
       ...narrow,
@@ -196,76 +195,20 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
     expect(both).toBe(destructiveOnly + 1);
   });
 
-  it('counts the wrapped rows of a flag footer longer than contentWidth', () => {
-    const narrow = { ...base, contentWidth: 20 };
-    const missing = ['aaaaaaaa', 'bbbbbbbb', 'cccccccc'];
-    const footerRows = wrapText(
-      missingToolsFooterText({ command: 'ls', explanation: 'list', missingTools: missing }, false),
-      20,
-    ).length;
-    expect(footerRows).toBe(3);
-    const plain = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [{ command: 'ls', explanation: 'list' }],
-    });
-    const flagged = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [{ command: 'ls', explanation: 'list', missingTools: missing }],
-    });
-    expect(flagged).toBe(plain + 1 + footerRows);
+  it('keeps the height when the selection moves between flagged and unflagged rows', () => {
+    const candidates = [
+      { command: 'ls', explanation: 'list' },
+      { command: 'fd -e ts', explanation: 'find', missingTools: ['fd'] },
+    ];
+    const onPlain = estimateCandidateSelectLines({ ...base, candidates, selectedIndex: 0 });
+    const onFlagged = estimateCandidateSelectLines({ ...base, candidates, selectedIndex: 1 });
+    expect(onFlagged).toBe(onPlain);
   });
 });
 
 describe('candidateKey', () => {
   it('is the trimmed command, ::, then the explanation', () => {
     expect(candidateKey({ command: '  fd -e ts ', explanation: 'find' })).toBe('fd -e ts::find');
-  });
-});
-
-describe('missingToolsFooterText — install states (D-11, D-14)', () => {
-  const flagged: DisplayCandidate = {
-    command: 'fd . | rg x',
-    explanation: 'find',
-    missingTools: ['fd', 'rg'],
-    install: {
-      form: 'brew install fd ripgrep && fd . | rg x',
-      packages: ['fd', 'ripgrep'],
-      blocked: null,
-    },
-  };
-
-  it('lists the missing tools while the original command is shown', () => {
-    expect(missingToolsFooterText(flagged, false)).toBe('⊘ not installed: fd, rg');
-  });
-
-  it('lists the packages while the install form is shown', () => {
-    expect(missingToolsFooterText(flagged, true)).toBe('⊘ will install: fd, ripgrep');
-  });
-
-  it('explains a missing package manager', () => {
-    expect(
-      missingToolsFooterText(
-        { ...flagged, install: { form: null, packages: [], blocked: 'no-package-manager' } },
-        false,
-      ),
-    ).toBe('⊘ not installed: fd, rg — no package manager found');
-  });
-
-  it('explains an unsafe word or an unwrappable command', () => {
-    for (const blocked of ['unsafe-package-name', 'unwrappable-command'] as const) {
-      expect(
-        missingToolsFooterText(
-          { ...flagged, install: { form: null, packages: [], blocked } },
-          false,
-        ),
-      ).toBe('⊘ not installed: fd, rg — no safe install command');
-    }
-  });
-
-  it('keeps the plain copy for a candidate with no install plan', () => {
-    expect(
-      missingToolsFooterText({ command: 'fd', explanation: '', missingTools: ['fd'] }, false),
-    ).toBe('⊘ not installed: fd');
   });
 });
 
@@ -301,7 +244,7 @@ describe('estimateCandidateSelectLines — install toggle', () => {
   });
 
   it('counts the mark-overflow row of the displayed install form', () => {
-    // Rows: 'brew install fd &&' and 'fd abcdefghijklmnop' (19 + ' ⊘' = 21 > 20 → one more row).
+    // Rows: 'brew install fd &&' and 'fd abcdefghijklmnop' (19 + ' ⓘ' = 21 > 20 → one more row).
     const candidate = flaggedWithForm('brew install fd && fd abcdefghijklmnop');
     const untoggled = estimateCandidateSelectLines({ ...base, candidates: [selected, candidate] });
     const toggled = estimateCandidateSelectLines({
@@ -312,7 +255,7 @@ describe('estimateCandidateSelectLines — install toggle', () => {
     expect(toggled).toBe(untoggled + 2);
   });
 
-  it('runs the destructive check on a toggled sudo form (footer gains the ⚠ line)', () => {
+  it('runs the destructive check on a toggled sudo form (the ⚠ footer appears)', () => {
     const candidate: DisplayCandidate = {
       command: 'fdfind -e ts',
       explanation: 'find',
@@ -330,7 +273,7 @@ describe('estimateCandidateSelectLines — install toggle', () => {
       candidates: [candidate],
       installToggled: new Set([candidateKey(candidate)]),
     });
-    expect(toggled).toBe(untoggled + 1);
+    expect(toggled).toBe(untoggled + 2);
   });
 
   it('ignores a toggled key whose plan has no form', () => {

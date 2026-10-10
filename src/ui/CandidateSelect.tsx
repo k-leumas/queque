@@ -12,7 +12,6 @@ import {
   filterCandidates,
   isInstallToggled,
   MISSING_TOOL_MARK,
-  missingToolsFooterText,
   wrapText,
 } from './modal-layout.js';
 import { SearchInput } from './SearchInput.js';
@@ -52,7 +51,7 @@ function linePrefix(active: boolean, lineIndex: number): string {
  * Props for CandidateSelect.
  *
  * D-06: candidates is nullable — null means loading state (spinner shown).
- * D-08: a candidate's optional `missingTools` drives the ⊘ mark and footer; it stays selectable.
+ * D-08: a candidate's optional `missingTools` drives the ⓘ mark (no footer line); it stays selectable.
  * D-09: a flagged candidate's optional `install.form` is what Tab switches the row to.
  */
 interface Props {
@@ -237,7 +236,6 @@ export function CandidateSelect({
 
   let content: ReactElement;
   let showDestructiveWarning = false;
-  let selectedMissingTools: readonly string[] = [];
   let selectedCandidate: DisplayCandidate | undefined;
   let selectedToggled = false;
   if (error === true) {
@@ -259,7 +257,6 @@ export function CandidateSelect({
       ? displayedCommand(selectedCandidate, installToggled)
       : undefined;
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-    selectedMissingTools = selectedCandidate?.missingTools ?? [];
     selectedToggled =
       selectedCandidate !== undefined && isInstallToggled(selectedCandidate, installToggled);
     if (visible.length === 0) {
@@ -338,13 +335,9 @@ export function CandidateSelect({
       )}
       <SearchInput query={query} />
       {content}
-      {(showDestructiveWarning || selectedMissingTools.length > 0) && (
-        // One footer block: destructive and missing-tool lines share a single margin.
-        <Box flexDirection="column" marginTop={1}>
-          {showDestructiveWarning && <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>}
-          {selectedCandidate !== undefined && selectedMissingTools.length > 0 && (
-            <Text color="cyan">{missingToolsFooterText(selectedCandidate, selectedToggled)}</Text>
-          )}
+      {showDestructiveWarning && (
+        <Box marginTop={1}>
+          <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>
         </Box>
       )}
       <ControlsLine tabHint={tabHint} />

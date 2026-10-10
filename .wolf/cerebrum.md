@@ -12,6 +12,7 @@
 - [2026-10-07] Installed-tool awareness: treat zsh `$commands` as the source of truth (no Node PATH scan / daemon index). Suggestions using missing tools are shown flagged "not installed", not dropped.
 - [2026-10-07] Don't design handling for edge cases the prompt already prevents (e.g. use-before-install, wrong-OS installer). The user calls these 'malformed command sets'; judge them with the normal rules.
 - [2026-10-07] Install commands are never part of model candidates; they appear only via Tab on a flagged candidate. Keep the model's candidate order (no re-sorting of flagged items).
+- [2026-10-10] Missing-tool mark is ⓘ (U+24D8, circled i), not ⊘ — user disliked ⊘. Never add selection-dependent footer lines to the candidate modal: a footer that appears only for some rows makes the window jump as selection moves. Inline row marks + ControlsLine chips only.
 
 ## Key Learnings
 
@@ -73,6 +74,7 @@
 - [2026-10-07] In hand-written lexers, clamp `indexOf(...) === -1` to `s.length` before assigning the cursor; a −1 rewound the cursor and caused an infinite loop on malformed input (spike 002). Fuzz with a per-input timeout.
 - [2026-10-07] Repeated: `docs(spike-001): VALIDATED — ...` failed subject-case. GSD spike verdicts must be lowercase in commit subjects.
 - [2026-10-08] Vitest `--reporter=tap-flat` emits multi-line `toEqual` diffs unindented (malformed TAP), so gsd `tdd-red-evidence` returns `invalid_record` / "Non-TAP data". Pick a RED target whose assertion message is a single line (`toBe` on a scalar) and run it with `-t`.
+- [2026-10-10] Don't put per-selection status text (e.g. `not installed: fd`, `will install: fd`) in a conditional footer of CandidateSelect — it changes modal height on arrow keys (user-reported jump). The pre-existing destructive ⚠ footer is the only exception so far.
 
 ## Decision Log
 
@@ -89,3 +91,5 @@
 - [2026-10-08] Phase 9 reviews round 1: the daemon-side `installed-tools` schema FILTERS unknown catalog names (zod transform) instead of rejecting the request, and the client checks strictly (`strictInstalledToolsChunkSchema`). Rule: IPC schemas reject unknown shapes but filter unknown values; only shape changes need a pong capability bump. The build-hash-in-pong alternative was deferred (would restart the daemon on every dev rebuild).
 - [2026-10-08] Phase 9 wave 2 (09-02/03/04) runs in parallel worktrees and the OpenWolf hooks rewrite `.wolf/anatomy.md` and `memory.md` on every write, so wave-2 plans commit no `.wolf/` file; they list entries in their SUMMARY and 09-05 (alone in wave 3) applies them.
 - [2026-10-08] Phase 9 steering wording (draft, spike 003 partial): system prompt gets "Notable command-line tools installed on this machine (standard system utilities are also present): …", "Prefer installed tools. A tool that is not installed is acceptable only when it is clearly better for the task.", "At least one candidate must use only installed tools or standard system utilities.", "Never include install steps …". System prompt only; no sampling params; user prompt unchanged.
+- [2026-10-10] Phase 9 checkpoint feedback: dropped `missingToolsFooterText` entirely (incl. blocked-plan reasons like `no package manager found`); the ⓘ mark plus the `tab install`/`undo install` chip carry the state. ⓘ is EAW Ambiguous but string-width 7/8 measure it as 1 column.
+

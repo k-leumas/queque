@@ -659,7 +659,7 @@ describe('CandidateSelect — missing-tool flag', () => {
     return [];
   }
 
-  it('renders ⊘ after the command and a not-installed footer for the selected candidate', async () => {
+  it('renders ⓘ after the command and no missing-tool footer for the selected candidate', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
 
     const tree = CandidateSelect({
@@ -669,8 +669,8 @@ describe('CandidateSelect — missing-tool flag', () => {
     });
 
     const text = collectText(tree).join('\n');
-    expect(text).toMatch(/fd -e ts\n ⊘/);
-    expect(text).toContain('⊘ not installed: fd');
+    expect(text).toMatch(/fd -e ts\n ⓘ/);
+    expect(text).not.toContain('not installed');
   });
 
   type Element = { props: Record<string, unknown> & { children?: unknown } };
@@ -687,7 +687,7 @@ describe('CandidateSelect — missing-tool flag', () => {
     return [];
   }
 
-  it('shows both marks and both footer lines inside one footer block for a destructive flagged candidate', async () => {
+  it('shows both marks and only the destructive footer for a destructive flagged candidate', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
 
     const tree = CandidateSelect({
@@ -697,17 +697,14 @@ describe('CandidateSelect — missing-tool flag', () => {
     });
 
     const text = collectText(tree).join('\n');
-    expect(text).toMatch(/sudo fd -e ts\n ⚠\n ⊘/);
+    expect(text).toMatch(/sudo fd -e ts\n ⚠\n ⓘ/);
     expect(text).toContain('⚠ review carefully — this command may be destructive');
-    expect(text).toContain('⊘ not installed: fd');
+    expect(text).not.toContain('not installed');
 
     const footers = collectElements(tree).filter((element) => {
-      if (element.props.flexDirection !== 'column' || element.props.marginTop !== 1) return false;
+      if (element.props.marginTop !== 1) return false;
       const footerText = collectText(element.props.children).join('\n');
-      return (
-        footerText.includes('⚠ review carefully — this command may be destructive') &&
-        footerText.includes('⊘ not installed: fd')
-      );
+      return footerText === '⚠ review carefully — this command may be destructive';
     });
     expect(footers).toHaveLength(1);
     expect(collectText(footers[0].props.children).join('\n')).not.toContain('sudo fd -e ts');
@@ -727,10 +724,10 @@ describe('CandidateSelect — missing-tool flag', () => {
       .map((element) => collectText(element.props.children).join(''));
     expect(nonShrinking).toContain('┌> ');
     expect(nonShrinking).toContain(' ⚠');
-    expect(nonShrinking).toContain(' ⊘');
+    expect(nonShrinking).toContain(' ⓘ');
   });
 
-  it('shows no ⊘ for an unflagged candidate', async () => {
+  it('shows no ⓘ for an unflagged candidate', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
 
     const tree = CandidateSelect({
@@ -740,10 +737,10 @@ describe('CandidateSelect — missing-tool flag', () => {
     });
 
     const text = collectText(tree).join('\n');
-    expect(text).not.toContain('⊘');
+    expect(text).not.toContain('ⓘ');
   });
 
-  it('shows the not-installed footer only for the selected candidate', async () => {
+  it('shows the ⓘ mark on an unselected flagged candidate', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
 
     const tree = CandidateSelect({
@@ -756,7 +753,7 @@ describe('CandidateSelect — missing-tool flag', () => {
     });
 
     const text = collectText(tree).join('\n');
-    expect(text).toMatch(/fd -e ts\n ⊘/);
+    expect(text).toMatch(/fd -e ts\n ⓘ/);
     expect(text).not.toContain('not installed:');
   });
 
@@ -847,16 +844,15 @@ describe('CandidateSelect — Tab install form', () => {
 
     stateCallCount = 0;
     let text = collectText(CandidateSelect(props)).join('\n');
-    expect(text).toMatch(/brew install fd && fd -e ts\n ⊘/);
-    expect(text).toContain('⊘ will install: fd');
-    expect(text).not.toContain('⊘ not installed: fd');
+    expect(text).toMatch(/brew install fd && fd -e ts\n ⓘ/);
+    expect(text).not.toContain('will install');
 
     capturedInputHandler?.('', tab);
     stateCallCount = 0;
     text = collectText(CandidateSelect(props)).join('\n');
-    expect(text).toMatch(/fd -e ts\n ⊘/);
+    expect(text).toMatch(/fd -e ts\n ⓘ/);
     expect(text).not.toContain('brew install fd');
-    expect(text).toContain('⊘ not installed: fd');
+    expect(text).not.toContain('not installed');
   });
 
   it('Shift+Tab toggles the same way', async () => {
@@ -947,11 +943,13 @@ describe('CandidateSelect — Tab install form', () => {
     expect(stateSetters[1]).not.toHaveBeenCalled();
   });
 
-  it('explains blocked plans in the footer', async () => {
+  it('marks a blocked plan with ⓘ and adds no footer text', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
-    const footerFor = (
-      blocked: 'no-package-manager' | 'unsafe-package-name' | 'unwrappable-command',
-    ) => {
+    for (const blocked of [
+      'no-package-manager',
+      'unsafe-package-name',
+      'unwrappable-command',
+    ] as const) {
       resetState();
       const tree = CandidateSelect({
         candidates: [
@@ -965,21 +963,13 @@ describe('CandidateSelect — Tab install form', () => {
         onSelect: vi.fn(),
         onCancel: vi.fn(),
       });
-      return collectText(tree).join('\n');
-    };
-
-    expect(footerFor('no-package-manager')).toContain(
-      '⊘ not installed: fd — no package manager found',
-    );
-    expect(footerFor('unsafe-package-name')).toContain(
-      '⊘ not installed: fd — no safe install command',
-    );
-    expect(footerFor('unwrappable-command')).toContain(
-      '⊘ not installed: fd — no safe install command',
-    );
+      const text = collectText(tree).join('\n');
+      expect(text).toMatch(/fd -e ts\n ⓘ/);
+      expect(text).not.toContain('not installed');
+    }
   });
 
-  it('shows ⚠ and ⊘ and both footer lines for a toggled sudo install form (D-08)', async () => {
+  it('shows ⚠ and ⓘ and only the destructive footer for a toggled sudo install form (D-08)', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const props = {
       candidates: [
@@ -1004,14 +994,12 @@ describe('CandidateSelect — Tab install form', () => {
     const tree = CandidateSelect(props);
 
     const text = collectText(tree).join('\n');
-    expect(text).toMatch(/sudo apt install fd-find && fdfind -e ts\n ⚠\n ⊘/);
+    expect(text).toMatch(/sudo apt install fd-find && fdfind -e ts\n ⚠\n ⓘ/);
+    expect(text).not.toContain('will install');
     const footers = collectElements(tree).filter((element) => {
-      if (element.props.flexDirection !== 'column' || element.props.marginTop !== 1) return false;
+      if (element.props.marginTop !== 1) return false;
       const footerText = collectText(element.props.children).join('\n');
-      return (
-        footerText.includes('⚠ review carefully — this command may be destructive') &&
-        footerText.includes('⊘ will install: fd-find')
-      );
+      return footerText === '⚠ review carefully — this command may be destructive';
     });
     expect(footers).toHaveLength(1);
   });
@@ -1040,8 +1028,7 @@ describe('CandidateSelect — Tab install form', () => {
 
     expect(stateValues[1]).toBe('f');
     expect(text).not.toContain('ls -la');
-    expect(text).toContain('brew install fd && fd -e ts');
-    expect(text).toContain('⊘ will install: fd');
+    expect(text).toMatch(/brew install fd && fd -e ts\n ⓘ/);
   });
 
   it('passes the matching tabHint to ControlsLine (D-14)', async () => {

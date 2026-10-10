@@ -761,10 +761,10 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Enter inserts the displayed text; footer shows install state; passes `tabHint` to ControlsLine. (~3200 tok)
+- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Enter inserts the displayed text; no missing-tool footer (only the destructive ⚠ footer); passes `tabHint` to ControlsLine. (~3000 tok)
 - `ControlsLine.tsx` — Keyboard hints below the candidate list; optional `tabHint` (`install` | `undo install`) chips between accept and cancel. (~300 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
-- `modal-layout.ts` — Wrapping/row layout; ⊘ mark, `candidateKey`, `displayedCommand`, `isInstallToggled`, state-aware `missingToolsFooterText(candidate, toggled)`, `installToggled` layout input. (~2500 tok)
+- `modal-layout.ts` — Wrapping/row layout; ⓘ `MISSING_TOOL_MARK`, `candidateKey`, `displayedCommand`, `isInstallToggled`, `installToggled` layout input; flagged rows add no footer rows. (~2200 tok)
 - `Modal.tsx` — Modal (~223 tok)
 - `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
