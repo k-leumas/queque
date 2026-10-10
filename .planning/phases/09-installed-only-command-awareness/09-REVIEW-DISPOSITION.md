@@ -5,11 +5,11 @@ titles: json
 findings:
   - id: CR-01
     severity: critical
-    disposition: open
+    disposition: fixed
     title: "Heredoc bodies and `\\`-newline continuations are classified as commands (false \"not installed\" marks, real commands missed)"
   - id: CR-02
     severity: critical
-    disposition: open
+    disposition: fixed
     title: "Wrapper operands are misread: `watch 'cmd'` is flagged, and long options produce an install form for an unrelated package"
   - id: WR-01
     severity: warning
@@ -17,7 +17,7 @@ findings:
     title: "Package alias map uses Homebrew names but is applied to apt/dnf/pacman"
   - id: WR-02
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "Viewport-reserve comment describes a shared footer margin that the code doesn't have, and the 17-line reserve is short when both footers show"
   - id: WR-03
     severity: warning
@@ -29,7 +29,7 @@ findings:
     title: "Install-form toggle and the search filter disagree on what a row \"is\""
   - id: WR-05
     severity: warning
-    disposition: open
+    disposition: fixed
     title: "`lookupOnly` handling is dead, so `command -v`, `type` and `which` operands work only by accident"
   - id: IN-01
     severity: info
@@ -51,22 +51,22 @@ findings:
     severity: info
     disposition: open
     title: "Steering guard test is marker-based and easy to bypass"
-open: 9
+open: 5
 total: 12
-recorded: 2026-10-10T20:11:28.230Z
+recorded: 2026-10-10T20:12:01.811Z
 ---
 
 # Phase 09: Code Review Disposition
 
 | Finding | Severity | Disposition | Source |
 |---------|----------|-------------|--------|
-| CR-01 | critical | open | - |
-| CR-02 | critical | open | - |
+| CR-01 | critical | fixed | 09-REVIEW-FIX.md (b8ea9d7) |
+| CR-02 | critical | fixed | 09-REVIEW-FIX.md (b235597) |
 | WR-01 | warning | fixed | 09-REVIEW-FIX.md |
-| WR-02 | warning | open | - |
+| WR-02 | warning | fixed | 09-REVIEW-FIX.md (eb6fad1) |
 | WR-03 | warning | fixed | 09-REVIEW-FIX.md |
 | WR-04 | warning | fixed | 09-REVIEW-FIX.md |
-| WR-05 | warning | open | - |
+| WR-05 | warning | fixed | 09-REVIEW-FIX.md (d0cf4e8) |
 | IN-01 | info | open | - |
 | IN-02 | info | open | - |
 | IN-03 | info | open | - |
