@@ -12,7 +12,7 @@
 - [2026-10-07] Installed-tool awareness: treat zsh `$commands` as the source of truth (no Node PATH scan / daemon index). Suggestions using missing tools are shown flagged "not installed", not dropped.
 - [2026-10-07] Don't design handling for edge cases the prompt already prevents (e.g. use-before-install, wrong-OS installer). The user calls these 'malformed command sets'; judge them with the normal rules.
 - [2026-10-07] Install commands are never part of model candidates; they appear only via Tab on a flagged candidate. Keep the model's candidate order (no re-sorting of flagged items).
-- [2026-10-10] Missing-tool mark is ⓘ (U+24D8, circled i), not ⊘ — user disliked ⊘. Never add selection-dependent footer lines to the candidate modal: a footer that appears only for some rows makes the window jump as selection moves. Inline row marks + ControlsLine chips only.
+- [2026-10-10] Missing-tool mark is ⓘ (U+24D8, circled i), not ⊘ — user disliked ⊘. The cyan ⓘ belongs at the START of the row's explanation (user: the explanation already describes the command), not after the command. A legend `ⓘ not installed: <tools>` sits directly above the controls when any visible row is flagged — it depends on the visible list, never on the selection. Never add selection-dependent footer lines (they make the modal jump on arrow keys).
 
 ## Key Learnings
 
@@ -52,6 +52,7 @@
 - [2026-10-08] Envelope SHAPE changes (new chunk kind/field) require a pong capability bump in server.ts + ipc.ts + `pingDaemonFetchCap` (bootstrap.ts), or old daemons silently drop the envelope (800 ms ack timeout + cold fallback per `??`). `installedTools` is the second flag after `fetchCandidates`; catalog CONTENT changes do not need one.
 - [2026-10-08] Every src/providers/ adapter must build its system prompt with `buildSystemPrompt(envelope)` from steering.ts (never raw `QUEQUE_SYSTEM`); tests/steering.test.ts "adapters" scans the directory and fails otherwise.
 - [2026-10-08] CandidateSelect's third `useState` is the install toggle (`stateValues[2]` / `stateSetters[2]` in tests), after selectedIndex (0) and query (1). New state goes after it.
+- [2026-10-10] User's ~/.zshrc sources the dev widget then the Homebrew widget (/usr/local/share/queque/queque.zsh) last, so the brew widget wins even in dev mode. Live-UAT of new widget behavior: first check /tmp/qq-debug.log for `tool handoff unavailable ENOENT`; fix in-shell with `qq_dev`.
 
 ## Do-Not-Repeat
 - [2026-10-08] In the Claude Code Bash tool, `git` is a shell function from a shell snapshot: `git ls-files --error-unmatch` and `git check-ignore` returned 0 for untracked paths. Use the real binary (`/usr/local/bin/git`, or `whence -p git`) when an exit status decides tracked/ignored.

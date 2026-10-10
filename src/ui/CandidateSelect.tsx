@@ -9,9 +9,11 @@ import {
   candidateKey,
   displayedCommand,
   estimateCandidateSelectLines,
+  explanationText,
   filterCandidates,
   isInstallToggled,
   MISSING_TOOL_MARK,
+  missingToolsLegend,
   wrapText,
 } from './modal-layout.js';
 import { SearchInput } from './SearchInput.js';
@@ -51,7 +53,7 @@ function linePrefix(active: boolean, lineIndex: number): string {
  * Props for CandidateSelect.
  *
  * D-06: candidates is nullable — null means loading state (spinner shown).
- * D-08: a candidate's optional `missingTools` drives the ⓘ mark (no footer line); it stays selectable.
+ * D-08: a candidate's optional `missingTools` puts ⓘ before its explanation and in the legend; it stays selectable.
  * D-09: a flagged candidate's optional `install.form` is what Tab switches the row to.
  */
 interface Props {
@@ -238,6 +240,7 @@ export function CandidateSelect({
   let showDestructiveWarning = false;
   let selectedCandidate: DisplayCandidate | undefined;
   let selectedToggled = false;
+  let legend: string | undefined;
   if (error === true) {
     content = (
       <Box marginTop={1}>
@@ -259,6 +262,7 @@ export function CandidateSelect({
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
     selectedToggled =
       selectedCandidate !== undefined && isInstallToggled(selectedCandidate, installToggled);
+    legend = missingToolsLegend(visible);
     if (visible.length === 0) {
       content = (
         <Box marginTop={1}>
@@ -275,8 +279,9 @@ export function CandidateSelect({
             const destructive = isDestructiveCommand(command);
             const flagged = (candidate.missingTools?.length ?? 0) > 0;
             const commandLines = wrapText(command, contentWidth);
+            const explanation = explanationText(candidate);
             const explanationLines =
-              candidate.explanation.length > 0 ? wrapText(candidate.explanation, contentWidth) : [];
+              explanation.length > 0 ? wrapText(explanation, contentWidth) : [];
             const blockLines = [...commandLines, ...explanationLines];
 
             return (
@@ -284,28 +289,26 @@ export function CandidateSelect({
                 {blockLines.map((line, lineIndex) => {
                   const isCommandLine = lineIndex < commandLines.length;
                   const isLastCommandLine = isCommandLine && lineIndex === commandLines.length - 1;
+                  // explanationText puts the mark first, and wrapText keeps it on this line.
+                  const marked = flagged && lineIndex === commandLines.length;
                   const prefix = linePrefix(active, lineIndex);
                   return (
                     <Box key={`${prefix}${line}`}>
-                      {/* flexShrink={0} on the gutter and marks: Ink wraps the command text, never a mark. */}
+                      {/* flexShrink={0} on the gutter and ⚠: Ink wraps the command text, never a mark. */}
                       <Box flexShrink={0}>
                         <Text color={active ? 'ansi256(166)' : undefined}>{prefix}</Text>
                       </Box>
+                      {marked && <Text color="cyan">{MISSING_TOOL_MARK}</Text>}
                       <Text
                         bold={active && isCommandLine}
                         color={active && isCommandLine ? 'white' : undefined}
                         dimColor={!active || !isCommandLine}
                       >
-                        {line}
+                        {marked ? line.slice(MISSING_TOOL_MARK.length) : line}
                       </Text>
                       {isLastCommandLine && destructive && (
                         <Box flexShrink={0}>
                           <Text color="yellow">{` ${DESTRUCTIVE_WARNING_MARK}`}</Text>
-                        </Box>
-                      )}
-                      {isLastCommandLine && flagged && (
-                        <Box flexShrink={0}>
-                          <Text color="cyan">{` ${MISSING_TOOL_MARK}`}</Text>
                         </Box>
                       )}
                     </Box>
@@ -338,6 +341,12 @@ export function CandidateSelect({
       {showDestructiveWarning && (
         <Box marginTop={1}>
           <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>
+        </Box>
+      )}
+      {legend !== undefined && (
+        <Box marginTop={1}>
+          <Text color="cyan">{MISSING_TOOL_MARK}</Text>
+          <Text dimColor>{legend.slice(MISSING_TOOL_MARK.length)}</Text>
         </Box>
       )}
       <ControlsLine tabHint={tabHint} />

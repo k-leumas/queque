@@ -3291,6 +3291,45 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-10T12:45:00Z"
+    },
+    {
+      "id": "bug-205",
+      "timestamp": "2026-10-10T12:55:00Z",
+      "error_message": "User: dust not installed but no missing-tool indicators; debug log: [client] tool handoff unavailable {reason: ENOENT}, flagged: 0",
+      "file": "~/.zshrc (user env, not repo)",
+      "root_cause": "~/.zshrc sources the dev widget ($QQ_DEV_ROOT/shell/zsh/queque.zsh) and then unconditionally sources the Homebrew widget /usr/local/share/queque/queque.zsh, which predates Phase 9 and redefines the ?? widget without _qq_write_tool_handoff. Dev client runs but never receives commands/builtins/functions files, so it shows no flags (by design: no files = no flags).",
+      "fix": "Run qq_dev in the shell (re-sources dev widget) or source the brew widget only when QQ_DEV_ROOT is unset",
+      "tags": [
+        "phase-9",
+        "zshrc",
+        "widget-shadowing",
+        "tool-handoff",
+        "ENOENT",
+        "uat"
+      ],
+      "related_bugs": [
+        "bug-204"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-10T12:55:00Z"
+    },
+    {
+      "id": "bug-206",
+      "timestamp": "2026-10-10T13:10:00Z",
+      "error_message": "tests/command-words-fuzz.test.ts: crafted malformed input \"...\" finishes within 1 s \u2014 ETIMEDOUT, stdout=\"\", last input=<none>",
+      "file": "tests/command-words-fuzz.test.ts",
+      "root_cause": "Not fixed. Child process is killed by the 1 s hard timeout before it reads any input (node spawn/startup cost), different case each run; reproduces at HEAD c105e57/3209e9b, worse under full-suite parallel load. Also zsh-widget 'handoff timing' (25 ms guard) failed once under full-suite load, passes alone (13.95 ms).",
+      "fix": "Open \u2014 candidate fix: measure from first input received rather than spawn, or raise the hard timeout for spawn overhead",
+      "tags": [
+        "flaky",
+        "timeout",
+        "fuzz",
+        "test-infra",
+        "phase-9"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-10-10T13:10:00Z"
     }
   ]
 }

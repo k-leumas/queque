@@ -3,7 +3,9 @@ import type { DisplayCandidate } from '../src/shared/tool-awareness.js';
 import {
   candidateKey,
   estimateCandidateSelectLines,
+  explanationText,
   filterCandidates,
+  missingToolsLegend,
   wrapText,
 } from '../src/ui/modal-layout.js';
 
@@ -98,7 +100,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
     includeDevFooter: false,
   };
 
-  it('adds no rows when the selected candidate is flagged (no missing-tool footer)', () => {
+  it('adds the legend (marginTop + one line) when any visible candidate is flagged', () => {
     const plain = estimateCandidateSelectLines({
       ...base,
       candidates: [{ command: 'git status', explanation: 'show status' }],
@@ -107,29 +109,10 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
       ...base,
       candidates: [{ command: 'git status', explanation: 'show status', missingTools: ['git'] }],
     });
-    expect(flagged).toBe(plain);
+    expect(flagged).toBe(plain + 2);
   });
 
-  it('adds only the destructive footer rows when the selected candidate is destructive and flagged', () => {
-    const plain = estimateCandidateSelectLines({
-      ...base,
-      candidates: [{ command: 'git status', explanation: 'show status' }],
-    });
-    const destructiveOnly = estimateCandidateSelectLines({
-      ...base,
-      candidates: [{ command: 'rm -rf /tmp/foo', explanation: 'remove files' }],
-    });
-    const both = estimateCandidateSelectLines({
-      ...base,
-      candidates: [
-        { command: 'rm -rf /tmp/foo', explanation: 'remove files', missingTools: ['rm'] },
-      ],
-    });
-    expect(both).toBe(plain + 2);
-    expect(both).toBe(destructiveOnly);
-  });
-
-  it('adds no footer rows for a flagged candidate that is not selected', () => {
+  it('adds the legend for a flagged candidate that is not selected', () => {
     const unflagged = estimateCandidateSelectLines({
       ...base,
       candidates: [
@@ -144,55 +127,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
         { command: 'fd -e ts', explanation: 'find', missingTools: ['fd'] },
       ],
     });
-    expect(flaggedSecond).toBe(unflagged);
-  });
-
-  it('adds 1 row when the mark no longer fits on the last command line', () => {
-    const narrow = { ...base, contentWidth: 20 };
-    const selected = { command: 'ls', explanation: 'list' };
-    // 19 columns + ' ⓘ' (2) = 21 > 20 → Ink wraps the command text → one extra row.
-    const longLine = 'abcdefghij-klmnopqr';
-    const withoutMark = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [selected, { command: longLine, explanation: 'x' }],
-    });
-    const withMark = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [selected, { command: longLine, explanation: 'x', missingTools: ['abc'] }],
-    });
-    expect(withMark).toBe(withoutMark + 1);
-  });
-
-  it('adds nothing when the last command line has room for the mark', () => {
-    const narrow = { ...base, contentWidth: 20 };
-    const selected = { command: 'ls', explanation: 'list' };
-    // 18 columns + 2 = 20 → fits.
-    const fitting = 'abcdefghij-klmnopq';
-    const withoutMark = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [selected, { command: fitting, explanation: 'x' }],
-    });
-    const withMark = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [selected, { command: fitting, explanation: 'x', missingTools: ['abc'] }],
-    });
-    expect(withMark).toBe(withoutMark);
-  });
-
-  it('adds 1 row when both marks no longer fit (length + 4 > contentWidth)', () => {
-    const narrow = { ...base, contentWidth: 20 };
-    const selected = { command: 'ls', explanation: 'list' };
-    // 17 columns: ' ⚠' alone fits (19), ' ⚠ ⓘ' does not (21).
-    const destructiveLine = 'rm -rf /tmp/foo12';
-    const destructiveOnly = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [selected, { command: destructiveLine, explanation: 'x' }],
-    });
-    const both = estimateCandidateSelectLines({
-      ...narrow,
-      candidates: [selected, { command: destructiveLine, explanation: 'x', missingTools: ['rm'] }],
-    });
-    expect(both).toBe(destructiveOnly + 1);
+    expect(flaggedSecond).toBe(unflagged + 2);
   });
 
   it('keeps the height when the selection moves between flagged and unflagged rows', () => {
@@ -203,6 +138,115 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
     const onPlain = estimateCandidateSelectLines({ ...base, candidates, selectedIndex: 0 });
     const onFlagged = estimateCandidateSelectLines({ ...base, candidates, selectedIndex: 1 });
     expect(onFlagged).toBe(onPlain);
+  });
+
+  it('counts the destructive footer and the legend for a destructive flagged candidate', () => {
+    const plain = estimateCandidateSelectLines({
+      ...base,
+      candidates: [{ command: 'git status', explanation: 'show status' }],
+    });
+    const both = estimateCandidateSelectLines({
+      ...base,
+      candidates: [
+        { command: 'rm -rf /tmp/foo', explanation: 'remove files', missingTools: ['rm'] },
+      ],
+    });
+    expect(both).toBe(plain + 4);
+  });
+
+  it('wraps the explanation with the mark in front of it', () => {
+    const narrow = { ...base, contentWidth: 20 };
+    // 'abcdefghij klmnopqr' (19) fits on one row; 'ⓘ abcdefghij klmnopqr' (21) does not.
+    const explanation = 'abcdefghij klmnopqr';
+    const plain = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [{ command: 'ls', explanation }],
+    });
+    const flagged = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [{ command: 'ls', explanation, missingTools: ['ls'] }],
+    });
+    const legendRows = 1 + wrapText('ⓘ not installed: ls', 20).length;
+    expect(flagged).toBe(plain + 1 + legendRows);
+  });
+
+  it('adds no command-line overflow row for the mark (it sits in the explanation)', () => {
+    const narrow = { ...base, contentWidth: 20 };
+    const longLine = 'abcdefghij-klmnopqrs'; // exactly 20 columns
+    const plain = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [{ command: longLine, explanation: 'x' }],
+    });
+    const flagged = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [{ command: longLine, explanation: 'x', missingTools: ['abc'] }],
+    });
+    const legendRows = 1 + wrapText('ⓘ not installed: abc', 20).length;
+    expect(flagged).toBe(plain + legendRows);
+  });
+
+  it('adds 1 row when ⚠ no longer fits on the last command line', () => {
+    const narrow = { ...base, contentWidth: 20 };
+    const selected = { command: 'ls', explanation: 'list' };
+    // 'rm -rf /tmp/foo1234' is 19 columns + ' ⚠' (2) = 21 > 20.
+    const fits = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [selected, { command: 'rm -rf /tmp/foo123', explanation: 'x' }],
+    });
+    const overflows = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [selected, { command: 'rm -rf /tmp/foo1234', explanation: 'x' }],
+    });
+    expect(overflows).toBe(fits + 1);
+  });
+
+  it('counts the wrapped rows of a legend longer than contentWidth', () => {
+    const narrow = { ...base, contentWidth: 20 };
+    const missing = ['aaaaaaaa', 'bbbbbbbb', 'cccccccc'];
+    const legendRows = wrapText(`ⓘ not installed: ${missing.join(', ')}`, 20).length;
+    expect(legendRows).toBeGreaterThan(1);
+    const plain = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [{ command: 'ls', explanation: '' }],
+    });
+    const flagged = estimateCandidateSelectLines({
+      ...narrow,
+      candidates: [{ command: 'ls', explanation: '', missingTools: missing }],
+    });
+    // The mark alone becomes the explanation row, then the legend.
+    expect(flagged).toBe(plain + 1 + 1 + legendRows);
+  });
+});
+
+describe('explanationText', () => {
+  it('leaves an unflagged explanation unchanged', () => {
+    expect(explanationText({ command: 'ls', explanation: 'list' })).toBe('list');
+  });
+
+  it('puts the mark in front of a flagged explanation', () => {
+    expect(explanationText({ command: 'fd', explanation: 'find', missingTools: ['fd'] })).toBe(
+      'ⓘ find',
+    );
+  });
+
+  it('is the mark alone when a flagged candidate has no explanation', () => {
+    expect(explanationText({ command: 'fd', explanation: '', missingTools: ['fd'] })).toBe('ⓘ');
+  });
+});
+
+describe('missingToolsLegend', () => {
+  it('is undefined when nothing is flagged', () => {
+    expect(missingToolsLegend([{ command: 'ls', explanation: 'list' }])).toBeUndefined();
+  });
+
+  it('lists every missing tool once, in first-seen order', () => {
+    expect(
+      missingToolsLegend([
+        { command: 'fd . | rg x', explanation: 'a', missingTools: ['fd', 'rg'] },
+        { command: 'ls', explanation: 'b' },
+        { command: 'rg y | dust', explanation: 'c', missingTools: ['rg', 'dust'] },
+      ]),
+    ).toBe('ⓘ not installed: fd, rg, dust');
   });
 });
 
@@ -243,8 +287,8 @@ describe('estimateCandidateSelectLines — install toggle', () => {
     expect(toggled).toBe(untoggled + 1);
   });
 
-  it('counts the mark-overflow row of the displayed install form', () => {
-    // Rows: 'brew install fd &&' and 'fd abcdefghijklmnop' (19 + ' ⓘ' = 21 > 20 → one more row).
+  it('counts the install form rows without a mark-overflow row (ⓘ sits in the explanation)', () => {
+    // Rows: 'brew install fd &&' and 'fd abcdefghijklmnop' (19 fits in 20).
     const candidate = flaggedWithForm('brew install fd && fd abcdefghijklmnop');
     const untoggled = estimateCandidateSelectLines({ ...base, candidates: [selected, candidate] });
     const toggled = estimateCandidateSelectLines({
@@ -252,7 +296,7 @@ describe('estimateCandidateSelectLines — install toggle', () => {
       candidates: [selected, candidate],
       installToggled: new Set([candidateKey(candidate)]),
     });
-    expect(toggled).toBe(untoggled + 2);
+    expect(toggled).toBe(untoggled + 1);
   });
 
   it('runs the destructive check on a toggled sudo form (the ⚠ footer appears)', () => {

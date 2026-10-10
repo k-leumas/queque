@@ -2179,3 +2179,5 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 12:45 | 09-05 checkpoint fix: ⊘→ⓘ mark, removed missing-tool footer (layout jump) | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 478 tests ok except pre-existing fuzz spawn-timeout flake | ~8k |
+| 12:55 | Diagnosed missing ⓘ flags in UAT: brew widget sourced after dev widget in ~/.zshrc (handoff ENOENT) | ~/.zshrc | user env issue, no code change | ~3k |
+| 13:10 | 09-05 UAT: ⓘ moved to explanation start + legend above controls (explanationText, missingToolsLegend) | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 481 pass; fuzz spawn-timeout flake pre-existing (bug-206) | ~15k |

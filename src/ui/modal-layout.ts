@@ -3,13 +3,26 @@ import { isDestructiveCommand } from '../shared/privacy-filter.js';
 import type { DisplayCandidate } from '../shared/tool-awareness.js';
 
 /**
- * Mark shown after the last command line of a candidate that uses a tool zsh cannot resolve
- * (D-08). U+24D8 (circled i) is East Asian Width A, measured as one column by Ink's
- * string-width, so it occupies one column. Rendered cyan, distinct from the yellow destructive
- * ⚠. There is deliberately no missing-tool footer line: a footer that appears only for flagged
- * rows makes the modal jump as the selection moves; the Tab chip carries the install action.
+ * Mark that starts the explanation of a candidate using a tool zsh cannot resolve (D-08).
+ * U+24D8 (circled i) is East Asian Width A, measured as one column by Ink's string-width.
+ * Rendered cyan. The legend above the controls explains it; the legend depends on the
+ * visible list, never on the selection, so moving the selection never changes the height.
  */
 export const MISSING_TOOL_MARK = 'ⓘ';
+
+/** Explanation text a row shows: prefixed with the mark when the candidate is flagged. */
+export function explanationText(candidate: DisplayCandidate): string {
+  if ((candidate.missingTools?.length ?? 0) === 0) return candidate.explanation;
+  return candidate.explanation.length > 0
+    ? `${MISSING_TOOL_MARK} ${candidate.explanation}`
+    : MISSING_TOOL_MARK;
+}
+
+/** Legend for the mark, or undefined when no visible candidate is flagged. */
+export function missingToolsLegend(visible: readonly DisplayCandidate[]): string | undefined {
+  const tools = [...new Set(visible.flatMap((candidate) => candidate.missingTools ?? []))];
+  return tools.length > 0 ? `${MISSING_TOOL_MARK} not installed: ${tools.join(', ')}` : undefined;
+}
 
 /** Candidate identity (`command::explanation`) — the row key and the install-toggle key (D-13). */
 export function candidateKey(candidate: CommandCandidate): string {
@@ -112,7 +125,7 @@ export interface CandidateSelectLayoutInput {
 
 /**
  * Columns one inline mark takes after the last command line: a space plus a one-column glyph
- * (⚠ or ⓘ). Estimate-only — render spacing stays in Ink props.
+ * (⚠). Estimate-only — render spacing stays in Ink props.
  */
 const MARK_COLUMNS = 2;
 
@@ -143,20 +156,16 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
         // Wrap, destructive check and mark overflow all use the text the row shows.
         const command = displayedCommand(candidate, input.installToggled);
         const commandLines = wrapText(command, input.contentWidth);
+        const explanation = explanationText(candidate);
         const explanationLines =
-          candidate.explanation.length > 0
-            ? wrapText(candidate.explanation, input.contentWidth)
-            : [];
+          explanation.length > 0 ? wrapText(explanation, input.contentWidth) : [];
         lines += commandLines.length + explanationLines.length;
-        // The gutter and marks have flexShrink={0}: when the marks no longer fit after the
-        // last command line, Ink wraps the command text onto one more row.
-        const markCount =
-          (isDestructiveCommand(command) ? 1 : 0) +
-          ((candidate.missingTools?.length ?? 0) > 0 ? 1 : 0);
+        // The gutter and ⚠ have flexShrink={0}: when ⚠ no longer fits after the last
+        // command line, Ink wraps the command text onto one more row.
         const lastCommandLine = commandLines[commandLines.length - 1] ?? '';
         if (
-          markCount > 0 &&
-          lastCommandLine.length + MARK_COLUMNS * markCount > input.contentWidth
+          isDestructiveCommand(command) &&
+          lastCommandLine.length + MARK_COLUMNS > input.contentWidth
         ) {
           lines += 1;
         }
@@ -179,6 +188,12 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
   if (showDestructiveWarning) {
     lines += 1; // footer marginTop
     lines += 1; // destructive warning text
+  }
+
+  const legend = missingToolsLegend(visible);
+  if (legend !== undefined) {
+    lines += 1; // legend marginTop
+    lines += wrapText(legend, input.contentWidth).length;
   }
 
   lines += 1; // ControlsLine marginTop
