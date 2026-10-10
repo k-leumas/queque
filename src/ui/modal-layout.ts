@@ -19,13 +19,12 @@ export function explanationText(candidate: DisplayCandidate): string {
 }
 
 /**
- * Legend for the mark, or undefined when no visible candidate is flagged. It names the missing
- * tools and, when Tab can act on at least one visible row, says what Tab does (D-14).
+ * Legend for the mark, or undefined when no visible candidate is flagged. It says what ⓘ means,
+ * not which tools are missing, and adds what Tab does when Tab can act on a visible row (D-14).
  */
 export function missingToolsLegend(visible: readonly DisplayCandidate[]): string | undefined {
-  const tools = [...new Set(visible.flatMap((candidate) => candidate.missingTools ?? []))];
-  if (tools.length === 0) return undefined;
-  const legend = `${MISSING_TOOL_MARK} not installed: ${tools.join(', ')}`;
+  if (!visible.some((candidate) => (candidate.missingTools?.length ?? 0) > 0)) return undefined;
+  const legend = `${MISSING_TOOL_MARK} not installed`;
   const installable = visible.some((candidate) => candidate.install?.form != null);
   return installable ? `${legend} · tab prepends the install command` : legend;
 }

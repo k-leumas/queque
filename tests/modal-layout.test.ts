@@ -166,7 +166,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
       ...narrow,
       candidates: [{ command: 'ls', explanation, missingTools: ['ls'] }],
     });
-    const legendRows = 1 + wrapText('ⓘ not installed: ls', 20).length;
+    const legendRows = 1 + wrapText('ⓘ not installed', 20).length;
     expect(flagged).toBe(plain + 1 + legendRows);
   });
 
@@ -181,7 +181,7 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
       ...narrow,
       candidates: [{ command: longLine, explanation: 'x', missingTools: ['abc'] }],
     });
-    const legendRows = 1 + wrapText('ⓘ not installed: abc', 20).length;
+    const legendRows = 1 + wrapText('ⓘ not installed', 20).length;
     expect(flagged).toBe(plain + legendRows);
   });
 
@@ -200,20 +200,20 @@ describe('estimateCandidateSelectLines — missing-tool flag rows', () => {
     expect(overflows).toBe(fits + 1);
   });
 
-  it('counts the wrapped rows of a legend longer than contentWidth', () => {
+  it('counts the wrapped rows of the legend when contentWidth is narrow', () => {
     const narrow = { ...base, contentWidth: 20 };
-    const missing = ['aaaaaaaa', 'bbbbbbbb', 'cccccccc'];
-    const legendRows = wrapText(`ⓘ not installed: ${missing.join(', ')}`, 20).length;
+    const install = { form: 'brew install fd && fd', packages: ['fd'], blocked: null };
+    const legendRows = wrapText('ⓘ not installed · tab prepends the install command', 20).length;
     expect(legendRows).toBeGreaterThan(1);
     const plain = estimateCandidateSelectLines({
       ...narrow,
-      candidates: [{ command: 'ls', explanation: '' }],
+      candidates: [{ command: 'fd', explanation: '' }],
     });
     const flagged = estimateCandidateSelectLines({
       ...narrow,
-      candidates: [{ command: 'ls', explanation: '', missingTools: missing }],
+      candidates: [{ command: 'fd', explanation: '', missingTools: ['fd'], install }],
     });
-    // The mark alone becomes the explanation row, then the legend.
+    // The mark alone becomes the explanation row, then the legend's marginTop and rows.
     expect(flagged).toBe(plain + 1 + 1 + legendRows);
   });
 });
@@ -239,14 +239,14 @@ describe('missingToolsLegend', () => {
     expect(missingToolsLegend([{ command: 'ls', explanation: 'list' }])).toBeUndefined();
   });
 
-  it('lists every missing tool once, in first-seen order', () => {
+  it('names no tools, however many are missing', () => {
     expect(
       missingToolsLegend([
         { command: 'fd . | rg x', explanation: 'a', missingTools: ['fd', 'rg'] },
         { command: 'ls', explanation: 'b' },
-        { command: 'rg y | dust', explanation: 'c', missingTools: ['rg', 'dust'] },
+        { command: 'dust', explanation: 'c', missingTools: ['dust'] },
       ]),
-    ).toBe('ⓘ not installed: fd, rg, dust');
+    ).toBe('ⓘ not installed');
   });
 
   it('says what Tab does when a visible flagged row has an install form', () => {
@@ -259,7 +259,7 @@ describe('missingToolsLegend', () => {
           install: { form: 'brew install dust && dust', packages: ['dust'], blocked: null },
         },
       ]),
-    ).toBe('ⓘ not installed: dust · tab prepends the install command');
+    ).toBe('ⓘ not installed · tab prepends the install command');
   });
 
   it('leaves Tab out when no visible flagged row can be installed', () => {
@@ -272,7 +272,7 @@ describe('missingToolsLegend', () => {
           install: { form: null, packages: [], blocked: 'no-package-manager' },
         },
       ]),
-    ).toBe('ⓘ not installed: dust');
+    ).toBe('ⓘ not installed');
   });
 });
 

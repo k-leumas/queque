@@ -670,7 +670,7 @@ describe('CandidateSelect — missing-tool flag', () => {
 
     const text = collectText(tree).join('\n');
     expect(text).toMatch(/fd -e ts\n.{3}\nⓘ\n find ts files/);
-    expect(text).toContain('ⓘ\n not installed: fd');
+    expect(text).toContain('ⓘ\n not installed');
   });
 
   type Element = { props: Record<string, unknown> & { children?: unknown } };
@@ -699,7 +699,7 @@ describe('CandidateSelect — missing-tool flag', () => {
     const text = collectText(tree).join('\n');
     expect(text).toMatch(/sudo fd -e ts\n ⚠\n.{3}\nⓘ\n x/);
     expect(text).toContain('⚠ review carefully — this command may be destructive');
-    expect(text).toContain('ⓘ\n not installed: fd');
+    expect(text).toContain('ⓘ\n not installed');
 
     const footers = collectElements(tree).filter((element) => {
       if (element.props.marginTop !== 1) return false;
@@ -743,7 +743,7 @@ describe('CandidateSelect — missing-tool flag', () => {
     const controlsIndex = children.findIndex((child) => child.type === ControlsLine);
     expect(controlsIndex).toBeGreaterThan(0);
     expect(collectText(children[controlsIndex - 1].props.children).join('\n')).toBe(
-      'ⓘ\n not installed: fd',
+      'ⓘ\n not installed',
     );
   });
 
@@ -774,7 +774,7 @@ describe('CandidateSelect — missing-tool flag', () => {
 
     const text = collectText(tree).join('\n');
     expect(text).toMatch(/fd -e ts\n {3}\nⓘ\n find ts files/);
-    expect(text).toContain('ⓘ\n not installed: fd');
+    expect(text).toContain('ⓘ\n not installed');
   });
 
   it('Enter on a flagged candidate inserts its command unchanged', async () => {
@@ -865,14 +865,14 @@ describe('CandidateSelect — Tab install form', () => {
     stateCallCount = 0;
     let text = collectText(CandidateSelect(props)).join('\n');
     expect(text).toMatch(/brew install fd && fd -e ts\n.{3}\nⓘ\n find ts files/);
-    expect(text).toContain('ⓘ\n not installed: fd · tab prepends the install command');
+    expect(text).toContain('ⓘ\n not installed · tab prepends the install command');
 
     capturedInputHandler?.('', tab);
     stateCallCount = 0;
     text = collectText(CandidateSelect(props)).join('\n');
     expect(text).toMatch(/fd -e ts\n.{3}\nⓘ\n find ts files/);
     expect(text).not.toContain('brew install fd');
-    expect(text).toContain('ⓘ\n not installed: fd');
+    expect(text).toContain('ⓘ\n not installed');
   });
 
   it('Shift+Tab toggles the same way', async () => {
@@ -985,7 +985,8 @@ describe('CandidateSelect — Tab install form', () => {
       });
       const text = collectText(tree).join('\n');
       expect(text).toMatch(/fd -e ts\n.{3}\nⓘ\n find/);
-      expect(text).toContain('ⓘ\n not installed: fd');
+      expect(text).toContain('ⓘ\n not installed');
+      expect(text).not.toContain('tab prepends');
     }
   });
 
@@ -1015,7 +1016,7 @@ describe('CandidateSelect — Tab install form', () => {
 
     const text = collectText(tree).join('\n');
     expect(text).toMatch(/sudo apt install fd-find && fdfind -e ts\n ⚠\n.{3}\nⓘ\n find/);
-    expect(text).toContain('ⓘ\n not installed: fdfind');
+    expect(text).toContain('ⓘ\n not installed · tab prepends the install command');
     expect(text).not.toContain('will install');
     const footers = collectElements(tree).filter((element) => {
       if (element.props.marginTop !== 1) return false;
