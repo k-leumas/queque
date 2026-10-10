@@ -761,7 +761,7 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Enter inserts the displayed text; flagged rows start their explanation with cyan ⓘ; selection-independent legend (`ⓘ not installed[ · tab prepends …]`) directly above ControlsLine; passes `tabHint`. (~3100 tok)
+- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Enter inserts the displayed text; flagged rows start their explanation with cyan ⓘ; selection-independent legend (`ⓘ not installed[ · tab prepends …]`) directly above ControlsLine; ControlsLine takes no props (tab chip removed). (~3000 tok)
 - `ControlsLine.tsx` — Keyboard hints below the candidate list; optional `tabHint` (`install` | `undo install`) chips between accept and cancel. (~300 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `modal-layout.ts` — Wrapping/row layout; ⓘ `MISSING_TOOL_MARK`, `explanationText` (mark-prefixed explanation), `missingToolsLegend(visible)`, `candidateKey`, `displayedCommand`, `isInstallToggled`; estimator counts legend rows. (~2500 tok)

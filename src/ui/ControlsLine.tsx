@@ -1,14 +1,11 @@
 import { Box, Text } from 'ink';
 import type { ReactElement } from 'react';
 
-/** Props for ControlsLine. */
-export interface ControlsLineProps {
-  /** Label for the Tab chip; omitted when Tab does nothing for the selected row (D-14). */
-  tabHint?: 'install' | 'undo install';
-}
-
-/** Keyboard hints shown below the candidate list. */
-export function ControlsLine({ tabHint }: ControlsLineProps = {}): ReactElement {
+/**
+ * Keyboard hints shown below the candidate list. Tab has no chip: the ⓘ legend above
+ * explains it, so the controls stay the same for every row.
+ */
+export function ControlsLine(): ReactElement {
   return (
     <Box marginTop={1}>
       <Text backgroundColor="ansi256(238)" color="white" bold>
@@ -24,17 +21,6 @@ export function ControlsLine({ tabHint }: ControlsLineProps = {}): ReactElement 
       <Text backgroundColor="ansi256(245)" color="black">
         {' accept '}
       </Text>
-      {tabHint !== undefined && (
-        <>
-          <Text dimColor>{' · '}</Text>
-          <Text backgroundColor="ansi256(238)" color="white" bold>
-            {' tab '}
-          </Text>
-          <Text backgroundColor="ansi256(245)" color="black">
-            {` ${tabHint} `}
-          </Text>
-        </>
-      )}
       <Text dimColor>{' · '}</Text>
       <Text backgroundColor="ansi256(238)" color="white" bold>
         {' esc '}

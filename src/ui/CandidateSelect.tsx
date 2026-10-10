@@ -11,7 +11,6 @@ import {
   estimateCandidateSelectLines,
   explanationText,
   filterCandidates,
-  isInstallToggled,
   MISSING_TOOL_MARK,
   missingToolsLegend,
   wrapText,
@@ -239,7 +238,6 @@ export function CandidateSelect({
   let content: ReactElement;
   let showDestructiveWarning = false;
   let selectedCandidate: DisplayCandidate | undefined;
-  let selectedToggled = false;
   let legend: string | undefined;
   if (error === true) {
     content = (
@@ -260,8 +258,6 @@ export function CandidateSelect({
       ? displayedCommand(selectedCandidate, installToggled)
       : undefined;
     showDestructiveWarning = selectedCommand !== undefined && isDestructiveCommand(selectedCommand);
-    selectedToggled =
-      selectedCandidate !== undefined && isInstallToggled(selectedCandidate, installToggled);
     legend = missingToolsLegend(visible);
     if (visible.length === 0) {
       content = (
@@ -322,13 +318,6 @@ export function CandidateSelect({
     }
   }
 
-  // D-14: the Tab chip only appears while Tab would do something for the selected row.
-  const tabHint: 'install' | 'undo install' | undefined = selectedToggled
-    ? 'undo install'
-    : selectedCandidate?.install?.form != null
-      ? 'install'
-      : undefined;
-
   return (
     <Modal>
       {initialQuery && initialQuery.length > 0 && (
@@ -349,7 +338,7 @@ export function CandidateSelect({
           <Text dimColor>{legend.slice(MISSING_TOOL_MARK.length)}</Text>
         </Box>
       )}
-      <ControlsLine tabHint={tabHint} />
+      <ControlsLine />
       {process.env.QQ_DEV_ROOT != null && (
         <Box justifyContent="flex-end">
           <Text color="yellow">{`dev v${__QUEQUE_VERSION__} ${__QUEQUE_COMMIT__}`}</Text>

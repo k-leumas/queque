@@ -1053,46 +1053,18 @@ describe('CandidateSelect — Tab install form', () => {
     expect(text).toMatch(/brew install fd && fd -e ts\n.{3}\nⓘ/);
   });
 
-  it('passes the matching tabHint to ControlsLine (D-14)', async () => {
+  it('renders ControlsLine without a tab hint, toggled or not', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const { ControlsLine } = await import('../src/ui/ControlsLine.js');
     const props = { candidates: [flagged], onSelect: vi.fn(), onCancel: vi.fn() };
 
     const before = findElementByType(CandidateSelect(props), ControlsLine);
     expect(before).toBeDefined();
-    expect(before?.props.tabHint).toBe('install');
+    expect(before?.props).toEqual({});
 
     capturedInputHandler?.('', tab);
     stateCallCount = 0;
     const after = findElementByType(CandidateSelect(props), ControlsLine);
-    expect(after?.props.tabHint).toBe('undo install');
-
-    resetState();
-    const unflagged = findElementByType(
-      CandidateSelect({
-        candidates: [{ command: 'git status', explanation: 'status' }],
-        onSelect: vi.fn(),
-        onCancel: vi.fn(),
-      }),
-      ControlsLine,
-    );
-    expect(unflagged).toBeDefined();
-    expect(unflagged?.props.tabHint).toBeUndefined();
-
-    resetState();
-    const blocked = findElementByType(
-      CandidateSelect({
-        candidates: [
-          {
-            ...flagged,
-            install: { form: null, packages: [], blocked: 'unsafe-package-name' },
-          },
-        ],
-        onSelect: vi.fn(),
-        onCancel: vi.fn(),
-      }),
-      ControlsLine,
-    );
-    expect(blocked?.props.tabHint).toBeUndefined();
+    expect(after?.props).toEqual({});
   });
 });

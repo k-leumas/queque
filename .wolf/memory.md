@@ -2183,3 +2183,4 @@
 | 13:10 | 09-05 UAT: ⓘ moved to explanation start + legend above controls (explanationText, missingToolsLegend) | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests | 481 pass; fuzz spawn-timeout flake pre-existing (bug-206) | ~15k |
 | 13:20 | Legend now explains Tab prepends the install command (only when installable) | src/ui/modal-layout.ts, tests | 68 ui tests pass | ~3k |
 | 13:30 | Legend drops tool names: 'ⓘ not installed[ · tab prepends the install command]' | src/ui/modal-layout.ts, tests | 68 ui tests pass | ~3k |
+| 13:40 | Removed tab chip from ControlsLine (legend explains Tab) | src/ui/ControlsLine.tsx, src/ui/CandidateSelect.tsx, tests | 69 ui tests pass | ~4k |

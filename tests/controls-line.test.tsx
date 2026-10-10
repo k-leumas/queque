@@ -24,8 +24,8 @@ function collectText(node: unknown): string[] {
   return [];
 }
 
-describe('ControlsLine — tab hint (D-14)', () => {
-  it('shows no tab chip without a hint', () => {
+describe('ControlsLine', () => {
+  it('shows the same chips for every row, with no tab chip (the ⓘ legend explains Tab)', () => {
     const chips = collectText(ControlsLine());
     expect(chips).toEqual([
       ' ↑↓ ',
@@ -38,28 +38,5 @@ describe('ControlsLine — tab hint (D-14)', () => {
       ' cancel ',
     ]);
     expect(chips).not.toContain(' tab ');
-  });
-
-  it('shows the tab install chips between accept and cancel', () => {
-    expect(collectText(ControlsLine({ tabHint: 'install' }))).toEqual([
-      ' ↑↓ ',
-      ' select ',
-      ' · ',
-      ' enter ',
-      ' accept ',
-      ' · ',
-      ' tab ',
-      ' install ',
-      ' · ',
-      ' esc ',
-      ' cancel ',
-    ]);
-  });
-
-  it('shows the undo install chip while the install form is shown', () => {
-    const chips = collectText(ControlsLine({ tabHint: 'undo install' }));
-    expect(chips).toContain(' tab ');
-    expect(chips).toContain(' undo install ');
-    expect(chips).not.toContain(' install ');
   });
 });
