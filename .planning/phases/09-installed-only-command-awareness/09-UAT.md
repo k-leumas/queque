@@ -1,9 +1,9 @@
 ---
-status: diagnosed
+status: complete
 phase: 09-installed-only-command-awareness
-source: [09-01-SUMMARY.md, 09-02-SUMMARY.md, 09-03-SUMMARY.md, 09-04-SUMMARY.md, 09-05-SUMMARY.md]
+source: [09-01-SUMMARY.md, 09-02-SUMMARY.md, 09-03-SUMMARY.md, 09-04-SUMMARY.md, 09-05-SUMMARY.md, 09-06-SUMMARY.md]
 started: 2026-10-11T02:48:53Z
-updated: 2026-10-11T08:41:28.124Z
+updated: 2026-10-11T15:53:13.010Z
 ---
 
 ## Current Test
@@ -176,10 +176,14 @@ result: pass
 source: automated
 coverage_id: D3
 
+### 31. G-09-7 retest: list stays after re-enabling tool awareness (Zellij)
+expected: In a Zellij pane: run `show me how to use z3??` six times (Esc between runs); then `QQ_TOOL_AWARENESS=0`, one `??`, Esc, `unset QQ_TOOL_AWARENESS`, two more `??`; then type `smt` quickly and Backspace it away quickly. Every time the candidate list appears and stays (never dwindles to an empty modal), and the pane ends sized to the full list. (Note but don't fail on whether the top `queque ›` line is clipped — separate older issue.)
+result: pass
+
 ## Summary
 
-total: 30
-passed: 29
+total: 31
+passed: 30
 issues: 1
 pending: 0
 skipped: 0
@@ -189,10 +193,12 @@ blocked: 0
 
 - gap_id: G-09-7
   truth: "Run `QQ_TOOL_AWARENESS=0`, then use `??` on an intent that previously showed ⓘ. No ⓘ marks or legend appear. Repeat inside a Zellij pane and outside it; both show no marks. After re-enabling tool awareness, the next ?? shows its candidates and keeps them."
-  status: failed
+  status: resolved
   reason: "User reported: when i reenable tool awareness, and retrigger the qq ui, the list shows 3 results and then dwindles down to zero  so its just a modal with nothing in it"
   severity: major
   test: 7
+  resolved_by: 09-06-PLAN.md
+  resolved_at: 2026-10-11
   root_cause: "Not caused by the kill switch (the same rate with no inventory; the code dates from 99adc79, before Phase 9). When candidates arrive, CandidateSelect's layout effect reports the size of the first render, which still filters by initialQuery = request.lbuffer (0 matches, 7 lines, pane height 9), before the reset effect clears the query (22 lines, height 24). syncZellijFloatingPaneHeight starts a detached `zellij action change-floating-pane-coordinates` for each height, and Zellij applies them in finish order, so when the height-9 call lands last the pane stays at 9 rows. 15 lines go into scrollback and the modal looks empty. Ink never redraws, because the /dev/tty tty.WriteStream never emits 'resize'. Reproduced in real Zellij 0.44.1 (5/18 runs with flags, 4/14 with no inventory); an empty initialQuery fixed it in 10/10 runs."
   artifacts:
     - path: "src/ui/CandidateSelect.tsx"
