@@ -12,6 +12,13 @@ const MIN_PANE_HEIGHT = 6;
  */
 const ZELLIJ_FLOATING_FRAME_LINES = 2;
 
+/**
+ * How long one `zellij action` may run before it is killed and the next waiting height is
+ * spawned. Each action took about 100-420 ms in the G-09-7 repro, so 2 s is about five times
+ * the slowest; a hung action must not freeze every later resize.
+ */
+export const RESIZE_SETTLE_TIMEOUT_MS = 2000;
+
 let lastSyncedHeight: number | undefined;
 
 /**
