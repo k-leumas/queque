@@ -2275,3 +2275,5 @@
 | 04:11 | Created .planning/phases/09-installed-only-command-awareness/deferred-items.md | — | ~299 |
 | 04:14 | Session end: 5 writes across 5 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 6 reads | ~14723 tok |
 | 04:14 | 09-06 T2 gates: 457/457 non-timing tests, zsh-widget 46/46 x3, fuzz crafted 1 s guards flaky under load 55-138 (bug-206); typecheck/lint/build pass | — | documented | ~300 |
+| 04:17 | Created .planning/phases/09-installed-only-command-awareness/09-06-SUMMARY.md | — | ~4571 |
+| 04:20 | 09-06 SUMMARY committed (ce4eb39); STATE/ROADMAP updated, plan 6/6, awaiting verification + live Zellij UAT | .planning/STATE.md, .planning/ROADMAP.md | done | ~500 |

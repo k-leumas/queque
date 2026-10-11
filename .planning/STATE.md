@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Context-Aware Learning and Ambient Suggestions
-status: planning
-stopped_at: Phase 09 complete, ready to plan Phase 7
-last_updated: "2026-10-11T02:25:45.810Z"
-last_activity: 2026-10-10
-last_activity_desc: Phase 09 complete, transitioned to Phase 7
-state_head: 8671ef4f58f8c06a573ce43f11b75078b5bf308e
+current_phase: 9
+current_phase_name: Installed-Only Command Awareness
+status: executing
+stopped_at: Completed 09-06-PLAN.md
+last_updated: "2026-10-11T10:18:41.425Z"
+last_activity: 2026-10-11
+last_activity_desc: Completed 09-06 (empty Zellij modal gap closure)
+state_head: ce4eb39aea83872e272f41657987ad49c9f644db
 progress:
   total_phases: 11
   completed_phases: 8
-  total_plans: 32
-  completed_plans: 28
-  percent: 70
+  total_plans: 33
+  completed_plans: 29
 milestone_name: milestone
 ---
 
@@ -25,15 +24,15 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-04-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 09 — Installed-Only Command Awareness
+**Current focus:** Phase 9 — Installed-Only Command Awareness
 
 ## Current Position
 
-Phase: 7 — Context-Aware Learning and Ambient Suggestions
-Plan: Not started
-Next: Phase 09 wave 2 — 09-02, 09-03, 09-04 (parallel); then 09-05
-Status: Ready to plan
-Last activity: 2026-10-10 — Phase 09 complete, transitioned to Phase 7
+Phase: 9 (Installed-Only Command Awareness) — EXECUTING
+Plan: 6 of 6 (09-06 G-09-7 gap closure complete)
+Next: Phase 09 verification — end-of-phase UAT re-test of G-09-7 in Zellij (09-06 human-check steps 1-3)
+Status: Plans complete, awaiting verification
+Last activity: 2026-10-11 — Completed 09-06 (empty Zellij modal gap closure)
 
 Progress: [███████░░░] 70% (8/10 phases with plans in progress; 08-03 still open on ROADMAP)
 
@@ -71,6 +70,7 @@ Progress: [███████░░░] 70% (8/10 phases with plans in progre
 | Phase 09 P02 | 6min | 2 tasks | 4 files |
 | Phase 09 P03 | 5min | 3 tasks | 11 files |
 | Phase 09 P04 | 7min | 2 tasks | 9 files |
+| Phase 09 P06 | 17 min | 2 tasks | 11 files |
 
 ## Accumulated Context
 
@@ -113,6 +113,8 @@ Recent decisions affecting current work:
 - [Phase 09]: 09-03: installed-tools chunk filters unknown catalog names daemon-side (zod transform) and is strict client-side; catalog edits need no capability bump, shape changes do
 - [Phase 09]: 09-04: brace-wrap terminator check uses the last lexHand token, not string endsWith, so an escaped \; still gets its own ;
 - [Phase 09]: 09-04: displayedCommand/isInstallToggled live in modal-layout.ts so the render and layout estimate share one displayed-text rule
+- [Phase 09]: G-09-7 fix (09-06): render-phase candidate-arrival reset in CandidateSelect (prevCandidates) plus a serialized latest-wins Zellij resize queue; SIGWINCH /dev/tty resize wiring deliberately not done
+- [Phase 09]: RESIZE_SETTLE_TIMEOUT_MS = 2000 (about 5x the slowest measured zellij action); timer unref'd, a hung action is killed and the newest waiting height spawned
 
 ### Pending Todos
 
@@ -152,6 +154,6 @@ None yet.
 
 Last activity: 2026-08-26 — completed 08-02 Claude CLI-first fetch with SDK rescue
 
-Last session: 2026-10-08T08:43:56.123Z
-Stopped at: Phase 09 complete, ready to plan Phase 7
+Last session: 2026-10-11T10:18:22.910Z
+Stopped at: Completed 09-06-PLAN.md
 Resume file: None

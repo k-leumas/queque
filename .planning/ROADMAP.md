@@ -258,7 +258,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 | 6. Hardening, Privacy Defaults, and Extension Seams | 3/3 | Complete | 2026-06-18 |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
 | 8. Zero-Config Install and Provider Detection | 2/6 | In Progress | - |
-| 9. Installed-Only Command Awareness | 5/5 | Complete | 2026-10-10 |
+| 9. Installed-Only Command Awareness | 6/6 | In Progress |  |
 
 ### Phase 9: Installed-Only Command Awareness
 
@@ -274,7 +274,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
   5. Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout).
   6. The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter.
 
-**Plans:** 5/6 plans complete
+**Plans:** 6/6 plans executed
 
 Plans:
 **Wave 1**
@@ -289,7 +289,7 @@ Plans:
 - [x] 09-05-PLAN.md — Apply wave-2 OpenWolf entries; send the chunk across IPC with a stale-daemon capability bump and a catalog-drift test; human check of the live `??` flow incl. real-shell timing and the Zellij kill switch (wave 3)
 
 **Gap closure** *(UAT G-09-7)*
-- [ ] 09-06-PLAN.md — (gap closure) G-09-7 empty Zellij modal: reset candidate state during render so the stale "no matches" height is never reported, and run Zellij resizes one at a time so the newest height wins; real-hooks Ink and resize-order regression tests
+- [x] 09-06-PLAN.md — (gap closure) G-09-7 empty Zellij modal: reset candidate state during render so the stale "no matches" height is never reported, and run Zellij resizes one at a time so the newest height wins; real-hooks Ink and resize-order regression tests
 
 ## Backlog
 
