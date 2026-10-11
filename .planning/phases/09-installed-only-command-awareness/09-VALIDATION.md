@@ -50,6 +50,12 @@ Task IDs filled in by the planner (2026-10-08). Rows stay keyed by success crite
 | 09-03-T1, 09-03-T2, 09-05-T2 | 09-03, 09-05 | 2, 3 | SC-6 | T-09-07, T-09-08, T-09-15 | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ✅ | ✅ green (55/55) |
 | 09-05-T1 | 09-05 | 3 | Compat | T-09-14, T-09-19 | Unknown catalog names are filtered daemon-side, never a dropped request | unit (stale daemon replaced; catalog drift filtered) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts tests/daemon-fetch.test.ts` | ✅ | ✅ green (14/14) |
 | 09-01-T1, 09-01-T2 | 09-01 | 1 | Fallback | T-09-02, T-09-17 | Handoff failures never reach the widget ERR trap | unit + zsh smoke (missing handoff → no chunk, no flags, no error; partial write / unwritable dir → no files, status 0) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` and `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ | ✅ green (29/29 + 8/8) |
+| 09-06-T1 | 09-06 | 4 (gap) | G-09-7 layout | T-09-26 | Non-matching lbuffer on candidate arrival reports one full-list height, never draws no-matches; matching lbuffer still pre-filters (real React/Ink) | integration (real hooks) | `pnpm exec vitest run tests/candidate-select-layout.test.tsx -t "candidate arrival"` | ✅ | ✅ green |
+| 09-06-T1 | 09-06 | 4 (gap) | G-09-7 e2e | T-09-25 | Inside Zellij the arrival spawns exactly one `change-floating-pane-coordinates`, height = `resolveZellijPaneHeight(full-list)` | integration (real hooks, spawn mocked) | `pnpm exec vitest run tests/candidate-select-layout.test.tsx -t "exactly one resize"` | ✅ | ✅ green |
+| 09-06-T1 (validate-phase) | 09-06 | 4 (gap) | D-09 kept | T-09-13 | A new candidates array resets selection to row 0 and clears every Tab install toggle | integration (real hooks, real stdin keys) | `pnpm exec vitest run tests/candidate-select-layout.test.tsx -t "arrival reset"` | ✅ | ✅ green (added a03cc38) |
+| 09-06-T2 | 09-06 | 4 (gap) | Resize ordering | T-09-23 | One action at a time; queued heights collapse to newest; last applied = last requested even when earlier action is slower | unit | `pnpm exec vitest run tests/zellij-pane-resize.test.ts` | ✅ | ✅ green |
+| 09-06-T2 (+validate-phase) | 09-06 | 4 (gap) | Resize failure release | T-09-23, T-09-24 | Spawn error (async or synchronous throw) and hung action (killed after `RESIZE_SETTLE_TIMEOUT_MS`, timer unref'd) never crash or block later resizes | unit | `pnpm exec vitest run tests/zellij-pane-resize.test.ts` | ✅ | ✅ green (13/13; sync-throw + unref added a03cc38) |
+| 09-06-T2 | 09-06 | 4 (gap) | Gates | — | `pnpm test:run`, `typecheck`, `lint`, `build` exit 0 | suite | `pnpm test:run && pnpm typecheck && pnpm lint && pnpm build` | ✅ | ✅ green (31/31 files at 09-06 completion) |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -74,6 +80,7 @@ No framework install is needed.
 | Handoff median vs the ~10 ms target | SC-2 | The automated test is a 25 ms regression guard (D-19) under `zsh -f`, which has almost no functions or aliases; the target is recorded, not asserted | Record two numbers in VERIFICATION.md: the median printed by the `handoff timing` test, and the median of 5 `_qq_write_tool_handoff` runs in the user's real interactive shell (09-05 Task 3 step 6) |
 | Kill switch inside and outside Zellij | Fallback | Needs a live Zellij pane; the pane gets argv, not later shell exports | `QQ_TOOL_AWARENESS=0` (shell parameter) then `??` shows no ⊘, once with `ZELLIJ` set and once without (09-05 Task 3 step 7) |
 | Linux `apt` / `dnf` / `pacman` install form | SC-3 | No Linux host in the human check; CI's Ubuntu runner only exercises injected inventories | Optional: on a Linux box, Tab on a flagged row shows `sudo apt install …` with both ⚠ and ⊘, and Enter only inserts it |
+| G-09-7 in a live Zellij pane: repeated `show me how to use z3??` (incl. UAT 7 `QQ_TOOL_AWARENESS=0` then re-enabled) keeps the candidate list visible | G-09-7 | Needs a real Zellij server; tests mock `spawn` and cannot observe zellij's completion-order application | End-of-phase UAT: run the sequence in a Zellij floating pane and confirm the list stays drawn and the pane is not left at a stale size |
 
 ---
 
@@ -86,7 +93,7 @@ No framework install is needed.
 - [x] Feedback latency < 60s
 - [ ] `nyquist_compliant: true` set in frontmatter — blocked: SC-2 and SC-5 are red under load (bug-206); re-run `/gsd-validate-phase 9` on an idle machine
 
-**Approval:** partial 2026-10-10 — 6/8 rows green, 2 flaky under load (user chose re-run when idle)
+**Approval:** partial 2026-10-10 — 6/8 rows green, 2 flaky under load (user chose re-run when idle). Updated 2026-10-11 for 09-06: 6 new rows, all green; 2 gaps (D-09 arrival reset, sync spawn-throw/timer unref) filled in a03cc38. SC-2/SC-5 still flaky (bug-206, load avg ~27 at audit) — `nyquist_compliant` stays false
 
 ## Validation Audit 2026-10-11
 
@@ -94,4 +101,12 @@ No framework install is needed.
 |---|---|
 | Gaps found | 2 |
 | Resolved | 0 |
+| Escalated | 0 |
+
+## Validation Audit 2026-10-11 (09-06 gap closure)
+
+| Metric | Count |
+|---|---|
+| Gaps found | 2 |
+| Resolved | 2 |
 | Escalated | 0 |

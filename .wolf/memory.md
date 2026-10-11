@@ -2283,3 +2283,4 @@
 | 04:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/gap-section.md | — | ~3108 |
 | 04:44 | gsd-code-review phase 9: 09-06 gap-closure review appended (3 WR, 4 IN), disposition updated | 09-REVIEW.md, 09-REVIEW-DISPOSITION.md | done | ~120k |
 | 04:45 | gsd-secure-phase 9: added T-09-23..26 (09-06 zellij resize queue, render reset), 27/27 closed, threats_open 0 | 09-SECURITY.md | verified | ~15k |
+| 04:51 | gsd-validate-phase 9: 09-06 rows added to VALIDATION, 2 gaps filled (arrival reset, sync spawn throw/unref tests) | 09-VALIDATION.md, tests/candidate-select-layout.test.tsx, tests/zellij-pane-resize.test.ts | partial (SC-2/SC-5 flaky bug-206) | ~60k |
