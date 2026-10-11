@@ -2340,3 +2340,5 @@
 | 14:36 | Created src/client/instant-frame.ts | — | ~1291 |
 | 14:36 | Edited shell/zsh/queque.zsh | added 2 condition(s) | ~1381 |
 | 14:39 | quick 261011-jbh Task 1 GREEN: zsh instant frame (inline paint before mktemp, Zellij pane wrapper + session-dir frame file, kill switch, inline clear on non-zero exit), instant-frame.ts takeover, run-foreground arms it with its own reserve/save; 111 tests green incl. handoff timing 11.5 ms | shell/zsh/queque.zsh, src/client/instant-frame.ts, src/client/run-foreground.ts, tests | pass | ~14000 |
+| 14:41 | Created tests/bundle-startup.test.ts | — | ~2408 |
+| 14:42 | quick 261011-jbh Task 2 RED: tests/bundle-startup.test.ts b1-b6 (debugger's test kept, two output files, compile-cache cases); b1 RED_EVIDENCE_OK (cac, zod, sdk, ink, react external) | tests/bundle-startup.test.ts | RED as planned | ~3000 |
