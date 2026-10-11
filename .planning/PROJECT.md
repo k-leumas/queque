@@ -70,6 +70,7 @@ The product is meant to be used during development of the product itself. Daily-
 | Installed-tool awareness from zsh's own `$commands`/builtins/functions, rehashed on every `??` | Always current (incl. tools installed earlier in the session) at ~10–12 ms, no background cache | ✓ Good — Phase 9 |
 | Missing tools are flagged (ⓘ + selection-independent legend), never dropped; the modal never changes height with the selection | User decision at the Phase 9 checkpoint | ✓ Good — Phase 9 |
 | Install commands are built locally and insertion-only (safe package names, no `-y`); package names from per-installer aliases | The model never writes install text; model-supplied package names are backlog 999.1 | — Pending (999.1) |
+| Zellij floating-pane resizes run one at a time, newest height wins; layout height is decided during render, never from a transient filtered frame | Detached `zellij action` calls applied in finish order left the modal empty (G-09-7) | ✓ Good — Phase 9 (09-06) |
 
 ## Evolution
 
@@ -89,4 +90,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-10 after Phase 9 (installed-only command awareness)*
+*Last updated: 2026-10-11 after Phase 9 (installed-only command awareness, incl. G-09-7 gap closure)*

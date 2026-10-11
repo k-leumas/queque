@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 9
-current_phase_name: Installed-Only Command Awareness
-status: executing
-stopped_at: Completed 09-06-PLAN.md
-last_updated: "2026-10-11T10:18:41.425Z"
+current_phase: 7
+current_phase_name: Context-Aware Learning and Ambient Suggestions
+status: planning
+stopped_at: Phase 9 complete, ready to plan Phase 7
+last_updated: "2026-10-11T15:58:13.443Z"
 last_activity: 2026-10-11
-last_activity_desc: Completed 09-06 (empty Zellij modal gap closure)
-state_head: ce4eb39aea83872e272f41657987ad49c9f644db
+last_activity_desc: Phase 9 complete, transitioned to Phase 7
+state_head: 5cd2ce04a2d68a1653aab7372c36e074bfd73d5e
 progress:
   total_phases: 11
   completed_phases: 8
   total_plans: 33
   completed_plans: 29
+  percent: 73
 milestone_name: milestone
 ---
 
@@ -21,26 +22,26 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-30)
+See: .planning/PROJECT.md (updated 2026-10-11)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 9 — Installed-Only Command Awareness
+**Current focus:** Phase 7 — Context-Aware Learning and Ambient Suggestions
 
 ## Current Position
 
-Phase: 9 (Installed-Only Command Awareness) — EXECUTING
-Plan: 6 of 6 (09-06 G-09-7 gap closure complete)
-Next: Phase 09 verification — end-of-phase UAT re-test of G-09-7 in Zellij (09-06 human-check steps 1-3)
-Status: Plans complete, awaiting verification
-Last activity: 2026-10-11 — Completed 09-06 (empty Zellij modal gap closure)
+Phase: 7 — Context-Aware Learning and Ambient Suggestions
+Plan: Not started
+Next: Plan Phase 7 (/gsd-discuss-phase 7 or /gsd-plan-phase 7)
+Status: Ready to plan
+Last activity: 2026-10-11 — Phase 9 UAT complete (G-09-7 retest passed in Zellij), verified, transitioned to Phase 7
 
-Progress: [███████░░░] 70% (8/10 phases with plans in progress; 08-03 still open on ROADMAP)
+Progress: [████████████████████░] 29/33 plans (Phase 9 complete; 08-03 still open on ROADMAP)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 8
+- Total plans completed: 9
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -49,7 +50,7 @@ Progress: [███████░░░] 70% (8/10 phases with plans in progre
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 03 | 3 | - | - |
-| 09 | 5 | - | - |
+| 9 | 6 | - | - |
 
 **Recent Trend:**
 
@@ -124,6 +125,8 @@ None yet.
 
 - TUI library choice must not compromise raw keyboard handling or shell-return behavior.
 - Confidence routing quality will determine whether the product feels magical or annoying. (Deferred with Phase 5 — manual re-query is acceptable for now.)
+- [Phase 9] Zellij resize queue: WR-06 (timed-out resize can still land after its successor) and WR-07 (failed resize counted as applied, later equal heights skipped) are open advisory review findings in 09-REVIEW-DISPOSITION.md.
+- [Phase 9] nyquist_compliant stays false until /gsd-validate-phase 9 runs on an idle machine (bug-206 timing guards flake under load).
 
 ### Quick Tasks Completed
 
@@ -154,6 +157,6 @@ None yet.
 
 Last activity: 2026-08-26 — completed 08-02 Claude CLI-first fetch with SDK rescue
 
-Last session: 2026-10-11T10:18:22.910Z
-Stopped at: Completed 09-06-PLAN.md
+Last session: 2026-10-11T15:59:11Z
+Stopped at: Phase 9 complete (UAT 31/31, verification passed), ready to plan Phase 7
 Resume file: None

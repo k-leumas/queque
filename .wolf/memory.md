@@ -2286,3 +2286,5 @@
 | 04:51 | gsd-validate-phase 9: 09-06 rows added to VALIDATION, 2 gaps filled (arrival reset, sync spawn throw/unref tests) | 09-VALIDATION.md, tests/candidate-select-layout.test.tsx, tests/zellij-pane-resize.test.ts | partial (SC-2/SC-5 flaky bug-206) | ~60k |
 | 04:51 | Session end: 7 writes across 7 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 13 reads | ~44814 tok |
 | 04:57 | Created .planning/phases/09-installed-only-command-awareness/09-VERIFICATION.md | — | ~6721 |
+| 04:58 | Session end: 8 writes across 8 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 15 reads | ~52015 tok |
+| 09:51 | Session end: 8 writes across 8 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 16 reads | ~52015 tok |

@@ -258,7 +258,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 | 6. Hardening, Privacy Defaults, and Extension Seams | 3/3 | Complete | 2026-06-18 |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
 | 8. Zero-Config Install and Provider Detection | 2/6 | In Progress | - |
-| 9. Installed-Only Command Awareness | 6/6 | In Progress |  |
+| 9. Installed-Only Command Awareness | 6/6 | Complete    | 2026-10-11 |
 
 ### Phase 9: Installed-Only Command Awareness
 
@@ -274,7 +274,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
   5. Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout).
   6. The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter.
 
-**Plans:** 6/6 plans executed
+**Plans:** 6/6 plans complete
 
 Plans:
 **Wave 1**
