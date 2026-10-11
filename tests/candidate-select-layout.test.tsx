@@ -254,3 +254,65 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
     expect(reports).toEqual(reports.map(() => filtered));
   });
 });
+
+describe('CandidateSelect arrival reset (real hooks, 09-06 truth 3 / D-09)', () => {
+  beforeEach(() => {
+    spawnMock.mockReset();
+    spawnMock.mockImplementation(() => fakeChild());
+    resetZellijPaneHeightCache();
+  });
+
+  it('a new candidates array resets selection to row 0 and clears every Tab install toggle', async () => {
+    const first = annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
+    const installForm = first[0]?.install?.form;
+    expect(installForm).toBeTruthy();
+    expect(first[1]?.command).not.toBe(first[0]?.command);
+
+    const stdout = new FakeStdout();
+    const stdin = new FakeStdin();
+    const selections: string[] = [];
+    const build = (list: readonly DisplayCandidate[] | null) =>
+      React.createElement(CandidateSelect, {
+        candidates: list,
+        initialQuery: '',
+        onSelect: (command: string) => selections.push(command),
+        onCancel: () => {},
+      });
+    const press = async (key: string): Promise<void> => {
+      stdin.push(key);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await app.waitUntilRenderFlush();
+    };
+
+    const app = render(build(first), {
+      stdout: stdout as unknown as NodeJS.WriteStream,
+      stdin: stdin as unknown as NodeJS.ReadStream,
+      interactive: true,
+      patchConsole: false,
+      exitOnCtrlC: false,
+    });
+    try {
+      await app.waitUntilRenderFlush();
+      // Toggle the install form on flagged row 0, then move selection to row 1.
+      await press('\t');
+      expect(stdout.writes.join('')).toContain(installForm as string);
+      await press('\u001B[B');
+
+      // Arrival: a NEW array (same commands, so a stale toggle keyed by command would survive).
+      const second = annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
+      expect(second).not.toBe(first);
+      const writesBefore = stdout.writes.length;
+      app.rerender(build(second));
+      await app.waitUntilRenderFlush();
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const frameAfter = stdout.writes.slice(writesBefore).join('');
+      expect(frameAfter).not.toContain(installForm as string);
+
+      // Enter inserts exactly the selected row's displayed command.
+      await press('\r');
+      expect(selections).toEqual([first[0]?.command]);
+    } finally {
+      app.unmount();
+    }
+  });
+});

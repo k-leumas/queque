@@ -214,4 +214,50 @@ describe('zellij-pane-resize', () => {
       }
     });
   });
+  describe('failure to start never blocks later resizes (09-06 truth 5)', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      setZellijEnv();
+    });
+
+    it('a synchronous spawn throw does not crash and a later different height still spawns', async () => {
+      const { syncZellijFloatingPaneHeight } = await import('../src/client/zellij-pane-resize.js');
+      spawnMock.mockImplementationOnce(() => {
+        throw new Error('spawn EAGAIN');
+      });
+
+      expect(() => syncZellijFloatingPaneHeight(8)).not.toThrow();
+      expect(spawnMock).toHaveBeenCalledTimes(1);
+
+      // No timer advance: the slot must already be free after the synchronous throw.
+      syncZellijFloatingPaneHeight(14);
+      expect(spawnMock).toHaveBeenCalledTimes(2);
+      expect(spawned.map((action) => action.height)).toEqual([16]);
+    });
+
+    it("the settle timeout timer is unref'd so it never keeps the client alive", async () => {
+      const { syncZellijFloatingPaneHeight } = await import('../src/client/zellij-pane-resize.js');
+      const realSetTimeout = globalThis.setTimeout;
+      const timers: { unref: Mock }[] = [];
+      const spy = vi.spyOn(globalThis, 'setTimeout').mockImplementation(((
+        fn: () => void,
+        ms?: number,
+      ) => {
+        const handle = realSetTimeout(fn, ms);
+        const unref = vi.fn(() => handle);
+        const wrapped = Object.assign(handle, { unref });
+        timers.push(wrapped as unknown as { unref: Mock });
+        return wrapped;
+      }) as unknown as typeof setTimeout);
+      try {
+        syncZellijFloatingPaneHeight(8);
+      } finally {
+        spy.mockRestore();
+      }
+
+      expect(spawnMock).toHaveBeenCalledTimes(1);
+      expect(timers).toHaveLength(1);
+      expect(timers[0]?.unref).toHaveBeenCalledTimes(1);
+    });
+  });
 });
