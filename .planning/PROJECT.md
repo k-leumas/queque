@@ -14,7 +14,7 @@ Turn natural-language intent into a shell command that feels native to the termi
 
 ### Validated
 
-(None yet — ship to validate)
+- ✓ Suggestions favour installed tools; a candidate using a missing tool stays selectable and is flagged with a cyan ⓘ (legend above the controls), with Tab prepending a guarded install command — Phase 9
 
 ### Active
 
@@ -67,6 +67,9 @@ The product is meant to be used during development of the product itself. Daily-
 | Use `pnpm` + `tsup` + `vitest` + `cac` as the CLI/tooling baseline | Keeps scaffolding, packaging, testing, and command parsing simple and fast for a 2-week MVP | — Pending |
 | Start the TUI with Ink and helper input/list components, but keep a narrow UI adapter seam | Fastest route to a working fuzzy-list/chat prototype while preserving the option to swap UI internals if raw input handling proves limiting | — Pending |
 | Prioritize extension seams early | Future shell adapters, providers, storage, and plugins should land independently | — Pending |
+| Installed-tool awareness from zsh's own `$commands`/builtins/functions, rehashed on every `??` | Always current (incl. tools installed earlier in the session) at ~10–12 ms, no background cache | ✓ Good — Phase 9 |
+| Missing tools are flagged (ⓘ + selection-independent legend), never dropped; the modal never changes height with the selection | User decision at the Phase 9 checkpoint | ✓ Good — Phase 9 |
+| Install commands are built locally and insertion-only (safe package names, no `-y`); package names from per-installer aliases | The model never writes install text; model-supplied package names are backlog 999.1 | — Pending (999.1) |
 
 ## Evolution
 
@@ -86,4 +89,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-17 — Phase 05 deferred; Phase 06 (hardening) is next*
+*Last updated: 2026-10-10 after Phase 9 (installed-only command awareness)*
