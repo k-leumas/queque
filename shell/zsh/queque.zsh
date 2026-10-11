@@ -58,6 +58,123 @@ _qq_write_tool_handoff() {
   return 0
 }
 
+# ---------------------------------------------------------------------------
+# Instant first frame (quick 261011-jbh, LD-1).
+# The moment `??` fires, the widget paints the `queque › <lbuffer>` header and
+# a `thinking…` row into the modal surface, before Node starts:
+#   inline — `_qq_paint_inline_instant_frame` prints the scroll reserve, a
+#            fresh cursor save, an erase, the frame, and a restore, so the
+#            cursor ends on the reserve top. The reserve is byte-identical to
+#            the client's inlineScrollReserve(MODAL_VIEWPORT_LINES)
+#            (src/client/instant-frame.ts; tests/zsh-widget.test.ts z5 guards
+#            the drift), so the client's own reserve moves nothing.
+#   Zellij — `_qq_write_pane_instant_frame` writes the frame to
+#            `$tmpdir/instant-frame.txt` (0700 session dir) and the pane
+#            command becomes `/bin/sh -c "$QQ_PANE_PAINT_SCRIPT"`, which cats
+#            the file and execs the unchanged client argv. The lbuffer never
+#            reaches the zellij or sh argv.
+# The Ink client clears the frame in its first visible write (takeover). The
+# rows mirror Ink's loading frame: header (only for a non-empty lbuffer), the
+# FILTER row and the content margin (blank here), then the loading text.
+# Control characters are stripped from the lbuffer before it reaches the
+# terminal. Plain stdout only (no tty-device redirects; ZLE tracks it).
+# Every line is guarded like the handoff helper: the widget's ERR trap deletes
+# the session dir on any failing command, so every list ends in status 0 and
+# stderr stays off the ZLE line. No subprocesses.
+# Kill switch: QQ_INSTANT_FRAME=0 in the shell paints nothing and launches the
+# client exactly as before.
+# Constants use `typeset -g`, not `-r`: the widget is re-sourced in dev.
+# ---------------------------------------------------------------------------
+typeset -g QQ_MODAL_VIEWPORT_LINES=18          # mirrors MODAL_VIEWPORT_LINES (modal-layout.ts)
+typeset -g QQ_MODAL_MAX_COLUMNS=80             # mirrors MODAL_MAX_WIDTH (CandidateSelect / Modal)
+typeset -g QQ_MODAL_PADDING_COLUMNS=1          # Modal paddingX on each side
+typeset -g QQ_ZELLIJ_FRAME_COLUMNS=2           # floating pane border columns
+typeset -g QQ_INSTANT_FRAME_ROWS_ABOVE_LOADING=2  # FILTER row + content marginTop
+typeset -g QQ_INSTANT_FRAME_LOADING_TEXT='thinking…'  # LoadingSpinner FRAMES[0]
+typeset -g QQ_INSTANT_FRAME_FILE='instant-frame.txt'
+typeset -g QQ_PANE_PAINT_SCRIPT='cat "$1" 2>/dev/null; shift; exec "$@"'
+typeset -g QQ_INSTANT_FRAME_PAINTED="${QQ_INSTANT_FRAME_PAINTED:-0}"
+
+# _qq_instant_frame lbuffer columns — sets REPLY to the frame rows joined by
+# CR LF (empty with QQ_INSTANT_FRAME=0). Non-numeric or zero columns mean 80.
+_qq_instant_frame() {
+  REPLY=''
+  if [[ "${QQ_INSTANT_FRAME:-}" == 0 ]]; then
+    return 0
+  fi
+  local lbuffer="${1//[[:cntrl:]]/}"
+  local columns="${2:-}"
+  if [[ "$columns" != <1-> ]] || (( columns > QQ_MODAL_MAX_COLUMNS )); then
+    columns=$QQ_MODAL_MAX_COLUMNS
+  fi
+  local width=$(( columns - 2 * QQ_MODAL_PADDING_COLUMNS ))
+  if (( width < 1 )); then
+    width=1
+  fi
+  local pad="${(l:QQ_MODAL_PADDING_COLUMNS:)}"
+  local dim=$'\e[2m' undim=$'\e[22m'
+  local -a rows
+  if [[ -n "${1:-}" ]]; then
+    local text="queque › ${lbuffer}"
+    if (( ${#text} > width )); then
+      text="${text[1,width-1]}…"
+    fi
+    rows+=("${pad}${dim}${text}${undim}")
+  fi
+  repeat $QQ_INSTANT_FRAME_ROWS_ABOVE_LOADING rows+=('')
+  rows+=("${pad}${dim}${QQ_INSTANT_FRAME_LOADING_TEXT}${undim}")
+  REPLY="${(pj:\r\n:)rows}"
+  return 0
+}
+
+# _qq_inline_instant_frame_bytes lbuffer columns — sets REPLY to the inline
+# paint: reserve (newlines, CSI <n> A, CR, ESC 7) + CSI J + frame + ESC 8.
+# Empty when the frame is empty.
+_qq_inline_instant_frame_bytes() {
+  _qq_instant_frame "${1:-}" "${2:-}"
+  if [[ -z "$REPLY" ]]; then
+    return 0
+  fi
+  local frame="$REPLY"
+  REPLY="${(pl:QQ_MODAL_VIEWPORT_LINES::\n:)}"$'\e['"${QQ_MODAL_VIEWPORT_LINES}A"$'\r\e7\e[J'"${frame}"$'\e8'
+  return 0
+}
+
+# _qq_paint_inline_instant_frame lbuffer — prints the inline paint in one
+# write when stdout is a terminal. QQ_INSTANT_FRAME_PAINTED=1 only when that
+# print succeeded (the widget then clears it if the client exits non-zero).
+_qq_paint_inline_instant_frame() {
+  QQ_INSTANT_FRAME_PAINTED=0
+  if [[ ! -t 1 ]]; then
+    return 0
+  fi
+  _qq_inline_instant_frame_bytes "${1:-}" "${COLUMNS:-}"
+  if [[ -z "$REPLY" ]]; then
+    return 0
+  fi
+  if print -rn -- "$REPLY" 2>/dev/null; then
+    QQ_INSTANT_FRAME_PAINTED=1
+  fi
+  return 0
+}
+
+# _qq_write_pane_instant_frame dir lbuffer pane_columns — writes the frame +
+# CSI H to dir/instant-frame.txt for the Zellij pane wrapper. A failed write
+# removes the file, so failure means "no file" and the pane launches as before.
+_qq_write_pane_instant_frame() {
+  local dir="$1"
+  _qq_instant_frame "${2:-}" "${3:-}"
+  if [[ -z "$REPLY" ]]; then
+    return 0
+  fi
+  {
+    print -rn -- "${REPLY}"$'\e[H' > "$dir/$QQ_INSTANT_FRAME_FILE"
+  } 2>/dev/null || {
+    rm -f -- "$dir/$QQ_INSTANT_FRAME_FILE" 2>/dev/null || true
+  }
+  return 0
+}
+
 typeset -g QQ_DAEMON_PREWARMED="${QQ_DAEMON_PREWARMED:-0}"
 
 _qq_log() {
@@ -215,9 +332,39 @@ qq-question-widget() {
 
   # Second `?` detected — consume trigger and capture buffers
   _qq_log "trigger fired lbuffer=${LBUFFER} rbuffer=${RBUFFER}"
+  QQ_INSTANT_FRAME_PAINTED=0
   _qq_capture_buffers
   LBUFFER="$QQ_LBUFFER"
   RBUFFER="$QQ_RBUFFER"
+
+  # Build the qq invocation.
+  # qq may be a shell function (dev mode) or an installed binary. zellij run
+  # uses exec — it does not start a shell, so shell functions are invisible.
+  # Use node + the script path directly when QQ_DEV_ROOT is set; otherwise
+  # fall back to a bare qq (assumes a globally-installed binary).
+  local -a qq_cmd
+  if [[ -n "${QQ_DEV_ROOT:-}" && -f "${QQ_DEV_ROOT}/dist/cli/main.js" ]]; then
+    qq_cmd=("node" "${QQ_DEV_ROOT}/dist/cli/main.js")
+  else
+    # whence -p searches PATH only, bypassing shell functions — prevents the dev
+    # qq() function from shadowing the installed Homebrew binary.
+    local _qq_bin
+    _qq_bin=$(whence -p qq 2>/dev/null)
+    if [[ -z "$_qq_bin" ]]; then
+      zle -M "queque: qq not found — run: qq init zsh >> ~/.zshrc && source ~/.zshrc"
+      return 0
+    fi
+    qq_cmd=("$_qq_bin")
+  fi
+  _qq_log "qq_cmd=${qq_cmd[*]}"
+
+  # Instant first frame (LD-1): paint the header and loading row now, before
+  # mktemp, jq and the tool handoff, so the modal shows something before Node
+  # starts. The Zellij pane gets its frame through a file further down.
+  if [[ -z "$ZELLIJ" ]]; then
+    _qq_paint_inline_instant_frame "$QQ_LBUFFER"
+    _qq_log "instant frame painted=${QQ_INSTANT_FRAME_PAINTED}"
+  fi
 
   # Create a private session directory (CR-006 fix).
   # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on temp paths.
@@ -250,27 +397,6 @@ JSON
   _qq_write_tool_handoff "$tmpdir"
   _qq_log "tool handoff written"
 
-  # Build the qq invocation.
-  # qq may be a shell function (dev mode) or an installed binary. zellij run
-  # uses exec — it does not start a shell, so shell functions are invisible.
-  # Use node + the script path directly when QQ_DEV_ROOT is set; otherwise
-  # fall back to a bare qq (assumes a globally-installed binary).
-  local -a qq_cmd
-  if [[ -n "${QQ_DEV_ROOT:-}" && -f "${QQ_DEV_ROOT}/dist/cli/main.js" ]]; then
-    qq_cmd=("node" "${QQ_DEV_ROOT}/dist/cli/main.js")
-  else
-    # whence -p searches PATH only, bypassing shell functions — prevents the dev
-    # qq() function from shadowing the installed Homebrew binary.
-    local _qq_bin
-    _qq_bin=$(whence -p qq 2>/dev/null)
-    if [[ -z "$_qq_bin" ]]; then
-      zle -M "queque: qq not found — run: qq init zsh >> ~/.zshrc && source ~/.zshrc"
-      return 0
-    fi
-    qq_cmd=("$_qq_bin")
-  fi
-  _qq_log "qq_cmd=${qq_cmd[*]}"
-
   if [[ -n "$ZELLIJ" ]]; then
     # ---- Zellij path: FIFO + floating pane ----
     local fifo_path="$tmpdir/result.fifo"
@@ -287,10 +413,26 @@ JSON
     export QQ_PANE_WIDTH="$qq_pane_width"
     export QQ_PANE_HEIGHT="$qq_pane_height"
 
+    # Instant first frame (LD-1): the frame goes to a file in the 0700 session
+    # dir; the pane wrapper cats it, then execs the unchanged client argv. A
+    # non-numeric pane width (e.g. a percentage) falls back to the modal width.
+    local qq_frame_columns=0
+    if [[ "$qq_pane_width" == <1-> ]]; then
+      qq_frame_columns=$(( qq_pane_width - QQ_ZELLIJ_FRAME_COLUMNS ))
+    fi
+    _qq_write_pane_instant_frame "$tmpdir" "$QQ_LBUFFER" "$qq_frame_columns"
+    local -a pane_cmd
+    if [[ -s "$tmpdir/$QQ_INSTANT_FRAME_FILE" ]]; then
+      pane_cmd=(/bin/sh -c "$QQ_PANE_PAINT_SCRIPT" queque-instant-frame "$tmpdir/$QQ_INSTANT_FRAME_FILE" "${qq_cmd[@]}")
+    else
+      pane_cmd=("${qq_cmd[@]}")
+    fi
+    _qq_log "pane instant frame=${#pane_cmd[@]}"
+
     # Launch the floating pane backgrounded+disowned (D-06).
     # Launch at config height; qq client shrinks the pane once content is rendered.
     zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" --name "qq" -- \
-      "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
+      "${pane_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
       2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
 
     # Block on FIFO read with a 30 s timeout (D-05).
@@ -308,8 +450,16 @@ JSON
 
     # Run the client as a foreground child. ZLE yields the terminal so Ink
     # can open /dev/tty and render the selection UI inline.
+    local qq_client_status=0
     "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
-      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}"
+      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" || qq_client_status=$?
+
+    # A client that crashed (before or after Ink) cannot clear the instant
+    # frame: restore the widget's own fresh save (the reserve top) and erase.
+    if [[ "$QQ_INSTANT_FRAME_PAINTED" == 1 && "$qq_client_status" != 0 ]]; then
+      print -rn -- $'\e8\e[J' 2>/dev/null || true
+      _qq_log "instant frame cleared after client status=${qq_client_status}"
+    fi
 
     _qq_apply_result "$result_file" || true
   fi

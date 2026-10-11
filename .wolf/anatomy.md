@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T20:31:12.941Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T20:36:33.696Z
 > Files: 413 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -729,7 +729,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~3478 tok)
+- `queque.zsh` — QueQue ZLE widget + shell result contract: `??` trigger, qq lookup, instant first frame (quick 261011-jbh: `_qq_instant_frame`, `_qq_inline_instant_frame_bytes`, `_qq_paint_inline_instant_frame` before mktemp, `_qq_write_pane_instant_frame` + `QQ_PANE_PAINT_SCRIPT` `/bin/sh` pane wrapper, `QQ_INSTANT_FRAME=0` kill switch, inline clear on non-zero client exit), session dir, request.json, `_qq_write_tool_handoff`, Zellij FIFO pane / inline foreground client, `_qq_apply_result_str`. (~4840 tok)
 
 ## src/
 
@@ -747,9 +747,9 @@
 
 ## src/client/
 
-- `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): named cursor/erase sequences, INLINE_SURFACE_CLEAR / PANE_SURFACE_CLEAR, `inlineScrollReserve(lines)`, `armInstantFrameTakeover(stream, clear)` (RED stub until GREEN). (~474 tok)
+- `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): SAVE_CURSOR/RESTORE_CURSOR/ERASE_BELOW/CURSOR_HOME/SYNC_UPDATE_BEGIN, INLINE_SURFACE_CLEAR (ESC 8 + CSI J on the client's own save), PANE_SURFACE_CLEAR (CSI H + CSI J), `inlineScrollReserve(lines)` (byte-identical to the widget's reserve), `armInstantFrameTakeover(stream, clear)` → `{ clearNow }` (inserts the clear into the first visible write, after a leading `CSI ?2026 h`). (~1291 tok)
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Foreground client: request parse, tool handoff read, `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk appended before fetch; logs counts only), Ink modal (inline scroll reserve = `MODAL_VIEWPORT_LINES` from modal-layout), ⓘ annotation, buildShellBuffers. (~4400 tok)
+- `run-foreground.ts` — Foreground client: request parse, tool handoff read, llm branch opens /dev/tty streams first, writes `inlineScrollReserve(MODAL_VIEWPORT_LINES)` and arms `armInstantFrameTakeover` (inline / Zellij clear) before classify/context/render; `clearNow()` in pre-frame failure paths; `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk), Ink modal, clearScrollReserve = INLINE_SURFACE_CLEAR, ⓘ annotation, buildShellBuffers. (~4600 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Zellij floating-pane sizing: `readMaxZellijPaneHeight` (QQ_PANE_HEIGHT, default 24), `resolveZellijPaneHeight` (content + 2 frame rows `ZELLIJ_FLOATING_FRAME_LINES` + 1 Ink cursor row `INK_TRAILING_CURSOR_ROWS`, min 6, capped), `formatZellijPaneId`; `syncZellijFloatingPaneHeight` runs a serialized latest-wins queue: one `zellij action change-floating-pane-coordinates` at a time, heights requested meanwhile collapse to the newest, slot released on exit, on child error (no crash when zellij is missing) or after `RESIZE_SETTLE_TIMEOUT_MS` (2000, kills the hung action; timer unref'd); `resetZellijPaneHeightCache` (tests only). (~1900 tok)
 
@@ -809,7 +809,7 @@
 ## tests/
 
 - `bundle-startup.test.ts` — Specifiers of top-level static `import` statements in an ESM file. (~1073 tok)
-- `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes: header row, stale rows, scroll). (d) smt2 pre-filter draws filtered but reports the unfiltered height; (e) "header row": pane PTY rows (height − 2 chrome) fit the drawn frame (drawn-state estimate + 1 cursor row, not the report); (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height (one resize, clean replay); (g) a new candidates array resets the hold (heights `A,B`, B smaller). (~7000 tok)
+- `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (d) smt2 pre-filter draws filtered but reports the unfiltered height; (e) "header row": pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases. (~9500 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
 - `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
@@ -838,7 +838,7 @@
 - `tool-awareness.test.ts` — Characterization tests for missing-tool semantics, installer choice, package aliases, install forms/wrapping/blocked plans and annotateCandidates (incl. CR-02: no install form for a wrapper option value such as `sudo --user root`). (~3573 tok)
 - `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — argv, height cap, trailing cursor row mapping (QQ_PANE_HEIGHT=24: 15→18, 21→24, 22→24, min 6), pane-id format, dedupe, outside-Zellij no-op; fake Zellij applies heights in completion order: slower stale action lands last, coalescing to the newest, equal-height drop, ENOENT error release, RESIZE_SETTLE_TIMEOUT_MS kill release, every child unref'd. (~1900 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~7917 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`): trigger capture, result application, tool handoff (ERR-trap safety, placement, shape guard, 25 ms timing), and `instant frame` z1-z10 (rows, sanitising, truncation, reserve drift guard vs inlineScrollReserve, kill switch, pane file + `/bin/sh` wrapper, placement; `runZshArgs` passes user text as positional params). (~7917 tok)
 
 ## tests/fixtures/
 

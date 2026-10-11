@@ -19,6 +19,13 @@ import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/t
 import { installedCatalogTools } from '../shared/tool-catalog.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { MODAL_VIEWPORT_LINES } from '../ui/modal-layout.js';
+import {
+  armInstantFrameTakeover,
+  INLINE_SURFACE_CLEAR,
+  type InstantFrameTakeover,
+  inlineScrollReserve,
+  PANE_SURFACE_CLEAR,
+} from './instant-frame.js';
 import { writeShellResult } from './result-writer.js';
 import { readToolHandoff } from './tool-handoff.js';
 import { syncZellijFloatingPaneHeight } from './zellij-pane-resize.js';
@@ -175,26 +182,15 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       // Declared here so the catch block can also write errors to the TTY.
       let ttyReadStream: tty.ReadStream | undefined;
       let ttyWriteStream: tty.WriteStream | undefined;
+      // Instant-frame takeover (quick 261011-jbh, LD-1), reachable from the catch paths.
+      let takeover: InstantFrameTakeover | undefined;
       try {
-        const decision = classifyIntent({ ...request, intent: 'unknown' as const, confidence: 0 });
-        void appendDebugLog('client', 'intent classified', {
-          intent: decision.intent,
-          signals: decision.signals,
-        });
-
-        const normalized: NormalizedRequest = {
-          ...request,
-          intent: decision.intent,
-          confidence: decision.confidence,
-        };
-        const envelope = withInstalledToolsChunk(await gatherContext(normalized), toolInventory);
-        void appendDebugLog('client', 'context gathered', {
-          extraCount: envelope.extras.length,
-        });
-
         // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
         // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
-        // D-05: No raw ANSI loading indicator — spinner is inside the Ink component.
+        // D-05: The Ink spinner lives inside the component. The zsh widget's instant frame
+        // (header + loading row, painted before Node starts) only covers the time before this
+        // process runs (LD-1 amends D-05 for that interval); the takeover below hands the
+        // surface to Ink's first frame.
 
         // Try to create TTY streams from /dev/tty for Ink.
         // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
@@ -221,6 +217,19 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           await writeShellResult(resultFile, { kind: 'error', message: msg.trim() });
           return;
         }
+
+        // Take the instant frame's surface over in Ink's first visible write. Inline: write the
+        // scroll reserve first. It is byte-identical to the widget's (so it moves nothing after
+        // the widget's paint) and ends with this process's own cursor save on the reserve top,
+        // which every inline clear restores — never a stale save. Zellij: the floating pane
+        // starts clean, so the clear is absolute (home + erase below).
+        if (inZellij) {
+          takeover = armInstantFrameTakeover(ttyWriteStream, PANE_SURFACE_CLEAR);
+        } else {
+          ttyWriteStream.write(inlineScrollReserve(MODAL_VIEWPORT_LINES));
+          takeover = armInstantFrameTakeover(ttyWriteStream, INLINE_SURFACE_CLEAR);
+        }
+
         try {
           ttyReadStream.setRawMode(true);
           ttyReadStream.setRawMode(false);
@@ -236,18 +245,27 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           return;
         }
 
-        // Reserve MODAL_VIEWPORT_LINES (see modal-layout.ts for the row count) so only that
-        // many lines of previous terminal content scroll up and the rest stays visible above
-        // the TUI, rather than filling the whole screen.
-        // Skipped in Zellij: the floating pane starts with a clean screen.
-        if (ttyWriteStream && !inZellij) {
-          ttyWriteStream.write('\n'.repeat(MODAL_VIEWPORT_LINES));
-          ttyWriteStream.write(`\x1b[${MODAL_VIEWPORT_LINES}A`);
-          // Save cursor at the top of the reserved area. Restored in clearScrollReserve
-          // so cleanup always erases from the right position regardless of where Ink
-          // leaves the cursor after unmount.
-          ttyWriteStream.write('\x1b7');
-        }
+        const decision = classifyIntent({ ...request, intent: 'unknown' as const, confidence: 0 });
+        void appendDebugLog('client', 'intent classified', {
+          intent: decision.intent,
+          signals: decision.signals,
+        });
+
+        const normalized: NormalizedRequest = {
+          ...request,
+          intent: decision.intent,
+          confidence: decision.confidence,
+        };
+        const envelope = withInstalledToolsChunk(await gatherContext(normalized), toolInventory);
+        void appendDebugLog('client', 'context gathered', {
+          extraCount: envelope.extras.length,
+        });
+
+        // The inline reserve (MODAL_VIEWPORT_LINES, see modal-layout.ts) was written above, with
+        // the takeover: only that many lines of previous terminal content scroll up and the rest
+        // stays visible above the TUI. Its cursor save is restored in clearScrollReserve, so
+        // cleanup always erases from the right position regardless of where Ink leaves the
+        // cursor after unmount. Skipped in Zellij: the floating pane starts with a clean screen.
 
         await new Promise<void>((resolve) => {
           let unmount: ((skipClear?: boolean) => void) | undefined;
@@ -299,7 +317,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           const clearScrollReserve = () => {
             if (ttyWriteStream && !inZellij) {
               try {
-                ttyWriteStream.write('\x1b8\x1b[J');
+                ttyWriteStream.write(INLINE_SURFACE_CLEAR);
               } catch {
                 // TTY may already be gone (e.g. SIGHUP fired because terminal closed)
               }
@@ -337,6 +355,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;
               resolved = true;
+              // Clears the instant frame only if Ink never drew (a no-op after its first frame,
+              // so the skipClear behaviour below is unchanged).
+              takeover?.clearNow();
               const errorMsg = formatFifoError(message);
               await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
               // skipClear=true: don't restore cursor to ZLE's saved start position —
@@ -350,6 +371,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         void appendDebugLog('client', 'llm request failed', { message });
+        // A failure before Ink's first frame leaves the instant frame on screen: clear it.
+        takeover?.clearNow();
         const errorMsg = formatFifoError(message);
         await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
       }

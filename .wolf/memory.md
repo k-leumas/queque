@@ -2337,3 +2337,6 @@
 | 14:26 | Session end: 34 writes across 19 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 25 reads | ~118729 tok |
 | 14:31 | Created src/client/instant-frame.ts | — | ~474 |
 | 14:35 | quick 261011-jbh Task 1 RED: instant-frame zsh cases z1-z10, real-Ink takeover replays t1-t6, replayScreen ESC 7/8, throw-on-call instant-frame.ts stub; z1 RED_EVIDENCE_OK | tests/zsh-widget.test.ts, tests/candidate-select-layout.test.tsx, src/client/instant-frame.ts | RED as planned | ~9000 |
+| 14:36 | Created src/client/instant-frame.ts | — | ~1291 |
+| 14:36 | Edited shell/zsh/queque.zsh | added 2 condition(s) | ~1381 |
+| 14:39 | quick 261011-jbh Task 1 GREEN: zsh instant frame (inline paint before mktemp, Zellij pane wrapper + session-dir frame file, kill switch, inline clear on non-zero exit), instant-frame.ts takeover, run-foreground arms it with its own reserve/save; 111 tests green incl. handoff timing 11.5 ms | shell/zsh/queque.zsh, src/client/instant-frame.ts, src/client/run-foreground.ts, tests | pass | ~14000 |

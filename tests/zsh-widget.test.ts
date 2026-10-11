@@ -988,11 +988,14 @@ function frameRows(reply: string): string[] {
   return reply.replace(SGR_SEQUENCE, '').split('\r\n');
 }
 
-/** The qq-question-widget function body. */
+/** The qq-question-widget function body (up to its closing redraw; the heredoc has a `}`). */
 function questionWidgetBody(): string {
   const source = readFileSync(widgetPath, 'utf8');
   const start = source.indexOf('qq-question-widget() {');
-  return source.slice(start, source.indexOf('\n}\n', start));
+  const end = source.indexOf('\n  zle -R\n  return 0\n}\n', start);
+  expect(start).toBeGreaterThanOrEqual(0);
+  expect(end).toBeGreaterThan(start);
+  return source.slice(start, end);
 }
 
 describe('instant frame', () => {
