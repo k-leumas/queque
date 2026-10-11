@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T09:49:28.361Z
-> Files: 400 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T10:01:10.423Z
+> Files: 401 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -776,7 +776,7 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Enter inserts the displayed text; the search filter matches the displayed text (install form when toggled) and hidden rows keep their toggle; flagged rows start their explanation with cyan ⓘ; selection-independent legend (`ⓘ not installed[ · tab prepends …]`) directly above ControlsLine; ControlsLine takes no props (tab chip removed). (~3000 tok)
+- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Candidate-arrival reset (selection, toggles, non-matching lbuffer query) runs during render via `prevCandidates` (fourth useState), so no effect sees the stale initialQuery render (G-09-7). Enter inserts the displayed text; the search filter matches the displayed text (install form when toggled) and hidden rows keep their toggle; flagged rows start their explanation with cyan ⓘ; selection-independent legend (`ⓘ not installed[ · tab prepends …]`) directly above ControlsLine; ControlsLine takes no props (tab chip removed). (~3100 tok)
 - `ControlsLine.tsx` — Keyboard hints below the candidate list; optional `tabHint` (`install` | `undo install`) chips between accept and cancel. (~300 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
 - `modal-layout.ts` — Wrapping/row layout; ⓘ `MISSING_TOOL_MARK`, `explanationText` (mark-prefixed explanation), `missingToolsLegend(visible)`, `candidateKey`, `displayedCommand`, `isInstallToggled`; `filterCandidates(list, query)` matches the command or the install form, regardless of the Tab toggle; `MODAL_VIEWPORT_LINES` (18: inline scroll reserve, row count documented); estimator counts the ⚠ footer and legend as separate margin+line blocks. (~2500 tok)
@@ -785,7 +785,8 @@
 
 ## tests/
 
-- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~6504 tok)
+- `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; a matching lbuffer still pre-filters. (~2500 tok)
+- `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
 - `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)

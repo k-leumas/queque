@@ -2255,3 +2255,16 @@
 | 03:49 | Edited .planning/ROADMAP.md | 5→5 lines | ~25 |
 | 03:49 | Edited .planning/ROADMAP.md | 2→5 lines | ~104 |
 | 03:50 | Planned G-09-7 gap closure 09-06 (render-phase arrival reset + serialized zellij resize queue); probes confirmed real-Ink [6,11] -> [11] and 42/43 mocked tests unchanged | .planning/phases/09-installed-only-command-awareness/09-06-PLAN.md, .planning/ROADMAP.md | plan valid | ~45000 |
+| 03:51 | Session end: 12 writes across 6 files (09-SECURITY.md, empty-modal-after-tool-awareness-reenable.md, 09-05-SUMMARY.md, probe_layout.test.tsx, 09-06-PLAN.md) | 9 reads | ~40560 tok |
+| 03:51 | Session end: 12 writes across 6 files (09-SECURITY.md, empty-modal-after-tool-awareness-reenable.md, 09-05-SUMMARY.md, probe_layout.test.tsx, 09-06-PLAN.md) | 10 reads | ~40560 tok |
+
+## Session: 2026-10-11 03:54
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 03:59 | Created tests/candidate-select-layout.test.tsx | — | ~2499 |
+| 04:01 | Edited src/ui/CandidateSelect.tsx | CSS: useState, effect | ~505 |
+| 04:01 | Edited tests/candidate-select.test.tsx | CSS: effects | ~88 |
+| 04:00 | 09-06 T1 RED: real-hooks Ink test (reports [6,15]/[6,17], spawns heights 8,17) | tests/candidate-select-layout.test.tsx | committed 8b4c1c9 | ~2500 |
+| 04:02 | 09-06 T1 GREEN: render-phase prevCandidates arrival reset, effect removed | src/ui/CandidateSelect.tsx, tests/candidate-select.test.tsx | 52/52 targeted pass | ~1200 |
+| 04:03 | 09-06 T1 wolf: anatomy/cerebrum entries for prevCandidates + real-hooks tests | .wolf/anatomy.md, .wolf/cerebrum.md | done | ~400 |

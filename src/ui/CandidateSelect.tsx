@@ -102,6 +102,32 @@ export function CandidateSelect({
   // Third useState (tests index state by call order): keys (candidateKey) of rows showing
   // their install form. Eager initial value — the test mock never calls lazy initializers.
   const [installToggled, setInstallToggled] = useState<ReadonlySet<string>>(new Set());
+  // Fourth useState: the candidates array the arrival reset below last ran for. Eager null
+  // initial value, so a mount that already has candidates still runs the reset.
+  const [prevCandidates, setPrevCandidates] = useState<readonly DisplayCandidate[] | null>(null);
+
+  // Reset selection and Tab toggles when candidates arrive (Pitfall 2 fix, D-09).
+  // Also clear the initialQuery pre-filter if it produces zero matches — the lbuffer
+  // was already used as context for Claude; filtering candidates by it too is
+  // harmful when no command literally contains the lbuffer text.
+  // This runs during render (React's "adjust state when a prop changes" pattern), not in
+  // an effect: an effect would commit one stale render first, and the layout effect would
+  // report that render's 'no matches' height to Zellij (G-09-7). React discards this
+  // render and retries before committing, so no effect ever sees the stale state.
+  // Each setter runs only when its value would change.
+  if (candidates !== prevCandidates) {
+    setPrevCandidates(candidates);
+    if (selectedIndex !== 0) {
+      setSelectedIndex(0);
+    }
+    if (installToggled.size > 0) {
+      setInstallToggled(new Set());
+    }
+    // Toggles are being cleared, so the filter matches the plain commands.
+    if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
+      setQuery('');
+    }
+  }
 
   // If the TTY doesn't support raw mode we can't accept keyboard input — cancel
   // immediately rather than leaving the user with an unresponsive TUI.
@@ -110,20 +136,6 @@ export function CandidateSelect({
       onCancel();
     }
   }, [isRawModeSupported, onCancel]);
-
-  // Reset selectedIndex when candidates arrive (Pitfall 2 fix).
-  // Also clear initialQuery pre-filter if it produces zero matches — the lbuffer
-  // was already used as context for Claude; filtering candidates by it too is
-  // harmful when no command literally contains the lbuffer text.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: candidates is a prop; reset on arrival is intentional
-  useEffect(() => {
-    setSelectedIndex(0);
-    setInstallToggled(new Set());
-    // Toggles were just cleared, so the filter matches the plain commands.
-    if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
-      setQuery('');
-    }
-  }, [candidates]);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: reset selectedIndex when query changes to prevent out-of-bounds access after filter narrows visible list
   useEffect(() => {

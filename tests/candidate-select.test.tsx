@@ -224,10 +224,10 @@ describe('CandidateSelect — selectedIndex reset on query change', () => {
       onSelect,
       onCancel,
     });
-    // useEffect must be called twice: once for useEffect([candidates]) and
-    // once for useEffect([query]) — the latter added by Plan 04-02.
-    // +1 for the isRawModeSupported cancel guard added in the prod-tui-crash fix.
-    expect(useEffect).toHaveBeenCalledTimes(4);
+    // Three effects: the isRawModeSupported cancel guard (prod-tui-crash fix), the
+    // useEffect([query]) selectedIndex reset (Plan 04-02) and the layout report.
+    // The candidate-arrival reset runs during render since 09-06 (G-09-7), not in an effect.
+    expect(useEffect).toHaveBeenCalledTimes(3);
   });
 });
 
