@@ -26,6 +26,8 @@ created: "2026-10-10"
 | client → daemon (Unix socket) | Envelope with the installed-tools chunk crosses IPC to a possibly older daemon | Public catalog tool names |
 | client/daemon → hosted model | Steered system prompt leaves the machine (SDK or `claude -p`) | Public catalog tool names |
 | process argv | `claude -p --system-prompt <text>` is visible through `ps` | Public catalog tool names |
+| foreground client → `zellij` CLI (child process, 09-06) | `spawn('zellij', ['action','change-floating-pane-coordinates','--pane-id',id,'--height',n], {stdio:'ignore'})`, no shell | Integer height + Zellij-set `ZELLIJ_PANE_ID` |
+| Ink render → Zellij floating pane (09-06) | Layout reports drive pane size; a reordered size hides content (G-09-7) | Integer heights |
 
 ---
 
@@ -55,7 +57,11 @@ created: "2026-10-10"
 | T-09-20 | Tampering | brace wrapper with `#` comment / heredoc | medium | mitigate | `unwrappable-command` block when wrap needed and comment/heredoc token present (`tool-awareness.ts:235–270`) | closed |
 | T-09-21 | Tampering | verification of T-09-18 | medium | mitigate | Fuzz child exits 3 on any word containing `undefined` (`tests/fixtures/command-words-fuzz-child.mjs:13, 48`) | closed |
 | T-09-22 | DoS | verification of T-09-19 | medium | mitigate | `tests/daemon-fetch.test.ts:100` "filters a catalog name the daemon does not know instead of dropping the request" | closed |
-| T-09-SC | Tampering | npm/pip/cargo installs | high | mitigate | No new runtime or dev dependencies in phase 09 plans. Only `66bc863` (pnpm 11.8.0 → 12.6.0 `packageManager` pin, sha512-hashed) changed the lockfile in the window — a toolchain bump, not a QueQue dependency | closed |
+| T-09-23 | DoS | `src/client/zellij-pane-resize.ts` serialized queue | medium | mitigate | One action at a time (`current`, L176–184); hung action killed after `RESIZE_SETTLE_TIMEOUT_MS` then settled (L141–148), timer `unref` (L150), single `waiting` slot replaced not appended (L178); `tests/zellij-pane-resize.test.ts:180` "a hung action is killed" | closed |
+| T-09-24 | DoS | spawn failure of `zellij action` | medium | mitigate | `child.on('error', settle)` (L133) and synchronous-throw `catch { settle() }` (L136–139); `tests/zellij-pane-resize.test.ts:169` "a spawn error releases the queue without throwing" | closed |
+| T-09-25 | Tampering | resize argv | low | accept | Argv-only spawn, `stdio: 'ignore'`, no shell (L117–128); height from `resolveZellijPaneHeight` (integer, clamped), pane id from Zellij env — see Accepted Risks | closed |
+| T-09-26 | DoS | `src/ui/CandidateSelect.tsx` render-phase reset | low | mitigate | Guard `candidates !== prevCandidates` (L118) with `setPrevCandidates` in the same render, so the retry render skips it; real-hooks `tests/candidate-select-layout.test.tsx` would hang on a loop | closed |
+| T-09-SC | Tampering | npm/pip/cargo installs | high | mitigate | No new runtime or dev dependencies in phase 09 plans. Only `66bc863` (pnpm 11.8.0 → 12.6.0 `packageManager` pin, sha512-hashed) changed the lockfile in the window — a toolchain bump, not a QueQue dependency. 09-06 (`8b4c1c9..e8677f3`) touched neither `package.json` nor `pnpm-lock.yaml` | closed |
 
 *Status: open · closed · open — below high threshold (non-blocking)*
 *Severity: critical > high > medium > low — only open threats at or above workflow.security_block_on count toward threats_open*
@@ -69,6 +75,7 @@ created: "2026-10-10"
 |---------|------------|-----------|-------------|------|
 | AR-09-01 | T-09-04 | Flag is display-only; QueQue inserts into the buffer and never executes, so the user reviews before running | Plan 09-01 threat model | 2026-10-10 |
 | AR-09-02 | T-09-09 | Already accepted as T-08-02-07; the added text is public catalog tool names only, so `ps` disclosure does not meaningfully grow | Plan 09-03 threat model | 2026-10-10 |
+| AR-09-03 | T-09-25 | Argv-only spawn with no shell; inputs are a clamped integer and Zellij's own pane id, so no injection surface | Plan 09-06 threat model | 2026-10-11 |
 
 *Accepted risks do not resurface in future audit runs.*
 
@@ -79,6 +86,7 @@ created: "2026-10-10"
 | Audit Date | Threats Total | Closed | Open | Run By |
 |------------|---------------|--------|------|--------|
 | 2026-10-10 | 23 | 23 | 0 | /gsd-secure-phase (orchestrator, ASVS L1 grep-depth; auditor skipped per short-circuit rule) |
+| 2026-10-11 | 27 | 27 | 0 | /gsd-secure-phase (09-06 gap closure; orchestrator, ASVS L1 grep-depth; auditor skipped per short-circuit rule). Note: review WR-06/WR-07 (timeout path may reorder heights; failed action still counted as applied) are display-correctness defects, not security threats — tracked in 09-REVIEW-DISPOSITION.md |
 
 ---
 
@@ -89,4 +97,4 @@ created: "2026-10-10"
 - [x] `threats_open: 0` confirmed
 - [x] `status: verified` set in frontmatter
 
-**Approval:** verified 2026-10-10
+**Approval:** verified 2026-10-10; re-verified 2026-10-11 (09-06)
