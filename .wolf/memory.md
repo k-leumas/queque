@@ -2224,3 +2224,5 @@
 
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
+| 20:34 | Created .planning/phases/09-installed-only-command-awareness/09-SECURITY.md | — | ~2098 |
+| 20:34 | /gsd-secure-phase 9: verified 23 threats closed at L1, wrote SECURITY.md | 09-SECURITY.md | threats_open: 0 | ~15000 |
