@@ -13,6 +13,16 @@ const MIN_PANE_HEIGHT = 6;
 const ZELLIJ_FLOATING_FRAME_LINES = 2;
 
 /**
+ * Ink's trailing cursor row. Ink writes every interactive frame shorter than its rows as the
+ * output plus a newline, leaving the cursor on its own row below the frame, so an N-line
+ * frame needs N + 1 PTY rows. Without this row a pane that fits the content exactly scrolls
+ * the `queque ›` header into pane scrollback (Zellij shows `SCROLL: 0/1`). At the cap, min()
+ * absorbs the extra row: a frame as tall as the pane takes Ink's fullscreen path, which writes
+ * no trailing newline. Like the frame rows, a presentational row offset kept as a named constant.
+ */
+const INK_TRAILING_CURSOR_ROWS = 1;
+
+/**
  * How long one `zellij action` may run before it is killed and the next waiting height is
  * spawned. Each action took about 100-420 ms in the G-09-7 repro, so 2 s is about five times
  * the slowest; a hung action must not freeze every later resize.
@@ -54,14 +64,15 @@ export function readMaxZellijPaneHeight(): number {
 }
 
 /**
- * Converts Ink content line count into a Zellij floating pane height capped by config.
+ * Converts Ink content line count into a Zellij floating pane height capped by config:
+ * content + frame rows (border + title) + Ink's trailing cursor row, at least MIN_PANE_HEIGHT.
  */
 export function resolveZellijPaneHeight(
   contentLines: number,
   maxHeight = readMaxZellijPaneHeight(),
 ): number {
-  const withFrame = contentLines + ZELLIJ_FLOATING_FRAME_LINES;
-  return Math.min(Math.max(withFrame, MIN_PANE_HEIGHT), maxHeight);
+  const withChrome = contentLines + ZELLIJ_FLOATING_FRAME_LINES + INK_TRAILING_CURSOR_ROWS;
+  return Math.min(Math.max(withChrome, MIN_PANE_HEIGHT), maxHeight);
 }
 
 /**

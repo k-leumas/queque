@@ -3576,6 +3576,26 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-11T10:11:08.000Z"
+    },
+    {
+      "id": "bug-220",
+      "timestamp": "2026-10-11T16:27:00.000Z",
+      "error_message": "top `queque ›` line clipped when the modal is resized in Zellij (SCROLL: 0/1, blank last row)",
+      "file": "src/client/zellij-pane-resize.ts",
+      "root_cause": "Ink's trailing cursor row was not counted in the pane height: Ink 7 writes an interactive frame shorter than its rows as output + '\\n', so an N-line frame takes N + 1 PTY rows, but resolveZellijPaneHeight gave the pane N + 2 rows with 2 used by the border and title, leaving N. The terminal scrolled the header row into pane scrollback.",
+      "fix": "Added module-private INK_TRAILING_CURSOR_ROWS = 1 next to ZELLIJ_FLOATING_FRAME_LINES; resolveZellijPaneHeight returns content + frame rows + cursor row (min 6, QQ_PANE_HEIGHT cap unchanged). Real-Ink regression case (e) in tests/candidate-select-layout.test.tsx; queue-test heights +1.",
+      "tags": [
+        "zellij",
+        "ink",
+        "pane-resize",
+        "layout",
+        "off-by-one"
+      ],
+      "related_bugs": [
+        "bug-219"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-11T16:27:00.000Z"
     }
   ]
 }

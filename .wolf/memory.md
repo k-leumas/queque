@@ -2288,3 +2288,19 @@
 | 04:57 | Created .planning/phases/09-installed-only-command-awareness/09-VERIFICATION.md | — | ~6721 |
 | 04:58 | Session end: 8 writes across 8 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 15 reads | ~52015 tok |
 | 09:51 | Session end: 8 writes across 8 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 16 reads | ~52015 tok |
+| 10:00 | Session end: 8 writes across 8 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 17 reads | ~52015 tok |
+| 10:10 | Session end: 8 writes across 8 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 20 reads | ~59716 tok |
+| 10:19 | Created .planning/quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/261011-e43-PLAN.md | — | ~6570 |
+| 10:19 | Edited .planning/quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/261011-e43-PLAN.md | inline fix | ~41 |
+| 10:20 | Planned quick 261011-e43 (Zellij header clip): probe confirmed Ink occupies report+1 rows vs pane report rows; fix = INK_TRAILING_CURSOR_ROWS headroom | .planning/quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/261011-e43-PLAN.md | plan valid (frontmatter + structure) | ~45000 |
+| 10:21 | Session end: 10 writes across 9 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 21 reads | ~69299 tok |
+| 10:23 | Edited tests/candidate-select-layout.test.tsx | added 1 import(s) | ~38 |
+| 10:23 | Edited tests/candidate-select-layout.test.tsx | added optional chaining | ~359 |
+| 10:23 | Edited tests/candidate-select-layout.test.tsx | 2→3 lines | ~38 |
+| 10:23 | Edited tests/candidate-select-layout.test.tsx | CSS: writes | ~150 |
+| 10:23 | Edited tests/candidate-select-layout.test.tsx | added nullish coalescing | ~393 |
+| 10:27 | Edited src/client/zellij-pane-resize.ts | expanded (+10 lines) | ~186 |
+| 10:27 | Edited src/client/zellij-pane-resize.ts | modified resolveZellijPaneHeight() | ~135 |
+| 10:24 | quick 261011-e43 RED: real-Ink case (e) "header row" (pane PTY rows >= Ink frame rows) + cursor-row mapping unit test + queue heights +1; RED 15<16, 17<18, 8<9 (RED_EVIDENCE_OK) | tests/candidate-select-layout.test.tsx, tests/zellij-pane-resize.test.ts | committed 8a7bca0 | ~6000 |
+| 10:27 | quick 261011-e43 GREEN: INK_TRAILING_CURSOR_ROWS = 1 in resolveZellijPaneHeight (content + 2 frame + 1 cursor row, min 6, capped); 22/22 tests pass | src/client/zellij-pane-resize.ts | green | ~1500 |
+| 10:30 | Restored curated anatomy lines rewritten by the OpenWolf hook, dropped 4 auto buglog entries, logged bug-220, cerebrum Ink cursor-row + Zellij scrollback learnings and decision | .wolf/anatomy.md, .wolf/buglog.json, .wolf/cerebrum.md | done | ~2000 |
