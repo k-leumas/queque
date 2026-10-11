@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T09:26:38.920Z
-> Files: 399 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T09:49:28.361Z
+> Files: 400 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -419,7 +419,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~4890 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~5222 tok)
 - `STATE.md` — Project State (~2442 tok)
 
 ## .planning/debug/
@@ -554,6 +554,7 @@
 - `09-04-SUMMARY.md` — Phase 9 Plan 04: Tab Install Form Summary (~3886 tok)
 - `09-05-PLAN.md` — Wave 3: apply wave-2 .wolf entries, pong installedTools, catalog-drift test, client sends strict chunk, human check (real-shell timing, Zellij kill switch) (~8056 tok)
 - `09-05-SUMMARY.md` — Phase 9 Plan 05: Installed-Tools Chunk, Daemon Capability and Live Check Summary (~2198 tok)
+- `09-06-PLAN.md` — Gap closure G-09-7 (empty Zellij modal): tracer = render-phase candidate-arrival reset in CandidateSelect (prevCandidates, 4th useState) + real-hooks Ink test; Task 2 = serialized latest-wins zellij resize queue (error/2 s settle release) + completion-order race test; SIGWINCH not wired (reasons in objective) (~9100 tok)
 - `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2940 tok)
 - `09-DISCUSS-CHECKPOINT.json` (~587 tok)
 - `09-DISCUSSION-LOG.md` — Phase 9: Installed-Only Command Awareness - Discussion Log (~1131 tok)

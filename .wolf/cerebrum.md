@@ -64,6 +64,8 @@
 - Lexer regression cases from reviews go in `REVIEW_CASES` (tests/fixtures/command-words-cases.ts), not `COMMAND_WORD_CASES` — the spike table is a verbatim copy locked at 40 cases by a count test.
 
 ## Do-Not-Repeat
+- [2026-10-11] In the Claude Code Bash tool, `cp` is aliased to interactive `cp -i`: restoring a file over an existing one waits on an invisible `overwrite? (y/n)` prompt, so the command hangs until timeout and the restore never happens. Use `/bin/cp -f` (or `command cp -f`) for scripted copies, and verify with `cmp` afterwards.
+- [2026-10-11] A real-hooks Ink render works under vitest (no ink/react mocks) with Writable/Readable fakes (`isTTY` true, 78x22) plus `waitUntilRenderFlush`. A planning probe reproduced G-09-7's stale layout report (`[6, 11]`) and showed a render-phase `prevCandidates` reset gives `[11]`. Use this, not the mocked candidate-select.test.tsx, to test effect ordering.
 - [2026-10-08] In the Claude Code Bash tool, `git` is a shell function from a shell snapshot: `git ls-files --error-unmatch` and `git check-ignore` returned 0 for untracked paths. Use the real binary (`/usr/local/bin/git`, or `whence -p git`) when an exit status decides tracked/ignored.
 - [2026-10-07] `packageManager` must pin a pnpm that ships a darwin-x64 binary (11.8.0 did not; pnpm then refused every command incl. lefthook hooks). Now pinned to 12.6.0 to match the global install. If pnpm errors with ERR_PNPM_PNPM_ENGINE_NO_NATIVE_BINARY, repin rather than using `pnpm_config_pm_on_fail=ignore`.
 - [2026-10-07] commitlint subject-case rejects subjects starting with an acronym (e.g. "SDK-first ..."). Start the subject with a lowercase word.
