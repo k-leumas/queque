@@ -23,11 +23,11 @@ overrides:
   - must_have: "09-02: every crafted malformed input finishes in its own child process within a hard 1 s timeout"
     reason: "User decision 2026-10-10: bug-206 (Node child spawn time exceeds the 1 s per-input timeout under machine load) stays a tracked warning, not a phase gap. The lexer itself takes 0.003–0.025 ms per crafted input in process (0.0168 ms worst case in this run). The 20k and 5k child-process fuzz cases pass."
     accepted_by: "user (Samuel Kimama)"
-    accepted_at: "2026-10-10T21:00:37Z"
+    accepted_at: "2026-10-11T02:25:34Z"
   - must_have: "09-05: pnpm test:run exits 0"
     reason: "Environment-dependent for the same reason as bug-206 (accepted as a tracked warning by the user on 2026-10-10). Every phase test file passes. The only failures are the fuzz file's 1 s spawn-bound crafted cases, and only at load average 20–40. claude-exec.test.ts passes when run alone (2/2)."
     accepted_by: "user (Samuel Kimama)"
-    accepted_at: "2026-10-10T21:00:37Z"
+    accepted_at: "2026-10-11T02:25:34Z"
 re_verification:
   previous_status: human_needed
   previous_score: 4/6
