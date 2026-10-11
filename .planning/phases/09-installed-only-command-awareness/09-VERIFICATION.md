@@ -1,12 +1,12 @@
 ---
 phase: 09-installed-only-command-awareness
-verified: 2026-10-10T21:00:37Z
-status: passed
-score: 6/6 roadmap success criteria verified (4 verified on evidence, 2 passed by user override: SC-2 timing, SC-3 naming clause)
-covered_files: [".planning/phases/09-installed-only-command-awareness/09-01-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-01-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-02-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-02-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-03-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-03-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-04-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-04-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-05-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md", "docs/EXTENSIONS.md", "shell/zsh/queque.zsh", "src/client/run-foreground.ts", "src/client/tool-handoff.ts", "src/contracts/ipc.ts", "src/contracts/request.ts", "src/daemon/bootstrap.ts", "src/daemon/server.ts", "src/providers/claude-cli.ts", "src/providers/claude.ts", "src/providers/steering.ts", "src/shared/command-words.ts", "src/shared/tool-awareness.ts", "src/shared/tool-catalog.ts", "src/ui/CandidateSelect.tsx", "src/ui/ControlsLine.tsx", "src/ui/modal-layout.ts", "tests/candidate-select.test.tsx", "tests/claude-cli-provider.test.ts", "tests/claude-provider.test.ts", "tests/client-result.test.ts", "tests/command-words-fuzz.test.ts", "tests/command-words.test.ts", "tests/controls-line.test.tsx", "tests/daemon-bootstrap.test.ts", "tests/daemon-fetch.test.ts", "tests/fixtures/command-words-cases.ts", "tests/fixtures/command-words-fuzz-child.mjs", "tests/modal-layout.test.ts", "tests/steering.test.ts", "tests/tool-awareness.test.ts", "tests/tool-handoff.test.ts", "tests/zsh-widget.test.ts"]
-covered_digest: "v3:sha256:376ff87bbd1e568eb2fb4a3bfd17e80fe499e3b432bd6e375d3086e63c5f1cb7"
+verified: 2026-10-11T10:57:00Z
+status: human_needed
+score: 12/13 must-haves verified (6/6 roadmap SCs, 4 on evidence + 2 by carried-forward user override; 6/7 plan 09-06 truths; 1 live-Zellij truth awaits human UAT)
+covered_files: [".planning/phases/09-installed-only-command-awareness/09-01-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-01-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-02-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-02-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-03-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-03-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-04-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-04-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-05-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md", ".planning/phases/09-installed-only-command-awareness/09-06-PLAN.md", ".planning/phases/09-installed-only-command-awareness/09-06-SUMMARY.md", "docs/EXTENSIONS.md", "shell/zsh/queque.zsh", "src/client/run-foreground.ts", "src/client/tool-handoff.ts", "src/client/zellij-pane-resize.ts", "src/contracts/ipc.ts", "src/contracts/request.ts", "src/daemon/bootstrap.ts", "src/daemon/server.ts", "src/providers/claude-cli.ts", "src/providers/claude.ts", "src/providers/steering.ts", "src/shared/command-words.ts", "src/shared/tool-awareness.ts", "src/shared/tool-catalog.ts", "src/ui/CandidateSelect.tsx", "src/ui/ControlsLine.tsx", "src/ui/modal-layout.ts", "tests/candidate-select-layout.test.tsx", "tests/candidate-select.test.tsx", "tests/claude-cli-provider.test.ts", "tests/claude-provider.test.ts", "tests/client-result.test.ts", "tests/command-words-fuzz.test.ts", "tests/command-words.test.ts", "tests/controls-line.test.tsx", "tests/daemon-bootstrap.test.ts", "tests/daemon-fetch.test.ts", "tests/fixtures/command-words-cases.ts", "tests/fixtures/command-words-fuzz-child.mjs", "tests/modal-layout.test.ts", "tests/steering.test.ts", "tests/tool-awareness.test.ts", "tests/tool-handoff.test.ts", "tests/zellij-pane-resize.test.ts", "tests/zsh-widget.test.ts"]
+covered_digest: "v3:sha256:5463336805244729d0161e6ee5f74fa01dc5fa8e30c11bf36212fbca2ec1142b"
 behavior_unverified: 0
-overrides_applied: 5
+overrides_applied: 2 # SC-2 and SC-3 (naming) count in the score; the other 3 carried-forward overrides cover 09-01..09-05 plan must-haves
 overrides:
   - must_have: "A candidate that uses a tool not in $commands is shown with a 'not installed' flag naming the tool"
     reason: "Accepted as designed. Checkpoint decision 2026-10-10 (612fa07): the row shows a cyan ⓘ before its explanation, and a selection-independent legend reads `ⓘ not installed[ · tab prepends the install command]`. At the user's request the legend names no tools, so the modal never changes height with the selection. The candidate's own command text shows the tool, and Tab shows the install packages. The flag, selectability and insertion-only parts of SC-3 are verified on evidence; only the 'naming the tool' clause is overridden."
@@ -29,149 +29,131 @@ overrides:
     accepted_by: "user (Samuel Kimama)"
     accepted_at: "2026-10-11T02:25:34Z"
 re_verification:
-  previous_status: human_needed
-  previous_score: 4/6
-  previous_verified: 2026-10-10T21:25:00Z
-  trigger: "Covered files changed after the previous report (674ca9f before the report was committed but not reflected in it; aa55dd5 after)"
+  previous_status: passed
+  previous_score: 6/6 roadmap success criteria (4 on evidence, 2 by override)
+  previous_verified: 2026-10-10T21:00:37Z (re-checked 2026-10-11T02:25:34Z)
+  trigger: "UAT test 7 found G-09-7 (major) after the previous report; gap-closure plan 09-06 executed (8b4c1c9..e8677f3) plus post-execute commits 7351fa8 (review), 6b8a607 (security), a03cc38/77e1d3a (Nyquist tests). Covered files changed."
   gaps_closed:
-    - "SC-3 'naming the tool': user accepted as designed; override recorded"
-    - "SC-2 'about 10 ms': user accepted 12.37 ms; override recorded"
-    - "WR-01 Linux package names: apt kubectl is now null and blocked as unknown-package (aa55dd5). The remaining hand-typed Linux names are accepted for now, with backlog phase 999.1 'Model-supplied install package names' (33cab84) as the follow-up"
-    - "WR-04 filter vs Tab: the user chose 'keep the row visible after undoing tab'. filterCandidates(candidates, query) now matches the command or the install form whatever the toggle state (674ca9f), and both tests pass"
+    - "G-09-7 (code): candidate arrival no longer reports the stale 'no matches' height, and Zellij resizes are serialized latest-wins. Proven by real-hooks Ink tests and queue-ordering tests that fail against the pre-09-06 source (re-run independently in this verification). The live Zellij re-test remains a human UAT item."
   gaps_remaining: []
   regressions: []
+human_verification:
+  - test: "G-09-7 live re-test in Zellij (09-06 Task 2 human-check, UAT test 7 re-run). Open a zsh pane inside Zellij with the dev widget (run qq_dev first if the Homebrew widget loads last; /tmp/qq-debug.log should show 'tool handoff written'; dist/cli/main.js was rebuilt 2026-10-11 04:51 local, after the last src commit). (1) Type `show me how to use z3??` six times, Esc between runs. (2) `QQ_TOOL_AWARENESS=0`, then `show me how to use z3??` (no ⓘ), Esc, `unset QQ_TOOL_AWARENESS`, then `show me how to use z3??` twice. (3) With a list open, type `smt` quickly, then Backspace it away quickly."
+    expected: "Steps 1–3 show the candidate list every time and keep it; the pane never shrinks to just the legend and controls, and after step 3 it ends sized to the full list. (Note but do not fail on: a one-row clip of the top `queque › …` line, a separate pre-existing Ink trailing-cursor issue.)"
+    why_human: "Needs a real Zellij floating pane and real server-side ordering of `zellij action change-floating-pane-coordinates` under live PTY output. The tests mock spawn and model Zellij as applying heights in exit order; the real failure rate was 25–50% of runs before the fix, so only a live repeat run can confirm it is gone."
 ---
 
 # Phase 9: Installed-Only Command Awareness Verification Report
 
-**Phase Goal:** Suggestions favour tools that are actually installed, and any suggestion that uses a tool the user does not have is visibly flagged "not installed" (never silently dropped). The `??` widget hands zsh's freshly rehashed `$commands` and `$builtins` to the client; the prompt carries the installed ∩ curated-catalog tool list; each returned candidate's command words are checked against the installed set.
-**Verified:** 2026-10-10T21:00:37Z
-**Status:** passed
-**Re-verification:** Yes. The previous report (human_needed, 4/6) went stale when covered files changed in 674ca9f and aa55dd5. This round fully re-checks those two commits, applies the user's 2026-10-10 decisions as overrides, and regression-checks everything else.
+**Phase Goal:** Suggestions favour tools that are actually installed, and any suggestion that uses a tool the user does not have is visibly flagged "not installed" (never silently dropped). The `??` widget hands zsh's freshly rehashed `$commands` and `$builtins` to the client (~7 ms, always current, including tools installed earlier in the same session); the prompt carries the installed ∩ curated-catalog tool list; each returned candidate's command words are checked against the installed set.
+**Verified:** 2026-10-11T10:57:00Z
+**Status:** human_needed
+**Re-verification:** Yes. The previous report (passed, 2026-10-10) predates UAT gap G-09-7 and gap-closure plan 09-06. This round fully verifies 09-06 and regression-checks plans 09-01 to 09-05.
 
 ## Goal Achievement
 
-The core mechanism is real, wired end to end and tested. The regression check this round confirms each step:
+Since the previous report, only five files changed (`git diff --stat 8f8bd78..HEAD -- src shell tests docs`), all from 09-06 and its Nyquist follow-up:
 
-1. The zsh widget runs `rehash` and writes `commands.txt`, `builtins.txt` and `functions.txt` (`shell/zsh/queque.zsh:44-60`, called at line 250).
-2. The client reads them eagerly (`run-foreground.ts:153`).
-3. The hand lexer extracts command words, and `annotateCandidates` flags missing tools without reordering or dropping candidates (`run-foreground.ts:328`).
-4. The picker shows a cyan ⓘ mark and a selection-independent legend (`modal-layout.ts:11-30`).
-5. The client sends the strictly validated installed ∩ CATALOG chunk (`run-foreground.ts:68-70`). The daemon accepts it leniently, filtering unknown names.
-6. `buildSystemPrompt` is used by both prompt-building adapters (`claude.ts:172`, `claude-cli.ts:28`).
+- `src/ui/CandidateSelect.tsx`
+- `src/client/zellij-pane-resize.ts`
+- `tests/candidate-select-layout.test.tsx` (new)
+- `tests/candidate-select.test.tsx`
+- `tests/zellij-pane-resize.test.ts`
 
-The two items that previously needed a human decision (SC-2 timing and SC-3 naming) are now covered by user overrides. The two post-checkpoint review items are settled:
+The phase-9 mechanism (handoff, lexer, flagging, catalog steering, daemon capability) is unchanged, and its test files all pass in this run's full suite.
 
-- **WR-04:** the user's choice is implemented and tested.
-- **WR-01:** kubectl is fixed; the remaining Linux names are accepted, with backlog 999.1 as the follow-up.
+G-09-7 (an empty modal in Zellij) is closed in code, and both of its causes were removed at the source:
 
-### What changed since the previous report (verified in code)
+1. **No stale height on arrival.** `CandidateSelect.tsx:118-130` resets during render when `candidates !== prevCandidates`. It clears the selection, clears the Tab toggles, and clears a non-matching lbuffer query. The old effect keyed on candidates is gone. The layout effect (`CandidateSelect.tsx:149-178`) therefore never sees the stale `initialQuery` render.
+2. **Ordered resizes.** `zellij-pane-resize.ts:81-185` runs one action at a time; the newest waiting height wins.
+   - The slot is released on `exit`, on `error` (a missing zellij no longer crashes the client), on a synchronous spawn throw, or after a 2 s settle timeout that kills the action. The settle timer is unref'd.
+   - The resize helper is still wired: `run-foreground.ts:283` passes `onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined`, and `initialQuery: request.lbuffer` is at line 263.
 
-| Commit | Claim | Verified evidence |
-|--------|-------|-------------------|
-| 674ca9f | `filterCandidates(candidates, query)` matches the command or the install form regardless of the Tab toggle, so Tab never shows or hides a row | `modal-layout.ts:112-124`: the signature has no `installToggled` parameter. The predicate is `c.command.toLowerCase().includes(lower) \|\| (c.install?.form?.toLowerCase().includes(lower) ?? false)`. A grep finds no call with three arguments: all 6 call sites in `CandidateSelect.tsx` (lines 123, 187, 207, 225, 231, 256) and both in `modal-layout.ts` (175, 203) pass two. Named tests pass: candidate-select "keeps a row matched by its install form visible after Tab undoes it" and modal-layout "matches a row by its command or its install form, toggled or not (WR-04)". The jiti spot-check on the real module gives `brew` and `BREW` → `['fd -e ts']` and `ls` → `['ls -la']`. Enter still inserts `displayedCommand(selected, installToggled)`, so it inserts exactly what the row shows. |
-| aa55dd5 | APT_PACKAGES kubectl → null, so planInstall blocks it as `unknown-package` | `tool-awareness.ts:125` is `['kubectl', null]` with a comment. Spot-check: `packageFor('kubectl','apt')` → `null`. `planInstall('kubectl get pods',['kubectl'],'apt')` → `{form:null,packages:[],blocked:'unknown-package'}`. brew is unchanged: `brew install kubernetes-cli && kubectl get pods`. dnf `kubernetes-client` and pacman `kubectl` are unchanged. The row is still flagged ⓘ, because `explanationText` depends only on `missingTools`. The legend drops the Tab clause when no visible row has an install form (`modal-layout.ts:25-30`). Named tests pass: "uses each Linux manager its own package names (WR-01)" and the blocked-plans group. |
-| 33cab84 | Backlog item 999.1 committed | `.planning/ROADMAP.md` has "Phase 999.1: Model-supplied install package names (BACKLOG)", which says it "Replaces the hand-typed Linux alias names (phase 9 WR-01)". |
+**Independent RED reproduction.** HEAD was exported to the scratchpad and the two 09-06 source files were swapped back to `9da51d9`; nothing in the working tree changed. The new tests then fail with the same values the SUMMARY claims:
 
-### Observable Truths (ROADMAP success criteria, the contract)
+- (a) `expected [ 6, 15 ] to not include 6`
+- (b) `[ 6, 17 ]`
+- (c) spawned heights `[ '8', '17' ]`, expected `[ '17' ]`
+- queue test 1: `expected 9 to be 24`
+- the other queue tests: 7 more failures
+
+With the 09-06 source in place, all of them pass.
+
+**Mutation check of the D-09 test** (the Nyquist test "a new candidates array resets selection to row 0 and clears every Tab install toggle"). Removing `setInstallToggled(new Set())` makes it fail: the frame still contains `brew install z3 && …`. Removing `setSelectedIndex(0)` also makes it fail: Enter selects the wrong row. So 09-06 truth 3 is proven by behaviour, not just by the code being present.
+
+### Observable Truths
+
+#### Roadmap success criteria (the contract)
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| 1 | SC-1: A tool installed earlier in the same shell session is treated as installed on the next `??` without restarting the shell | ✓ VERIFIED | `queque.zsh:50`: `rehash` runs unconditionally on every enabled call, before the three `print -rl` writes (52-54). The behavioural test `tests/zsh-widget.test.ts` "SC-1: lists a tool created after the hash table was primed" passed in this run (46/46). It also passed the human checkpoint on 2026-10-10. |
-| 2 | SC-2: The widget handoff adds no more than about 10 ms to `??` startup with about 2k PATH commands | ✓ PASSED (override) | Override: the user accepted 12.37 ms on 2026-10-10. Recorded medians are 10.10 ms (`zsh -f`) and 12.37 ms (real interactive shell), with 2,175 commands, at load average 20–40. The automated guard "median of 5 handoffs under zsh -f stays below the 25 ms guard (D-19)" passed in this run at load average 37–40. The cost is the lazy re-hash during the first `${(k)commands}` expansion, which SC-1 requires; `rehash` itself costs 0.1–0.5 ms. |
-| 3 | SC-3: A candidate that uses a tool not in `$commands` is shown with a "not installed" flag naming the tool; it remains selectable and insertion-only | ✓ PASSED (override, naming clause only) | **Flag (verified):** `explanationText` puts ⓘ before the explanation of any row whose `missingTools` is non-empty (`modal-layout.ts:14-19`, rendered at `CandidateSelect.tsx:279-289`). `missingToolsLegend` renders `ⓘ not installed[ · tab prepends the install command]`. **Selectable and insertion-only (verified):** Enter calls `onSelect(displayedCommand(...))` and nothing executes. `annotateCandidates` maps 1:1, with no drop or re-sort. Tests: client-result "case A: flags a missing tool from a real zsh handoff, keeps order, inserts verbatim", plus candidate-select. **Naming clause:** overridden, because the user accepted the design on 2026-10-10 (the legend names no tools, so the modal height is selection-independent). |
-| 4 | SC-4: Builtins, reserved words, `<placeholders>`, `$VAR` commands and path commands (`./x.sh`) are never flagged | ✓ VERIFIED | The command-words tests passed in this run: all 40 spike cases plus review cases, with builtins from a real `zsh -f` listing. Spot-checks from the previous round (unchanged, since neither new commit touches the lexer): `cd <dir> && ls`, `$EDITOR file.txt`, `./x.sh --flag`, `<tool> --help`, `for f in *; do echo $f; done`, `~/bin/foo`, a heredoc body and the function-only `nvm use 20` all give `[]`. Builtins come from builtins.txt, never a hardcoded list. |
-| 5 | SC-5: Malformed model output never hangs or crashes command-word extraction (fuzz test with a hard per-input timeout) | ✓ VERIFIED (test is flaky under load; bug-206 tracked) | This run: in-process jiti benchmark on the real `extractCommandWords` over the 10 crafted inputs that timed out in vitest (`rg 'open`, `echo $(date`, `((((((`, `>`, `&&&&`, `${`, `<placeholder`, `` x ` ``, `a'`, `a "b\`). Worst case was 0.0168 ms per input over 1000 iterations, with no throw and no `undefined` words. The 20k and 5k child-process fuzz cases passed. The 10 crafted-case failures are the 1 s child-spawn bound at load average 37 (bug-206), not lexer time. `extractCommandWords` has a try/catch, an 8192-character cap and a depth cap of 32. |
-| 6 | SC-6: The prompt includes only the installed ∩ curated-catalog tool list (not the full `$commands` list), across every provider adapter | ✓ VERIFIED | The client sends `installedCatalogTools(isInstalled)` validated by `strictInstalledToolsChunkSchema` (`run-foreground.ts:68-70`). The daemon's lenient schema filters to CATALOG_SET. `buildSystemPrompt` (`steering.ts:43`) re-filters to CATALOG. Both prompt-building adapters use it: `claude.ts:172` `system: buildSystemPrompt(envelope)` and `claude-cli.ts:28` `--system-prompt`. Tests passed in this run: steering (adapters guard), client-result "sends only installed catalog tools in the envelope", and the daemon-fetch catalog-drift and malformed-chunk tests. |
+| 1 | SC-1: A tool installed earlier in the same session is treated as installed on the next `??` | ✓ VERIFIED | Unchanged since the previous report: `queque.zsh` runs `rehash` on every call. `tests/zsh-widget.test.ts` ("SC-1: lists a tool created after the hash table was primed") passed in this run's full suite. UAT test 5 passed live. |
+| 2 | SC-2: Handoff ≤ ~10 ms with ~2k PATH commands | ✓ PASSED (override) | The user accepted 12.37 ms (real shell) / 10.10 ms (`zsh -f`) on 2026-10-10. The automated 25 ms median guard passed in this run (zsh-widget file green). UAT test 9 passed live. |
+| 3 | SC-3: A missing-tool candidate is shown with a "not installed" flag naming the tool; it remains selectable and insertion-only | ✓ PASSED (override, naming clause only) | The ⓘ flag, the legend, selectability and insert-only Enter are unchanged and tested; UAT tests 2–4 passed live. **"Shown … remains" inside Zellij (G-09-7):** fixed in code by 09-06 truths 1–5 below. The live re-test is the one human item. Naming clause: carried-forward user override. |
+| 4 | SC-4: Builtins, reserved words, placeholders, `$VAR` and path commands are never flagged | ✓ VERIFIED | Lexer unchanged. command-words tests passed in this run. UAT test 6 passed live. |
+| 5 | SC-5: Malformed output never hangs or crashes extraction (fuzz, hard per-input timeout) | ✓ VERIFIED | `tests/command-words-fuzz.test.ts` passed 36/36 when run alone (load 14). In the full parallel run (load ~19–70), one crafted case hit the 1 s spawn bound at 1015 ms. That is bug-206, a tracked warning the user accepted; lexer time per input is under 0.02 ms. |
+| 6 | SC-6: The prompt carries only installed ∩ catalog, across every adapter | ✓ VERIFIED | Unchanged. steering, client-result and daemon-fetch tests passed in this run. |
 
-**Score:** 6/6 roadmap truths (4 verified on evidence, 2 passed by override); 0 present but behaviour-unverified; 0 failed.
+#### Plan 09-06 must-haves (gap closure G-09-7)
 
-### Plan must-haves (merged; plans cannot reduce roadmap scope)
+| # | Truth | Status | Evidence |
+|---|-------|--------|----------|
+| 7 | Non-matching lbuffer on arrival: exactly one layout report (the full-list estimate), never the no-match estimate, and the no-match frame is never drawn. Real React effects and a real Ink render | ✓ VERIFIED | `tests/candidate-select-layout.test.tsx` cases (a) and (b) pass. The file has no `vi.mock('react'|'ink')`; it mocks only `node:child_process` spawn, through an importOriginal spread. Both cases fail against the pre-09-06 component (re-run here). |
+| 8 | In Zellij, that arrival spawns exactly one `change-floating-pane-coordinates`, at `resolveZellijPaneHeight(full)` | ✓ VERIFIED | Case (c) passes with the real `syncZellijFloatingPaneHeight`. It fails against the old source (`['8','17']`). |
+| 9 | A matching lbuffer still pre-filters; arrival resets the selection and clears every Tab toggle (D-09) | ✓ VERIFIED | Case (d) passes (`smt2` pre-filter). The Nyquist D-09 test passes and is mutation-sensitive for both setters (see above). The mocked suite passes 43/43. |
+| 10 | At most one resize action runs at a time; requests collapse to the newest; the last applied height equals the last requested, even when the earlier action is slower | ✓ VERIFIED | Queue tests "final applied height equals the last requested height when the earlier action is slower" (asserts alive ≤ 1 and applied `[9, 24]`), "collapse to the newest" and "equal height dropped" all pass, and all fail on the old helper. Caveat: on the timeout path, WR-06 shows a narrow window where a killed child may overlap the next one. See Anti-Patterns (warning). |
+| 11 | A resize that fails to start or hangs past `RESIZE_SETTLE_TIMEOUT_MS` never crashes the client or blocks later resizes | ✓ VERIFIED | Tests pass for: ENOENT `error` releases the queue; a synchronous spawn throw (Nyquist); a hung child killed at the 2 s timeout, with nothing spawned before it; child unref; settle-timer unref (Nyquist). All fail on the old helper. |
+| 12 | `pnpm test:run`, `pnpm typecheck`, `pnpm lint` and `pnpm build` exit 0 | ✓ VERIFIED (bug-206 caveat) | Results by command: <ul><li>`pnpm typecheck` exit 0.</li><li>`pnpm lint` exit 0, with 2 older warnings logged in deferred-items.md.</li><li>`pnpm test:run` (run once): 30/31 files and 541/542 tests. The only failure is bug-206, in the fuzz file, which 09-06 did not touch. That file then passed 36/36 alone. The orchestrator reports 31/31 at low load.</li><li>`pnpm build`: not re-run, because it writes `dist/`. `dist/cli/main.js` is dated 04:51 local, newer than the last src commit at 04:15, which is consistent with the orchestrator's build pass.</li></ul> |
+| 13 | Human end-of-phase UAT: repeated `show me how to use z3??` in a Zellij pane, including UAT test 7's disable/re-enable sequence, shows and keeps the list | ? UNCERTAIN (human) | Harvested from the 09-06 Task 2 `<human-check>`. Spawn is mocked in every test; only a live Zellij run can confirm it. |
 
-| Plan | Must-have group | Status | Evidence |
-|------|-----------------|--------|----------|
-| 09-01 | Handoff shape: three `print -rl`, no loop or sort, unconditional rehash, ERR-trap-safe, failure leaves no files, kill switch at shell and client level, call placed after request.json and before both launches | ✓ VERIFIED | zsh-widget tests 46/46 in this run (shape guard, partial write, unwritable dir, missing dir, kill switch, placement). |
-| 09-01 | functions.txt holds function and alias names (no `_` prefix); a function-only `nvm` is never flagged | ✓ VERIFIED | `queque.zsh:54` `${(k)functions:#_*} ${(k)aliases}`; zsh-widget test "D-01 amended". |
-| 09-01 | Hardened lexer: Map/Set tables, escape fallback, depth cap 32, 8192-character cap, no throw | ✓ VERIFIED | command-words tests pass; in-process benchmark is clean. |
-| 09-01 | Inventory read eagerly after request.json parses; full set never sent over IPC; logs carry counts only | ✓ VERIFIED | `run-foreground.ts:153` reads before `ensureDaemon`. Only the CATALOG-intersected chunk enters the envelope. |
-| 09-01 / 09-04 | D-08/D-14/D-11 UI wording (⊘ after the command, selection-dependent footers, `tab install` chips) | ✓ PASSED (override) | Superseded at the checkpoint and accepted as designed by the user on 2026-10-10. Replaced by `MISSING_TOOL_MARK = 'ⓘ'`, `explanationText`, `missingToolsLegend` and a prop-less ControlsLine. |
-| 09-01 / WR-02 | Layout estimate mirrors the render; viewport reserve | ✓ VERIFIED | `MODAL_VIEWPORT_LINES = 18`. After 674ca9f, `estimateCandidateSelectLines` uses the same two-argument `filterCandidates` as the render (`modal-layout.ts:175, 203`), so estimate and render agree on the visible rows. modal-layout tests pass. |
-| 09-02 | 40 spike cases, token contract frozen, real-source import in the fuzz child | ✓ VERIFIED | command-words.test.ts passes. The fuzz child imports `src/shared/command-words.ts` directly. |
-| 09-02 | "every crafted malformed input … finishes in its own child process within a hard 1 s timeout" | ✓ PASSED (override) | Under load, 10 of 36 cases hit the 1 s spawn bound in this run. The user accepted bug-206 as a tracked warning. The lexer work is under 0.02 ms per input. |
-| 09-03 | Catalog of 196 names; lenient and strict schemas; steering text for D-15/16/17; byte-identical prompt without a chunk; adapters guard; Phase 8 plan notes; EXTENSIONS.md section | ✓ VERIFIED | steering tests pass. Unchanged since the previous round. |
-| 09-04 | Tab and Shift+Tab toggle in place; Enter inserts the shown text; one install step with deduped packages; installer from the handoff; per-installer alias map; unsafe-name, list-op wrap and comment/heredoc blocking; toggle keyed by `candidateKey` and reset on arrival; no auto-run | ✓ VERIFIED | `CandidateSelect.tsx:185-215` (the Tab, Enter and arrow handlers now all use the same two-argument `filterCandidates`, so the selected index means the same row in each). `tool-awareness.ts` planInstall/packageFor. The tool-awareness tests (including apt kubectl → `unknown-package`) and the candidate-select tests pass. |
-| 09-04 / WR-04 | Filter and Tab agree on what a row is | ✓ VERIFIED | The user chose "keep the row visible after undoing tab". 674ca9f implements it, and the named tests pass (see above). |
-| 09-04 / WR-01 | Linux manager package names | ✓ VERIFIED (accepted for now) | apt kubectl → null (aa55dd5). The remaining hand-typed Linux names are accepted by the user, with backlog phase 999.1 (33cab84) as the follow-up. |
-| 09-05 | Envelope carries exactly one validated chunk; pong `installedTools: true`; stale daemon replaced; catalog drift filtered; malformed chunk ignored | ✓ VERIFIED | daemon-bootstrap "replaces a live daemon whose pong lacks installedTools" and the daemon-fetch tests passed in this run. |
-| 09-05 | SC-1, kill switch and Zellij behaviour (human-verified) | ✓ VERIFIED | Checkpoint approved on 2026-10-10. SC-1 and the kill switch are also covered by automated tests. |
-| 09-05 | SC-2 numbers recorded | ✓ VERIFIED | `zsh -f` 10.10 ms; real shell 12.37 ms (accepted, see the override). |
-| 09-05 | "`pnpm test:run` exits 0" | ✓ PASSED (override) | Environment-dependent (bug-206). Every phase test file passes. `claude-exec.test.ts` passes when run alone (2/2). |
+**Score:** 12/13 truths verified (2 of them by carried-forward override); 0 present but behaviour-unverified; 1 awaiting human UAT; 0 failed.
 
-### Prohibitions
+#### Plans 09-01 to 09-05 must-haves (regression check)
 
-| Prohibition | Tier | Disposition | Evidence |
-|-------------|------|-------------|----------|
-| MUST NOT drop or re-sort a flagged candidate | test | VERIFIED | `annotateCandidates` maps 1:1; client-result case A asserts order. 674ca9f only widens the filter match; it never drops a row on toggle. |
-| MUST NOT discover installed tools from Node | test | VERIFIED | `src/` has no PATH, readdir, watch or which discovery; zsh-widget shape guard. |
-| MUST NOT add a third-party shell parser dependency | test | VERIFIED | package.json has none. |
-| MUST NOT let the handoff helper return non-zero to the widget | test | VERIFIED | ERR-trap tests passed. |
-| MUST NOT change lexHand op/redir/comment token values | test | VERIFIED | Token-contract tests passed. |
-| MUST NOT put the full installed list, function/alias names or non-catalog names in a prompt | test | VERIFIED | Strict and lenient schemas plus the steering re-filter; client-result asserts the absence of non-catalog names. |
-| MUST NOT steer through sampling parameters | test | VERIFIED | None in `src/providers`. |
-| MUST NOT auto-run an install or the command | test | VERIFIED | Tab only changes the shown text; Enter calls `onSelect` (replace-buffer). A blocked plan (apt kubectl) offers no form at all. |
-| MUST NOT let a quoted or metacharacter word into the installer args | test | VERIFIED | The `SAFE_PACKAGE_NAME_RE` gate makes `planInstall` return `unsafe-package-name`. |
-| MUST NOT emit a brace-wrapped form for a command with a comment or heredoc | test | VERIFIED | Blocked-plans tests passed in this run. |
+None of their source files changed after the previous report, which verified them in detail. The previous report's override set (D-08/D-14 UI wording, 09-02's 1 s per-input bound, 09-05's test:run exit) is carried forward in the frontmatter unchanged.
 
-### Required Artifacts
+This run re-ran every test file for those plans. All passed in the full suite: tool-awareness, tool-handoff, command-words, steering, modal-layout, controls-line, client-result, daemon-bootstrap, daemon-fetch, claude-provider, claude-cli-provider and zsh-widget. The fuzz file was the only exception: it passed when run alone, as described above.
+
+All prohibitions from the previous report still hold. The 09-06 diff adds no Node-side tool discovery, no shell parser dependency, no auto-run, and no sampling parameters. The resize spawn stays argv-only with `stdio: 'ignore'`.
+
+### Required Artifacts (09-06)
 
 | Artifact | Expected | Status | Details |
 |----------|----------|--------|---------|
-| `shell/zsh/queque.zsh` | `_qq_write_tool_handoff` and its call in the widget | ✓ VERIFIED | Lines 44-60 and 250 |
-| `src/client/tool-handoff.ts` | `readToolHandoff`, `TOOL_HANDOFF_FILES` | ✓ VERIFIED | Imported by run-foreground |
-| `src/shared/command-words.ts` | Hardened lexer | ✓ VERIFIED | Unchanged since the previous round |
-| `src/shared/tool-awareness.ts` | Inventory, `isInstalled`, `missingTools`, `annotateCandidates`, install plan | ✓ VERIFIED | aa55dd5: APT kubectl → null |
-| `src/shared/tool-catalog.ts` | CATALOG (196), `installedCatalogTools` | ✓ VERIFIED | |
-| `src/contracts/request.ts` | Lenient chunk variant and strict schema | ✓ VERIFIED | |
-| `src/providers/steering.ts` | `QUEQUE_SYSTEM`, `buildSteeringText`, `buildSystemPrompt` | ✓ VERIFIED | Used by claude.ts and claude-cli.ts |
-| `src/ui/modal-layout.ts` | Mark, legend, `candidateKey`, `filterCandidates`, estimate | ✓ VERIFIED | 674ca9f: two-argument filter on command or install form |
-| `src/ui/CandidateSelect.tsx` | Mark, legend, Tab toggle | ✓ VERIFIED | All handlers and the render use the same filter |
-| `src/ui/ControlsLine.tsx` | (was: `tabHint` chips) | ✓ PASSED (override) | Prop-less by user request (88b08dc) |
-| `src/contracts/ipc.ts`, `src/daemon/server.ts`, `src/daemon/bootstrap.ts` | installedTools capability | ✓ VERIFIED | |
+| `src/ui/CandidateSelect.tsx` | Render-phase arrival reset using `prevCandidates` | ✓ VERIFIED | Lines 107 and 118-130. `setPrevCandidates` is called. Each setter runs only when its value changes. The old effect is removed. |
+| `tests/candidate-select-layout.test.tsx` | Real-hooks Ink regression tests that call `rerender` | ✓ VERIFIED | 5 tests: cases (a) to (d) plus the D-09 test. No react/ink mocks. |
+| `src/client/zellij-pane-resize.ts` | Serialized latest-wins queue with `RESIZE_SETTLE_TIMEOUT_MS` | ✓ VERIFIED | Lines 20 and 81-185. Listens for `'error'` with `on`. Settle timer is unref'd. |
+| `tests/zellij-pane-resize.test.ts` | Ordering tests that use `RESIZE_SETTLE_TIMEOUT_MS` | ✓ VERIFIED | 13 tests pass: the 5 original, the 6 queue tests and the 2 Nyquist tests. |
 
-### Key Link Verification
+### Key Link Verification (09-06)
 
 | From | To | Via | Status |
 |------|----|-----|--------|
-| queque.zsh | tool-handoff.ts | Fixed sibling files commands/builtins/functions.txt | ✓ WIRED |
-| run-foreground.ts | tool-handoff.ts | `readToolHandoff(path.dirname(requestFile))` (line 153) | ✓ WIRED |
-| run-foreground.ts | tool-awareness.ts | `annotateCandidates(candidates, toolInventory)` (line 328) | ✓ WIRED |
-| tool-awareness.ts | command-words.ts | `extractCommandWords`; `lexHand` for the install form | ✓ WIRED |
-| run-foreground.ts | tool-catalog.ts / request.ts | `installedCatalogTools(...)` validated by `strictInstalledToolsChunkSchema.safeParse` (lines 68-70) | ✓ WIRED |
-| run-foreground.ts | daemon / fallback adapter | Same envelope on both paths | ✓ WIRED |
-| claude.ts / claude-cli.ts | steering.ts | `buildSystemPrompt(envelope)` (claude.ts:172, claude-cli.ts:28) | ✓ WIRED |
-| bootstrap.ts | server.ts | pong `installedTools` handshake | ✓ WIRED |
-| CandidateSelect.tsx | modal-layout.ts | `filterCandidates(candidates, query)` in render and in every key handler; the layout estimate uses the same call | ✓ WIRED |
+| CandidateSelect.tsx | modal-layout.ts | The layout effect calls `onLayoutLinesChange(estimateCandidateSelectLines(...))` | ✓ WIRED |
+| run-foreground.ts | zellij-pane-resize.ts | `onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined` (line 283) | ✓ WIRED |
+| zellij-pane-resize.ts | zellij CLI | `spawn('zellij', ['action','change-floating-pane-coordinates','--pane-id',…,'--height',…], {stdio:'ignore'})`, one action at a time | ✓ WIRED |
+
+The phase-wide key links from the previous report are unchanged (no diff in those files).
 
 ### Data-Flow Trace (Level 4)
 
 | Artifact | Data | Source | Real data | Status |
 |----------|------|--------|-----------|--------|
-| CandidateSelect ⓘ mark | `candidate.missingTools` | `annotateCandidates`, from the zsh handoff files | Yes. client-result case A uses a real `zsh -f` handoff | ✓ FLOWING |
-| CandidateSelect install form | `candidate.install.form` | `planInstall` with the installer from the handoff | Yes; apt kubectl correctly yields none | ✓ FLOWING |
-| System prompt steering | `installed-tools.payload.tools` | handoff → `isInstalled` → CATALOG intersection → envelope → IPC or fallback → `buildSystemPrompt` | Yes | ✓ FLOWING |
+| Zellij pane height | `contentLines`, then `resolveZellijPaneHeight` | `estimateCandidateSelectLines` over the committed render state (candidates, query after reset, selection, toggles) | Yes. Case (c) asserts the spawned height equals `resolveZellijPaneHeight(full)` from the real estimator. | ✓ FLOWING |
+| ⓘ mark, install form, steering list | As in the previous report | zsh handoff, then annotate/plan, then envelope | Yes (unchanged) | ✓ FLOWING |
 
-### Behavioral Spot-Checks (this run, load average 24–40)
+### Behavioral Spot-Checks (this run, load average 14–88)
 
 | Behavior | Command | Result | Status |
 |----------|---------|--------|--------|
-| Phase unit suites | `vitest run` over 12 files (tool-awareness, tool-handoff, command-words, steering, candidate-select, modal-layout, controls-line, client-result, daemon-bootstrap, daemon-fetch, claude-provider, claude-cli-provider) | 312/312 passed | ✓ PASS |
-| New-commit named tests | `vitest run -t` for "keeps a row matched by its install form visible after Tab undoes it", "matches a row by its command or its install form", "uses each Linux manager its own package names", "blocked plans" | 9/9 passed | ✓ PASS |
-| Handoff, freshness, ERR-trap, kill switch, timing guard | `vitest run tests/zsh-widget.test.ts` | 46/46, including the 25 ms median guard | ✓ PASS |
-| Lexer fuzz (child process) | `vitest run tests/command-words-fuzz.test.ts` | 20k and 5k fuzz passed; 10 crafted cases hit the 1 s spawn bound at load average 37 | ⚠ FLAKY (bug-206, accepted) |
-| Lexer cost per crafted input | jiti in-process benchmark, 1000 iterations | Worst case 0.0168 ms; no throw, no undefined | ✓ PASS |
-| kubectl and filter on real modules | jiti script: `packageFor`, `planInstall`, `filterCandidates` | apt → null/`unknown-package`; brew → kubernetes-cli; filter `brew`/`BREW` → flagged row, `ls` → `ls -la` | ✓ PASS |
-| claude-exec alone | `vitest run tests/claude-exec.test.ts` | 2/2 | ✓ PASS |
-| Typecheck | `npx tsc --noEmit` | exit 0 | ✓ PASS |
+| 09-06 test files | `pnpm exec vitest run tests/candidate-select-layout.test.tsx tests/candidate-select.test.tsx tests/zellij-pane-resize.test.ts` | 61/61 | ✓ PASS |
+| RED reproduction against pre-09-06 source (scratchpad export) | same layout and resize files, with `9da51d9` versions of the two sources | 10 failed (a, b, c and the queue tests); (d), the D-09 test, the original resize tests and the unref test passed | ✓ PASS (tests catch G-09-7) |
+| D-09 test mutation | delete `setInstallToggled(new Set())`, and separately `setSelectedIndex(0)` | Each makes the test fail | ✓ PASS |
+| Full suite (run once) | `pnpm test:run` | 30/31 files, 541/542 tests. One bug-206 spawn-bound case (1015 ms) failed. | ⚠ known flake |
+| Fuzz file alone | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | 36/36 | ✓ PASS |
+| Typecheck | `pnpm typecheck` | exit 0 | ✓ PASS |
+| Lint | `pnpm lint` | exit 0 (2 older warnings) | ✓ PASS |
+| Build | not re-run (it writes `dist/`) | `dist/cli/main.js` mtime 04:51 is later than the last src commit at 04:15 | ? SKIP (orchestrator reports pass) |
 
 ### Probe Execution
 
@@ -179,61 +161,55 @@ Not applicable. No phase plan declares a probe, and the repo has no `scripts/*/t
 
 ### Requirements Coverage
 
-The SC-1 to SC-6 IDs in the PLAN frontmatter are the ROADMAP success criteria. ROADMAP lists Phase 9 "**Requirements**: TBD". `.planning/REQUIREMENTS.md` has no Phase 9 rows, so no requirement is orphaned.
+The PLAN frontmatter declares SC-1 to SC-6, which are the ROADMAP success criteria. ROADMAP Phase 9 lists "**Requirements**: TBD", and `.planning/REQUIREMENTS.md` has no Phase 9 or SC rows. Every declared ID is accounted for, and none is orphaned.
 
 | Requirement | Source Plan(s) | Description | Status | Evidence |
 |-------------|----------------|-------------|--------|----------|
-| SC-1 | 09-01, 09-05 | Same-session install seen without a shell restart | ✓ SATISFIED | Truth 1 |
-| SC-2 | 09-01, 09-05 | Handoff about 10 ms or less | ✓ SATISFIED (override: 12.37 ms accepted) | Truth 2 |
-| SC-3 | 09-01, 09-04 | Flag naming the tool; selectable; insertion-only | ✓ SATISFIED (override on the naming clause) | Truth 3 |
-| SC-4 | 09-01, 09-02 | Builtins, reserved words, placeholders, `$VAR` and paths never flagged | ✓ SATISFIED | Truth 4 |
+| SC-1 | 09-01, 09-05 | Same-session install seen | ✓ SATISFIED | Truth 1 |
+| SC-2 | 09-01, 09-05 | Handoff ~10 ms | ✓ SATISFIED (override) | Truth 2 |
+| SC-3 | 09-01, 09-04, 09-06 | Flag; selectable; insertion-only; shown (incl. Zellij) | ✓ SATISFIED in code (override on the naming clause); live Zellij confirmation pending | Truths 3, 7–11, 13 |
+| SC-4 | 09-01, 09-02 | Never flag builtins, placeholders, etc. | ✓ SATISFIED | Truth 4 |
 | SC-5 | 09-02 | No hang or crash on malformed input | ✓ SATISFIED | Truth 5 |
-| SC-6 | 09-03, 09-05 | Only installed ∩ catalog in the prompt, every adapter | ✓ SATISFIED | Truth 6 |
+| SC-6 | 09-03, 09-05 | Only installed ∩ catalog in the prompt | ✓ SATISFIED | Truth 6 |
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
 |------|------|---------|----------|--------|
-| (files changed by 674ca9f and aa55dd5) | — | TBD, FIXME or XXX | — | None found (grep exit 1) |
-| src/daemon/server.ts | 24 | `TODO(CR-005)` | ℹ️ Info | Pre-existing, not from this phase |
-| tests/command-words-fuzz.test.ts | 105 | 1 s hard timeout includes Node spawn time | ⚠️ Warning (tracked, bug-206) | Goes red under load although lexer work is under 0.02 ms. The user decided on 2026-10-10 that it is not a phase gap. Fix idea: time the lexer inside the child and raise the hard kill to a few seconds. |
-| tests/modal-layout.test.ts | 1 | Biome `noUnusedImports` (`afterEach`, `beforeEach`, `vi`) | ℹ️ Info | Pre-existing (674ca9f's diff does not touch the import line); a warning, not an error |
-| src/ui/CandidateSelect.tsx | 136 | Biome `suppressions/unused` on the layout-effect `biome-ignore` | ℹ️ Info | Pre-existing (not in 674ca9f's diff); a warning, not an error |
-| src/shared/command-words.ts | — | A lone `\` command yields an empty external word `""` | ℹ️ Info | Cosmetic; install is blocked as `unsafe-package-name` |
-| src/shared/tool-awareness.ts | — | Remaining hand-typed Linux alias names (WR-01) | ℹ️ Info | Accepted by the user for now; backlog phase 999.1 replaces them with model-supplied names |
-| (review) | — | IN-01 to IN-05 open in 09-REVIEW-DISPOSITION | ℹ️ Info | Lexer false negatives undocumented, function definitions flag their name, legend estimate width, `ps` visibility of catalog names for `claude -p`, marker-based adapters guard. None affects a success criterion. |
-
-### Advisory (New Scope, Unevidenced)
-
-None.
+| 09-06 changed files | — | TBD, FIXME or XXX | — | None (grep exit 1). No TODO, HACK or placeholder either. |
+| src/client/zellij-pane-resize.ts | 141-148 | WR-06: on timeout the code kills the child and settles at once. A killed or slow client whose request the server already received could still land after the next action. | ⚠️ Warning (open in 09-REVIEW-DISPOSITION) | Only reachable when one action hangs longer than 2 s; observed actions take 100–420 ms. It does not affect the G-09-7 arrival path, which the tests prove. Fix: settle when the killed child exits (with a SIGKILL deadline) and re-assert the newest height. |
+| src/client/zellij-pane-resize.ts | 103, 178, 181-183 | WR-07: the dedupe key is the spawned height, not the applied one. A non-zero exit, error or kill for height H leaves the pane stale, and later requests for H are skipped. | ⚠️ Warning (open) | Needs a failed resize action, which was not seen in the repro. If the human UAT still shows a stuck size, look here first. Fix: track `appliedHeight` on exit code 0. |
+| tests/candidate-select.test.tsx | 239-259 | WR-08: the mocked useState never replays render-phase updates, so the zero-match Enter test now checks a state production cannot reach that way. | ⚠️ Warning (open) | Test quality only. The real behaviour (a non-matching lbuffer is cleared) is covered by the real-hooks cases (a) to (c). |
+| tests/command-words-fuzz.test.ts | 105 | 1 s bound includes Node spawn time (bug-206) | ⚠️ Warning (tracked; user-accepted) | Hit 1 of 33 crafted cases in this run's parallel full suite. |
+| (review) | — | IN-01 to IN-05, IN-07 to IN-09 open | ℹ️ Info | None affects a success criterion. IN-06 (no D-09 arrival test) and IN-07 (spawn-throw and timer-unref untested) are in fact covered by the Nyquist tests in a03cc38, though their disposition rows still read `open`. |
+| tests/modal-layout.test.ts, src/ui/CandidateSelect.tsx | 1 / layout-effect `biome-ignore` | Biome warnings | ℹ️ Info | Pre-existing; logged in deferred-items.md. |
 
 ### Human Verification Required
 
-None. Every item from the previous report is resolved:
+#### 1. G-09-7 live re-test in Zellij (UAT test 7 re-run)
 
-1. **SC-3 naming:** override recorded (the user accepted it as designed).
-2. **SC-2 timing:** override recorded (the user accepted 12.37 ms).
-3. **WR-01 Linux names:** kubectl fixed (aa55dd5); the rest are accepted, with backlog 999.1 as the follow-up.
-4. **WR-04 filter:** the user's choice is implemented and tested (674ca9f).
+**Test:** Open a zsh pane inside Zellij with the dev widget. Run `qq_dev` first if needed; `/tmp/qq-debug.log` should show `tool handoff written`.
+
+1. Type `show me how to use z3??` six times, pressing Esc between runs.
+2. Run `QQ_TOOL_AWARENESS=0`, then `show me how to use z3??` (no ⓘ should appear), then Esc. Run `unset QQ_TOOL_AWARENESS`, then `show me how to use z3??` twice.
+3. With a list open, type `smt` quickly, then Backspace it away quickly.
+
+**Expected:** Every run in steps 1–3 shows the candidate list and keeps it. The pane never shrinks to only the legend and controls, and after step 3 it ends sized to the full list. A one-row clip of the top `queque › …` line can be noted but is not a failure; it is a separate, pre-existing issue.
+
+**Why human:** Zellij's server-side ordering of resize actions under live PTY output cannot be automated here, because every test mocks spawn. Before the fix the failure hit 25–50% of runs, so the check needs repeated live runs.
+
+If this passes, mark UAT test 7 resolved in `09-UAT.md` (its gap G-09-7 still reads `status: failed` / `diagnosed`). The phase can then be treated as passed.
 
 ### Gaps Summary
 
-No gaps. The phase goal's mechanism is in the codebase, wired and behaviourally tested:
+There are no automated gaps.
 
-- **Freshness:** zsh `rehash` handoff.
-- **Flagging:** missing tools are flagged without being dropped, and Tab no longer changes which rows are visible.
-- **Steering:** the catalog-only list reaches both prompt-building adapters through `buildSystemPrompt`.
-- **Compatibility:** the stale-daemon capability bump.
-
-Neither new commit introduced a regression. typecheck is clean, all 12 phase unit files pass (312 tests), and the zsh widget suite passes (46).
-
-**Tracked warning (not a gap, by user decision):** bug-206. The fuzz file's 1 s per-input bound counts Node spawn time, so it goes red at high load average.
-
-**Follow-up (not a gap):** backlog phase 999.1 replaces the hand-typed Linux package names with model-supplied names.
-
-Whether the model actually *favours* installed tools depends on the model following the steering prompt. The code guarantees that the prompt carries the list and the prefer-installed rules. The live checkpoint was approved; there is no automated test of model compliance, nor could there reasonably be one.
+- **G-09-7 code fix:** substantive and wired. Both of its causes are removed at the source. Regression tests that genuinely fail on the old code back this up; this verification re-ran them independently against the old source.
+- **Earlier plans:** none of their source changed, and all their tests pass.
+- **What remains:** the live Zellij confirmation of G-09-7, routed to human UAT.
+- **Open warnings (WR-06, WR-07, WR-08):** robustness and test-quality items in edge paths that the G-09-7 repro did not exercise. They are recorded for triage, not as blockers. If the live UAT still shows a stale pane height, investigate WR-07 first, then WR-06.
 
 ---
 
-_Verified: 2026-10-10T21:00:37Z_
+_Verified: 2026-10-11T10:57:00Z_
 _Verifier: Claude (gsd-verifier)_

@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T10:43:26.575Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T10:57:17.998Z
 > Files: 404 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -570,7 +570,7 @@
 - `09-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~1967 tok)
 - `09-SECURITY.md` — Phase 9 threat register (23 threats, all closed, ASVS L1), accepted risks AR-09-01/02, audit trail (~2100 tok)
 - `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1584 tok)
-- `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~7326 tok)
+- `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~6301 tok)
 - `COVERAGE.md` — No external API integration declaration for Phase 9 (~44 tok)
 - `deferred-items.md` — Phase 09 — Deferred Items (~280 tok)
 
