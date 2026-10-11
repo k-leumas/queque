@@ -605,6 +605,29 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
       mounted.close();
     }
   });
+
+  it('(g) a new candidates array resets the hold and sizes the pane for the new list', async () => {
+    process.env.ZELLIJ = '0';
+    process.env.ZELLIJ_PANE_ID = '7';
+    process.env.QQ_PANE_HEIGHT = '24';
+    const arrival = resolveZellijPaneHeight(estimate(RAW_CANDIDATES, LBUFFER, ''), 24);
+    const requery = [RAW_CANDIDATES[0] as CommandCandidate];
+    const requeryHeight = resolveZellijPaneHeight(estimate(requery, LBUFFER, ''), 24);
+    expect(requeryHeight).toBeLessThan(arrival);
+
+    const mounted = await mountArrival(RAW_CANDIDATES, LBUFFER, syncZellijFloatingPaneHeight);
+    try {
+      await settle();
+      expect(spawnedHeights().join(',')).toBe(String(arrival));
+
+      // A re-query (a NEW array) is not held at the old list's height (decision 4).
+      await mounted.rerender(requery);
+      await settle();
+      expect(spawnedHeights().join(',')).toBe(`${arrival},${requeryHeight}`);
+    } finally {
+      mounted.close();
+    }
+  });
 });
 
 describe('CandidateSelect arrival reset (real hooks, 09-06 truth 3 / D-09)', () => {

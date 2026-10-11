@@ -3596,6 +3596,27 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-11T16:27:00.000Z"
+    },
+    {
+      "id": "bug-221",
+      "timestamp": "2026-10-11T17:36:00.000Z",
+      "error_message": "when filtering using smt, the modal shrinks but shows an empty square --- i'd alsmost rather the modal container didn't shirnk at all",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "The layout report followed the filtered frame, so every narrowing filter shrank the Zellij pane and Backspace grew it again; the pane and Ink disagreed for each 100-420 ms detached zellij action (probe with the z3 fixtures: reports [15,15,8,8,8,15,15], spawned heights 18,11,18)",
+      "fix": "Per-list pane hold: heldPaneLines(previousHeld, input) in modal-layout.ts returns max(held, drawn estimate, unfiltered estimate); CandidateSelect keeps it in a useRef keyed by the candidates array and reports it through onLayoutLinesChange, so filtering and Backspace spawn no resize (quick-261011-f9o)",
+      "tags": [
+        "zellij",
+        "ink",
+        "pane-resize",
+        "filter",
+        "layout"
+      ],
+      "related_bugs": [
+        "bug-219",
+        "bug-220"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-11T17:36:00.000Z"
     }
   ]
 }

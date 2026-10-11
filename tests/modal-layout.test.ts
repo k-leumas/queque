@@ -5,6 +5,7 @@ import {
   estimateCandidateSelectLines,
   explanationText,
   filterCandidates,
+  heldPaneLines,
   MODAL_VIEWPORT_LINES,
   missingToolsLegend,
   wrapText,
@@ -394,5 +395,88 @@ describe('estimateCandidateSelectLines — install toggle', () => {
       installToggled: new Set(['fd x::x']),
     });
     expect(toggled).toBe(untoggled);
+  });
+});
+
+describe('heldPaneLines (quick-261011-f9o Zellij pane hold)', () => {
+  const base = {
+    initialQuery: undefined,
+    query: '',
+    selectedIndex: 0,
+    contentWidth: 75,
+    includeDevFooter: false,
+  };
+  const list: DisplayCandidate[] = [
+    { command: 'git status', explanation: 'show status' },
+    { command: 'rm -rf /tmp/foo', explanation: 'remove files' },
+    { command: 'git diff', explanation: 'show diff' },
+  ];
+  const unfilteredRow0 = estimateCandidateSelectLines({ ...base, candidates: list });
+
+  it('sizes a narrowing filter for the unfiltered list (query empty, row 0)', () => {
+    const filtered = { ...base, candidates: list, query: 'diff' };
+    expect(estimateCandidateSelectLines(filtered)).toBeLessThan(unfilteredRow0);
+    expect(heldPaneLines(0, filtered)).toBe(unfilteredRow0);
+  });
+
+  it('equals the estimate when nothing is filtered and row 0 is selected', () => {
+    const input = { ...base, candidates: list };
+    expect(heldPaneLines(0, input)).toBe(estimateCandidateSelectLines(input));
+  });
+
+  it('sizes an lbuffer pre-filter for the unfiltered list', () => {
+    const candidates: DisplayCandidate[] = [
+      { command: 'z3 -smt2 problem.smt2', explanation: 'solve a file' },
+      { command: 'python3 -c "import z3"', explanation: 'use the bindings' },
+    ];
+    const preFiltered = { ...base, candidates, initialQuery: 'smt2', query: 'smt2' };
+    const unfiltered = estimateCandidateSelectLines({ ...preFiltered, query: '' });
+    expect(unfiltered).toBeGreaterThan(estimateCandidateSelectLines(preFiltered));
+    expect(heldPaneLines(0, preFiltered)).toBe(unfiltered);
+  });
+
+  it('keeps the ⚠ height when a filter then resets the selection to row 0', () => {
+    const held = heldPaneLines(0, { ...base, candidates: list, selectedIndex: 1 });
+    expect(held).toBe(unfilteredRow0 + 2);
+    expect(heldPaneLines(held, { ...base, candidates: list, query: 'git' })).toBe(held);
+  });
+
+  it('grows past previousHeld when the drawn frame is taller', () => {
+    expect(heldPaneLines(unfilteredRow0, { ...base, candidates: list, selectedIndex: 1 })).toBe(
+      unfilteredRow0 + 2,
+    );
+  });
+
+  it('counts a toggled row the filter hides (its wrapped install form)', () => {
+    const narrow = { ...base, contentWidth: 20 };
+    const selected: DisplayCandidate = { command: 'ls', explanation: 'list' };
+    // 'brew install fd && fd x' (23) wraps to 2 rows at 20; 'fd x' is 1 row.
+    const flagged: DisplayCandidate = {
+      command: 'fd x',
+      explanation: 'x',
+      missingTools: ['fd'],
+      install: { form: 'brew install fd && fd x', packages: ['fd'], blocked: null },
+    };
+    const installToggled = new Set([candidateKey(flagged)]);
+    const candidates = [selected, flagged];
+    const toggledUnfiltered = estimateCandidateSelectLines({
+      ...narrow,
+      candidates,
+      installToggled,
+    });
+    expect(toggledUnfiltered).toBeGreaterThan(
+      estimateCandidateSelectLines({ ...narrow, candidates }),
+    );
+    // 'ls' hides the flagged row (neither its command nor its form contains 'ls').
+    const hidden = { ...narrow, candidates, installToggled, query: 'ls' };
+    expect(filterCandidates(candidates, 'ls')).toHaveLength(1);
+    expect(heldPaneLines(0, hidden)).toBe(toggledUnfiltered);
+  });
+
+  it('equals the estimate while loading and on error', () => {
+    const loading = { ...base, candidates: null };
+    expect(heldPaneLines(0, loading)).toBe(estimateCandidateSelectLines(loading));
+    const failed = { ...base, candidates: null, error: true };
+    expect(heldPaneLines(0, failed)).toBe(estimateCandidateSelectLines(failed));
   });
 });
