@@ -2214,3 +2214,13 @@
 | 14:46 | Session end: 13 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~24229 tok |
 | 14:49 | Session end: 13 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 4 reads | ~24229 tok |
 | 14:40 | apt kubectl alias → null (blocked as unknown-package) | src/shared/tool-awareness.ts, tests/tool-awareness.test.ts | 47 tests pass | ~2k |
+| 14:56 | Session end: 13 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 5 reads | ~31708 tok |
+| 15:02 | Created .planning/phases/09-installed-only-command-awareness/09-VERIFICATION.md | — | ~7815 |
+| 15:03 | Session end: 14 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 5 reads | ~40081 tok |
+| 20:30 | SESSION: Phase 9 closed — checkpoint UI iterations (ⓘ mark, legend, no tab chip), zshrc widget fix, code review 7/7 fixed, search keeps rows on Tab undo, apt kubectl blocked, backlog 999.1, verification passed with 5 user overrides | phase 09 | complete | ~250k |
+| 20:28 | Session end: 14 writes across 7 files (09-05-SUMMARY.md, 09-REVIEW.md, command-words.ts, wolf.py, tool-awareness.test.ts) | 5 reads | ~40081 tok |
+
+## Session: 2026-10-11 20:31
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|

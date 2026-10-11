@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-10T20:24:59.652Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-10T21:02:27.636Z
 > Files: 396 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -558,7 +558,7 @@
 - `09-REVIEW-FIX.md` — Phase 9: Code Review Fix Report (~2744 tok)
 - `09-REVIEW.md` — Phase 9: Code Review Report (~3864 tok)
 - `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1584 tok)
-- `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~7479 tok)
+- `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~7326 tok)
 - `COVERAGE.md` — No external API integration declaration for Phase 9 (~44 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/

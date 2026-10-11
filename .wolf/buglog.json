@@ -3319,7 +3319,7 @@
       "error_message": "tests/command-words-fuzz.test.ts: crafted malformed input \"...\" finishes within 1 s \u2014 ETIMEDOUT, stdout=\"\", last input=<none>",
       "file": "tests/command-words-fuzz.test.ts",
       "root_cause": "Not fixed. Child process is killed by the 1 s hard timeout before it reads any input (node spawn/startup cost), different case each run; reproduces at HEAD c105e57/3209e9b, worse under full-suite parallel load. Also zsh-widget 'handoff timing' (25 ms guard) failed once under full-suite load, passes alone (13.95 ms).",
-      "fix": "Open \u2014 candidate fix: measure from first input received rather than spawn, or raise the hard timeout for spawn overhead",
+      "fix": "Open \u2014 candidate fix: measure from first input received rather than spawn, or raise the hard timeout for spawn overhead | 2026-10-10: user accepted as a tracked warning for phase 9 closure; candidate fix = time the lexer inside the child, not spawn.",
       "tags": [
         "flaky",
         "timeout",
@@ -3328,8 +3328,8 @@
         "phase-9"
       ],
       "related_bugs": [],
-      "occurrences": 3,
-      "last_seen": "2026-10-10T13:10:00Z"
+      "occurrences": 6,
+      "last_seen": "2026-10-10T21:30:00Z"
     },
     {
       "id": "bug-207",

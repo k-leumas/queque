@@ -1,120 +1,12 @@
 {
-  "session_id": "session-2026-10-10-1236",
-  "started": "2026-10-10T18:36:20.507Z",
-  "files_read": {
-    "/Users/samuel/.claude/gsd-core/workflows/execute-phase.md": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-10-10T18:36:34.158Z"
-    },
-    "/Users/samuel/.claude/gsd-core/workflows/code-review.md": {
-      "count": 3,
-      "tokens": 0,
-      "first_read": "2026-10-10T19:27:19.172Z"
-    },
-    "/Users/samuel/.claude/gsd-core/workflows/code-review-fix.md": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-10-10T19:43:25.271Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-REVIEW.md": {
-      "count": 1,
-      "tokens": 3864,
-      "first_read": "2026-10-10T19:43:57.865Z"
-    }
-  },
-  "files_written": [
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md",
-      "action": "create",
-      "tokens": 2440,
-      "at": "2026-10-10T19:26:16.079Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-REVIEW.md",
-      "action": "create",
-      "tokens": 4416,
-      "at": "2026-10-10T19:39:46.644Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 487,
-      "at": "2026-10-10T19:49:04.010Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 76,
-      "at": "2026-10-10T19:49:06.210Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 43,
-      "at": "2026-10-10T19:49:08.799Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 97,
-      "at": "2026-10-10T19:49:18.248Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 86,
-      "at": "2026-10-10T19:49:21.355Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 91,
-      "at": "2026-10-10T19:49:25.626Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/command-words.ts",
-      "action": "edit",
-      "tokens": 82,
-      "at": "2026-10-10T19:49:37.283Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py",
-      "action": "create",
-      "tokens": 676,
-      "at": "2026-10-10T19:52:58.118Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/tool-awareness.test.ts",
-      "action": "edit",
-      "tokens": 188,
-      "at": "2026-10-10T19:55:40.064Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-REVIEW-FIX.md",
-      "action": "create",
-      "tokens": 3136,
-      "at": "2026-10-10T20:10:30.920Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/09-installed-only-command-awareness/09-VERIFICATION.md",
-      "action": "create",
-      "tokens": 8547,
-      "at": "2026-10-10T20:24:59.725Z"
-    }
-  ],
-  "edit_counts": {
-    ".planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md": 1,
-    ".planning/phases/09-installed-only-command-awareness/09-REVIEW.md": 1,
-    "src/shared/command-words.ts": 7,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/wolf.py": 1,
-    "tests/tool-awareness.test.ts": 1,
-    ".planning/phases/09-installed-only-command-awareness/09-REVIEW-FIX.md": 1,
-    ".planning/phases/09-installed-only-command-awareness/09-VERIFICATION.md": 1
-  },
-  "anatomy_hits": 1,
-  "anatomy_misses": 3,
-  "repeated_reads_warned": 4,
+  "session_id": "session-2026-10-11-2031",
+  "started": "2026-10-11T02:31:37.470Z",
+  "files_read": {},
+  "files_written": [],
+  "edit_counts": {},
+  "anatomy_hits": 0,
+  "anatomy_misses": 0,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 15
+  "stop_count": 0
 }
