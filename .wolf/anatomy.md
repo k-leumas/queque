@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T02:34:28.605Z
-> Files: 397 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T08:43:02.984Z
+> Files: 399 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -422,6 +422,10 @@
 - `ROADMAP.md` — Roadmap: QueQue (~4890 tok)
 - `STATE.md` — Project State (~2442 tok)
 
+## .planning/debug/
+
+- `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~313 tok)
+
 ## .planning/notes/
 
 - `2026-05-01-shell-path-vcs-detection.md` — Declares we (~60 tok)
@@ -558,8 +562,8 @@
 - `09-REVIEW-FIX.md` — Phase 9: Code Review Fix Report (~2744 tok)
 - `09-REVIEW.md` — Phase 9: Code Review Report (~3864 tok)
 - `09-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~1967 tok)
-- `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1584 tok)
 - `09-SECURITY.md` — Phase 9 threat register (23 threats, all closed, ASVS L1), accepted risks AR-09-01/02, audit trail (~2100 tok)
+- `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1584 tok)
 - `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~7326 tok)
 - `COVERAGE.md` — No external API integration declaration for Phase 9 (~44 tok)
 
