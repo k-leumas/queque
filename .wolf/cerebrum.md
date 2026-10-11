@@ -14,6 +14,7 @@
 - [2026-10-07] Install commands are never part of model candidates; they appear only via Tab on a flagged candidate. Keep the model's candidate order (no re-sorting of flagged items).
 - [2026-10-10] Missing-tool mark is ⓘ (U+24D8, circled i), not ⊘ — user disliked ⊘. The cyan ⓘ belongs at the START of the row's explanation (user: the explanation already describes the command), not after the command. A legend `ⓘ not installed · tab prepends the install command` (no tool names — user: it only explains what ⓘ means) (Tab part only when a visible flagged row has an install form; user wants the legend to be where Tab is explained) sits directly above the controls when any visible row is flagged; ControlsLine has no tab chip (user: the legend already explains Tab) — it depends on the visible list, never on the selection. Never add selection-dependent footer lines (they make the modal jump on arrow keys).
 - [2026-10-10] Search must never make a row appear/disappear when Tab toggles it: `filterCandidates(candidates, query)` matches the command OR the install form, regardless of toggle (user: keep the row visible after undoing tab).
+- [2026-10-10] Load-flaky timing tests (bug-206: fuzz 1 s spawn bound, 25 ms handoff guard): user prefers marking them flaky and re-running validation on an idle machine over loosening guards or moving them to manual-only.
 
 ## Key Learnings
 
@@ -48,6 +49,7 @@
 - [2026-10-08] `rehash` (= `hash -r`) also drops manual `hash name=path` entries (verified). `⊘` U+2298 is East Asian Width N (Unicode 16) and width 1 in Ink's string-width — not an ambiguous-width glyph.
 - [2026-10-08] Ink 7 `<Text>` accepts no layout props (it hardcodes `flexShrink: 1`). To keep a gutter or mark from shrinking in a row, wrap it in `<Box flexShrink={0}>`.
 - [2026-10-08] Per-process child cost on this machine is ~120 ms for bare Node plus ~110 ms to type-strip the lexer; per-input 1 s hard kills in the lexer fuzz have ~4x headroom (less under load).
+- [2026-10-10] Under heavy load (avg 31–47, syspolicyd ~40% CPU) zsh `rehash` with 2,175 PATH commands costs ~10 ms (0.1–0.5 ms when quiet), pushing the handoff to 21–31 ms; the 25 ms timing guard can fail even when run alone. Check `uptime` before treating a timing failure as a regression.
 - [2026-10-08] Biome flags zsh `${…}` inside single-quoted JS strings with `noTemplateCurlyInString`. Suppress with a reasoned `biome-ignore`; never rewrite the shell text.
 - [2026-10-08] IPC schemas filter unknown VALUES (zod transform) and reject only unknown SHAPES. The `installed-tools` variant drops non-catalog names instead of failing ipcRequestSchema, so catalog CONTENT edits need no daemon restart.
 - [2026-10-08] Envelope SHAPE changes (new chunk kind/field) require a pong capability bump in server.ts + ipc.ts + `pingDaemonFetchCap` (bootstrap.ts), or old daemons silently drop the envelope (800 ms ack timeout + cold fallback per `??`). `installedTools` is the second flag after `fetchCandidates`; catalog CONTENT changes do not need one.

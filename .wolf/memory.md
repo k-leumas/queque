@@ -2226,3 +2226,5 @@
 |------|--------|---------|---------|--------|
 | 20:34 | Created .planning/phases/09-installed-only-command-awareness/09-SECURITY.md | — | ~2098 |
 | 20:34 | /gsd-secure-phase 9: verified 23 threats closed at L1, wrote SECURITY.md | 09-SECURITY.md | threats_open: 0 | ~15000 |
+| 20:35 | Session end: 1 writes across 1 files (09-SECURITY.md) | 0 reads | ~2248 tok |
+| 20:44 | /gsd-validate-phase 9: 6/8 rows green, SC-2/SC-5 flaky under load (bug-206); user chose re-run when idle; VALIDATION.md status validated, nyquist_compliant false | 09-VALIDATION.md, buglog.json, cerebrum.md | partial | ~25000 |

@@ -3,9 +3,9 @@ phase: "9"
 slug: "installed-only-command-awareness"
 # status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6)
 # audit-milestone §5.5 distinguishes NOT-VALIDATED (draft) from PARTIAL (validated + nyquist_compliant: false) (#2117)
-status: draft
+status: validated
 nyquist_compliant: false
-wave_0_complete: false
+wave_0_complete: true
 created: "2026-10-08"
 ---
 
@@ -42,14 +42,14 @@ Task IDs filled in by the planner (2026-10-08). Rows stay keyed by success crite
 
 | Task ID | Plan | Wave | Requirement | Threat Ref | Secure Behavior | Test Type | Automated Command | File Exists | Status |
 |---------|------|------|-------------|------------|-----------------|-----------|-------------------|-------------|--------|
-| 09-01-T2 (+T1 e2e) | 09-01 | 1 | SC-1 | T-09-03 | N/A | zsh smoke | `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ file / ❌ cases | ⬜ pending |
-| 09-01-T2 | 09-01 | 1 | SC-2 | — | N/A | zsh timing (regression guard, median of 5 < 25 ms, median printed — D-19) | `pnpm exec vitest run tests/zsh-widget.test.ts -t "handoff timing"` | ❌ W0 | ⬜ pending |
-| 09-01-T1, 09-01-T3, 09-04-T1, 09-04-T2 | 09-01, 09-04 | 1, 2 | SC-3 | T-09-10, T-09-11, T-09-20 | Install form only accepts safe package words; comment/heredoc commands are never brace-wrapped | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ❌ W0 / ✅ | ⬜ pending |
-| 09-02-T1 (+09-01-T3) | 09-02 | 2 | SC-4 | — | N/A | unit table (40 spike cases) | `pnpm exec vitest run tests/command-words.test.ts` | ❌ W0 | ⬜ pending |
-| 09-02-T2 | 09-02 | 2 | SC-5 | T-09-01, T-09-05 | Malformed model output cannot hang/crash the client | child-process fuzz | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | ❌ W0 | ⬜ pending |
-| 09-03-T1, 09-03-T2, 09-05-T2 | 09-03, 09-05 | 2, 3 | SC-6 | T-09-07, T-09-08, T-09-15 | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ❌ W0 / ✅ | ⬜ pending |
-| 09-05-T1 | 09-05 | 3 | Compat | T-09-14, T-09-19 | Unknown catalog names are filtered daemon-side, never a dropped request | unit (stale daemon replaced; catalog drift filtered) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts tests/daemon-fetch.test.ts` | ✅ / ❌ cases | ⬜ pending |
-| 09-01-T1, 09-01-T2 | 09-01 | 1 | Fallback | T-09-02, T-09-17 | Handoff failures never reach the widget ERR trap | unit + zsh smoke (missing handoff → no chunk, no flags, no error; partial write / unwritable dir → no files, status 0) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` and `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ❌ W0 / ✅ | ⬜ pending |
+| 09-01-T2 (+T1 e2e) | 09-01 | 1 | SC-1 | T-09-03 | N/A | zsh smoke | `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ | ✅ green (8/8) |
+| 09-01-T2 | 09-01 | 1 | SC-2 | — | N/A | zsh timing (regression guard, median of 5 < 25 ms, median printed — D-19) | `pnpm exec vitest run tests/zsh-widget.test.ts -t "handoff timing"` | ✅ | ⚠️ flaky (bug-206: medians 25.68–38.04 ms at load avg 31–47; `rehash` ~10 ms vs 0.1–0.5 ms at verify; no code change) |
+| 09-01-T1, 09-01-T3, 09-04-T1, 09-04-T2 | 09-01, 09-04 | 1, 2 | SC-3 | T-09-10, T-09-11, T-09-20 | Install form only accepts safe package words; comment/heredoc commands are never brace-wrapped | unit + component | `pnpm exec vitest run tests/tool-awareness.test.ts tests/candidate-select.test.tsx tests/controls-line.test.tsx tests/modal-layout.test.ts` | ✅ | ✅ green (120/120) |
+| 09-02-T1 (+09-01-T3) | 09-02 | 2 | SC-4 | — | N/A | unit table (40 spike cases) | `pnpm exec vitest run tests/command-words.test.ts` | ✅ | ✅ green (94/94) |
+| 09-02-T2 | 09-02 | 2 | SC-5 | T-09-01, T-09-05 | Malformed model output cannot hang/crash the client | child-process fuzz | `pnpm exec vitest run tests/command-words-fuzz.test.ts` | ✅ | ⚠️ flaky (bug-206: 20k/5k fuzz and deep-nesting ~10 ms pass; 8–13 crafted cases hit the 1 s child-spawn bound at load avg 31–47) |
+| 09-03-T1, 09-03-T2, 09-05-T2 | 09-03, 09-05 | 2, 3 | SC-6 | T-09-07, T-09-08, T-09-15 | Only catalog names reach the model (privacy, D-04) | unit + static guard | `pnpm exec vitest run tests/steering.test.ts tests/claude-provider.test.ts tests/claude-cli-provider.test.ts` | ✅ | ✅ green (55/55) |
+| 09-05-T1 | 09-05 | 3 | Compat | T-09-14, T-09-19 | Unknown catalog names are filtered daemon-side, never a dropped request | unit (stale daemon replaced; catalog drift filtered) | `pnpm exec vitest run tests/daemon-bootstrap.test.ts tests/daemon-fetch.test.ts` | ✅ | ✅ green (14/14) |
+| 09-01-T1, 09-01-T2 | 09-01 | 1 | Fallback | T-09-02, T-09-17 | Handoff failures never reach the widget ERR trap | unit + zsh smoke (missing handoff → no chunk, no flags, no error; partial write / unwritable dir → no files, status 0) | `pnpm exec vitest run tests/tool-handoff.test.ts tests/client-result.test.ts` and `pnpm exec vitest run tests/zsh-widget.test.ts -t "tool handoff"` | ✅ | ✅ green (29/29 + 8/8) |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -57,10 +57,10 @@ Task IDs filled in by the planner (2026-10-08). Rows stay keyed by success crite
 
 ## Wave 0 Requirements
 
-- [ ] `src/shared/command-words.ts`, `src/shared/tool-awareness.ts`, `src/client/tool-handoff.ts`, `src/providers/steering.ts` — throw-on-call stubs with public exports so RED tests pass `tsc --noEmit`
-- [ ] `tests/fixtures/command-words-cases.ts` — port the 40 cases from `.claude/skills/spike-findings-tui-llm/sources/002-candidate-binary-check/cases.mjs`
-- [ ] `tests/fixtures/command-words-fuzz-child.mjs` — modes `fuzz N`, `one <s>`, `deep N`
-- [ ] `tests/command-words.test.ts`, `tests/command-words-fuzz.test.ts`, `tests/tool-awareness.test.ts`, `tests/tool-handoff.test.ts`, `tests/steering.test.ts`, `tests/controls-line.test.tsx`
+- [x] `src/shared/command-words.ts`, `src/shared/tool-awareness.ts`, `src/client/tool-handoff.ts`, `src/providers/steering.ts` — throw-on-call stubs with public exports so RED tests pass `tsc --noEmit`
+- [x] `tests/fixtures/command-words-cases.ts` — port the 40 cases from `.claude/skills/spike-findings-tui-llm/sources/002-candidate-binary-check/cases.mjs`
+- [x] `tests/fixtures/command-words-fuzz-child.mjs` — modes `fuzz N`, `one <s>`, `deep N`
+- [x] `tests/command-words.test.ts`, `tests/command-words-fuzz.test.ts`, `tests/tool-awareness.test.ts`, `tests/tool-handoff.test.ts`, `tests/steering.test.ts`, `tests/controls-line.test.tsx`
 
 No framework install is needed.
 
@@ -79,11 +79,19 @@ No framework install is needed.
 
 ## Validation Sign-Off
 
-- [ ] All tasks have `<automated>` verify or Wave 0 dependencies
-- [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references
-- [ ] No watch-mode flags
-- [ ] Feedback latency < 60s
-- [ ] `nyquist_compliant: true` set in frontmatter
+- [x] All tasks have `<automated>` verify or Wave 0 dependencies
+- [x] Sampling continuity: no 3 consecutive tasks without automated verify
+- [x] Wave 0 covers all MISSING references
+- [x] No watch-mode flags
+- [x] Feedback latency < 60s
+- [ ] `nyquist_compliant: true` set in frontmatter — blocked: SC-2 and SC-5 are red under load (bug-206); re-run `/gsd-validate-phase 9` on an idle machine
 
-**Approval:** pending
+**Approval:** partial 2026-10-10 — 6/8 rows green, 2 flaky under load (user chose re-run when idle)
+
+## Validation Audit 2026-10-11
+
+| Metric | Count |
+|---|---|
+| Gaps found | 2 |
+| Resolved | 0 |
+| Escalated | 0 |
