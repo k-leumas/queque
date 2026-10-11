@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T08:43:02.984Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T09:26:38.920Z
 > Files: 399 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -424,7 +424,7 @@
 
 ## .planning/debug/
 
-- `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~313 tok)
+- `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~3416 tok)
 
 ## .planning/notes/
 
@@ -553,7 +553,7 @@
 - `09-04-PLAN.md` — Wave 2: installer/package map/install form (comment/heredoc block), Tab toggle, ControlsLine tabHint via element tree (~9205 tok)
 - `09-04-SUMMARY.md` — Phase 9 Plan 04: Tab Install Form Summary (~3886 tok)
 - `09-05-PLAN.md` — Wave 3: apply wave-2 .wolf entries, pong installedTools, catalog-drift test, client sends strict chunk, human check (real-shell timing, Zellij kill switch) (~8056 tok)
-- `09-05-SUMMARY.md` — Phase 9 Plan 05: Installed-Tools Chunk, Daemon Capability and Live Check Summary (~2135 tok)
+- `09-05-SUMMARY.md` — Phase 9 Plan 05: Installed-Tools Chunk, Daemon Capability and Live Check Summary (~2198 tok)
 - `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2940 tok)
 - `09-DISCUSS-CHECKPOINT.json` (~587 tok)
 - `09-DISCUSSION-LOG.md` — Phase 9: Installed-Only Command Awareness - Discussion Log (~1131 tok)

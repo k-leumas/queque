@@ -17,6 +17,9 @@
 - [2026-10-10] Load-flaky timing tests (bug-206: fuzz 1 s spawn bound, 25 ms handoff guard): user prefers marking them flaky and re-running validation on an idle machine over loosening guards or moving them to manual-only.
 
 ## Key Learnings
+- [2026-10-11] Node only refreshes size / emits 'resize' on SIGWINCH for process.stdout/stderr. The tty.WriteStream that run-foreground.ts builds on the /dev/tty fd never emits 'resize', so Ink never repaints after a Zellij pane resize and stdout.rows stays at the launch value.
+- [2026-10-11] `syncZellijFloatingPaneHeight` spawns detached `zellij action` processes (~100-400 ms each). Zellij applies them in completion order, not spawn order, so two quick calls can land reversed. CandidateSelect's first render after candidates arrive still filters by initialQuery (lbuffer), so its layout effect reports a tiny 'no matches' height before the real one — the cause of the empty-modal bug (G-09-7).
+- [2026-10-11] Zellij UI repro recipe: `tmux new-session -d -s X -x 160 -y 50 'zellij -s X-zj'`, Esc the tips popup, `zellij --session X-zj run --floating --width 80 --height 24 --name qq -- node harness.mjs`, then poll `tmux capture-pane -p -t X`. Bundle a harness from src with esbuild (`--external:ink --external:react --external:yoga-layout`, define __QUEQUE_VERSION__/__QUEQUE_COMMIT__), and symlink node_modules next to the bundle.
 
 - **Phase 8 selector:** Runtime uses `provider.json` pin or Claude default. `detectProvider()` waterfall is not the long-term adapter selector.
 - **`claude -p` flags for QueQue:** Use `--safe-mode --tools "" --no-session-persistence --output-format text` and argv prompt. Never `--bare` (skips Keychain/OAuth). Never `--output-format json` into `parseCandidates` (wrapper envelope). Stdin must be `ignore` or Ink/Zellij hangs. Shared 25s CLI+SDK budget under FIFO 30s.

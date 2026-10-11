@@ -1,5 +1,5 @@
 ---
-status: complete
+status: diagnosed
 phase: 09-installed-only-command-awareness
 source: [09-01-SUMMARY.md, 09-02-SUMMARY.md, 09-03-SUMMARY.md, 09-04-SUMMARY.md, 09-05-SUMMARY.md]
 started: 2026-10-11T02:48:53Z
@@ -193,5 +193,17 @@ blocked: 0
   reason: "User reported: when i reenable tool awareness, and retrigger the qq ui, the list shows 3 results and then dwindles down to zero  so its just a modal with nothing in it"
   severity: major
   test: 7
-  artifacts: []  # Filled by diagnosis
-  missing: []    # Filled by diagnosis
+  root_cause: "Not caused by the kill switch (the same rate with no inventory; the code dates from 99adc79, before Phase 9). When candidates arrive, CandidateSelect's layout effect reports the size of the first render, which still filters by initialQuery = request.lbuffer (0 matches, 7 lines, pane height 9), before the reset effect clears the query (22 lines, height 24). syncZellijFloatingPaneHeight starts a detached `zellij action change-floating-pane-coordinates` for each height, and Zellij applies them in finish order, so when the height-9 call lands last the pane stays at 9 rows. 15 lines go into scrollback and the modal looks empty. Ink never redraws, because the /dev/tty tty.WriteStream never emits 'resize'. Reproduced in real Zellij 0.44.1 (5/18 runs with flags, 4/14 with no inventory); an empty initialQuery fixed it in 10/10 runs."
+  artifacts:
+    - path: "src/ui/CandidateSelect.tsx"
+      issue: "Layout effect (L137-166) reports onLayoutLinesChange for the stale initialQuery render before the reset effect (L119-126) clears the query"
+    - path: "src/client/zellij-pane-resize.ts"
+      issue: "syncZellijFloatingPaneHeight (L53-76) starts detached zellij actions with no ordering; lastSyncedHeight only drops repeated heights, so a shrink then grow can land in reverse"
+    - path: "src/client/run-foreground.ts"
+      issue: "Ink's /dev/tty tty.WriteStream (L204-205, L290-295) never emits 'resize', so there is no redraw after the pane resize; initialQuery: request.lbuffer at L263"
+  missing:
+    - "Never report the transient initialQuery-filtered height to Zellij (for example, decide during render that a no-match initial query is cleared, not in an effect after it)"
+    - "Serialize Zellij resizes: one zellij action at a time, and apply only the latest requested height"
+    - "Optional: wire SIGWINCH to the custom /dev/tty write stream so it refreshes columns/rows and emits 'resize' for Ink"
+    - "Regression tests: real-hooks render asserting onLayoutLinesChange never gets the no-match estimate when candidates arrive; the resize helper's final height equals the last height requested"
+  debug_session: ".planning/debug/empty-modal-after-tool-awareness-reenable.md"
