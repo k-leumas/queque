@@ -89,10 +89,11 @@ coverage:
     description: "Live ?? check: flag, Tab install form and back, insertion-only Enter, same-session freshness, nvm function, real-shell timing, kill switch inside and outside Zellij"
     requirement: SC-1, SC-2
     verification:
-      - kind: manual
+      - kind: manual_procedural
         ref: "Task 3 checkpoint — user replied \"approved\" on 2026-10-10"
         status: pass
     human_judgment: true
+    rationale: "Needs a real interactive shell, a live package manager and a Zellij pane; tests mock Ink's input and run zsh -f, so glyph rendering, Tab feel, freshness after a real install and real-shell timing can only be judged by hand"
 
 duration: 2 sessions (Tasks 1–2 on 2026-10-08; checkpoint and UI fixes on 2026-10-10)
 completed: 2026-10-10

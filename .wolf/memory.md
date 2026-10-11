@@ -2240,3 +2240,6 @@
 | 02:37 | Session end: 1 writes across 1 files (09-SECURITY.md) | 1 reads | ~2248 tok |
 | 02:42 | Session end: 1 writes across 1 files (09-SECURITY.md) | 3 reads | ~2248 tok |
 | 02:43 | Created .planning/debug/empty-modal-after-tool-awareness-reenable.md | — | ~334 |
+| 02:45 | Edited .planning/debug/empty-modal-after-tool-awareness-reenable.md | expanded (+10 lines) | ~312 |
+| 02:46 | Edited .planning/phases/09-installed-only-command-awareness/09-05-SUMMARY.md | 5→6 lines | ~105 |
+| 02:46 | Fixed 09-05-SUMMARY coverage D4: kind manual→manual_procedural, added rationale; classify-coverage now error-free | 09-05-SUMMARY.md | fixed | ~1500 |
