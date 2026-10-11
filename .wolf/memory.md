@@ -2277,3 +2277,8 @@
 | 04:14 | 09-06 T2 gates: 457/457 non-timing tests, zsh-widget 46/46 x3, fuzz crafted 1 s guards flaky under load 55-138 (bug-206); typecheck/lint/build pass | — | documented | ~300 |
 | 04:17 | Created .planning/phases/09-installed-only-command-awareness/09-06-SUMMARY.md | — | ~4571 |
 | 04:20 | 09-06 SUMMARY committed (ce4eb39); STATE/ROADMAP updated, plan 6/6, awaiting verification + live Zellij UAT | .planning/STATE.md, .planning/ROADMAP.md | done | ~500 |
+| 04:22 | Session end: 6 writes across 6 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 6 reads | ~19620 tok |
+| 04:37 | Session end: 6 writes across 6 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 6 reads | ~19620 tok |
+| 04:38 | Session end: 6 writes across 6 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 6 reads | ~19620 tok |
+| 04:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/gap-section.md | — | ~3108 |
+| 04:44 | gsd-code-review phase 9: 09-06 gap-closure review appended (3 WR, 4 IN), disposition updated | 09-REVIEW.md, 09-REVIEW-DISPOSITION.md | done | ~120k |

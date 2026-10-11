@@ -1,13 +1,14 @@
 ---
 phase: 09-installed-only-command-awareness
-reviewed: 2026-10-10T19:38:42Z
+reviewed: 2026-10-11T10:42:33Z
 depth: standard
-files_reviewed: 33
+files_reviewed: 36
 files_reviewed_list:
   - docs/EXTENSIONS.md
   - shell/zsh/queque.zsh
   - src/client/run-foreground.ts
   - src/client/tool-handoff.ts
+  - src/client/zellij-pane-resize.ts
   - src/contracts/ipc.ts
   - src/contracts/request.ts
   - src/daemon/bootstrap.ts
@@ -21,6 +22,7 @@ files_reviewed_list:
   - src/ui/CandidateSelect.tsx
   - src/ui/ControlsLine.tsx
   - src/ui/modal-layout.ts
+  - tests/candidate-select-layout.test.tsx
   - tests/candidate-select.test.tsx
   - tests/claude-cli-provider.test.ts
   - tests/claude-provider.test.ts
@@ -36,12 +38,13 @@ files_reviewed_list:
   - tests/steering.test.ts
   - tests/tool-awareness.test.ts
   - tests/tool-handoff.test.ts
+  - tests/zellij-pane-resize.test.ts
   - tests/zsh-widget.test.ts
 findings:
   critical: 2
-  warning: 5
-  info: 5
-  total: 12
+  warning: 8
+  info: 9
+  total: 19
 status: issues_found
 ---
 
@@ -215,5 +218,129 @@ These fail open (no flag), which is the safe direction, but the module header do
 ---
 
 _Reviewed: 2026-10-10T19:38:42Z_
+_Reviewer: Claude (gsd-code-reviewer)_
+_Depth: standard_
+
+## Gap-Closure Review: Plan 09-06
+
+**Reviewed:** 2026-10-11T10:42:33Z
+**Depth:** standard
+**Scope:** `git diff 8b4c1c9^..e8677f3 -- src tests` (G-09-7, the empty Zellij modal)
+**Files Reviewed:** 5 (`src/ui/CandidateSelect.tsx`, `src/client/zellij-pane-resize.ts`, `tests/candidate-select-layout.test.tsx`, `tests/zellij-pane-resize.test.ts`, `tests/candidate-select.test.tsx`)
+**New findings:** 0 critical, 3 warning, 4 info
+
+### Summary
+
+Plan 09-06 removes the two races behind G-09-7. First, `CandidateSelect` now resets on candidate arrival during render (the `prevCandidates` pattern), so the stale "no matches" height is never committed or reported. Second, `syncZellijFloatingPaneHeight` now runs a one-slot queue where the newest request wins. I checked both against the source and ran the three test files: 58 pass.
+
+Parts that hold up:
+
+- **Render-phase reset.** The guard `candidates !== prevCandidates` runs once per new array reference. `setPrevCandidates` makes it converge on the retried render, so there is no re-render loop. Each setter runs only when its value would change. All hooks stay unconditional and in the same order. The `[query]` effect that fires after a render-phase `setQuery('')` sets `selectedIndex` to 0, which is already its value, so there is no second layout report. In `run-foreground.ts` the only arrival is the one `app.rerender`, and arrows and Tab are guarded with `!candidates` during loading, so there is no stale selection or toggle when the list arrives.
+- **Queue, normal path.** There is one waiting slot, so the queue cannot grow. A waiting height equal to the running height is dropped. Late `exit`/`error` events are ignored, both through the per-action `settled` flag and through the `action !== current` check. The `'error'` listener uses `on`, which closes the old unhandled-`'error'` crash. Both the child and the timer are unref'd. There are no promises in this path, so there can be no unhandled rejections.
+
+The defects are in the failure paths of the queue: timeout and non-zero exit. In those paths, the guarantee "the last height applied is the last requested" (zellij-pane-resize.ts:158-161) no longer holds. There is also a test-harness gap: the mocked-hooks suite never replays render-phase updates.
+
+### Warnings
+
+#### WR-06: The timeout path starts the next resize without waiting for the killed action to exit, which can bring back the G-09-7 ordering race
+
+**File:** `src/client/zellij-pane-resize.ts:141-148`
+**Issue:** On timeout, the code calls `action.child?.kill()` (a SIGTERM) and then calls `settle()` right away. `settleResize` then spawns the waiting height. Two problems follow:
+
+- The killed `zellij` client may still be alive, because SIGTERM is asynchronous and can be handled or delayed. During that time two actions run at once, which breaks the "at most one runs at a time" invariant (line 39).
+- A slow `zellij action` most likely stalls *after* it has sent its request to the server, while it waits for the reply. Killing the client does not cancel a request the server already has.
+
+Either way, the server can apply the old height after the new one. That is the completion-order reversal G-09-7 was about (lines 158-160). The test at `tests/zellij-pane-resize.test.ts:180-197` checks only that the next spawn happens. It does not model a killed action that still lands later.
+**Fix:** Settle only when the killed child exits, with a hard deadline. Then always re-send the newest height once, so the last action to land is the newest:
+```ts
+const timer = setTimeout(() => {
+  const child = action.child;
+  if (child === undefined || child.exitCode !== null || child.signalCode !== null) {
+    settle();
+    return;
+  }
+  child.kill();                           // the existing once('exit', settle) settles on death
+  setTimeout(() => { child.kill('SIGKILL'); settle(); }, 500).unref();
+  // After a timeout we cannot know whether the height landed: re-assert it.
+  if (waiting === undefined) waiting = { height: request.height, paneId: request.paneId };
+  spawnedHeight = undefined;              // so settleResize does not dedupe the re-assert
+}, RESIZE_SETTLE_TIMEOUT_MS);
+```
+Add a test where the killed action's fake child applies its height *after* the next action exits. Assert that `applied.at(-1)` is the newest height.
+
+#### WR-07: A failed, killed or non-zero-exit action still counts as the applied height, so the pane can stay at a stale size and later requests for the right height are deduped
+
+**File:** `src/client/zellij-pane-resize.ts:103, 130, 133, 178, 181-183`
+**Issue:**
+
+- `spawnedHeight` is set before the spawn (line 103) and is never rolled back.
+- `exit` settles whatever the exit code is (line 130), and `error` and the timeout settle the same way.
+- Line 178 throws away a waiting request whose height equals the in-flight height. Lines 181-183 skip any later request for that height.
+
+So when the action for height H fails, for example a non-zero exit because the server is busy, or a kill on timeout, the pane stays at its old height. Every later `syncZellijFloatingPaneHeight` call that resolves to H is then a no-op. A concrete sequence: H=24 is running, a stale 9 arrives, then 24 arrives again. Line 178 drops the waiting entry because it matches the in-flight 24. If that in-flight 24 action then exits non-zero or is killed, nothing re-sends 24, and the modal stays at the size it had before. That is the empty-modal symptom.
+
+The old code also set the dedupe key before spawning. The new timeout-kill path and the drop-equal-waiting rule add new ways to reach this state.
+**Fix:** Dedupe against the last height *known* to be applied, not the last one spawned:
+```ts
+let appliedHeight: number | undefined;   // updated only on exit code 0
+child.once('exit', (code) => {
+  if (code === 0 && action === current) appliedHeight = request.height;
+  settle();
+});
+// error / timeout / non-zero: leave appliedHeight as is, and if nothing newer is waiting,
+// keep the failed request as `waiting` for at most one retry.
+```
+In `syncZellijFloatingPaneHeight`, compare with `spawnedHeight` only to decide whether a request needs to wait behind the running action. Compare with `appliedHeight` to decide whether to skip it. Add tests for a non-zero exit followed by the same height, and for a timeout followed by the same height.
+
+#### WR-08: The mocked-hooks suite never replays render-phase updates, so the zero-match test now checks a state production cannot reach
+
+**File:** `tests/candidate-select.test.tsx:55-78, 239-259`; `src/ui/CandidateSelect.tsx:118-130`
+**Issue:** Since 09-06, the arrival reset runs during render. With `initialQuery: 'zzz'`, the first mocked render calls `setQuery('')`, and the mock stores `''` in `stateValues[1]`. However, the mock does not re-run the component the way React does. The `useInput` closure that the test captures still holds `query = 'zzz'`. Enter therefore hits the zero-match guard, and the test passes.
+
+In production, React discards that render and re-renders with `query = ''` before committing. The real-hooks test `(a)` in `tests/candidate-select-layout.test.tsx` shows this. So Enter would accept `git status`, which is the opposite of what the test is named for. The test now passes only because of how the harness works, and any future mocked test that renders once with a non-matching `initialQuery` gets the same stale closure. The harness gap also means the render-phase reset cannot be observed in this file at all (see IN-06).
+**Fix:** Either:
+
+- set up the zero-match state the way production reaches it: render with `initialQuery: 'git'`, type `z` through `capturedInputHandler`, set `stateCallCount = 0`, re-render, then press Enter; or
+- make the mocked `useState` harness act like React: record whether any setter ran during the call, and re-invoke the component (resetting `stateCallCount`) until no render-phase setter fires, with a cap of 25 like React's.
+
+Then add an assertion that a non-matching `initialQuery` is cleared on arrival.
+
+### Info
+
+#### IN-06: No test covers the arrival reset of `selectedIndex` and Tab toggles (D-09), although the 09-06 SUMMARY D3 claims it
+
+**File:** `src/ui/CandidateSelect.tsx:120-125`; `tests/candidate-select.test.tsx`; `tests/candidate-select-layout.test.tsx`
+**Issue:** SUMMARY D3 says "arrival still resets selection and clears Tab toggles (D-09 kept)" and cites the mocked suite. However, every mocked test reuses one `candidates` reference, so the reset branch never runs after a selection or toggle. A grep for arrival/reset tests finds only a comment. The real-hooks harness checks only the query branch, in tests (a) to (d). With today's single arrival these setters never fire, because arrows and Tab are no-ops while loading, so the impact is low. A future retry or refresh path that pushes a second array would not be covered.
+**Fix:** In the real-hooks harness, render list A, press down and Tab through stdin (`stdin.push('\x1b[B')` and `'\t'`), rerender with list B, and assert that the first row is active and shown in its plain form.
+
+#### IN-07: The queue tests skip the synchronous spawn-throw branch and the timer `unref`
+
+**File:** `src/client/zellij-pane-resize.ts:136-139, 149-150, 190-198`; `tests/zellij-pane-resize.test.ts:169-215`
+**Issue:**
+
+- **Spawn-throw branch.** The `catch` branch (spawn throws synchronously, e.g. `EACCES` or bad args) is never run.
+- **Timer `unref`.** "unrefs every spawned child" checks `child.unref` but not `timer.unref()`. That call is what stops a pending 2 s timer from delaying client exit, and fake timers make it a silent no-op.
+- **Reset leaves listeners attached.** `resetZellijPaneHeightCache` leaves an in-flight child's listeners attached. This is harmless thanks to the `action !== current` guard, but the function is exported from a production module.
+
+**Fix:**
+
+- Add a test where `spawnMock` throws once. Assert that no exception escapes and that the next request spawns.
+- Spy on `setTimeout`'s return value, or use `vi.spyOn(globalThis, 'setTimeout')` with real timers, to assert that `unref` is called.
+
+#### IN-08: The real-hooks layout tests rely on a 200 ms real-time sleep to catch late reports
+
+**File:** `tests/candidate-select-layout.test.tsx:84-85, 158`
+**Issue:** `SETTLE_MS = 200` is a wall-clock wait. The negative asserts depend on it: `not.toContain(noMatch)`, `reports` all equal to `full`, and exactly one spawn in (c). Under parallel load, a late report or a second spawn after 200 ms would be missed, so these tests can pass vacuously instead of catching a regression. The wait also adds about 800 ms to the suite.
+**Fix:** Wait for a deterministic condition. After `waitUntilRenderFlush`, drain the macrotask queue a few times (`await new Promise(setImmediate)` x3, since the fake child exits on `setImmediate`). Assert that the resize queue is idle, for example through a test-only `isZellijResizeIdle()` export. Then run the asserts.
+
+#### IN-09: An effect-count assertion stands in for the behaviour the test names
+
+**File:** `tests/candidate-select.test.tsx:214-231`
+**Issue:** The test "registers a useEffect hook for query dependency" only checks `useEffect` was called 3 times. It breaks on any unrelated effect added or removed (it was edited in this plan for exactly that reason), and it never checks that any effect depends on `query`.
+**Fix:** Find the call whose deps array contains the query value, e.g. `vi.mocked(useEffect).mock.calls.some(([, deps]) => deps?.length === 1 && deps[0] === '')`. Drop the exact count.
+
+---
+
+_Gap-closure review: 2026-10-11T10:42:33Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_

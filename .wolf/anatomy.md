@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T10:17:04.578Z
-> Files: 403 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T10:43:26.575Z
+> Files: 404 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -10,6 +10,10 @@
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/
 
 - `wolf.py` — Small helpers for .wolf bookkeeping: anatomy descriptions, memory lines, buglog entries. (~676 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/
+
+- `gap-section.md` — Gap-Closure Review: Plan 09-06 (~2914 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 

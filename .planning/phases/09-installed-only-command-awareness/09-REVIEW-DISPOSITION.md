@@ -51,9 +51,37 @@ findings:
     severity: info
     disposition: open
     title: "Steering guard test is marker-based and easy to bypass"
-open: 5
-total: 12
-recorded: 2026-10-10T20:12:01.811Z
+  - id: WR-06
+    severity: warning
+    disposition: open
+    title: "The timeout path starts the next resize without waiting for the killed action to exit, which can bring back the G-09-7 ordering race"
+  - id: WR-07
+    severity: warning
+    disposition: open
+    title: "A failed, killed or non-zero-exit action still counts as the applied height, so the pane can stay at a stale size and later requests for the right height are deduped"
+  - id: WR-08
+    severity: warning
+    disposition: open
+    title: "The mocked-hooks suite never replays render-phase updates, so the zero-match test now checks a state production cannot reach"
+  - id: IN-06
+    severity: info
+    disposition: open
+    title: "No test covers the arrival reset of `selectedIndex` and Tab toggles (D-09), although the 09-06 SUMMARY D3 claims it"
+  - id: IN-07
+    severity: info
+    disposition: open
+    title: "The queue tests skip the synchronous spawn-throw branch and the timer `unref`"
+  - id: IN-08
+    severity: info
+    disposition: open
+    title: "The real-hooks layout tests rely on a 200 ms real-time sleep to catch late reports"
+  - id: IN-09
+    severity: info
+    disposition: open
+    title: "An effect-count assertion stands in for the behaviour the test names"
+open: 12
+total: 19
+recorded: 2026-10-11T10:50:00.000Z
 ---
 
 # Phase 09: Code Review Disposition
@@ -72,6 +100,13 @@ recorded: 2026-10-10T20:12:01.811Z
 | IN-03 | info | open | - |
 | IN-04 | info | open | - |
 | IN-05 | info | open | - |
+| WR-06 | warning | open | 09-06 gap-closure review |
+| WR-07 | warning | open | 09-06 gap-closure review |
+| WR-08 | warning | open | 09-06 gap-closure review |
+| IN-06 | info | open | 09-06 gap-closure review |
+| IN-07 | info | open | 09-06 gap-closure review |
+| IN-08 | info | open | 09-06 gap-closure review |
+| IN-09 | info | open | 09-06 gap-closure review |
 
 Dispositions: `open` (recorded, not yet triaged), `fixed`, `skipped`, `deferred`.
 Set `deferred` by hand and put the reason in the Source cell; both are preserved. A `|` in the reason is kept as prose and escaped on the next run.
