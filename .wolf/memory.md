@@ -2315,3 +2315,7 @@
 | 11:22 | Edited tests/candidate-select-layout.test.tsx | CSS: quick-261011-f9o | ~274 |
 | 11:22 | Edited tests/candidate-select-layout.test.tsx | added optional chaining | ~1189 |
 | 11:23 | quick 261011-f9o RED: (f) filter-hold regression + replayScreen/mountArrival/spawnedHeights helpers, (d)/(e) expectations changed on purpose; -t "keeps the pane" fails '18,11' vs '18' (plain) / '20,13' vs '20' (flagged); RED_EVIDENCE_OK | tests/candidate-select-layout.test.tsx | RED confirmed | ~6000 |
+| 11:24 | Edited src/ui/modal-layout.ts | modified heldPaneLines() | ~394 |
+| 11:24 | Edited tests/candidate-select.test.tsx | CSS: useRef, initial, current | ~84 |
+| 11:25 | quick 261011-f9o GREEN: heldPaneLines in modal-layout + per-candidates-array paneHold useRef in CandidateSelect layout effect; react mock gains plain useRef; layout (10) + mocked (43) tests pass, typecheck 0, run-foreground/zellij-pane-resize untouched | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests/candidate-select.test.tsx | GREEN | ~3000 |
+| 11:26 | quick 261011-f9o GREEN: heldPaneLines in modal-layout + per-candidates-array paneHold useRef in CandidateSelect layout effect; react mock gains plain useRef; layout (10) + mocked (43) tests pass, typecheck 0, run-foreground/zellij-pane-resize untouched | src/ui/modal-layout.ts, src/ui/CandidateSelect.tsx, tests/candidate-select.test.tsx | GREEN | ~3000 |

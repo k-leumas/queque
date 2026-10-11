@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T17:22:44.880Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T17:24:38.524Z
 > Files: 407 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -791,17 +791,17 @@
 
 ## src/ui/
 
-- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Candidate-arrival reset (selection, toggles, non-matching lbuffer query) runs during render via `prevCandidates` (fourth useState), so no effect sees the stale initialQuery render (G-09-7). Enter inserts the displayed text; the search filter matches the displayed text (install form when toggled) and hidden rows keep their toggle; flagged rows start their explanation with cyan ⓘ; selection-independent legend (`ⓘ not installed[ · tab prepends …]`) directly above ControlsLine; ControlsLine takes no props (tab chip removed). (~3100 tok)
+- `CandidateSelect.tsx` — Candidate list; Tab/Shift+Tab toggles a flagged row to its install form (third useState: Set of `candidateKey`s). Candidate-arrival reset (selection, toggles, non-matching lbuffer query) runs during render via `prevCandidates` (fourth useState), so no effect sees the stale initialQuery render (G-09-7). Enter inserts the displayed text; the search filter matches the displayed text (install form when toggled) and hidden rows keep their toggle; flagged rows start their explanation with cyan ⓘ; selection-independent legend (`ⓘ not installed[ · tab prepends …]`) directly above ControlsLine; ControlsLine takes no props (tab chip removed). Zellij pane hold: a `paneHold` useRef `{ candidates, lines }` (not a fifth state) feeds `heldPaneLines` in the layout effect, so `onLayoutLinesChange` reports the held pane content rows (unfiltered size on arrival, never shrinks for the same candidates array, a new array resets) — filtering spawns no resize (quick-261011-f9o). (~3300 tok)
 - `ControlsLine.tsx` — Keyboard hints below the candidate list; optional `tabHint` (`install` | `undo install`) chips between accept and cancel. (~300 tok)
 - `LoadingSpinner.tsx` — FRAMES (~134 tok)
-- `modal-layout.ts` — Wrapping/row layout; ⓘ `MISSING_TOOL_MARK`, `explanationText` (mark-prefixed explanation), `missingToolsLegend(visible)`, `candidateKey`, `displayedCommand`, `isInstallToggled`; `filterCandidates(list, query)` matches the command or the install form, regardless of the Tab toggle; `MODAL_VIEWPORT_LINES` (18: inline scroll reserve, row count documented); estimator counts the ⚠ footer and legend as separate margin+line blocks. (~2500 tok)
+- `modal-layout.ts` — Wrapping/row layout; ⓘ `MISSING_TOOL_MARK`, `explanationText` (mark-prefixed explanation), `missingToolsLegend(visible)`, `candidateKey`, `displayedCommand`, `isInstallToggled`; `filterCandidates(list, query)` matches the command or the install form, regardless of the Tab toggle; `MODAL_VIEWPORT_LINES` (18: inline scroll reserve, row count documented); estimator counts the ⚠ footer and legend as separate margin+line blocks; `heldPaneLines(previousHeld, input)` = max(held, current estimate, unfiltered estimate with query '' + row 0 + current toggles): the Zellij pane's per-list high-water content height (quick-261011-f9o). (~2750 tok)
 - `Modal.tsx` — Modal (~223 tok)
 - `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
 ## tests/
 
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes: header row, stale rows, scroll). (d) smt2 pre-filter draws filtered but reports the unfiltered height; (e) "header row": pane PTY rows (height − 2 chrome) fit the drawn frame (drawn-state estimate + 1 cursor row); (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height (one resize, clean replay). (~6700 tok)
-- `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
+- `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
 - `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)

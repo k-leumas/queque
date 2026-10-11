@@ -73,6 +73,9 @@ vi.mock('react', async (importOriginal) => {
       return [stateValues[index], setter];
     }),
     useEffect: vi.fn(),
+    // The pane-hold ref (quick-261011-f9o). A plain function, not a vi.fn, so vi.clearAllMocks
+    // can never strip it; the real useRef throws outside a React render.
+    useRef: (initial: unknown) => ({ current: initial }),
     createElement: actual.createElement,
   };
 });

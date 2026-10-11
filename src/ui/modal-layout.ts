@@ -229,3 +229,25 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
 
   return lines;
 }
+
+/**
+ * Content rows the Zellij floating pane should hold for the current frame (quick-261011-f9o).
+ * The caller adds the pane's frame and cursor rows (resolveZellijPaneHeight).
+ *
+ * - The pane is sized for the unfiltered list: the frame the user sees after clearing the
+ *   filter (query '', row 0 selected — the query reset selects row 0 — and the current Tab
+ *   toggles, which hidden rows keep). That holds even when the lbuffer pre-filters the list
+ *   on arrival, so clearing a filter never needs a grow.
+ * - It is a per-list high-water mark: the result is never below `previousHeld`, so filtering,
+ *   Backspace, arrow keys and Tab undo never shrink the pane. The caller resets
+ *   `previousHeld` to 0 when a new candidates array arrives.
+ * - It is never below the frame drawn now (`input`), so a taller frame (the ⚠ footer, a
+ *   wrapped install form) still grows the pane and its PTY rows stay >= the rows Ink draws
+ *   (261011-e43).
+ *
+ * It is a max of existing estimates and adds no row offset of its own.
+ */
+export function heldPaneLines(previousHeld: number, input: CandidateSelectLayoutInput): number {
+  const unfiltered = estimateCandidateSelectLines({ ...input, query: '', selectedIndex: 0 });
+  return Math.max(previousHeld, estimateCandidateSelectLines(input), unfiltered);
+}

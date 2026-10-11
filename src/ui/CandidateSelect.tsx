@@ -1,5 +1,5 @@
 import { Box, Text, useInput, useStdin, useStdout } from 'ink';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useRef, useState } from 'react';
 import { isDestructiveCommand } from '../shared/privacy-filter.js';
 import type { DisplayCandidate } from '../shared/tool-awareness.js';
 import { ControlsLine } from './ControlsLine.js';
@@ -8,9 +8,9 @@ import { Modal } from './Modal.js';
 import {
   candidateKey,
   displayedCommand,
-  estimateCandidateSelectLines,
   explanationText,
   filterCandidates,
+  heldPaneLines,
   MISSING_TOOL_MARK,
   missingToolsLegend,
   wrapText,
@@ -61,7 +61,10 @@ interface Props {
   onSelect: (command: string, explanation: string) => void;
   onCancel: () => void;
   error?: boolean;
-  /** Called when rendered row count changes (Zellij pane resize). */
+  /**
+   * Called with the content rows the Zellij pane should hold (heldPaneLines), not the rows
+   * drawn: sized for the unfiltered list and never lower while the same list is shown.
+   */
   onLayoutLinesChange?: (lineCount: number) => void;
 }
 
@@ -105,6 +108,13 @@ export function CandidateSelect({
   // Fourth useState: the candidates array the arrival reset below last ran for. Eager null
   // initial value, so a mount that already has candidates still runs the reset.
   const [prevCandidates, setPrevCandidates] = useState<readonly DisplayCandidate[] | null>(null);
+  // The Zellij pane hold (quick-261011-f9o): the content rows last reported for `candidates`.
+  // A ref, not a fifth state, so the mocked test's useState indices are unchanged and writing
+  // it never triggers a render. Eager initial value, like the states above.
+  const paneHold = useRef<{ candidates: readonly DisplayCandidate[] | null; lines: number }>({
+    candidates: null,
+    lines: 0,
+  });
 
   // Reset selection and Tab toggles when candidates arrive (Pitfall 2 fix, D-09).
   // Also clear the initialQuery pre-filter if it produces zero matches — the lbuffer
@@ -144,7 +154,10 @@ export function CandidateSelect({
 
   const includeDevFooter = process.env.QQ_DEV_ROOT != null;
 
-  // Keep Zellij pane at QQ_PANE_HEIGHT while loading; shrink/grow once content is known.
+  // The Zellij pane stays at QQ_PANE_HEIGHT while loading. On arrival it is sized for the
+  // unfiltered list, and while the same candidates array is shown it never shrinks: filtering
+  // and Backspace report the held height (an equal height spawns no resize), and only a taller
+  // frame grows it. A new candidates array resets the hold. No state is set here (G-09-7).
   // biome-ignore lint/correctness/useExhaustiveDependencies: layout callback mirrors render inputs
   useEffect(() => {
     if (!onLayoutLinesChange) {
@@ -153,18 +166,20 @@ export function CandidateSelect({
     if (candidates === null && error !== true) {
       return;
     }
-    onLayoutLinesChange(
-      estimateCandidateSelectLines({
-        candidates,
-        initialQuery,
-        query,
-        selectedIndex,
-        error,
-        contentWidth,
-        includeDevFooter,
-        installToggled,
-      }),
-    );
+    const layout = {
+      candidates,
+      initialQuery,
+      query,
+      selectedIndex,
+      error,
+      contentWidth,
+      includeDevFooter,
+      installToggled,
+    };
+    const previousHeld = paneHold.current.candidates === candidates ? paneHold.current.lines : 0;
+    const lines = heldPaneLines(previousHeld, layout);
+    paneHold.current = { candidates, lines };
+    onLayoutLinesChange(lines);
   }, [
     candidates,
     initialQuery,
