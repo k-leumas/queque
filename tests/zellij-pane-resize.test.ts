@@ -71,7 +71,23 @@ describe('zellij-pane-resize', () => {
     process.env.QQ_PANE_HEIGHT = '12';
     const { resolveZellijPaneHeight } = await import('../src/client/zellij-pane-resize.js');
     expect(resolveZellijPaneHeight(20)).toBe(12);
-    expect(resolveZellijPaneHeight(6)).toBe(8);
+    expect(resolveZellijPaneHeight(6)).toBe(9);
+  });
+
+  it("leaves a PTY row for Ink's trailing cursor line below the cap", async () => {
+    process.env.QQ_PANE_HEIGHT = '24';
+    const { resolveZellijPaneHeight } = await import('../src/client/zellij-pane-resize.js');
+    // content + 2 frame rows + 1 trailing cursor row, floored at 6 and capped at 24.
+    expect(resolveZellijPaneHeight(15)).toBe(18);
+    expect(resolveZellijPaneHeight(20)).toBe(23);
+    // 21 lines -> 24: 22 PTY rows hold the 21 lines plus Ink's cursor row exactly.
+    expect(resolveZellijPaneHeight(21)).toBe(24);
+    // 22 lines -> 24: a frame as tall as the pane takes Ink's fullscreen path, which writes
+    // no trailing newline, so the capped pane still fits it.
+    expect(resolveZellijPaneHeight(22)).toBe(24);
+    expect(resolveZellijPaneHeight(23)).toBe(24);
+    expect(resolveZellijPaneHeight(3)).toBe(6);
+    expect(resolveZellijPaneHeight(1)).toBe(6);
   });
 
   it('spawns zellij resize action when inside Zellij', async () => {
@@ -84,7 +100,7 @@ describe('zellij-pane-resize', () => {
 
     expect(spawnMock).toHaveBeenCalledWith(
       'zellij',
-      ['action', 'change-floating-pane-coordinates', '--pane-id', 'terminal_2', '--height', '10'],
+      ['action', 'change-floating-pane-coordinates', '--pane-id', 'terminal_2', '--height', '11'],
       { stdio: 'ignore' },
     );
   });
@@ -115,7 +131,7 @@ describe('zellij-pane-resize', () => {
     it('final applied height equals the last requested height when the earlier action is slower', async () => {
       const { syncZellijFloatingPaneHeight } = await import('../src/client/zellij-pane-resize.js');
       // Measured in the G-09-7 repro: each action takes ~100-420 ms to exit.
-      const exitAfterMs: Record<number, number> = { 9: 400, 24: 100 };
+      const exitAfterMs: Record<number, number> = { 10: 400, 24: 100 };
       let alive = 0;
       let maxAlive = 0;
       onSpawn = ({ height, child }) => {
@@ -127,14 +143,14 @@ describe('zellij-pane-resize', () => {
         setTimeout(() => child.emit('exit', 0), exitAfterMs[height]);
       };
 
-      syncZellijFloatingPaneHeight(7); // height 9: the stale shrink
+      syncZellijFloatingPaneHeight(7); // height 10: the stale shrink
       vi.advanceTimersByTime(30);
       syncZellijFloatingPaneHeight(22); // height 24: the real list
       vi.advanceTimersByTime(1000);
 
       expect(applied.at(-1)).toBe(24);
-      expect(applied).toEqual([9, 24]);
-      expect(spawned.map((action) => action.height)).toEqual([9, 24]);
+      expect(applied).toEqual([10, 24]);
+      expect(spawned.map((action) => action.height)).toEqual([10, 24]);
       expect(maxAlive).toBe(1);
     });
 
@@ -174,7 +190,7 @@ describe('zellij-pane-resize', () => {
       const enoent = Object.assign(new Error('spawn zellij ENOENT'), { code: 'ENOENT' });
 
       expect(() => spawned[0]?.child.emit('error', enoent)).not.toThrow();
-      expect(spawned.map((action) => action.height)).toEqual([24, 9]);
+      expect(spawned.map((action) => action.height)).toEqual([24, 10]);
     });
 
     it('a hung action is killed after RESIZE_SETTLE_TIMEOUT_MS', async () => {
@@ -189,7 +205,7 @@ describe('zellij-pane-resize', () => {
 
       vi.advanceTimersByTime(2);
       expect(spawned[0]?.child.kill).toHaveBeenCalledTimes(1);
-      expect(spawned.map((action) => action.height)).toEqual([24, 9]);
+      expect(spawned.map((action) => action.height)).toEqual([24, 10]);
 
       // The killed action exiting late must not settle the new one or spawn again.
       spawned[0]?.child.emit('exit', null);
@@ -232,7 +248,7 @@ describe('zellij-pane-resize', () => {
       // No timer advance: the slot must already be free after the synchronous throw.
       syncZellijFloatingPaneHeight(14);
       expect(spawnMock).toHaveBeenCalledTimes(2);
-      expect(spawned.map((action) => action.height)).toEqual([16]);
+      expect(spawned.map((action) => action.height)).toEqual([17]);
     });
 
     it("the settle timeout timer is unref'd so it never keeps the client alive", async () => {

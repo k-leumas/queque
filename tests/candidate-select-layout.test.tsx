@@ -11,6 +11,7 @@
 
 import { EventEmitter } from 'node:events';
 import { Readable, Writable } from 'node:stream';
+import { stripVTControlCharacters } from 'node:util';
 import { render } from 'ink';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -107,6 +108,39 @@ const INVENTORY: ToolInventory = {
 
 const ENV_KEYS = ['QQ_DEV_ROOT', 'ZELLIJ', 'ZELLIJ_PANE_ID', 'QQ_PANE_HEIGHT'] as const;
 
+/**
+ * Zellij floating-pane chrome (border + title), as rows. Kept as an independent oracle on
+ * purpose: reading the source constant would make a wrong value pass its own check.
+ */
+const ZELLIJ_PANE_CHROME_ROWS = 2;
+
+/** The header text every CandidateSelect frame starts with. */
+const HEADER_MARKER = 'queque ›';
+
+/**
+ * Rows Ink's last frame occupies on the PTY. N content rows that each end in a newline
+ * leave the cursor on row N + 1; a fullscreen frame without the trailing newline gives N.
+ */
+function lastFrameRows(writes: readonly string[]): number {
+  const frame = writes
+    .map((chunk) => stripVTControlCharacters(chunk))
+    .filter((text) => text.includes(HEADER_MARKER))
+    .at(-1);
+  if (frame === undefined) {
+    throw new Error('Ink never wrote a frame containing the header');
+  }
+  return frame.split('\n').length;
+}
+
+/** The `--height` value of the last spawned `zellij action`. */
+function lastSpawnedHeight(): number {
+  const args = spawnMock.mock.calls.at(-1)?.[1] as string[] | undefined;
+  if (args === undefined) {
+    throw new Error('no zellij resize was spawned');
+  }
+  return Number(args[args.indexOf('--height') + 1]);
+}
+
 /** The estimator's answer for these candidates filtered by `query`. */
 function estimate(
   candidates: readonly DisplayCandidate[],
@@ -126,7 +160,8 @@ function estimate(
 
 /**
  * Mirrors run-foreground.ts: render the loading state, then rerender once with candidates.
- * Returns every chunk Ink wrote to stdout.
+ * Returns a copy of every chunk Ink wrote to stdout before unmount, so unmount writes are
+ * never mistaken for the last frame.
  */
 async function runArrival(
   candidates: readonly DisplayCandidate[],
@@ -151,15 +186,17 @@ async function runArrival(
     patchConsole: false,
     exitOnCtrlC: false,
   });
+  let writes: string[] = [];
   try {
     await app.waitUntilRenderFlush();
     app.rerender(build(candidates));
     await app.waitUntilRenderFlush();
     await new Promise((resolve) => setTimeout(resolve, SETTLE_MS));
+    writes = [...stdout.writes];
   } finally {
     app.unmount();
   }
-  return stdout.writes;
+  return writes;
 }
 
 describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-7)', () => {
@@ -252,6 +289,46 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
 
     expect(reports.length).toBeGreaterThan(0);
     expect(reports).toEqual(reports.map(() => filtered));
+  });
+
+  it.each([
+    {
+      name: 'plain',
+      build: (): readonly DisplayCandidate[] => RAW_CANDIDATES,
+      initialQuery: LBUFFER,
+    },
+    {
+      name: 'flagged',
+      build: (): readonly DisplayCandidate[] =>
+        annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin'),
+      initialQuery: LBUFFER,
+    },
+    {
+      name: 'smt2 pre-filter',
+      build: (): readonly DisplayCandidate[] => RAW_CANDIDATES,
+      initialQuery: 'smt2',
+    },
+  ])('(e) $name: the Zellij pane keeps the header row (PTY rows fit the whole Ink frame)', async ({
+    build,
+    initialQuery,
+  }) => {
+    process.env.ZELLIJ = '0';
+    process.env.ZELLIJ_PANE_ID = '7';
+    process.env.QQ_PANE_HEIGHT = '24';
+
+    const reports: number[] = [];
+    const writes = await runArrival(build(), initialQuery, (lines) => {
+      reports.push(lines);
+      syncZellijFloatingPaneHeight(lines);
+    });
+
+    const lastReport = reports.at(-1);
+    expect(lastReport).toBeDefined();
+    const occupied = lastFrameRows(writes);
+    // Ink draws exactly the estimated lines plus its trailing cursor row.
+    expect(occupied).toBe((lastReport ?? 0) + 1);
+    const paneRows = lastSpawnedHeight() - ZELLIJ_PANE_CHROME_ROWS;
+    expect(paneRows).toBeGreaterThanOrEqual(occupied);
   });
 });
 
