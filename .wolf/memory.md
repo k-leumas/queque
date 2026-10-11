@@ -2324,3 +2324,16 @@
 | 11:40 | quick 261011-f9o live Zellij 0.44.1 evidence (tmux-hosted floating pane 80x24, real CandidateSelect + real sync, z3 fixtures, smt then 3 Backspaces): pre-fix (69411c1) reports 16,16,9,9,9,16,16, pane shrinks under the frame (mid-filter capture shows only the controls rows, title SCROLL: 0/7); HEAD reports 16 x7, pane frame unchanged, header on first row, no SCROLL, blank rows below the filtered list, full list back after Backspace | scratchpad harness (not in repo) | fix confirmed in automation; human check pending | ~6000 |
 | 11:41 | Created .planning/quick/261011-f9o-keep-the-zellij-modal-at-its-full-list-h/261011-f9o-SUMMARY.md | — | ~2781 |
 | 11:42 | Session end: 28 writes across 15 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 22 reads | ~101191 tok |
+| 13:00 | Created .planning/debug/modal-blank-before-loading.md | — | ~526 |
+| 13:00 | Session end: 29 writes across 16 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 24 reads | ~102247 tok |
+| 13:42 | Session end: 29 writes across 16 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 24 reads | ~102247 tok |
+| 13:50 | Session end: 29 writes across 16 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 24 reads | ~102247 tok |
+| 13:51 | Created tests/bundle-startup.test.ts | — | ~1069 |
+| 13:51 | Edited tests/bundle-startup.test.ts | 2→1 lines | ~25 |
+| 13:55 | Session end: 31 writes across 17 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 25 reads | ~103341 tok |
+| 14:23 | Created .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/261011-jbh-PLAN.md | — | ~13251 |
+| 14:24 | Edited .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/261011-jbh-PLAN.md | inline fix | ~38 |
+| 14:24 | Created .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/COVERAGE.md | — | ~72 |
+| 14:26 | Session end: 34 writes across 19 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 25 reads | ~118729 tok |
+| 14:31 | Created src/client/instant-frame.ts | — | ~474 |
+| 14:35 | quick 261011-jbh Task 1 RED: instant-frame zsh cases z1-z10, real-Ink takeover replays t1-t6, replayScreen ESC 7/8, throw-on-call instant-frame.ts stub; z1 RED_EVIDENCE_OK | tests/zsh-widget.test.ts, tests/candidate-select-layout.test.tsx, src/client/instant-frame.ts | RED as planned | ~9000 |

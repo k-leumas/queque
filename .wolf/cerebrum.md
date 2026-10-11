@@ -72,6 +72,9 @@
 - [2026-10-11] In Ink 7's parse-keypress, `\x7f` (DEL) is `key.backspace`. Real-Ink tests press Backspace with `stdin.push('\u007F')`.
 - [2026-10-11] `replayScreen` in tests/candidate-select-layout.test.tsx is a tiny terminal model (printable text, `\n` as onlcr, `\r`, CSI A/B/C/D/E/F/G/H/K/J; colours and private modes ignored) fed Ink's raw writes. It checks the header row, stale rows and scroll on a pane-sized screen without a real terminal; size the screen from the spawned height minus the 2 chrome rows.
 
+- [2026-10-11] GSD api-coverage detector fires on the bare word "SDK" (e.g. a plan that only makes `@anthropic-ai/sdk` lazy). Answer with a one-line `COVERAGE.md` declaration ("No external API integration: <reason>") in the plan dir. `check api-coverage.verify-pre` only resolves `.planning/phases/`, so on quick dirs it reports phase_lookup_failed regardless.
+- [2026-10-11] Node's module compile cache only covers modules compiled after `enableCompileCache()`. A single-file bundle is compiled before its first statement runs, so enabling the cache inside it does nothing for it. Use a tiny launcher that enables the cache and then dynamically imports the bundle (quick 261011-jbh plan).
+
 ## Do-Not-Repeat
 - [2026-10-11] Do not adjust state on a prop change inside a useEffect when another effect reports layout to an outside process (Zellij resize). The stale committed render leaks out first (G-09-7). Use the render-phase `prevX` pattern (`if (prop !== prevProp) { setPrevProp(prop); … }`) and call each setter only when its value changes.
 - [2026-10-11] In the Claude Code Bash tool, `cp` is aliased to interactive `cp -i`: restoring a file over an existing one waits on an invisible `overwrite? (y/n)` prompt, so the command hangs until timeout and the restore never happens. Use `/bin/cp -f` (or `command cp -f`) for scripted copies, and verify with `cmp` afterwards.

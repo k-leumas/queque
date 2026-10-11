@@ -32,6 +32,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
+import { inlineScrollReserve } from '../src/client/instant-frame.js';
+import { MODAL_VIEWPORT_LINES } from '../src/ui/modal-layout.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -940,5 +942,233 @@ describe('handoff timing', () => {
     }
     console.log(`handoff median ms per batch: ${medians.map((m) => m.toFixed(2)).join(', ')}`);
     expect(Math.min(...medians)).toBeLessThan(25);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Instant frame (quick 261011-jbh, LD-1): the widget paints the queque header and a
+// loading row before Node starts — inline into the modal area, or into a session-dir
+// file the Zellij pane wrapper cats before it execs the client.
+// ---------------------------------------------------------------------------
+
+/** Every SGR sequence (the frame dims its header and loading rows). */
+// biome-ignore lint/suspicious/noControlCharactersInRegex: matching terminal SGR sequences is the point
+const SGR_SEQUENCE = /\u001B\[\d+m/g;
+
+const INSTANT_FRAME_LBUFFER = 'show me how to use z3';
+
+/**
+ * Runs a script with the widget sourced and `args` as positional parameters, so user text
+ * reaches zsh as `$1`, `$2`, ... and is never interpolated into the script.
+ */
+function runZshArgs(
+  script: string,
+  args: readonly string[],
+): { stdout: string; stderr: string; status: number } {
+  const result = spawnSync('zsh', ['-f', '-c', `source "$0"\n${script}`, widgetPath, ...args], {
+    encoding: 'utf8',
+    timeout: 5000,
+    env: { ...process.env, PATH: process.env.PATH },
+  });
+  return {
+    stdout: result.stdout ?? '',
+    stderr: result.stderr ?? '',
+    status: result.status ?? 1,
+  };
+}
+
+/** `_qq_instant_frame "$lbuffer" "$columns"`'s REPLY. */
+function instantFrame(lbuffer: string, columns: string): string {
+  return runZshArgs('_qq_instant_frame "$1" "$2"; print -rn -- "$REPLY"', [lbuffer, columns])
+    .stdout;
+}
+
+/** The frame's rows: split on CR LF with every SGR sequence removed. */
+function frameRows(reply: string): string[] {
+  return reply.replace(SGR_SEQUENCE, '').split('\r\n');
+}
+
+/** The qq-question-widget function body. */
+function questionWidgetBody(): string {
+  const source = readFileSync(widgetPath, 'utf8');
+  const start = source.indexOf('qq-question-widget() {');
+  return source.slice(start, source.indexOf('\n}\n', start));
+}
+
+describe('instant frame', () => {
+  it('z1: the frame is the header, two blank rows, then the loading row', () => {
+    const rows = frameRows(instantFrame(INSTANT_FRAME_LBUFFER, '78'));
+    expect(rows.length).toBe(4);
+    expect(rows).toEqual([` queque › ${INSTANT_FRAME_LBUFFER}`, '', '', ' thinking…']);
+  });
+
+  it('z2: an empty lbuffer draws no header row, as in CandidateSelect', () => {
+    expect(frameRows(instantFrame('', '78'))).toEqual(['', '', ' thinking…']);
+  });
+
+  it('z3: control characters in the lbuffer are stripped before they reach the terminal', () => {
+    const reply = instantFrame('\u001B[31mred\nline\tTAB', '78');
+    expect(frameRows(reply)).toEqual([' queque › [31mredlineTAB', '', '', ' thinking…']);
+    // Only the frame's own four SGR sequences (dim on/off for the header and loading rows).
+    expect(reply.split('\u001B').length - 1).toBe(4);
+    expect(reply.match(SGR_SEQUENCE)).toHaveLength(4);
+  });
+
+  it('z4: a long lbuffer is truncated to the modal content width with a trailing …', () => {
+    const long = 'a'.repeat(200);
+    const header = (columns: string): string => frameRows(instantFrame(long, columns))[0] ?? '';
+    expect([...header('78')]).toHaveLength(1 + 76);
+    expect(header('78').endsWith('…')).toBe(true);
+    expect([...header('40')]).toHaveLength(1 + 38);
+    expect(header('40').endsWith('…')).toBe(true);
+    // Non-numeric or zero columns fall back to 80 (content width 78).
+    expect([...header('wide')]).toHaveLength(1 + 78);
+    expect([...header('0')]).toHaveLength(1 + 78);
+  });
+
+  it('z5: the inline bytes start with the client reserve, byte for byte (drift guard)', () => {
+    const frame = instantFrame(INSTANT_FRAME_LBUFFER, '78');
+    const result = runZshArgs('_qq_inline_instant_frame_bytes "$1" "$2"; print -rn -- "$REPLY"', [
+      INSTANT_FRAME_LBUFFER,
+      '78',
+    ]);
+    expect(result.status).toBe(0);
+    expect(result.stdout).toBe(
+      `${inlineScrollReserve(MODAL_VIEWPORT_LINES)}\u001B[J${frame}\u001B8`,
+    );
+  });
+
+  it('z6: QQ_INSTANT_FRAME=0 paints nothing, writes no pane file and returns 0 everywhere', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-instant-off-'));
+    try {
+      const result = runZshArgs(
+        `
+        QQ_INSTANT_FRAME=0
+        trap 'print -r -- TRAPPED' ERR
+        _qq_instant_frame "$1" 78; s1=$?; f=$REPLY
+        _qq_inline_instant_frame_bytes "$1" 78; s2=$?; b=$REPLY
+        _qq_paint_inline_instant_frame "$1"; s3=$?
+        _qq_write_pane_instant_frame "$2" "$1" 78; s4=$?
+        print -r -- "frame=[$f] bytes=[$b] status=$s1$s2$s3$s4 painted=$QQ_INSTANT_FRAME_PAINTED"
+        `,
+        [INSTANT_FRAME_LBUFFER, dir],
+      );
+      expect(result.stdout).toBe('frame=[] bytes=[] status=0000 painted=0\n');
+      expect(result.stderr).toBe('');
+      expect(readdirSync(dir)).toEqual([]);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('z7: the painter writes nothing when stdout is not a terminal, and never trips ERR', () => {
+    const piped = runZshArgs(
+      `
+      trap 'print -r -- TRAPPED' ERR
+      _qq_paint_inline_instant_frame "$1"
+      print -r -- "status=$? painted=$QQ_INSTANT_FRAME_PAINTED"
+      `,
+      [INSTANT_FRAME_LBUFFER],
+    );
+    expect(piped.stdout).toBe('status=0 painted=0\n');
+    expect(piped.stderr).toBe('');
+
+    const closed = runZshArgs(
+      `
+      trap 'print -r -- TRAPPED' ERR
+      _qq_paint_inline_instant_frame "$1" >&-
+      print -r -- "status=$?"
+      `,
+      [INSTANT_FRAME_LBUFFER],
+    );
+    expect(closed.stdout).toBe('status=0\n');
+    expect(closed.stderr).toBe('');
+  });
+
+  it('z8: the pane frame file is the frame plus a cursor home; a missing dir is silent', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-instant-pane-'));
+    try {
+      const frame = instantFrame(INSTANT_FRAME_LBUFFER, '78');
+      const written = runZshArgs(
+        `
+        trap 'print -r -- TRAPPED' ERR
+        _qq_write_pane_instant_frame "$1" "$2" 78
+        print -r -- "status=$?"
+        `,
+        [dir, INSTANT_FRAME_LBUFFER],
+      );
+      expect(written.stdout).toBe('status=0\n');
+      expect(readFileSync(join(dir, 'instant-frame.txt'), 'utf8')).toBe(`${frame}\u001B[H`);
+
+      const missing = runZshArgs(
+        `
+        trap 'print -r -- TRAPPED' ERR
+        _qq_write_pane_instant_frame /nonexistent/qq-instant-probe "$1" 78
+        print -r -- "status=$?"
+        `,
+        [INSTANT_FRAME_LBUFFER],
+      );
+      expect(missing.stdout).toBe('status=0\n');
+      expect(missing.stderr).toBe('');
+      expect(existsSync('/nonexistent/qq-instant-probe')).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('z9: the pane wrapper cats the frame file, then execs the client argv unchanged', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-instant-sh-'));
+    try {
+      const script = runZshArgs('print -rn -- "$QQ_PANE_PAINT_SCRIPT"', []).stdout;
+      expect(script).not.toBe('');
+      const file = join(dir, 'instant-frame.txt');
+      writeFileSync(file, 'FRAME\u001B[H');
+      const wrapped = spawnSync('/bin/sh', ['-c', script, 'x', file, 'printf', '%s', 'EXEC-OK'], {
+        encoding: 'utf8',
+        timeout: 5000,
+      });
+      expect(wrapped.stdout).toBe('FRAME\u001B[HEXEC-OK');
+      expect(wrapped.status).toBe(0);
+
+      const absent = spawnSync(
+        '/bin/sh',
+        ['-c', script, 'x', join(dir, 'missing.txt'), 'printf', '%s', 'EXEC-OK'],
+        { encoding: 'utf8', timeout: 5000 },
+      );
+      expect(absent.stdout).toBe('EXEC-OK');
+      expect(absent.stderr).toBe('');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('z10: placement — lookup, then the inline paint, then mktemp; pane frame before the pane', () => {
+    const body = questionWidgetBody();
+    const lookup = body.indexOf('whence -p qq');
+    const notFound = body.indexOf('zle -M "queque: qq not found');
+    const paint = body.indexOf('_qq_paint_inline_instant_frame "$QQ_LBUFFER"');
+    const mktemp = body.indexOf('mktemp -d');
+    const mkfifo = body.indexOf('mkfifo "$fifo_path"');
+    const paneFrame = body.indexOf('_qq_write_pane_instant_frame "$tmpdir"');
+    const zellijLaunch = body.search(/^\s+zellij run --floating/m);
+    expect(lookup).toBeGreaterThan(0);
+    expect(notFound).toBeGreaterThan(lookup);
+    expect(paint).toBeGreaterThan(notFound);
+    expect(mktemp).toBeGreaterThan(paint);
+    expect(paneFrame).toBeGreaterThan(mkfifo);
+    expect(zellijLaunch).toBeGreaterThan(paneFrame);
+
+    // The pane gets the frame through a file path; the lbuffer never reaches the argv.
+    const launchLine = body.slice(zellijLaunch, body.indexOf('&!', zellijLaunch));
+    expect(launchLine).toContain(
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: zsh source text, not a JS template
+      '"${pane_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path"',
+    );
+    expect(launchLine).not.toMatch(/LBUFFER/);
+
+    // The inline launch keeps its exact string and captures the client status.
+    expect(body).toMatch(
+      /client --request-file "\$req_file" --result-file "\$result_file" \\\n\s+2>>[^\n]*\|\| qq_client_status=\$\?/,
+    );
   });
 });

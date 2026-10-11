@@ -9,12 +9,24 @@
  * the only way to see which layout height the effects report on candidate arrival.
  */
 
+import { spawnSync } from 'node:child_process';
 import { EventEmitter } from 'node:events';
+import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { Readable, Writable } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 import { stripVTControlCharacters } from 'node:util';
 import { render } from 'ink';
 import React from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  armInstantFrameTakeover,
+  INLINE_SURFACE_CLEAR,
+  inlineScrollReserve,
+  PANE_SURFACE_CLEAR,
+  SYNC_UPDATE_BEGIN,
+} from '../src/client/instant-frame.js';
 import {
   resetZellijPaneHeightCache,
   resolveZellijPaneHeight,
@@ -27,7 +39,7 @@ import {
   type ToolInventory,
 } from '../src/shared/tool-awareness.js';
 import { CandidateSelect } from '../src/ui/CandidateSelect.js';
-import { estimateCandidateSelectLines } from '../src/ui/modal-layout.js';
+import { estimateCandidateSelectLines, MODAL_VIEWPORT_LINES } from '../src/ui/modal-layout.js';
 
 // ---------------------------------------------------------------------------
 // spawn spy — the rest of node:child_process stays real (Ink's terminal-size uses it)
@@ -161,9 +173,11 @@ function spawnedHeights(): number[] {
  * A tiny terminal model: feeds Ink's raw writes, in order, into a rows x columns grid and
  * returns the visible rows (trailing spaces trimmed) plus how many times the grid scrolled.
  * It understands just what Ink's log-update emits: printable text, `\n` (the PTY's onlcr,
- * so col 0 + next row), `\r`, and CSI cursor-move / erase sequences. Colours, private modes
- * (`?2026` synchronized output, `?25` cursor visibility) and bare `ESC 7` / `ESC 8` are
- * ignored. Every glyph in these fixtures (›, ┌, │, ⓘ, ⚠) is one column, as in string-width.
+ * so col 0 + next row), `\r`, CSI cursor-move / erase sequences, and `ESC 7` / `ESC 8`
+ * (save / restore the cursor row and column; a restore before any save goes to the top-left
+ * cell). Colours and private modes (`?2026` synchronized output, `?25` cursor visibility)
+ * are ignored. Every glyph in these fixtures (›, ┌, │, ⓘ, ⚠) is one column, as in
+ * string-width.
  */
 function replayScreen(
   writes: readonly string[],
@@ -175,6 +189,7 @@ function replayScreen(
   let row = 0;
   let col = 0;
   let scrolled = 0;
+  let saved = { row: 0, col: 0 };
   const clampRow = (value: number): number => Math.max(0, Math.min(rows - 1, value));
   const clampCol = (value: number): number => Math.max(0, Math.min(columns - 1, value));
   const eraseRow = (target: number, from: number, to: number): void => {
@@ -264,8 +279,15 @@ function replayScreen(
           default:
             break; // `m` (colours) and anything else
         }
+      } else if (next === '7') {
+        index += 1;
+        saved = { row, col };
+      } else if (next === '8') {
+        index += 1;
+        row = saved.row;
+        col = saved.col;
       } else {
-        index += 1; // bare ESC 7 / ESC 8 and other two-byte escapes
+        index += 1; // other two-byte escapes
       }
       continue;
     }
@@ -689,5 +711,270 @@ describe('CandidateSelect arrival reset (real hooks, 09-06 truth 3 / D-09)', () 
     } finally {
       app.unmount();
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Instant frame takeover (quick 261011-jbh, LD-1): the zsh widget paints the header and a
+// loading row before Node starts; Ink's first frame must replace them in place. The widget
+// bytes come from the real widget (spawnSync zsh), the frame from a real Ink render.
+// ---------------------------------------------------------------------------
+
+const WIDGET_PATH = fileURLToPath(new URL('../shell/zsh/queque.zsh', import.meta.url));
+
+/** Rows of the replay screen (FakeStdout.rows, also the Zellij pane minus its chrome). */
+const SCREEN_ROWS = 22;
+
+/** The loading row of the instant frame and of Ink's loading frame (LoadingSpinner FRAMES[0]). */
+const LOADING_ROW = ' thinking…';
+
+/** Runs a widget helper with `args` as positional parameters (never interpolated). */
+function zshHelperOutput(script: string, args: readonly string[]): string {
+  const result = spawnSync('zsh', ['-f', '-c', `source "$0"\n${script}`, WIDGET_PATH, ...args], {
+    encoding: 'utf8',
+    timeout: 5000,
+  });
+  if (result.status !== 0) {
+    throw new Error(`zsh helper failed: ${result.stderr}`);
+  }
+  return result.stdout;
+}
+
+/** The bytes the widget paints inline for `lbuffer` at SCREEN_COLUMNS. */
+function widgetInlineBytes(lbuffer: string): string {
+  return zshHelperOutput('_qq_inline_instant_frame_bytes "$1" "$2"; print -rn -- "$REPLY"', [
+    lbuffer,
+    String(SCREEN_COLUMNS),
+  ]);
+}
+
+/** The pane frame file the widget writes for `lbuffer` (the pane wrapper cats it). */
+function widgetPaneFrame(lbuffer: string): string {
+  const dir = mkdtempSync(join(tmpdir(), 'qq-pane-frame-'));
+  try {
+    zshHelperOutput('_qq_write_pane_instant_frame "$1" "$2" "$3"', [
+      dir,
+      lbuffer,
+      String(SCREEN_COLUMNS),
+    ]);
+    return readFileSync(join(dir, 'instant-frame.txt'), 'utf8');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+/**
+ * Every chunk a real Ink render of CandidateSelect's loading state writes up to its first
+ * flushed frame, on a FakeStdout armed with the takeover (`clear`), as run-foreground.ts does.
+ */
+async function inkLoadingWrites(initialQuery: string, clear: string): Promise<string[]> {
+  const stdout = new FakeStdout();
+  const stdin = new FakeStdin();
+  armInstantFrameTakeover(stdout, clear);
+  const app = render(
+    React.createElement(CandidateSelect, {
+      candidates: null,
+      initialQuery,
+      onSelect: () => {},
+      onCancel: () => {},
+    }),
+    {
+      stdout: stdout as unknown as NodeJS.WriteStream,
+      stdin: stdin as unknown as NodeJS.ReadStream,
+      interactive: true,
+      patchConsole: false,
+      exitOnCtrlC: false,
+    },
+  );
+  try {
+    await app.waitUntilRenderFlush();
+    return [...stdout.writes];
+  } finally {
+    app.unmount();
+  }
+}
+
+/** Content rows of Ink's first frame (its trailing newline leaves the cursor below them). */
+function firstFrameRows(writes: readonly string[]): number {
+  const frame = writes
+    .map((chunk) => stripVTControlCharacters(chunk))
+    .find((text) => text.includes(HEADER_MARKER));
+  if (frame === undefined) {
+    throw new Error('Ink never wrote a frame containing the header');
+  }
+  return frame.split('\n').length - 1;
+}
+
+/** Indexes of the screen rows that contain the header. */
+function headerRows(lines: readonly string[]): number[] {
+  return lines.flatMap((line, index) => (line.includes(HEADER_MARKER) ? [index] : []));
+}
+
+/** A full screen of history with the prompt and the typed query on the last row. */
+function fullScreenPrompt(lbuffer: string): string {
+  const history = Array.from({ length: SCREEN_ROWS - 1 }, (_, row) => `history ${row}\n`);
+  return `${history.join('')}% ${lbuffer}?`;
+}
+
+/** Replays the inline handoff: the screen after the widget paint, and after Ink's first frame. */
+async function inlineTakeover(
+  prior: string,
+  lbuffer: string,
+): Promise<{
+  before: ReturnType<typeof replayScreen>;
+  after: ReturnType<typeof replayScreen>;
+  ink: string[];
+}> {
+  const widget = widgetInlineBytes(lbuffer);
+  const ink = await inkLoadingWrites(lbuffer, INLINE_SURFACE_CLEAR);
+  const before = replayScreen([prior, widget], SCREEN_ROWS, SCREEN_COLUMNS);
+  const after = replayScreen(
+    [prior, widget, inlineScrollReserve(MODAL_VIEWPORT_LINES), ...ink],
+    SCREEN_ROWS,
+    SCREEN_COLUMNS,
+  );
+  return { before, after, ink };
+}
+
+/** A recording Writable for the takeover unit cases. */
+class RecordingStream extends Writable {
+  readonly chunks: string[] = [];
+
+  override _write(chunk: unknown, _encoding: BufferEncoding, callback: () => void): void {
+    this.chunks.push(String(chunk));
+    callback();
+  }
+}
+
+describe('instant frame takeover (quick 261011-jbh)', () => {
+  beforeEach(() => {
+    for (const key of ENV_KEYS) delete process.env[key];
+  });
+
+  it('t1: inline, full screen — one header on the instant frame row, no residue, no extra scroll', async () => {
+    const { before, after } = await inlineTakeover(fullScreenPrompt(LBUFFER), LBUFFER);
+    expect(headerRows(after.lines).length).toBe(1);
+    const h = SCREEN_ROWS - 1 - MODAL_VIEWPORT_LINES;
+    expect(headerRows(before.lines)).toEqual([h]);
+    expect(before.lines[h + 3]).toBe(LOADING_ROW);
+    expect(headerRows(after.lines)).toEqual([h]);
+    expect(after.lines[h + 1]?.trimStart().startsWith('FILTER:')).toBe(true);
+    expect(after.lines[h + 3]).toBe(before.lines[h + 3]);
+    expect(after.lines.slice(0, h)).toEqual(before.lines.slice(0, h));
+    expect(after.scrolled).toBe(before.scrolled);
+  });
+
+  it('t2: inline, cleared screen — the same handoff on row 0 with no scroll', async () => {
+    const { before, after } = await inlineTakeover(`% ${LBUFFER}?`, LBUFFER);
+    expect(headerRows(before.lines)).toEqual([0]);
+    expect(before.lines[3]).toBe(LOADING_ROW);
+    expect(headerRows(after.lines)).toEqual([0]);
+    expect(after.lines[1]?.trimStart().startsWith('FILTER:')).toBe(true);
+    expect(after.lines[3]).toBe(before.lines[3]);
+    expect(before.scrolled).toBe(0);
+    expect(after.scrolled).toBe(0);
+  });
+
+  it('t3: Zellij pane — the pane frame is replaced in place and nothing survives below Ink', async () => {
+    const frame = widgetPaneFrame(LBUFFER);
+    const ink = await inkLoadingWrites(LBUFFER, PANE_SURFACE_CLEAR);
+    const before = replayScreen([frame], SCREEN_ROWS, SCREEN_COLUMNS);
+    const after = replayScreen([frame, ...ink], SCREEN_ROWS, SCREEN_COLUMNS);
+    expect(headerRows(before.lines)).toEqual([0]);
+    expect(before.lines[3]).toBe(LOADING_ROW);
+    expect(headerRows(after.lines)).toEqual([0]);
+    expect(after.lines[3]).toBe(before.lines[3]);
+    expect(after.scrolled).toBe(0);
+    expect(after.lines.slice(firstFrameRows(ink)).filter((line) => line !== '')).toEqual([]);
+  });
+
+  it('t4: inline, a 200-character lbuffer leaves one header and no instant-frame residue', async () => {
+    const long = 'a'.repeat(200);
+    const { before, after, ink } = await inlineTakeover(fullScreenPrompt(long), long);
+    const h = SCREEN_ROWS - 1 - MODAL_VIEWPORT_LINES;
+    expect(headerRows(before.lines)).toEqual([h]);
+    expect(headerRows(after.lines)).toEqual([h]);
+    expect(after.lines.slice(0, h)).toEqual(before.lines.slice(0, h));
+    expect(after.lines.slice(h + firstFrameRows(ink)).filter((line) => line !== '')).toEqual([]);
+  });
+
+  it('t5: no instant frame (older widget or kill switch) — one header on the reserve top', async () => {
+    const prior = fullScreenPrompt(LBUFFER);
+    const reserve = inlineScrollReserve(MODAL_VIEWPORT_LINES);
+    const ink = await inkLoadingWrites(LBUFFER, INLINE_SURFACE_CLEAR);
+    const reserveOnly = replayScreen([prior, reserve], SCREEN_ROWS, SCREEN_COLUMNS);
+    const after = replayScreen([prior, reserve, ...ink], SCREEN_ROWS, SCREEN_COLUMNS);
+    const top = SCREEN_ROWS - 1 - MODAL_VIEWPORT_LINES;
+    expect(headerRows(after.lines)).toEqual([top]);
+    expect(after.scrolled).toBe(reserveOnly.scrolled);
+    expect(after.lines.slice(0, top)).toEqual(reserveOnly.lines.slice(0, top));
+  });
+
+  it('t6: control-only chunks pass; the first visible chunk gets the clear, once', () => {
+    const stream = new RecordingStream();
+    const clear = INLINE_SURFACE_CLEAR;
+    armInstantFrameTakeover(stream, clear);
+    stream.write('\u001B[?25l');
+    stream.write('\n\n');
+    stream.write('\u001B[3A');
+    stream.write(`${SYNC_UPDATE_BEGIN} queque › x`);
+    stream.write('later');
+    expect(stream.chunks).toEqual([
+      '\u001B[?25l',
+      '\n\n',
+      '\u001B[3A',
+      `${SYNC_UPDATE_BEGIN}${clear} queque › x`,
+      'later',
+    ]);
+  });
+
+  it('t6: a visible chunk without a synchronized-update begin gets the clear prepended', () => {
+    const stream = new RecordingStream();
+    armInstantFrameTakeover(stream, PANE_SURFACE_CLEAR);
+    stream.write(SYNC_UPDATE_BEGIN);
+    stream.write(' queque › x\n');
+    stream.write(' queque › y\n');
+    expect(stream.chunks).toEqual([
+      SYNC_UPDATE_BEGIN,
+      `${PANE_SURFACE_CLEAR} queque › x\n`,
+      ' queque › y\n',
+    ]);
+  });
+
+  it('t6: clearNow() writes the clear once, then disarms; after the injection it writes nothing', () => {
+    const early = new RecordingStream();
+    const takeover = armInstantFrameTakeover(early, INLINE_SURFACE_CLEAR);
+    takeover.clearNow();
+    takeover.clearNow();
+    early.write('error text');
+    expect(early.chunks).toEqual([INLINE_SURFACE_CLEAR, 'error text']);
+
+    const late = new RecordingStream();
+    const fired = armInstantFrameTakeover(late, INLINE_SURFACE_CLEAR);
+    late.write('frame');
+    fired.clearNow();
+    expect(late.chunks).toEqual([`${INLINE_SURFACE_CLEAR}frame`]);
+  });
+
+  it('t6: every write argument is forwarded, and an own-property write keeps working', async () => {
+    const stream = new RecordingStream();
+    armInstantFrameTakeover(stream, INLINE_SURFACE_CLEAR);
+    const callback = vi.fn();
+    stream.write('frame', 'utf8', callback);
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(stream.chunks).toEqual([`${INLINE_SURFACE_CLEAR}frame`]);
+    expect(callback).toHaveBeenCalledTimes(1);
+
+    const fake = {
+      chunks: [] as string[],
+      write(chunk: unknown): boolean {
+        fake.chunks.push(String(chunk));
+        return true;
+      },
+    };
+    armInstantFrameTakeover(fake, PANE_SURFACE_CLEAR);
+    expect(fake.write('a')).toBe(true);
+    expect(fake.write('b')).toBe(true);
+    expect(fake.chunks).toEqual([`${PANE_SURFACE_CLEAR}a`, 'b']);
   });
 });

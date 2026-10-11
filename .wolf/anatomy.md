@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T17:41:14.865Z
-> Files: 408 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T20:31:12.941Z
+> Files: 413 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -429,6 +429,7 @@
 ## .planning/debug/
 
 - `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~3416 tok)
+- `modal-blank-before-loading.md` — Symptoms (~493 tok)
 
 ## .planning/notes/
 
@@ -670,6 +671,11 @@
 - `261011-f9o-PLAN.md` — Quick plan: hold the Zellij pane height while filtering. Tracer TDD = real-Ink (f) `smt` + Backspace spawns no resize (pre-fix probe 18,11,18) with a `replayScreen` check (header row 0, no stale rows, no scroll) + `heldPaneLines(previousHeld, input)` in modal-layout (max of held, current, unfiltered estimate) fed by a per-candidates-array useRef hold in CandidateSelect; (d)/(e) expectations changed on purpose; Task 2 unit tests + (g) per-list reset + wolf records; Task 3 live Zellij human-verify. Zellij path only; run-foreground/zellij-pane-resize untouched. (~8000 tok)
 - `261011-f9o-SUMMARY.md` — Phase quick-261011-f9o Plan 01: Keep the Zellij modal at its full-list height while filtering Summar (~2607 tok)
 
+## .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/
+
+- `261011-jbh-PLAN.md` — Quick plan: instant first frame + faster Node start. Tracer TDD (Task 1, LD-1): zsh widget paints `queque › <lbuffer>` + `thinking…` before Node (inline: reserve + ESC 7 + CSI J + frame + ESC 8 via plain print; Zellij: session-dir `instant-frame.txt` cat by a `/bin/sh` pane wrapper, lbuffer never in argv); client `src/client/instant-frame.ts` `armInstantFrameTakeover` injects the surface clear into Ink's first visible write (inline ESC 8 + CSI J on the client's own fresh save, Zellij CSI H + CSI J); real-Ink `replayScreen` cases t1-t6 + zsh z1-z10; `QQ_INSTANT_FRAME=0` kill switch. Task 2 (LD-2): RED tests/bundle-startup.test.ts, tsup entry {main: src/cli/launcher.ts, app: src/cli/main.ts}, noExternal, react-devtools-core shim alias, createRequire banner, per-user 0700 compile cache (fail safe), lazy `import('@anthropic-ai/sdk')`. Task 3 live check inline + Zellij; then debug session → resolved/. (~12400 tok)
+- `COVERAGE.md` — api-coverage gate declaration: no external API integration (SDK import only made lazy). (~68 tok)
+
 ## .planning/research/
 
 - `ARCHITECTURE.md` — Architecture Research: QueQue (~667 tok)
@@ -741,6 +747,7 @@
 
 ## src/client/
 
+- `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): named cursor/erase sequences, INLINE_SURFACE_CLEAR / PANE_SURFACE_CLEAR, `inlineScrollReserve(lines)`, `armInstantFrameTakeover(stream, clear)` (RED stub until GREEN). (~474 tok)
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
 - `run-foreground.ts` — Foreground client: request parse, tool handoff read, `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk appended before fetch; logs counts only), Ink modal (inline scroll reserve = `MODAL_VIEWPORT_LINES` from modal-layout), ⓘ annotation, buildShellBuffers. (~4400 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
@@ -801,6 +808,7 @@
 
 ## tests/
 
+- `bundle-startup.test.ts` — Specifiers of top-level static `import` statements in an ESM file. (~1073 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes: header row, stale rows, scroll). (d) smt2 pre-filter draws filtered but reports the unfiltered height; (e) "header row": pane PTY rows (height − 2 chrome) fit the drawn frame (drawn-state estimate + 1 cursor row, not the report); (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height (one resize, clean replay); (g) a new candidates array resets the hold (heights `A,B`, B smaller). (~7000 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
 - `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
