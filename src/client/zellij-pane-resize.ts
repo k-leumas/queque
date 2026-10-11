@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process';
+import { type ChildProcess, spawn } from 'node:child_process';
 
 /** Default max floating pane height when QQ_PANE_HEIGHT is unset or invalid. */
 const DEFAULT_MAX_PANE_HEIGHT = 24;
@@ -19,7 +19,28 @@ const ZELLIJ_FLOATING_FRAME_LINES = 2;
  */
 export const RESIZE_SETTLE_TIMEOUT_MS = 2000;
 
-let lastSyncedHeight: number | undefined;
+/** A resize that has been requested but not yet spawned. */
+interface ResizeRequest {
+  height: number;
+  paneId: string;
+}
+
+/** The in-flight `zellij action`; `child` stays undefined when spawn threw synchronously. */
+interface InFlightResize {
+  child: ChildProcess | undefined;
+}
+
+/** Height of the most recently spawned action (the dedupe key). */
+let spawnedHeight: number | undefined;
+
+/** Newest height requested while an action runs; replaced by every later request. */
+let waiting: ResizeRequest | undefined;
+
+/** The action currently running, if any. At most one runs at a time. */
+let current: InFlightResize | undefined;
+
+/** Kills a hung `current` action after RESIZE_SETTLE_TIMEOUT_MS. */
+let settleTimer: ReturnType<typeof setTimeout> | undefined;
 
 /**
  * Reads the configured max pane height from QQ_PANE_HEIGHT.
@@ -54,8 +75,90 @@ export function formatZellijPaneId(rawPaneId: string): string {
 }
 
 /**
+ * Releases the slot held by `action` and spawns the newest waiting height, if it differs
+ * from the height just spawned. Ignores an action that is no longer current (after a reset).
+ */
+function settleResize(action: InFlightResize): void {
+  if (action !== current) {
+    return;
+  }
+  if (settleTimer !== undefined) {
+    clearTimeout(settleTimer);
+    settleTimer = undefined;
+  }
+  current = undefined;
+
+  const next = waiting;
+  waiting = undefined;
+  if (next !== undefined && next.height !== spawnedHeight) {
+    startResize(next);
+  }
+}
+
+/**
+ * Spawns one `zellij action change-floating-pane-coordinates` and holds the slot until it
+ * exits, fails to start, or exceeds RESIZE_SETTLE_TIMEOUT_MS (then it is killed).
+ */
+function startResize(request: ResizeRequest): void {
+  spawnedHeight = request.height;
+  const action: InFlightResize = { child: undefined };
+  current = action;
+
+  let settled = false;
+  const settle = (): void => {
+    if (settled) {
+      return;
+    }
+    settled = true;
+    settleResize(action);
+  };
+
+  try {
+    const child = spawn(
+      'zellij',
+      [
+        'action',
+        'change-floating-pane-coordinates',
+        '--pane-id',
+        request.paneId,
+        '--height',
+        String(request.height),
+      ],
+      { stdio: 'ignore' },
+    );
+    action.child = child;
+    child.once('exit', settle);
+    // 'on', not 'once': a spawn failure (zellij not on PATH) must never be an unhandled
+    // 'error' event, which would crash the client.
+    child.on('error', settle);
+    // The client must never wait for zellij to exit.
+    child.unref();
+  } catch {
+    settle();
+    return;
+  }
+
+  const timer = setTimeout(() => {
+    try {
+      action.child?.kill();
+    } catch {
+      // Already gone; settling below is all that matters.
+    }
+    settle();
+  }, RESIZE_SETTLE_TIMEOUT_MS);
+  // Never keep the client process alive just to time out a resize.
+  timer.unref();
+  settleTimer = timer;
+}
+
+/**
  * Resizes the current Zellij floating pane to fit modal content, capped at QQ_PANE_HEIGHT.
  * No-op outside Zellij or when pane id is unavailable.
+ *
+ * Zellij applies resize actions in completion order, not spawn order, so concurrent actions
+ * can land reversed and leave a stale height (G-09-7). One action runs at a time: a height
+ * requested meanwhile replaces any earlier waiting height, and only the newest waiting height
+ * is spawned once the running action settles. The last height applied is the last requested.
  */
 export function syncZellijFloatingPaneHeight(contentLines: number): void {
   if (process.env.ZELLIJ === undefined) {
@@ -68,23 +171,28 @@ export function syncZellijFloatingPaneHeight(contentLines: number): void {
   }
 
   const height = resolveZellijPaneHeight(contentLines);
-  if (height === lastSyncedHeight) {
+  const paneId = formatZellijPaneId(rawPaneId);
+
+  if (current !== undefined) {
+    // The running action already asks for this height, so nothing needs to wait.
+    waiting = height === spawnedHeight ? undefined : { height, paneId };
     return;
   }
-  lastSyncedHeight = height;
-
-  const paneId = formatZellijPaneId(rawPaneId);
-  const child = spawn(
-    'zellij',
-    ['action', 'change-floating-pane-coordinates', '--pane-id', paneId, '--height', String(height)],
-    { stdio: 'ignore' },
-  );
-  child.unref();
+  if (height === spawnedHeight) {
+    return;
+  }
+  startResize({ height, paneId });
 }
 
 /**
- * Clears cached height — for tests only.
+ * Clears cached height and queue state — for tests only.
  */
 export function resetZellijPaneHeightCache(): void {
-  lastSyncedHeight = undefined;
+  if (settleTimer !== undefined) {
+    clearTimeout(settleTimer);
+    settleTimer = undefined;
+  }
+  spawnedHeight = undefined;
+  waiting = undefined;
+  current = undefined;
 }

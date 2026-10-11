@@ -2268,3 +2268,10 @@
 | 04:00 | 09-06 T1 RED: real-hooks Ink test (reports [6,15]/[6,17], spawns heights 8,17) | tests/candidate-select-layout.test.tsx | committed 8b4c1c9 | ~2500 |
 | 04:02 | 09-06 T1 GREEN: render-phase prevCandidates arrival reset, effect removed | src/ui/CandidateSelect.tsx, tests/candidate-select.test.tsx | 52/52 targeted pass | ~1200 |
 | 04:03 | 09-06 T1 wolf: anatomy/cerebrum entries for prevCandidates + real-hooks tests | .wolf/anatomy.md, .wolf/cerebrum.md | done | ~400 |
+| 04:05 | Created tests/zellij-pane-resize.test.ts | — | ~2211 |
+| 04:06 | 09-06 T2 RED: completion-order fake Zellij tests (applied ends at 9), constant exported for typecheck hook | tests/zellij-pane-resize.test.ts, src/client/zellij-pane-resize.ts | committed 7e649e5 | ~2000 |
+| 04:08 | 09-06 T2 GREEN: serialized latest-wins resize queue with error + 2 s settle release | src/client/zellij-pane-resize.ts | 58/58 targeted pass | ~1500 |
+| 04:12 | 09-06 T2 records: bug-219 fix, anatomy, cerebrum decision, debug Resolution | .wolf/*, .planning/debug/empty-modal-after-tool-awareness-reenable.md | done | ~1200 |
+| 04:11 | Created .planning/phases/09-installed-only-command-awareness/deferred-items.md | — | ~299 |
+| 04:14 | Session end: 5 writes across 5 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 6 reads | ~14723 tok |
+| 04:14 | 09-06 T2 gates: 457/457 non-timing tests, zsh-widget 46/46 x3, fuzz crafted 1 s guards flaky under load 55-138 (bug-206); typecheck/lint/build pass | — | documented | ~300 |

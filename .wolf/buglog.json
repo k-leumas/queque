@@ -3557,7 +3557,7 @@
       "error_message": "UAT G-09-7: after re-enabling tool awareness, ?? list shows 3 results then dwindles to zero — empty Zellij modal (only legend/controls visible)",
       "file": "src/ui/CandidateSelect.tsx, src/client/zellij-pane-resize.ts",
       "root_cause": "On candidate arrival the layout effect first reports the stale initialQuery render (0 visible -> no-matches estimate, pane height 9) before the reset clears the query and reports the full list (height 24). syncZellijFloatingPaneHeight spawns a detached zellij action per call with no ordering; when the shrink finishes last (~25-50% of runs) the pane stays 9 rows, the list goes to pane scrollback, and Ink never repaints (tty.WriteStream on /dev/tty never emits resize). Independent of QQ_TOOL_AWARENESS.",
-      "fix": "Not fixed yet (diagnose-only). Direction: never report the transient initialQuery render to Zellij and/or serialize resizes so the latest height wins. See .planning/debug/empty-modal-after-tool-awareness-reenable.md",
+      "fix": "Fixed in 09-06 with two mechanisms. (1) src/ui/CandidateSelect.tsx: the candidate-arrival reset (selection, Tab toggles, non-matching lbuffer query) runs during render via a prevCandidates useState, so React retries before commit and the layout effect never reports the stale initialQuery 'no matches' height. (2) src/client/zellij-pane-resize.ts: syncZellijFloatingPaneHeight is a serialized latest-wins queue (one zellij action at a time, newest waiting height wins, released on exit, child 'error' or a 2 s RESIZE_SETTLE_TIMEOUT_MS kill). Regression tests: tests/candidate-select-layout.test.tsx (real-hooks Ink render) and tests/zellij-pane-resize.test.ts (completion-order model). SIGWINCH wiring for the /dev/tty stream not done (not needed once both are fixed).",
       "tags": [
         "zellij",
         "pane-resize",
@@ -3567,13 +3567,15 @@
         "initialQuery",
         "phase-9",
         "uat",
-        "mandelbug"
+        "mandelbug",
+        "serialized-queue",
+        "render-phase-state"
       ],
       "related_bugs": [
         "bug-205"
       ],
       "occurrences": 1,
-      "last_seen": "2026-10-11T09:27:14.110Z"
+      "last_seen": "2026-10-11T10:11:08.000Z"
     }
   ]
 }
