@@ -2307,3 +2307,11 @@
 | 10:40 | quick 261011-e43 live Zellij 0.44.1 evidence (tmux-hosted, real CandidateSelect + real sync, z3 fixtures): pre-fix module → title `SCROLL: 0/1`, first row `FILTER:` (header clipped) for plain/flagged/smt2; fixed module → no SCROLL, first row `queque › …` | scratchpad harness (not in repo) | fix confirmed in automation; human check pending | ~8000 |
 | 10:39 | Created .planning/quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/261011-e43-SUMMARY.md | — | ~2976 |
 | 10:40 | Session end: 19 writes across 12 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 21 reads | ~76347 tok |
+| 10:48 | Session end: 19 writes across 12 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 21 reads | ~76347 tok |
+| 11:19 | Created .planning/quick/261011-f9o-keep-the-zellij-modal-at-its-full-list-h/261011-f9o-PLAN.md | — | ~8542 |
+| 11:20 | Session end: 20 writes across 13 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 21 reads | ~85499 tok |
+| 11:22 | Edited tests/candidate-select-layout.test.tsx | added nullish coalescing | ~1620 |
+| 11:22 | Edited tests/candidate-select-layout.test.tsx | added error handling | ~836 |
+| 11:22 | Edited tests/candidate-select-layout.test.tsx | CSS: quick-261011-f9o | ~274 |
+| 11:22 | Edited tests/candidate-select-layout.test.tsx | added optional chaining | ~1189 |
+| 11:23 | quick 261011-f9o RED: (f) filter-hold regression + replayScreen/mountArrival/spawnedHeights helpers, (d)/(e) expectations changed on purpose; -t "keeps the pane" fails '18,11' vs '18' (plain) / '20,13' vs '20' (flagged); RED_EVIDENCE_OK | tests/candidate-select-layout.test.tsx | RED confirmed | ~6000 |
