@@ -23,7 +23,8 @@ import tsupConfig from '../tsup.config.js';
 //
 // The test builds with the real tsup config into a temp dir (no node_modules
 // next to it) and checks:
-//   1. every emitted file statically imports nothing but Node built-ins;
+//   1. every emitted file loads nothing but Node built-ins by name (static imports, and
+//      esbuild's metafile record of external imports, dynamic imports and requires);
 //   2. both files start on their own (`--help` evaluates every module's top
 //      level code: ink, yoga, react, zod, cac);
 //   3. the compile cache lands in a 0700 per-user dir, and an unwritable or
@@ -49,18 +50,10 @@ function baseConfig(): Options {
   return config as Options;
 }
 
-/**
- * Module specifiers an ESM file can load at runtime by name: top-level static `import`
- * statements, literal dynamic `import("…")` calls and esbuild's `__require("…")` calls.
- */
-function moduleSpecifiers(source: string): string[] {
+/** Specifiers of top-level static `import` statements in an ESM file. */
+function staticImportSpecifiers(source: string): string[] {
   const specifiers: string[] = [];
-  const patterns = [
-    /^import\s[^;]*?\sfrom\s*["']([^"']+)["']/gm,
-    /^import\s*["']([^"']+)["']/gm,
-    /\bimport\(\s*["']([^"']+)["']\s*\)/g,
-    /\b__require\(\s*["']([^"']+)["']\s*\)/g,
-  ];
+  const patterns = [/^import\s[^;]*?\sfrom\s*["']([^"']+)["']/gm, /^import\s*["']([^"']+)["']/gm];
   for (const pattern of patterns) {
     for (const match of source.matchAll(pattern)) {
       if (match[1] !== undefined) {
@@ -69,6 +62,23 @@ function moduleSpecifiers(source: string): string[] {
     }
   }
   return specifiers;
+}
+
+/** The shape of esbuild's metafile that this test reads (tsup writes metafile-esm.json). */
+interface EsbuildMetafile {
+  outputs: Record<string, { imports: { path: string; kind: string; external?: boolean }[] }>;
+}
+
+/**
+ * Every module the emitted files still load by name at runtime, from esbuild's own record:
+ * static imports, dynamic `import()` and `require()` calls it left external. A source regex
+ * for `import("…")` / `__require("…")` would also match text inside string literals (React's
+ * lazy() error message quotes `import('./MyComponent')`), so the metafile is the authority.
+ */
+function externalImports(metafile: EsbuildMetafile): string[] {
+  return Object.values(metafile.outputs).flatMap((output) =>
+    output.imports.filter((entry) => entry.external === true).map((entry) => entry.path),
+  );
 }
 
 /** Every file under `dir`, recursively. */
@@ -126,6 +136,7 @@ describe('CLI bundle startup (blank modal before the loading frame)', () => {
       sourcemap: false,
       clean: false,
       silent: true,
+      metafile: true,
     });
     mainPath = join(outDir, 'main.js');
     appPath = join(outDir, 'app.js');
@@ -144,9 +155,12 @@ describe('CLI bundle startup (blank modal before the loading frame)', () => {
 
   it('statically imports only Node built-ins (no file-by-file node_modules loading)', async () => {
     const emitted = (await readdir(outDir)).filter((name) => name.endsWith('.js')).sort();
-    const specifiers: string[] = [];
+    const metafile = JSON.parse(
+      await readFile(join(outDir, 'metafile-esm.json'), 'utf8'),
+    ) as EsbuildMetafile;
+    const specifiers = externalImports(metafile);
     for (const name of emitted) {
-      specifiers.push(...moduleSpecifiers(await readFile(join(outDir, name), 'utf8')));
+      specifiers.push(...staticImportSpecifiers(await readFile(join(outDir, name), 'utf8')));
     }
     expect(specifiers.length).toBeGreaterThan(0);
     const external = [...new Set(specifiers.filter((specifier) => !isBuiltin(specifier)))];

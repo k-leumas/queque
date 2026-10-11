@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
 import { type CandidateList, candidateListSchema } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
@@ -20,12 +20,20 @@ let cachedAnthropic: { apiKey: string; client: Anthropic } | undefined;
  * The constructor is the keep-alive / TLS boundary. Creating a new client on
  * every `??` in a short-lived foreground process cannot warm that. The daemon
  * holds one client so repeat fetches skip handshake setup.
+ *
+ * The SDK is imported lazily (quick 261011-jbh, LD-2): the client's path to its
+ * first frame never evaluates it. The cache is re-checked after the import so
+ * concurrent first calls share one client.
  */
-export function getAnthropicClient(apiKey: string): Anthropic {
+export async function getAnthropicClient(apiKey: string): Promise<Anthropic> {
   if (cachedAnthropic?.apiKey === apiKey) {
     return cachedAnthropic.client;
   }
-  cachedAnthropic = { apiKey, client: new Anthropic({ apiKey }) };
+  const { default: AnthropicSdk } = await import('@anthropic-ai/sdk');
+  if (cachedAnthropic?.apiKey === apiKey) {
+    return cachedAnthropic.client;
+  }
+  cachedAnthropic = { apiKey, client: new AnthropicSdk({ apiKey }) };
   return cachedAnthropic.client;
 }
 
@@ -153,7 +161,7 @@ export async function fetchCandidates(
     throw new Error('ANTHROPIC_API_KEY is required in the environment or .env.local');
   }
 
-  const client = getAnthropicClient(apiKey);
+  const client = await getAnthropicClient(apiKey);
   const prompt = buildPrompt(envelope);
   const model = resolveModel();
 

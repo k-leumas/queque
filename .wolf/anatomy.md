@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T20:41:20.649Z
-> Files: 413 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T20:44:49.134Z
+> Files: 416 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -139,7 +139,7 @@
 - `package.json` — Node.js package manifest (~499 tok)
 - `README.md` — Project documentation (~1079 tok)
 - `tsconfig.json` — TypeScript configuration (~172 tok)
-- `tsup.config.ts` — Declares commit (~195 tok)
+- `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. (~600 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
 
 ## .claude/
@@ -737,6 +737,7 @@
 
 ## src/cli/
 
+- `launcher.ts` — CLI launcher built as dist/cli/main.js (quick 261011-jbh, LD-2): Node built-ins only; enables the module compile cache in `${XDG_CACHE_HOME:-~/.cache}/queque/node-compile-cache` (0700; queque parent + leaf lstat-checked: real dir, owned by getuid, no group/world write; skipped when NODE_COMPILE_CACHE / NODE_DISABLE_COMPILE_CACHE is set; silent on failure), then imports `new URL('./app.js', import.meta.url)` and awaits `main()`. (~955 tok)
 - `main.ts` — Exports main (~1261 tok)
 
 ## src/cli/commands/
@@ -775,7 +776,7 @@
 - `claude-cli.ts` — Spawns `claude -p` print mode (`--system-prompt` from `buildSystemPrompt(envelope)`) and parses stdout with the shared candidate contract. (~480 tok)
 - `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`. (~900 tok)
 - `claude-exec.ts` — Options for `execFileAsync`. Built on `spawn` so `stdio` is actually applied — (~1256 tok)
-- `claude.ts` — Reused Anthropic SDK client; re-exports `QUEQUE_SYSTEM`; SDK `system` comes from `buildSystemPrompt(envelope)`. (~1979 tok)
+- `claude.ts` — Reused Anthropic SDK client (async `getAnthropicClient`: lazy `import('@anthropic-ai/sdk')`, type-only static import, cache re-checked after the await); re-exports `QUEQUE_SYSTEM`; SDK `system` comes from `buildSystemPrompt(envelope)`. (~2050 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
@@ -796,6 +797,11 @@
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
 - `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), per-installer `PACKAGE_ALIASES` (brew/apt/dnf/pacman maps; null = no package installs that binary) + `packageFor(tool, installer)` (Homebrew-aliased tools with no Linux entry are null, never guessed), `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/unknown packages/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
 - `tool-catalog.ts` — Shipped 196-name allow list of notable CLI tools (spike 003 seed, frozen), `CATALOG_SET`, `installedCatalogTools(isInstalled)` (sorted in Node), shape constants `TOOL_NAME_RE` / `TOOL_NAME_MAX_LENGTH` (64) / `INSTALLED_TOOLS_MAX` (512). Zero imports. (~1000 tok)
+
+## src/shims/
+
+- `optional-native-module.ts` — Throws on load; tsup aliases ws's optional native add-ons (`bufferutil`, `utf-8-validate`) to it so ws keeps its not-installed fallback and the bundle resolves nothing from node_modules at runtime. (~203 tok)
+- `react-devtools-core.ts` — No-op `{ initialize, connectToDevTools }` default export; tsup alias target for ink's hoisted devtools import (keeping it external crashed the bundle with ERR_MODULE_NOT_FOUND). (~163 tok)
 
 ## src/ui/
 

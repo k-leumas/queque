@@ -3617,6 +3617,25 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-11T17:36:00.000Z"
+    },
+    {
+      "id": "bug-222",
+      "timestamp": "2026-10-11T21:50:00.000Z",
+      "error_message": "modal blank before loading frame: the ?? modal opens but stays blank for seconds before the queque header / thinking… loading state appears",
+      "file": "tsup.config.ts",
+      "root_cause": "dist/cli/main.js statically imported ink, react, zod, the Anthropic SDK and cac from node_modules; Node resolved/read/compiled every file (~2.5 s CPU) before any client code ran, multiplied to 4-17 s under heavy CPU load",
+      "fix": "quick 261011-jbh: zsh widget paints an instant frame before Node starts (inline paint / Zellij pane wrapper) and the client takes it over in Ink's first visible write; main.js became a built-in-only compile-cache launcher importing one bundled app.js (noExternal, shim aliases, createRequire banner); the Anthropic SDK loads lazily",
+      "tags": [
+        "bundle",
+        "startup",
+        "zsh",
+        "ink",
+        "compile-cache",
+        "latency"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-11T21:50:00.000Z"
     }
   ]
 }

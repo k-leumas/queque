@@ -2342,3 +2342,7 @@
 | 14:39 | quick 261011-jbh Task 1 GREEN: zsh instant frame (inline paint before mktemp, Zellij pane wrapper + session-dir frame file, kill switch, inline clear on non-zero exit), instant-frame.ts takeover, run-foreground arms it with its own reserve/save; 111 tests green incl. handoff timing 11.5 ms | shell/zsh/queque.zsh, src/client/instant-frame.ts, src/client/run-foreground.ts, tests | pass | ~14000 |
 | 14:41 | Created tests/bundle-startup.test.ts | — | ~2408 |
 | 14:42 | quick 261011-jbh Task 2 RED: tests/bundle-startup.test.ts b1-b6 (debugger's test kept, two output files, compile-cache cases); b1 RED_EVIDENCE_OK (cac, zod, sdk, ink, react external) | tests/bundle-startup.test.ts | RED as planned | ~3000 |
+| 14:42 | Created src/cli/launcher.ts | — | ~955 |
+| 14:42 | Created src/shims/react-devtools-core.ts | — | ~163 |
+| 14:44 | Created src/shims/optional-native-module.ts | — | ~203 |
+| 14:46 | quick 261011-jbh Task 2 GREEN: launcher main.js (per-user 0700 compile cache, fail safe) + bundled app.js (noExternal, devtools + ws native add-on shims, createRequire banner), lazy SDK; b1 now reads esbuild metafile; full suite 580/580; debug session awaiting_human_verify | tsup.config.ts, src/cli/launcher.ts, src/shims/*, src/providers/claude.ts, tests/bundle-startup.test.ts | pass | ~12000 |
