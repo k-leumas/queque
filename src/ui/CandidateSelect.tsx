@@ -6,6 +6,7 @@ import { ControlsLine } from './ControlsLine.js';
 import { LoadingSpinner } from './LoadingSpinner.js';
 import { Modal } from './Modal.js';
 import {
+  type CandidateListState,
   candidateKey,
   displayedCommand,
   explanationText,
@@ -66,6 +67,8 @@ interface Props {
    * drawn: sized for the unfiltered list and never lower while the same list is shown.
    */
   onLayoutLinesChange?: (lineCount: number) => void;
+  /** Where the candidate list stands (09.1 D-05); defaults to `'complete'`. */
+  listState?: CandidateListState;
 }
 
 /**

@@ -6,6 +6,7 @@ import {
   explanationText,
   filterCandidates,
   heldPaneLines,
+  LIST_STATUS_ROW_LINES,
   MODAL_VIEWPORT_LINES,
   missingToolsLegend,
   wrapText,
@@ -478,5 +479,55 @@ describe('heldPaneLines (quick-261011-f9o Zellij pane hold)', () => {
     expect(heldPaneLines(0, loading)).toBe(estimateCandidateSelectLines(loading));
     const failed = { ...base, candidates: null, error: true };
     expect(heldPaneLines(0, failed)).toBe(estimateCandidateSelectLines(failed));
+  });
+});
+
+describe('estimateCandidateSelectLines — streamed list status row (09.1 D-08, Pitfall 10)', () => {
+  const rows: DisplayCandidate[] = [
+    { command: 'git status', explanation: 'show status' },
+    { command: 'git log --oneline', explanation: 'one line per commit' },
+  ];
+  const base = {
+    candidates: rows,
+    initialQuery: 'show me the history',
+    query: '',
+    selectedIndex: 0,
+    contentWidth: 75,
+    includeDevFooter: false,
+  };
+
+  it('adds LIST_STATUS_ROW_LINES under arriving rows', () => {
+    const complete = estimateCandidateSelectLines({ ...base, listState: 'complete' });
+    expect(estimateCandidateSelectLines(base)).toBe(complete);
+    expect(LIST_STATUS_ROW_LINES).toBe(1);
+    expect(estimateCandidateSelectLines({ ...base, listState: 'arriving' })).toBe(
+      complete + LIST_STATUS_ROW_LINES,
+    );
+  });
+
+  it('adds no status row while loading or on error (the spinner or error is the content)', () => {
+    const loading = { ...base, candidates: null };
+    expect(estimateCandidateSelectLines({ ...loading, listState: 'arriving' })).toBe(
+      estimateCandidateSelectLines(loading),
+    );
+    const failed = { ...base, error: true };
+    expect(estimateCandidateSelectLines({ ...failed, listState: 'arriving' })).toBe(
+      estimateCandidateSelectLines(failed),
+    );
+  });
+
+  it('fits three two-line rows, the ⓘ legend and the spinner row in the inline reserve at 80 columns', () => {
+    const lines = estimateCandidateSelectLines({
+      ...base,
+      candidates: [
+        { command: 'git status', explanation: 'show status' },
+        { command: 'fd -e ts', explanation: 'find ts files', missingTools: ['fd'] },
+        { command: 'ls -la', explanation: 'list files' },
+      ],
+      listState: 'arriving',
+    });
+    // header 1 + filter 1 + marginTop 1 + 3 x (2 + 1) + spinner 1 + legend 2 + controls 2.
+    expect(lines).toBe(17);
+    expect(lines).toBeLessThanOrEqual(MODAL_VIEWPORT_LINES);
   });
 });

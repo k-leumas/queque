@@ -39,7 +39,13 @@ import {
   type ToolInventory,
 } from '../src/shared/tool-awareness.js';
 import { CandidateSelect } from '../src/ui/CandidateSelect.js';
-import { estimateCandidateSelectLines, MODAL_VIEWPORT_LINES } from '../src/ui/modal-layout.js';
+import {
+  type CandidateListState,
+  estimateCandidateSelectLines,
+  heldPaneLines,
+  MODAL_VIEWPORT_LINES,
+  wrapText,
+} from '../src/ui/modal-layout.js';
 
 // ---------------------------------------------------------------------------
 // spawn spy — the rest of node:child_process stays real (Ink's terminal-size uses it)
@@ -659,7 +665,11 @@ describe('CandidateSelect arrival reset (real hooks, 09-06 truth 3 / D-09)', () 
     resetZellijPaneHeightCache();
   });
 
-  it('a new candidates array resets selection to row 0 and clears every Tab install toggle', async () => {
+  // Rewritten on purpose in 09.1-07 (D-06): this test used to assert that a new candidates
+  // array resets selection to row 0 and clears every Tab toggle. Streaming sends a new array
+  // per arrival, so the reset now runs only on the first arrival; a later array keeps the
+  // highlighted row (by candidateKey) and the Tab toggles (keyed by candidateKey too).
+  it('a later arrival keeps the highlighted row and its Tab toggle; the reset runs only on the first arrival', async () => {
     const first = annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
     const installForm = first[0]?.install?.form;
     expect(installForm).toBeTruthy();
@@ -695,21 +705,301 @@ describe('CandidateSelect arrival reset (real hooks, 09-06 truth 3 / D-09)', () 
       expect(stdout.writes.join('')).toContain(installForm as string);
       await press('\u001B[B');
 
-      // Arrival: a NEW array (same commands, so a stale toggle keyed by command would survive).
+      // A later arrival: a NEW array with the same rows (what run-foreground sends per row).
       const second = annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
       expect(second).not.toBe(first);
-      const writesBefore = stdout.writes.length;
       app.rerender(build(second));
       await app.waitUntilRenderFlush();
       await new Promise((resolve) => setTimeout(resolve, 50));
-      const frameAfter = stdout.writes.slice(writesBefore).join('');
-      expect(frameAfter).not.toContain(installForm as string);
 
-      // Enter inserts exactly the selected row's displayed command.
+      // Enter inserts exactly the highlighted row's displayed command: row 1, untoggled.
       await press('\r');
-      expect(selections).toEqual([first[0]?.command]);
+      // Back on row 0, Enter inserts its install form: the toggle survived the arrival.
+      await press('\u001B[A');
+      await press('\r');
+      expect(selections).toEqual([first[1]?.command, installForm]);
     } finally {
       app.unmount();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Streamed rows (09.1-07, D-05 client half, D-06 to D-10, D-17): run-foreground rerenders
+// with a new array per arrived row and `listState: 'arriving'`, then once with the final
+// list and `'complete'`. Real hooks, as in the describes above.
+// ---------------------------------------------------------------------------
+
+/** The selection glyph on the highlighted row's first line (CandidateSelect.tsx ACTIVE_HEAD). */
+const ACTIVE_HEAD_MARK = '┌> ';
+
+/** A non-matching lbuffer: the pre-filter clears on the first arrival. */
+const STREAM_LBUFFER = 'show me the history';
+
+const GIT_STATUS: CommandCandidate = { command: 'git status', explanation: 'working tree' };
+const GIT_LOG: CommandCandidate = { command: 'git log', explanation: 'commit history' };
+const GIT_LOG_ONELINE: CommandCandidate = {
+  command: 'git log --oneline',
+  explanation: 'one line per commit',
+};
+const LS_LA: CommandCandidate = { command: 'ls -la', explanation: 'list files' };
+
+/** The first frame line carrying the selection glyph. */
+function highlightedLine(writes: readonly string[]): string {
+  const line = lastFrame(writes)
+    .split('\n')
+    .find((text) => text.includes(ACTIVE_HEAD_MARK));
+  if (line === undefined) {
+    throw new Error('the last frame has no highlighted row');
+  }
+  return line;
+}
+
+/** The first wrapped line of a command as the row shows it. */
+function firstRowLine(command: string): string {
+  return wrapText(command, CONTENT_WIDTH)[0] ?? '';
+}
+
+/** A CandidateSelect mounted in the loading state that rows then stream into. */
+interface MountedStream {
+  stdout: FakeStdout;
+  /** Commands passed to onSelect, in order. */
+  selections: string[];
+  /** Rerenders with a new rows array and list state, then waits for the flush. */
+  arrive: (list: readonly DisplayCandidate[], listState: CandidateListState) => Promise<void>;
+  /** Pushes one key to stdin, waits 50 ms, then waits for Ink to flush the render. */
+  press: (key: string) => Promise<void>;
+  /** Copies every chunk written so far, then unmounts. Safe to call more than once. */
+  close: () => string[];
+}
+
+/** Mirrors run-foreground.ts streaming: loading first, then one rerender per arrival. */
+async function mountStream(
+  initialQuery: string,
+  onLayoutLinesChange?: (lines: number) => void,
+): Promise<MountedStream> {
+  const stdout = new FakeStdout();
+  const stdin = new FakeStdin();
+  const selections: string[] = [];
+  const build = (list: readonly DisplayCandidate[] | null, listState: CandidateListState) =>
+    React.createElement(CandidateSelect, {
+      candidates: list,
+      initialQuery,
+      listState,
+      onSelect: (command: string) => selections.push(command),
+      onCancel: () => {},
+      onLayoutLinesChange,
+    });
+
+  const app = render(build(null, 'arriving'), {
+    stdout: stdout as unknown as NodeJS.WriteStream,
+    stdin: stdin as unknown as NodeJS.ReadStream,
+    interactive: true,
+    patchConsole: false,
+    exitOnCtrlC: false,
+  });
+  let closedWrites: string[] | undefined;
+  const close = (): string[] => {
+    if (closedWrites === undefined) {
+      closedWrites = [...stdout.writes];
+      app.unmount();
+    }
+    return closedWrites;
+  };
+  try {
+    await app.waitUntilRenderFlush();
+  } catch (error) {
+    close();
+    throw error;
+  }
+
+  return {
+    stdout,
+    selections,
+    arrive: async (list, listState) => {
+      app.rerender(build(list, listState));
+      await app.waitUntilRenderFlush();
+    },
+    press: async (key: string): Promise<void> => {
+      stdin.push(key);
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      await app.waitUntilRenderFlush();
+    },
+    close,
+  };
+}
+
+describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
+  const savedEnv: Partial<Record<(typeof ENV_KEYS)[number], string>> = {};
+
+  beforeEach(() => {
+    for (const key of ENV_KEYS) {
+      savedEnv[key] = process.env[key];
+      delete process.env[key];
+    }
+    spawnMock.mockReset();
+    spawnMock.mockImplementation(() => fakeChild());
+    resetZellijPaneHeightCache();
+  });
+
+  afterEach(() => {
+    for (const key of ENV_KEYS) {
+      const value = savedEnv[key];
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    resetZellijPaneHeightCache();
+  });
+
+  it('D-06/D-07: the first row is highlighted, later rows never move it, Enter works mid-stream', async () => {
+    const mounted = await mountStream(STREAM_LBUFFER);
+    try {
+      await mounted.arrive([GIT_STATUS], 'arriving');
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'arriving');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_STATUS.command);
+
+      await mounted.press('\u001B[B');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_LOG.command);
+
+      await mounted.arrive([GIT_STATUS, GIT_LOG, LS_LA], 'arriving');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_LOG.command);
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([GIT_LOG.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('D-06: the moved highlight and its Tab install form survive the third arrival and completion', async () => {
+    const rows = annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
+    const [r0, r1, r2] = rows as [DisplayCandidate, DisplayCandidate, DisplayCandidate];
+    const r1Form = r1.install?.form;
+    expect(r0.install?.form).toBeTruthy();
+    expect(r1Form).toBeTruthy();
+
+    const mounted = await mountStream(LBUFFER);
+    try {
+      await mounted.arrive([r0], 'arriving');
+      await mounted.arrive([r0, r1], 'arriving');
+      await mounted.press('\u001B[B');
+      await mounted.press('\t');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(firstRowLine(r1Form as string));
+
+      await mounted.arrive([r0, r1, r2], 'arriving');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(firstRowLine(r1Form as string));
+
+      // Completion: the final list as a new array of new objects, as run-foreground sends it.
+      await mounted.arrive(annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin'), 'complete');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(firstRowLine(r1Form as string));
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([r1Form]);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('D-08: the thinking row sits below the last arrived row and goes away on completion', async () => {
+    const mounted = await mountStream(STREAM_LBUFFER);
+    try {
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'arriving');
+      const arriving = lastFrame(mounted.stdout.writes).split('\n');
+      const spinnerRow = arriving.findIndex((line) => line.includes('thinking'));
+      const lastRow = arriving.findIndex((line) => line.includes(GIT_LOG.explanation));
+      expect(spinnerRow).toBeGreaterThan(-1);
+      expect(spinnerRow).toBeGreaterThan(lastRow);
+      expect(lastRow).toBeGreaterThan(-1);
+
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'complete');
+      expect(lastFrame(mounted.stdout.writes)).not.toContain('thinking');
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('D-09: a typed filter also filters rows that arrive later', async () => {
+    const mounted = await mountStream(STREAM_LBUFFER);
+    try {
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'arriving');
+      for (const key of ['l', 'o', 'g']) {
+        await mounted.press(key);
+      }
+      let frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(GIT_LOG.command);
+      expect(frame).not.toContain(GIT_STATUS.command);
+
+      await mounted.arrive([GIT_STATUS, GIT_LOG, GIT_LOG_ONELINE], 'arriving');
+      frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(GIT_LOG_ONELINE.command);
+      expect(frame).not.toContain(GIT_STATUS.command);
+
+      await mounted.arrive([GIT_STATUS, GIT_LOG, GIT_LOG_ONELINE, LS_LA], 'arriving');
+      frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain('FILTER: log');
+      expect(frame).not.toContain(LS_LA.command);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('Pitfall 9: an lbuffer that matches nothing clears on the first arrival and every later row shows', async () => {
+    const mounted = await mountStream(STREAM_LBUFFER);
+    try {
+      await mounted.arrive([GIT_STATUS], 'arriving');
+      await mounted.arrive([GIT_STATUS, LS_LA], 'arriving');
+      const frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(GIT_STATUS.command);
+      expect(frame).toContain(LS_LA.command);
+      expect(frame).not.toContain('no matches');
+      expect(frame).not.toContain(`FILTER: ${STREAM_LBUFFER}`);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('D-10/D-17: in Zellij no resize while rows arrive, one at completion, none when filtering after', async () => {
+    process.env.ZELLIJ = '0';
+    process.env.ZELLIJ_PANE_ID = '7';
+    process.env.QQ_PANE_HEIGHT = '24';
+
+    const mounted = await mountStream(LBUFFER, syncZellijFloatingPaneHeight);
+    try {
+      for (let count = 1; count <= RAW_CANDIDATES.length; count += 1) {
+        await mounted.arrive(RAW_CANDIDATES.slice(0, count), 'arriving');
+      }
+      await settle();
+      // Scalar first, so a RED failure is a one-line message.
+      expect(spawnedHeights().join(',')).toBe('');
+
+      const final = [...RAW_CANDIDATES];
+      await mounted.arrive(final, 'complete');
+      await settle();
+      const expected = resolveZellijPaneHeight(
+        heldPaneLines(0, {
+          candidates: final,
+          initialQuery: LBUFFER,
+          query: '',
+          selectedIndex: 0,
+          contentWidth: CONTENT_WIDTH,
+          includeDevFooter: false,
+          installToggled: new Set(),
+          listState: 'complete',
+        }),
+        24,
+      );
+      expect(spawnedHeights().join(',')).toBe(String(expected));
+
+      for (const key of ['s', 'm', 't']) {
+        await mounted.press(key);
+      }
+      await settle();
+      expect(spawnedHeights().join(',')).toBe(String(expected));
+    } finally {
+      mounted.close();
     }
   });
 });

@@ -134,6 +134,18 @@ export function filterCandidates<T extends DisplayCandidate>(
  */
 export const MODAL_VIEWPORT_LINES = 18;
 
+/**
+ * Where a streamed candidate list stands (09.1 D-05/D-08): `'arriving'` while more rows may
+ * come, `'complete'` once the provider finished.
+ */
+export type CandidateListState = 'arriving' | 'complete';
+
+/**
+ * Rows the list status row (the `thinking…` spinner under arriving rows) adds. It sits
+ * directly under the last row block, whose own bottom margin is the gap, so it adds one line.
+ */
+export const LIST_STATUS_ROW_LINES = 1;
+
 /** Input for estimating how many terminal rows the candidate modal occupies. */
 export interface CandidateSelectLayoutInput {
   candidates: readonly DisplayCandidate[] | null;
@@ -145,6 +157,8 @@ export interface CandidateSelectLayoutInput {
   includeDevFooter?: boolean;
   /** Keys (candidateKey) of rows currently showing their install form. */
   installToggled?: ReadonlySet<string>;
+  /** Where the candidate list stands; absent means `'complete'`. */
+  listState?: CandidateListState;
 }
 
 /**

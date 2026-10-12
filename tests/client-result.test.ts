@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TOOL_HANDOFF_FILES } from '../src/client/tool-handoff.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
-import { abortError } from '../src/providers/provider.js';
+import { abortError, type FetchOptions } from '../src/providers/provider.js';
 import { CATALOG_SET } from '../src/shared/tool-catalog.js';
 
 // ---------------------------------------------------------------------------
@@ -532,6 +532,53 @@ describe('runForegroundClient', () => {
     expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({ kind: 'cancel' });
     expect(receivedSignal?.aborted).toBe(true);
     expect(app.rerender).not.toHaveBeenCalled();
+  });
+
+  it('streams an arrived row into the modal; Enter on it aborts the rest and drops later rows (D-05/D-07/D-14)', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    let emit: FetchOptions['onCandidate'];
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: FetchOptions) =>
+        new Promise((_resolve, reject) => {
+          receivedSignal = options?.signal;
+          emit = options?.onCandidate;
+          if (emit === undefined) {
+            reject(new Error('the client passed no onCandidate'));
+            return;
+          }
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+          // One row arrives; the adapter stays pending (more rows could still come).
+          emit({ command: 'git log', explanation: 'commit history' });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderMock = vi.mocked(render);
+    const renderCallIndex = renderMock.mock.calls.length;
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    // The ink mock auto-selects the first row of the arriving list (an early Enter).
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({
+      kind: 'replace-buffer',
+      lbuffer: 'git log',
+      rbuffer: '  # commit history',
+      query: 'list files in src',
+    });
+    expect(receivedSignal?.aborted).toBe(true);
+    const app = renderMock.mock.results[renderCallIndex]?.value as {
+      rerender: ReturnType<typeof vi.fn>;
+    };
+    const arriving = app.rerender.mock.calls[0]?.[0] as {
+      props: { candidates: Array<{ command: string }>; listState?: string };
+    };
+    expect(arriving.props.listState).toBe('arriving');
+    expect(arriving.props.candidates.map((c) => c.command)).toEqual(['git log']);
+    const rerenders = app.rerender.mock.calls.length;
+
+    // D-14: a row that arrives after Enter is neither rendered nor kept.
+    emit?.({ command: 'ls -la', explanation: 'list files' });
+    expect(app.rerender).toHaveBeenCalledTimes(rerenders);
   });
 });
 
