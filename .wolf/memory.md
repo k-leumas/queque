@@ -2765,3 +2765,4 @@
 | 02:20 | Fixed 09.1 WR-01: daemon socket setEncoding utf8 + byte-measured 256 KB cap; 2 regression tests | src/daemon/server.ts, tests/daemon-fetch.test.ts | fixed | ~3k |
 | 02:25 | Fixed 09.1 WR-02: warm init deadline (stale-prewarm) + cold retry; fixture hang-before-init; tests | src/providers/claude-{process,cli,prewarm}.ts, tests | fixed | ~6k |
 | 02:27 | Fixed 09.1 WR-03: shutdownDaemon disables prewarm + aborts in-flight connections; 2 tests | src/cli/commands/daemon.ts, src/providers/claude-prewarm.ts, tests/daemon-fetch.test.ts | fixed | ~4k |
+| 02:30 | Fixed 09.1 WR-04: first-arrival clear only for untouched lbuffer pre-filter; real-hooks test | src/ui/CandidateSelect.tsx, tests/candidate-select-layout.test.tsx | fixed | ~3k |

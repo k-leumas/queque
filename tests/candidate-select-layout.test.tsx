@@ -962,6 +962,28 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
     }
   });
 
+  it('WR-04: a filter typed while loading survives a first row that does not match it', async () => {
+    const rgFoo: CommandCandidate = { command: 'rg foo', explanation: 'search with ripgrep' };
+    const grepFoo: CommandCandidate = { command: 'grep -r foo .', explanation: 'search tree' };
+    // The lbuffer `gr` pre-fills FILTER; the user types `ep` while `thinking…` shows.
+    const mounted = await mountStream('gr');
+    try {
+      for (const key of ['e', 'p']) {
+        await mounted.press(key);
+      }
+      await mounted.arrive([rgFoo], 'arriving');
+      expect(lastFrame(mounted.stdout.writes)).toContain('FILTER: grep');
+
+      await mounted.arrive([rgFoo, grepFoo], 'arriving');
+      const frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain('FILTER: grep');
+      expect(frame).toContain(grepFoo.command);
+      expect(frame).not.toContain(rgFoo.command);
+    } finally {
+      mounted.close();
+    }
+  });
+
   it('D-10/D-17: in Zellij no resize while rows arrive, one at completion, none when filtering after', async () => {
     process.env.ZELLIJ = '0';
     process.env.ZELLIJ_PANE_ID = '7';

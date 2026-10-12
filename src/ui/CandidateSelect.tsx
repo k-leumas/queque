@@ -126,7 +126,9 @@ export function CandidateSelect({
   // - First arrival (loading → rows): reset selection and Tab toggles (Pitfall 2 fix, D-09),
   //   and clear the initialQuery pre-filter if it matches nothing — the lbuffer was already
   //   used as context for Claude; filtering candidates by it too is harmful when no command
-  //   literally contains the lbuffer text.
+  //   literally contains the lbuffer text. Text the user typed while `thinking…` showed is
+  //   never cleared: with streaming the first array is a single row, and a typed filter
+  //   keeps applying to the rows that follow (D-09, review WR-04).
   // - Later arrival: keep the highlighted row by candidateKey (D-06) and the Tab toggles
   //   (keyed by candidateKey). The zero-match clear runs only while the user has not typed,
   //   so a typed filter keeps applying to later rows (D-09, Pitfall 9).
@@ -145,7 +147,12 @@ export function CandidateSelect({
         setInstallToggled(new Set());
       }
       // Toggles are being cleared, so the filter matches the plain commands.
-      if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
+      if (
+        candidates &&
+        candidates.length > 0 &&
+        query === (initialQuery ?? '') &&
+        filterCandidates(candidates, query).length === 0
+      ) {
         setQuery('');
       }
     } else if (candidates !== null) {

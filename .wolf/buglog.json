@@ -5303,6 +5303,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:27:14.821731Z"
+    },
+    {
+      "id": "bug-325",
+      "timestamp": "2026-10-12T08:30:45.103149Z",
+      "error_message": "A filter typed while 'thinking…' showed was wiped when the first streamed row did not match it, so later matching rows appeared unfiltered (09.1 WR-04)",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "The first-arrival branch cleared any query that matched nothing in `candidates`, which under streaming is a single row; it did not check whether the query was still the lbuffer pre-filter (the later-arrival branch already did, Pitfall 9).",
+      "fix": "Guard the first-arrival clear with `query === (initialQuery ?? '')`, so only the untouched lbuffer pre-filter is cleared (D-09). Real-hooks regression test in candidate-select-layout.test.tsx.",
+      "tags": [
+        "ui",
+        "candidate-select",
+        "streaming",
+        "filter",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:30:45.103149Z"
     }
   ]
 }
