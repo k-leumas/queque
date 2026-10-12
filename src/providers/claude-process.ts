@@ -114,6 +114,11 @@ function timeoutFailure(stderr: string, sawInit: boolean): ClaudeTurnFailure {
   });
 }
 
+/** True while `child` was spawned and has not exited or been reaped by a signal. */
+export function isRunning(child: ChildProcess): boolean {
+  return child.pid !== undefined && child.exitCode === null && child.signalCode === null;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object';
 }
@@ -165,17 +170,42 @@ export function terminateChild(child: ChildProcess, graceMs: number = SIGKILL_GR
  * The turn settles exactly once: nothing the child writes after it settles reaches
  * `onTextDelta` or `onStage`, except the final `exit` stage, and a later kill, `exit` or
  * `close` never re-settles it.
+ *
+ * With `child` (a prewarmed idle child, D-11) nothing is spawned and no `spawned` stage is
+ * emitted; the turn writes its user line to that child exactly as for a cold one. An
+ * abort or a zero budget terminates it, and a child that has already exited fails at once
+ * as `exit-without-result` with `sawInit: false`.
  */
 export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
   const { command, argv, cwd, env, prompt, budgetMs, signal, onTextDelta, onStage } = options;
   const backstopMs = options.backstopMs ?? POST_RESULT_BACKSTOP_MS;
   const killGraceMs = options.killGraceMs ?? SIGKILL_GRACE_MS;
 
+  const prewarmed = options.child;
+
   if (signal?.aborted) {
+    if (prewarmed) {
+      terminateChild(prewarmed, killGraceMs);
+    }
     return Promise.reject(abortError());
   }
   if (budgetMs <= 0) {
+    if (prewarmed) {
+      terminateChild(prewarmed, killGraceMs);
+    }
     return Promise.reject(timeoutFailure('', false));
+  }
+  if (prewarmed && !isRunning(prewarmed)) {
+    // Its `close` has already fired (or never will), so listeners would wait forever.
+    return Promise.reject(
+      turnFailure('Command failed: claude', 'exit-without-result', false, {
+        code: prewarmed.exitCode,
+        killed: false,
+        signal: prewarmed.signalCode,
+        stdout: '',
+        stderr: '',
+      }),
+    );
   }
 
   return new Promise<string>((resolve, reject) => {
@@ -187,7 +217,7 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
     let budgetTimer: ReturnType<typeof setTimeout> | undefined;
     let backstopArmed = false;
 
-    const child = spawnClaudeChild(command, argv, cwd, env);
+    const child = prewarmed ?? spawnClaudeChild(command, argv, cwd, env);
 
     const onAbort = (): void => {
       if (settled) {
@@ -324,7 +354,8 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
       finish(() => resolve(parsed.data.result ?? ''));
     };
 
-    if (child.pid !== undefined) {
+    // A prewarmed child was spawned before this turn: no `spawned` stage for it.
+    if (!prewarmed && child.pid !== undefined) {
       onStage?.('spawned', { pid: child.pid });
     }
 
