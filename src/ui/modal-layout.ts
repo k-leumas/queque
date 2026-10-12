@@ -258,8 +258,8 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
  *
  * - The pane is sized for the unfiltered list: the frame the user sees after clearing the
  *   filter (query '', row 0 selected — the query reset selects row 0 — and the current Tab
- *   toggles, which hidden rows keep). That holds even when the lbuffer pre-filters the list
- *   on arrival, so clearing a filter never needs a grow.
+ *   toggles, which hidden rows keep). That holds even when a filter typed during `thinking…`
+ *   already narrows the list on arrival, so clearing a filter never needs a grow.
  * - It is a per-list high-water mark: the result is never below `previousHeld`, so filtering,
  *   Backspace, arrow keys and Tab undo never shrink the pane. The caller resets
  *   `previousHeld` to 0 when a new candidates array arrives.

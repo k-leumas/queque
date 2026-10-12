@@ -453,8 +453,9 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
     resetZellijPaneHeightCache();
   });
 
-  it('(a) a non-matching lbuffer reports only the full-list height and never draws no-matches', async () => {
+  it('(a) the lbuffer never filters, so the arrival reports only the full-list height and never draws no-matches', async () => {
     const full = estimate(RAW_CANDIDATES, LBUFFER, '');
+    // Height of a FILTER pre-filled with the lbuffer (G-09.1-5 regression oracle).
     const noMatch = estimate(RAW_CANDIDATES, LBUFFER, LBUFFER);
     expect(full).not.toBe(noMatch);
 
@@ -507,8 +508,9 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
     );
   });
 
-  it('(d) an lbuffer that matches a command still pre-filters the list on arrival', async () => {
+  it('(d) an lbuffer that matches a command does not filter the list (G-09.1-5)', async () => {
     const initialQuery = 'smt2';
+    // The lbuffer matches one command, so a filter seeded with it would draw fewer rows.
     const filtered = estimate(RAW_CANDIDATES, initialQuery, initialQuery);
     const full = estimate(RAW_CANDIDATES, initialQuery, '');
     expect(filtered).not.toBe(full);
@@ -516,15 +518,15 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
     const reports: number[] = [];
     const writes = await runArrival(RAW_CANDIDATES, initialQuery, (lines) => reports.push(lines));
 
-    // Changed on purpose in quick-261011-f9o: the report is the held pane height, sized for
-    // the unfiltered list, so clearing the pre-filter never needs a grow.
+    // Every report is the unfiltered estimate (the held pane height, quick-261011-f9o).
     expect(reports.length).toBeGreaterThan(0);
     expect(reports).toEqual(reports.map(() => full));
-    // The drawn frame is still pre-filtered (Phase 4).
-    expect(lastFrameRows(writes)).toBe(filtered + 1);
+    // The drawn frame is the full list: the lbuffer is only the header, FILTER is empty.
+    expect(lastFrameRows(writes)).toBe(full + 1);
     const frame = lastFrame(writes);
     expect(frame).toContain('z3 -smt2 problem.smt2');
-    expect(frame).not.toContain('python3');
+    expect(frame).toContain('python3');
+    expect(frame).toContain('type to filter');
   });
 
   it.each([
@@ -532,7 +534,7 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
       name: 'plain',
       build: (): readonly DisplayCandidate[] => RAW_CANDIDATES,
       initialQuery: LBUFFER,
-      // The query Ink renders: the non-matching lbuffer is cleared on arrival.
+      // The query Ink renders: FILTER opens empty, the lbuffer is only the header (G-09.1-5).
       query: '',
     },
     {
@@ -543,10 +545,11 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
       query: '',
     },
     {
-      name: 'smt2 pre-filter',
+      name: 'matching lbuffer',
       build: (): readonly DisplayCandidate[] => RAW_CANDIDATES,
       initialQuery: 'smt2',
-      query: 'smt2',
+      // An lbuffer that matches a command still leaves FILTER empty (G-09.1-5).
+      query: '',
     },
   ])('(e) $name: the Zellij pane keeps the header row (PTY rows fit the whole Ink frame)', async ({
     build,
@@ -734,7 +737,7 @@ describe('CandidateSelect arrival reset (real hooks, 09-06 truth 3 / D-09)', () 
 /** The selection glyph on the highlighted row's first line (CandidateSelect.tsx ACTIVE_HEAD). */
 const ACTIVE_HEAD_MARK = '┌> ';
 
-/** A non-matching lbuffer: the pre-filter clears on the first arrival. */
+/** An lbuffer no row matches; it only ever shows in the `queque ›` header (G-09.1-5). */
 const STREAM_LBUFFER = 'show me the history';
 
 const GIT_STATUS: CommandCandidate = { command: 'git status', explanation: 'working tree' };
@@ -947,7 +950,7 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
     }
   });
 
-  it('Pitfall 9: an lbuffer that matches nothing clears on the first arrival and every later row shows', async () => {
+  it('G-09.1-5: the lbuffer never filters streamed rows and FILTER shows the placeholder', async () => {
     const mounted = await mountStream(STREAM_LBUFFER);
     try {
       await mounted.arrive([GIT_STATUS], 'arriving');
@@ -957,6 +960,7 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
       expect(frame).toContain(LS_LA.command);
       expect(frame).not.toContain('no matches');
       expect(frame).not.toContain(`FILTER: ${STREAM_LBUFFER}`);
+      expect(frame).toContain('type to filter');
     } finally {
       mounted.close();
     }
@@ -965,14 +969,15 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
   it('WR-04: a filter typed while loading survives a first row that does not match it', async () => {
     const rgFoo: CommandCandidate = { command: 'rg foo', explanation: 'search with ripgrep' };
     const grepFoo: CommandCandidate = { command: 'grep -r foo .', explanation: 'search tree' };
-    // The lbuffer `gr` pre-fills FILTER; the user types `ep` while `thinking…` shows.
+    // FILTER opens empty under the lbuffer `gr`; the user types `grep` while `thinking…` shows.
     const mounted = await mountStream('gr');
     try {
-      for (const key of ['e', 'p']) {
+      for (const key of ['g', 'r', 'e', 'p']) {
         await mounted.press(key);
       }
       await mounted.arrive([rgFoo], 'arriving');
       expect(lastFrame(mounted.stdout.writes)).toContain('FILTER: grep');
+      expect(lastFrame(mounted.stdout.writes)).not.toContain('FILTER: grgrep');
 
       await mounted.arrive([rgFoo, grepFoo], 'arriving');
       const frame = lastFrame(mounted.stdout.writes);
@@ -984,7 +989,7 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
     }
   });
 
-  it('WR-05: a later list that clears the lbuffer pre-filter keeps the highlight position', async () => {
+  it('WR-05: a later list without the highlighted row keeps the highlight position', async () => {
     const pwd: CommandCandidate = { command: 'pwd', explanation: 'print directory' };
     const du: CommandCandidate = { command: 'du -sh .', explanation: 'disk usage' };
     const mounted = await mountStream('git');
@@ -993,8 +998,8 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
       await mounted.press('\u001B[B');
       expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_LOG.command);
 
-      // The final list has no row matching the untouched lbuffer `git`: the filter clears
-      // and the highlight stays on the second row instead of jumping back to the first.
+      // The final list has no `git` row, so the highlighted key is gone: the index is clamped
+      // onto the second row instead of jumping back to the first.
       await mounted.arrive([LS_LA, pwd, du], 'complete');
       await settle();
       expect(lastFrame(mounted.stdout.writes)).not.toContain('FILTER: git');
@@ -1035,7 +1040,7 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
     const grepFoo: CommandCandidate = { command: 'grep -r foo .', explanation: 'search tree' };
     const mounted = await mountStream('gr');
     try {
-      for (const key of ['e', 'p']) {
+      for (const key of ['g', 'r', 'e', 'p']) {
         await mounted.press(key);
       }
       await mounted.arrive([rgFoo], 'arriving');

@@ -2803,3 +2803,4 @@
 | 14:40 | Edited src/ui/CandidateSelect.tsx | modified if() | ~75 |
 | 14:40 | Edited src/ui/CandidateSelect.tsx | 2→3 lines | ~60 |
 | 14:43 | 09.1-09 T1 GREEN: query state seeded with an empty string, both arrival zero-match clears removed, initialQuery JSDoc (header + estimator only); G-09.1-5 describe 3/3 green, typecheck clean; (d)/(e) smt2/WR-04/mocked zero-match now fail as planned for Task 2 | src/ui/CandidateSelect.tsx | GREEN | ~2500 |
+| 14:50 | 09.1-09 T2: rewrote the pre-fill tests to the empty-FILTER contract, none deleted: layout (a),(d),(e) matching lbuffer, Pitfall 9 -> G-09.1-5, WR-04/WR-06 type `grep`, WR-05 renamed; mocked filterCandidates/D-01/zero-match; modal-layout typedFilter; heldPaneLines JSDoc. 3 files 120/120 green, counts 43/32/41 | tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx, tests/modal-layout.test.ts, src/ui/modal-layout.ts | green | ~5000 |

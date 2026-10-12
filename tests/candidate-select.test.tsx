@@ -130,28 +130,35 @@ describe('CandidateSelect — loading state', () => {
 describe('CandidateSelect — filterCandidates logic', () => {
   beforeEach(resetState);
 
-  // Wave 2: adds live search with initialQuery pre-filtering
-  it('only selects matching candidates when query is provided', async () => {
+  // Live search: only what the user types narrows the list. The lbuffer (initialQuery) is
+  // the header and never filters (G-09.1-5).
+  it('initialQuery never filters; a typed query does', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const onSelect = vi.fn();
-    const onCancel = vi.fn();
-
-    // Call the component function directly — hooks are mocked so this works
-    // State slot 0 = selectedIndex (0), State slot 1 = query ('git')
-    CandidateSelect({
+    const props = {
       candidates: [
         { command: 'git status', explanation: '' },
         { command: 'ls -la', explanation: '' },
       ],
       onSelect,
-      onCancel,
-      initialQuery: 'git',
-    });
+      onCancel: vi.fn(),
+      initialQuery: 'ls',
+    };
 
-    // Simulate Enter key — should accept 'git status' (only match for 'git' filter)
+    // Call the component function directly — hooks are mocked so this works.
+    // State slot 0 = selectedIndex, slot 1 = query (starts '' whatever initialQuery is).
+    CandidateSelect(props);
+    capturedInputHandler?.('l', zeroKeys);
+    capturedInputHandler?.('s', zeroKeys);
+    expect(stateValues[1]).toBe('ls');
+
+    // Render again so the input handler sees the typed query.
+    stateCallCount = 0;
+    CandidateSelect(props);
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
-    expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
+    // `ls` matches only `ls -la`.
+    expect(onSelect).toHaveBeenCalledWith('ls -la', 'see man ls');
   });
 });
 
@@ -180,11 +187,12 @@ describe('CandidateSelect — keyboard navigation', () => {
   });
 });
 
-describe('CandidateSelect — D-01 pre-filter', () => {
+describe('CandidateSelect — G-09.1-5 FILTER opens empty (supersedes 03.1 D-01/D-02)', () => {
   beforeEach(resetState);
 
-  // Wave 2: adds initialQuery prop; pre-filters by lbuffer text (D-01)
-  it('pre-populates query from initialQuery prop and accepts only matching candidate', async () => {
+  // The lbuffer (initialQuery) only fills the `queque ›` header; FILTER opens empty, so a
+  // matching lbuffer does not narrow the list (G-09.1-5, UAT 09.1 test 5).
+  it('starts the query empty whatever initialQuery is', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const onSelect = vi.fn();
     const onCancel = vi.fn();
@@ -196,14 +204,15 @@ describe('CandidateSelect — D-01 pre-filter', () => {
       ],
       onSelect,
       onCancel,
-      initialQuery: 'git',
+      initialQuery: 'ls',
     });
+    expect(stateValues[1]).toBe('');
 
-    // Press Enter — should accept 'git status' (the only candidate after filter)
+    // Press Enter — the unfiltered list is shown, so row 0 (`git status`) is accepted.
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
     expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
-    expect(onSelect).not.toHaveBeenCalledWith('ls -la');
+    expect(onSelect).not.toHaveBeenCalledWith('ls -la', expect.anything());
   });
 });
 
@@ -265,18 +274,26 @@ describe('CandidateSelect — zero-match after filter', () => {
     const onSelect = vi.fn();
     const onCancel = vi.fn();
 
-    // initialQuery='zzz' matches neither 'git status' nor 'ls -la'
-    CandidateSelect({
+    const props = {
       candidates: [
         { command: 'git status', explanation: '' },
         { command: 'ls -la', explanation: '' },
       ],
       onSelect,
       onCancel,
-      initialQuery: 'zzz',
-    });
+    };
 
-    // Press Return — zero-match guard prevents onSelect from being called
+    // The user types `zzz`, which matches neither 'git status' nor 'ls -la'. FILTER opens
+    // empty (G-09.1-5), so the zero match comes from typing, not from initialQuery.
+    CandidateSelect(props);
+    for (const key of ['z', 'z', 'z']) {
+      capturedInputHandler?.(key, zeroKeys);
+    }
+
+    // Render again so the input handler sees the typed query, then press Return — the
+    // zero-match guard prevents onSelect from being called.
+    stateCallCount = 0;
+    CandidateSelect(props);
     capturedInputHandler?.('', { ...zeroKeys, return: true });
 
     expect(onSelect).not.toHaveBeenCalled();

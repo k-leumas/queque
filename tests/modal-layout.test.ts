@@ -425,15 +425,21 @@ describe('heldPaneLines (quick-261011-f9o Zellij pane hold)', () => {
     expect(heldPaneLines(0, input)).toBe(estimateCandidateSelectLines(input));
   });
 
-  it('sizes an lbuffer pre-filter for the unfiltered list', () => {
+  it('sizes a typed filter under the query header for the unfiltered list', () => {
     const candidates: DisplayCandidate[] = [
       { command: 'z3 -smt2 problem.smt2', explanation: 'solve a file' },
       { command: 'python3 -c "import z3"', explanation: 'use the bindings' },
     ];
-    const preFiltered = { ...base, candidates, initialQuery: 'smt2', query: 'smt2' };
-    const unfiltered = estimateCandidateSelectLines({ ...preFiltered, query: '' });
-    expect(unfiltered).toBeGreaterThan(estimateCandidateSelectLines(preFiltered));
-    expect(heldPaneLines(0, preFiltered)).toBe(unfiltered);
+    // initialQuery is only the `queque ›` header row; `smt2` is what the user typed.
+    const typedFilter = {
+      ...base,
+      candidates,
+      initialQuery: 'show me how to use z3',
+      query: 'smt2',
+    };
+    const unfiltered = estimateCandidateSelectLines({ ...typedFilter, query: '' });
+    expect(unfiltered).toBeGreaterThan(estimateCandidateSelectLines(typedFilter));
+    expect(heldPaneLines(0, typedFilter)).toBe(unfiltered);
   });
 
   it('keeps the ⚠ height when a filter then resets the selection to row 0', () => {
