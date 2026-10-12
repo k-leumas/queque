@@ -158,7 +158,6 @@ export function CandidateSelect({
   // unfiltered list, and while the same candidates array is shown it never shrinks: filtering
   // and Backspace report the held height (an equal height spawns no resize), and only a taller
   // frame grows it. A new candidates array resets the hold. No state is set here (G-09-7).
-  // biome-ignore lint/correctness/useExhaustiveDependencies: layout callback mirrors render inputs
   useEffect(() => {
     if (!onLayoutLinesChange) {
       return;
