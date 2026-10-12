@@ -3327,7 +3327,9 @@
         "test-infra",
         "phase-9"
       ],
-      "related_bugs": [],
+      "related_bugs": [
+        "bug-270"
+      ],
       "occurrences": 7,
       "last_seen": "2026-10-10T21:30:00Z"
     },
@@ -3675,7 +3677,7 @@
       "error_message": "User: 'i wish the llm response was faster' — ?? thinking->candidates ~4.3-5.4 s (tail 8-14 s) after the instant frame",
       "file": "src/providers/claude-cli.ts",
       "root_cause": "No usable ANTHROPIC_API_KEY on this machine (/login only), so every ?? spawns a fresh `claude -p` in the daemon: Claude Code boot 0.93 s + shutdown 0.44 s, account-default claude-opus-5-5 at Claude Code's default xhigh effort (thinking 0-1.8 s on less familiar queries), ~1 s time-to-headers, ~1.4 s JSON generation, and text output + waiting for process exit means nothing shows until the end. QueQue-side stages total ~0.4 s. Latent: daemon finds .env.local relative to its inherited cwd (spawnDaemon passes no cwd/env).",
-      "fix": "Not applied (diagnose-only, .planning/debug/llm-response-latency-profile.md). Ranked options: --effort low (-1.05 s on z3), resolve on result instead of exit (-0.44 s), stream first candidate (-1.5 s perceived), pre-spawned stream-json claude -p (-0.93 s), haiku only with thinking disabled.",
+      "fix": "Not applied (diagnose-only, .planning/debug/llm-response-latency-profile.md). Ranked options: --effort low (-1.05 s on z3), resolve on result instead of exit (-0.44 s), stream first candidate (-1.5 s perceived), pre-spawned stream-json claude -p (-0.93 s), haiku only with thinking disabled. | 2026-10-12 Phase 09.1 applied them: --effort low from config (09.1-02), stream-json resolve on result (09.1-01), per-candidate streaming to the modal (09.1-02/03/07), one prewarmed claude -p in the daemon (09.1-05), SDK streaming with output_config.effort (09.1-04). Real-provider latency is an end-of-phase UAT item.",
       "tags": [
         "latency",
         "claude-cli",
@@ -3688,7 +3690,7 @@
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-10-12T04:00:00Z"
+      "last_seen": "2026-10-12T07:45:00Z"
     },
     {
       "id": "bug-226",
@@ -4393,6 +4395,876 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T06:49:45.474Z"
+    },
+    {
+      "id": "bug-270",
+      "timestamp": "2026-10-10T13:10:00Z",
+      "error_message": "tests/command-words-fuzz.test.ts: crafted malformed input \"...\" finishes within 1 s — ETIMEDOUT, stdout=\"\", last input=<none>",
+      "file": "tests/command-words-fuzz.test.ts",
+      "root_cause": "Not fixed. Child process is killed by the 1 s hard timeout before it reads any input (node spawn/startup cost), different case each run; reproduces at HEAD c105e57/3209e9b, worse under full-suite parallel load. Also zsh-widget 'handoff timing' (25 ms guard) failed once under full-suite load, passes alone (13.95 ms). 2026-10-10 validate-phase: handoff timing now fails alone too (batch medians 25.68-38.04 ms); direct zsh -f run 21-31 ms with rehash ~10 ms (0.1-0.5 ms at verify), same 2,175 commands, no code change since verify, load avg 31-47 with syspolicyd ~40% CPU, so PATH directory scans are slow under I/O load. | 2026-10-12 (09.1-01 full suite, load avg 30-51): 20k random-input case failed once under the full suite, passed alone 36/36. | 2026-10-12 (09.1-06, parallel wave 2, load avg 62-77): \"20k random inputs\" and a crafted \"finishes within 1 s\" case failed 2 of 3 full runs, passed alone.",
+      "fix": "Open — candidate fix: measure from first input received rather than spawn, or raise the hard timeout for spawn overhead | 2026-10-10: user accepted as a tracked warning for phase 9 closure; candidate fix = time the lexer inside the child, not spawn.",
+      "tags": [
+        "flaky",
+        "timeout",
+        "fuzz",
+        "test-infra",
+        "phase-9"
+      ],
+      "related_bugs": [
+        "bug-206"
+      ],
+      "occurrences": 10,
+      "last_seen": "2026-10-12T07:00:00Z"
+    },
+    {
+      "id": "bug-271",
+      "timestamp": "2026-10-12T06:55:00Z",
+      "error_message": "Esc during thinking… leaves the client running (deferred from quick 261011-jbh): the prompt is back but qq client stays alive (seen at 66-75 s) and the claude -p child keeps running",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "onCancel wrote the cancel result and unmounted, but nothing destroyed the daemon fetch socket or cleared its 26 s timers, the fetch .then still called app.rerender after the result was written, the daemon never learned the client left (no abort signal into the adapter), and nothing called process.exit, so open handles kept the client alive (09.1-RESEARCH Pattern 3)",
+      "fix": "09.1-01: fetchAbort AbortController in run-foreground (aborted by onSelect/onCancel/cleanupOnSignal, no rerender once resolved, AbortError ignored); fetch-client rejects with abortError() and destroys the socket on abort and never falls back in-process afterwards; daemon socket close aborts a per-connection AbortController passed to the adapter; runClaudeTurn SIGTERMs the claude -p child then SIGKILLs after 1500 ms; the client action ends with process.exit(process.exitCode ?? 0). SDK path still runs its request to completion until plan 04",
+      "tags": [
+        "cancellation",
+        "abort",
+        "esc",
+        "client",
+        "daemon",
+        "claude-cli",
+        "phase-09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:55:00Z"
+    },
+    {
+      "id": "bug-272",
+      "timestamp": "2026-10-12T07:04:02.379Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:04:02.379Z"
+    },
+    {
+      "id": "bug-273",
+      "timestamp": "2026-10-12T07:04:35.849Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: describe('no in-process re-query after rows (D-16 transport); /** Settles with the fetch outcome, or 'hung' if it is still",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:07:53.073Z"
+    },
+    {
+      "id": "bug-274",
+      "timestamp": "2026-10-12T07:04:37.326Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-bootstrap.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:04:37.326Z"
+    },
+    {
+      "id": "bug-275",
+      "timestamp": "2026-10-12T07:04:58.877Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: if (overflowed) {; return;",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:05:00.289Z"
+    },
+    {
+      "id": "bug-276",
+      "timestamp": "2026-10-12T07:05:51.569Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:05:51.569Z"
+    },
+    {
+      "id": "bug-277",
+      "timestamp": "2026-10-12T07:07:01.130Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→15 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:07:01.130Z"
+    },
+    {
+      "id": "bug-278",
+      "timestamp": "2026-10-12T07:07:02.165Z",
+      "error_message": "Function not marked async",
+      "file": ".claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier | Also: async 'hang-after-result'() {; // A child that outlives its `result`: it ignores SIGTERM an",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:07:12.451Z"
+    },
+    {
+      "id": "bug-279",
+      "timestamp": "2026-10-12T07:07:11.128Z",
+      "error_message": "Missing error handling in deltaPieces",
+      "file": ".claude/worktrees/agent-ab8a809b1692afb63/tests/claude-cli-provider.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:07:11.128Z"
+    },
+    {
+      "id": "bug-280",
+      "timestamp": "2026-10-12T07:07:30.588Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs",
+      "root_cause": "Had ');\n    await writeFlushed(process.stderr, '",
+      "fix": "Changed to `${JSON.stringify(initEvent())}\\n`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "mjs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:07:30.588Z"
+    },
+    {
+      "id": "bug-281",
+      "timestamp": "2026-10-12T07:08:07.577Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-a95663009d2772251/tests/claude-process.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:08:07.577Z"
+    },
+    {
+      "id": "bug-282",
+      "timestamp": "2026-10-12T07:08:40.287Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a95663009d2772251/tests/claude-process.test.ts",
+      "root_cause": "Had 'resolves on hang-after-result, then the backstop ",
+      "fix": "Changed to 'resolves, then the backstop SIGKILLs a child that",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:08:40.287Z"
+    },
+    {
+      "id": "bug-283",
+      "timestamp": "2026-10-12T07:09:35.864Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts",
+      "root_cause": "Had './provider.js'",
+      "fix": "Changed to 'node:string_decoder'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:09:35.864Z"
+    },
+    {
+      "id": "bug-284",
+      "timestamp": "2026-10-12T07:09:38.474Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:09:38.474Z"
+    },
+    {
+      "id": "bug-285",
+      "timestamp": "2026-10-12T07:09:40.736Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:09:40.736Z"
+    },
+    {
+      "id": "bug-286",
+      "timestamp": "2026-10-12T07:10:11.734Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:10:11.734Z"
+    },
+    {
+      "id": "bug-287",
+      "timestamp": "2026-10-12T07:21:47.156Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:21:47.156Z"
+    },
+    {
+      "id": "bug-288",
+      "timestamp": "2026-10-12T07:22:26.742Z",
+      "error_message": "Wrong reference: MODAL_VIEWPORT_LINES should be LIST_STATUS_ROW_LINES",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/modal-layout.test.ts",
+      "root_cause": "Used \"MODAL_VIEWPORT_LINES\" instead of \"LIST_STATUS_ROW_LINES\"",
+      "fix": "Changed MODAL_VIEWPORT_LINES → LIST_STATUS_ROW_LINES",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:22:26.742Z"
+    },
+    {
+      "id": "bug-289",
+      "timestamp": "2026-10-12T07:22:38.946Z",
+      "error_message": "Missing error handling in idleChild",
+      "file": ".claude/worktrees/agent-a6493f5431239884a/tests/claude-process.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:22:38.946Z"
+    },
+    {
+      "id": "bug-290",
+      "timestamp": "2026-10-12T07:23:19.430Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:23:19.430Z"
+    },
+    {
+      "id": "bug-291",
+      "timestamp": "2026-10-12T07:24:05.948Z",
+      "error_message": "Missing error handling in highlightedLine",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:24:05.948Z"
+    },
+    {
+      "id": "bug-292",
+      "timestamp": "2026-10-12T07:24:15.096Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:24:15.096Z"
+    },
+    {
+      "id": "bug-293",
+      "timestamp": "2026-10-12T07:24:30.748Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:24:30.748Z"
+    },
+    {
+      "id": "bug-294",
+      "timestamp": "2026-10-12T07:25:15.838Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: /** True while `child` was spawned and has not exited or bee; export function isRunning(child: ChildProcess): boolean {",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:25:20.034Z"
+    },
+    {
+      "id": "bug-295",
+      "timestamp": "2026-10-12T07:25:17.990Z",
+      "error_message": "Wrong condition in logic",
+      "file": ".claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts",
+      "root_cause": "Condition was: if (child.pid !== undefined)",
+      "fix": "Changed to: if (!prewarmed && child.pid !== undefined)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:25:17.990Z"
+    },
+    {
+      "id": "bug-296",
+      "timestamp": "2026-10-12T07:26:36.269Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:26:36.269Z"
+    },
+    {
+      "id": "bug-297",
+      "timestamp": "2026-10-12T07:26:40.034Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: {/* D-08: while rows stream in, the spinner sits directly un; own bottom margin is the gap (LIST_STATUS_ROW_LINES), so it ",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:26:56.549Z"
+    },
+    {
+      "id": "bug-298",
+      "timestamp": "2026-10-12T07:26:54.645Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8→13 lines (2 removed) | Also: /** TDD RED stub (09.1-04 Task 2): replaced by the; export function sdkOutputConfig(_model: string, _e",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:29:40.832Z"
+    },
+    {
+      "id": "bug-299",
+      "timestamp": "2026-10-12T07:26:56.497Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:26:56.497Z"
+    },
+    {
+      "id": "bug-300",
+      "timestamp": "2026-10-12T07:26:57.998Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: const outputConfig = sdkOutputConfig(model, resolveEffort()); effort: outputConfig?.effort ?? 'none',",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:29:52.677Z"
+    },
+    {
+      "id": "bug-301",
+      "timestamp": "2026-10-12T07:26:59.088Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude-default.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:26:59.088Z"
+    },
+    {
+      "id": "bug-302",
+      "timestamp": "2026-10-12T07:27:15.052Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/client/run-foreground.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:27:15.052Z"
+    },
+    {
+      "id": "bug-303",
+      "timestamp": "2026-10-12T07:28:20.266Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→9 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:20.266Z"
+    },
+    {
+      "id": "bug-304",
+      "timestamp": "2026-10-12T07:28:21.702Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/modal-layout.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:21.702Z"
+    },
+    {
+      "id": "bug-305",
+      "timestamp": "2026-10-12T07:28:24.479Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/tests/claude-provider.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:24.479Z"
+    },
+    {
+      "id": "bug-306",
+      "timestamp": "2026-10-12T07:28:29.983Z",
+      "error_message": "Wrong reference: createCandidateScanner should be type",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts",
+      "root_cause": "Used \"createCandidateScanner\" instead of \"type\"",
+      "fix": "Changed createCandidateScanner → type",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:29.983Z"
+    },
+    {
+      "id": "bug-307",
+      "timestamp": "2026-10-12T07:28:33.964Z",
+      "error_message": "Function not marked async",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:33.964Z"
+    },
+    {
+      "id": "bug-308",
+      "timestamp": "2026-10-12T07:28:45.846Z",
+      "error_message": "Missing error handling in function",
+      "file": ".claude/worktrees/agent-a6493f5431239884a/src/providers/claude-cli.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:45.846Z"
+    },
+    {
+      "id": "bug-309",
+      "timestamp": "2026-10-12T07:28:46.935Z",
+      "error_message": "Wrong condition in logic",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts",
+      "root_cause": "Condition was: if (newOnSelect && newCandidates)",
+      "fix": "Changed to: if (inkMock.autoSelect && newOnSelect && newCandidates)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:46.935Z"
+    },
+    {
+      "id": "bug-310",
+      "timestamp": "2026-10-12T07:28:58.108Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a6493f5431239884a/src/cli/commands/daemon.ts",
+      "root_cause": "Had '../../shared/debug-log.js'",
+      "fix": "Changed to '../../providers/claude-prewarm.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:28:58.108Z"
+    },
+    {
+      "id": "bug-311",
+      "timestamp": "2026-10-12T07:29:05.503Z",
+      "error_message": "Missing error handling in function",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:29:05.503Z"
+    },
+    {
+      "id": "bug-312",
+      "timestamp": "2026-10-12T07:30:08.272Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-aee12978fe710dd1a/README.md",
+      "root_cause": "Had `low`",
+      "fix": "Changed to `--effort`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:30:08.272Z"
+    },
+    {
+      "id": "bug-313",
+      "timestamp": "2026-10-12T07:30:26.806Z",
+      "error_message": "Wrong condition in logic",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts",
+      "root_cause": "Condition was: if (input.listState === 'arriving')",
+      "fix": "Changed to: if (input.listState === 'arriving' || input.listState )",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:30:26.806Z"
+    },
+    {
+      "id": "bug-314",
+      "timestamp": "2026-10-12T07:30:28.141Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→7 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:30:28.141Z"
+    },
+    {
+      "id": "bug-315",
+      "timestamp": "2026-10-12T07:30:29.646Z",
+      "error_message": "Wrong reference: MISSING_TOOL_MARK should be INCOMPLETE_LIST_NOTE",
+      "file": ".claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx",
+      "root_cause": "Used \"MISSING_TOOL_MARK\" instead of \"INCOMPLETE_LIST_NOTE\"",
+      "fix": "Changed MISSING_TOOL_MARK → INCOMPLETE_LIST_NOTE",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:30:29.646Z"
+    },
+    {
+      "id": "bug-316",
+      "timestamp": "2026-10-12T07:45:00Z",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:45:00Z",
+      "error_message": "daemon hang-up mid-fetch (crash, restart) stalls the qq client for the full 26 s FETCH_TIMEOUT_MS",
+      "file": "src/daemon/fetch-client.ts",
+      "root_cause": "requestDaemonFetch handled only the socket `error` event; a daemon that closed the connection emitted end/close without error, so nothing settled the request until the timeout",
+      "fix": "09.1-03 (7f89384): client.on('close', () => finish(new IpcTransportError('daemon connection closed'))); the settled guard makes it a no-op after a normal finish",
+      "tags": [
+        "ipc",
+        "daemon",
+        "fetch-client",
+        "timeout",
+        "phase-09.1"
+      ]
+    },
+    {
+      "id": "bug-317",
+      "timestamp": "2026-10-12T07:45:00Z",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:45:00Z",
+      "error_message": "a claude -p child that hangs after an is_error or schema-invalid result would leak in the long-lived daemon",
+      "file": "src/providers/claude-process.ts",
+      "root_cause": "the post-result backstop was planned only after a successful result; is_error and invalid results also settle the turn, after which nothing killed a child that did not exit",
+      "fix": "09.1-06 (8d3b81d): armBackstop() runs once for every result event before validation; cleared on exit",
+      "tags": [
+        "claude-cli",
+        "child-process",
+        "leak",
+        "backstop",
+        "phase-09.1"
+      ]
+    },
+    {
+      "id": "bug-318",
+      "timestamp": "2026-10-12T07:45:00Z",
+      "related_bugs": [
+        "bug-270"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:45:00Z",
+      "error_message": "runClaudeTurn timeout test could flake: fake child died by signal instead of exiting 143",
+      "file": "tests/claude-process.test.ts",
+      "root_cause": "sigterm-slow installs its SIGTERM handler only after reading the stdin line; at load avg 50-77 a 200 ms budget could SIGTERM the child while node was still booting",
+      "fix": "09.1-06 (e451333): the test uses budgetMs 1000 on the 10 s streaming scenario; asserted shapes unchanged",
+      "tags": [
+        "flaky",
+        "timeout",
+        "test-infra",
+        "fixture",
+        "phase-09.1"
+      ]
+    },
+    {
+      "id": "bug-319",
+      "timestamp": "2026-10-12T07:45:00Z",
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T07:45:00Z",
+      "error_message": "commitlint body-max-line-length (100) rejected a RED commit",
+      "file": "commitlint.config",
+      "root_cause": "commit body bullets longer than 100 characters (09.1-01 and 09.1-04 RED commits)",
+      "fix": "Re-committed with wrapped body lines; no code change. Wrap body lines to 100 chars before committing.",
+      "tags": [
+        "commitlint",
+        "git",
+        "commit-message",
+        "phase-09.1"
+      ]
+    },
+    {
+      "id": "bug-320",
+      "timestamp": "2026-10-12T07:46:26.399Z",
+      "error_message": "Bash tool command hung until the 120 s timeout after a scripted rm of a scratch file",
+      "file": "(tool environment)",
+      "root_cause": "rm is a shell alias for rm -i in the Claude Code Bash tool, so it waited on an invisible confirmation prompt",
+      "fix": "Use /bin/rm -f for scripted deletes; killed the waiting rm -i process",
+      "tags": [
+        "tooling",
+        "bash",
+        "alias",
+        "rm",
+        "hang"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T07:46:26.399Z"
+    },
+    {
+      "id": "bug-321",
+      "timestamp": "2026-10-12T08:18:43.752Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/daemon-fetch.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:18:43.752Z"
+    },
+    {
+      "id": "bug-322",
+      "timestamp": "2026-10-12T08:20:22.007741Z",
+      "error_message": "Daemon decoded IPC input per chunk (chunk.toString()); a 60 KB envelope split into 8 chunks gained 12 U+FFFD characters, garbling non-ASCII queryText/cwd (09.1 WR-01)",
+      "file": "src/daemon/server.ts",
+      "root_cause": "Each socket chunk was decoded on its own, so a multi-byte UTF-8 character split across chunk boundaries became replacement characters. The 256 KB limit also compared UTF-16 code units (buf.length) with bytes (chunk.length).",
+      "fix": "socket.setEncoding('utf8') (StringDecoder keeps split code points) and measure the limit with Buffer.byteLength on both sides. Tests split a request inside a 3-byte char and send a 270 KB/90k-unit request.",
+      "tags": [
+        "daemon",
+        "ipc",
+        "utf8",
+        "socket",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:20:22.007741Z"
     }
   ]
 }

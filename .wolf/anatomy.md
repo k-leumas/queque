@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T08:09:35.095Z
-> Files: 518 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T08:19:27.816Z
+> Files: 519 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -32,6 +32,10 @@
 - `plan03-task2.md` (~791 tok)
 - `splice_tasks.py` — Replace the task blocks of a plan from the <task ...> whose <name> starts with a (~161 tok)
 - `splice.py` — Replace the "## Artifacts this phase produces" section (heading up to <tasks>) (~228 tok)
+
+## ../../../../tmp/rf091/
+
+- `wolf.py` — Helper for the 09.1 review-fix pass: buglog append, memory append, anatomy line set. (~529 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -968,7 +972,7 @@
 
 - `bootstrap.ts` — Ensures a current daemon: ping must advertise `fetchCandidates`, `installedTools` AND `streamCandidates` (else replace the stale listener; no reply = keep), spawn if needed (09.1-03). (~2010 tok)
 - `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`; `requestDaemonFetch(…, timeoutMs?, options?)` sends `stream: true`, utf8-decodes, forwards `candidate` rows to `onCandidate`, treats socket `close` as IpcTransportError, rejects with abortError() on signal abort and destroys the socket; `fetchCandidatesForUi(…, options?)` never falls back in-process after an abort or after a row arrived (D-16) (09.1-01/03). (~1590 tok)
-- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates, installedTools, streamCandidates: true}`; drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter inside a Promise chain with a per-connection AbortController (socket `close` aborts it; aborted fetches log `fetch aborted` and write nothing); streams `candidate` rows only for `stream: true` (`replied candidate`; rows after the client left are `candidate dropped`); final `candidates` is the done signal (09.1-01/03). (~1820 tok)
+- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates, installedTools, streamCandidates: true}`; socket `setEncoding('utf8')` so split multi-byte chars survive, 256 KB request cap measured in bytes (WR-01); drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter inside a Promise chain with a per-connection AbortController (socket `close` aborts it; aborted fetches log `fetch aborted` and write nothing); streams `candidate` rows only for `stream: true` (`replied candidate`; rows after the client left are `candidate dropped`); final `candidates` is the done signal (09.1-01/03). (~1820 tok)
 
 ## src/providers/
 
@@ -1035,7 +1039,7 @@
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
 - `controls-line.test.tsx` — Calls `ControlsLine(props)` directly and flattens its element tree; asserts no tab chip without a hint, the exact chip order with `tabHint: 'install'`, and the `undo install` chip. (~500 tok)
 - `daemon-bootstrap.test.ts` — ensureDaemon keep/replace/spawn cases incl. pongs lacking `fetchCandidates`, `installedTools` or `streamCandidates` (replace), all three (keep); server pong advertises three flags (09.1-03). (~2330 tok)
-- `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s), abort after fetch-accepted reaches the adapter signal via socket close, no fallback after abort; raw-socket and scripted-listener helpers; streaming (D-05/D-14: `candidate` rows only for `stream: true`, `candidate dropped` after close) and no-re-query-after-rows (D-16) cases (09.1-03) (~4980 tok)
+- `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s), abort after fetch-accepted reaches the adapter signal via socket close, no fallback after abort; request decoding (WR-01: request split inside a 3-byte char decodes intact; 270 KB/90k-unit request is refused); raw-socket and scripted-listener helpers; streaming (D-05/D-14: `candidate` rows only for `stream: true`, `candidate dropped` after close) and no-re-query-after-rows (D-16) cases (09.1-03) (~6504 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
 - `env-file.test.ts` — Declares root (~862 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)

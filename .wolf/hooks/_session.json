@@ -288,7 +288,7 @@
       "first_read": "2026-10-12T07:28:50.049Z"
     },
     "/Users/samuel/dev/tui-llm/.planning/phases/09.1-provider-latency-and-cancellation/09.1-REVIEW.md": {
-      "count": 1,
+      "count": 2,
       "tokens": 3977,
       "first_read": "2026-10-12T08:03:23.634Z"
     },
@@ -1819,6 +1819,18 @@
       "action": "create",
       "tokens": 6969,
       "at": "2026-10-12T08:09:35.124Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/daemon-fetch.test.ts",
+      "action": "edit",
+      "tokens": 858,
+      "at": "2026-10-12T08:18:43.745Z"
+    },
+    {
+      "file": "/tmp/rf091/wolf.py",
+      "action": "create",
+      "tokens": 529,
+      "at": "2026-10-12T08:19:27.857Z"
     }
   ],
   "edit_counts": {
@@ -1892,11 +1904,13 @@
     "../../../../var/folders/tk/mgym91f555d45tx9fnsg33680000gn/T/tmp.f6bWqq0SSZ/apply-anatomy.mjs": 1,
     ".planning/phases/09.1-provider-latency-and-cancellation/09.1-08-SUMMARY.md": 1,
     ".planning/phases/09.1-provider-latency-and-cancellation/09.1-REVIEW.md": 1,
-    ".planning/phases/09.1-provider-latency-and-cancellation/09.1-VERIFICATION.md": 1
+    ".planning/phases/09.1-provider-latency-and-cancellation/09.1-VERIFICATION.md": 1,
+    "tests/daemon-fetch.test.ts": 1,
+    "../../../../tmp/rf091/wolf.py": 1
   },
   "anatomy_hits": 44,
   "anatomy_misses": 15,
-  "repeated_reads_warned": 67,
+  "repeated_reads_warned": 68,
   "cerebrum_warnings": 0,
-  "stop_count": 17
+  "stop_count": 19
 }

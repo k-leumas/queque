@@ -36,6 +36,9 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
     const server = net.createServer((socket) => {
       let buf = '';
       const connectionAbort = new AbortController();
+      // A UTF-8 StringDecoder keeps a multi-byte character intact when it is split across
+      // socket reads. A Unix-socket write over ~8 KB arrives in several chunks on macOS.
+      socket.setEncoding('utf8');
       void appendDebugLog('daemon', 'socket connected', { socketPath });
 
       const writeJson = (payload: unknown) => {
@@ -45,12 +48,13 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
         socket.write(`${JSON.stringify(payload)}\n`);
       };
 
-      socket.on('data', (chunk) => {
-        if (buf.length + chunk.length > MAX_BUF_BYTES) {
+      socket.on('data', (chunk: string) => {
+        // Compare bytes with bytes: `buf.length` counts UTF-16 code units, not bytes.
+        if (Buffer.byteLength(buf) + Buffer.byteLength(chunk) > MAX_BUF_BYTES) {
           socket.destroy(new Error('IPC message too large'));
           return;
         }
-        buf += chunk.toString();
+        buf += chunk;
         let nl = buf.indexOf('\n');
 
         while (nl !== -1) {

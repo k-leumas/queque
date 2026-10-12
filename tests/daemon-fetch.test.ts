@@ -256,6 +256,74 @@ describe('daemon fetch-candidates IPC', () => {
     expect(Date.now() - started).toBeLessThan(2000);
   });
 
+  describe('request decoding (WR-01)', () => {
+    /** Writes `bytes` to the daemon in two reads split at `split`, then collects replies. */
+    function splitRequest(bytes: Buffer, split: number): Promise<RawMessage[]> {
+      return new Promise((resolve) => {
+        const messages: RawMessage[] = [];
+        let buf = '';
+        const client = net.createConnection(socketPath, () => {
+          client.write(bytes.subarray(0, split));
+          setTimeout(() => client.write(bytes.subarray(split)), 30);
+        });
+        client.setEncoding('utf8');
+        client.on('data', (chunk) => {
+          buf += String(chunk);
+          let nl = buf.indexOf('\n');
+          while (nl !== -1) {
+            const message = JSON.parse(buf.slice(0, nl)) as RawMessage;
+            buf = buf.slice(nl + 1);
+            nl = buf.indexOf('\n');
+            messages.push(message);
+            if (message.kind === 'candidates' || message.kind === 'fetch-error') {
+              client.destroy();
+              resolve(messages);
+              return;
+            }
+          }
+        });
+        client.on('close', () => resolve(messages));
+        // The daemon destroys an oversized request mid-write, so EPIPE/ECONNRESET end it.
+        client.on('error', () => resolve(messages));
+      });
+    }
+
+    it('keeps a multi-byte character intact when the request is split across socket reads', async () => {
+      fetchMock.mockResolvedValue([ROW_A]);
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+      const envelope = buildEnvelope();
+      envelope.base.queryText = 'プロジェクト ⓘ';
+      envelope.base.cwd = '/repo/プロジェクト';
+      const bytes = Buffer.from(
+        `${JSON.stringify({ kind: 'fetch-candidates', envelope, stream: true })}\n`,
+      );
+      const split = bytes.indexOf(Buffer.from('ジ')) + 1; // inside the 3-byte sequence
+
+      const replies = await splitRequest(bytes, split);
+
+      expect(replies.at(-1)).toEqual({ kind: 'candidates', candidates: [ROW_A] });
+      const received = fetchMock.mock.calls[0]?.[0] as ContextEnvelope;
+      expect(received.base.queryText).toBe('プロジェクト ⓘ');
+      expect(received.base.cwd).toBe('/repo/プロジェクト');
+    });
+
+    it('measures the 256 KB request limit in bytes, not UTF-16 code units', async () => {
+      fetchMock.mockResolvedValue([ROW_A]);
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+      const envelope = buildEnvelope();
+      // 90,000 three-byte characters: ~270 KB on the wire but only 90,000 code units.
+      envelope.base.queryText = 'ⓘ'.repeat(90_000);
+      const bytes = Buffer.from(`${JSON.stringify({ kind: 'fetch-candidates', envelope })}\n`);
+
+      const replies = await splitRequest(bytes, 1024);
+
+      expect(replies).toEqual([]);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
   describe('streamed candidates (D-05)', () => {
     it('writes one candidate message per streamed row, then the final candidates list', async () => {
       fetchMock.mockImplementation(async (_envelope: ContextEnvelope, options?: FetchOptions) => {
