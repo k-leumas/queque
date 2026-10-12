@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T20:46:26.657Z
-> Files: 523 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T21:06:56.678Z
+> Files: 528 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -152,15 +152,16 @@
 ## ./
 
 - `.gitignore` — Git ignore rules (~54 tok)
-- `.releaserc.json` (~343 tok)
+- `.releaserc.json` (~363 tok)
 - `biome.json` (~213 tok)
+- `CHANGELOG.md` — User-facing release notes: Features / Bug Fixes / Deprecations highlights with conventional-commit lists under `<details>` (LLM-written from the changeset at release). Unreleased = v0.5.0..HEAD. (~2200 tok)
 - `CLAUDE.md` — OpenWolf (~1668 tok)
 - `CONTRIBUTING.md` — Contributing (~1150 tok)
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~499 tok)
 - `README.md` — Project documentation; config.json table incl. `effort` (claude -p `--effort`, SDK `output_config.effort`) (09.1-02/04) (~1235 tok)
-- `tsconfig.json` — TypeScript configuration (~172 tok)
+- `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. (~600 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
 
@@ -589,7 +590,7 @@
 ## .github/workflows/
 
 - `homebrew.yml` — CI: Update Homebrew Tap (~957 tok)
-- `release.yaml` — CI: Release (~1824 tok)
+- `release.yaml` — CI: Release (~1842 tok)
 
 ## .gsd/
 
@@ -604,7 +605,7 @@
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~6081 tok)
-- `STATE.md` — Project State (~2442 tok)
+- `STATE.md` — Project State (~3580 tok)
 
 ## .planning/debug/
 
@@ -775,9 +776,9 @@
 - `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)
 - `09.1-RESEARCH.md` — Phase 09.1: Provider Latency and Cancellation - Research (~17961 tok)
 - `09.1-REVIEW-FIX.md` — Phase 09.1: Code Review Fix Report (~2739 tok)
-- `09.1-REVIEW.md` — Phase 09.1: Code Review Report (~3977 tok)
+- `09.1-REVIEW.md` — Phase 09.1: Code Review Report (~3027 tok)
 - `09.1-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2166 tok)
-- `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6098 tok)
+- `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~5751 tok)
 - `COVERAGE.md` — API Coverage — Anthropic Messages API (TS SDK 0.92.0) and Claude Code print mode (2.1.285) (~681 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
@@ -883,6 +884,11 @@
 - `COVERAGE.md` — api-coverage gate declaration: no external API integration (SDK import only made lazy). (~68 tok)
 - `deferred-items.md` — Deferred items: quick 261011-jbh (~332 tok)
 
+## .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/
+
+- `261012-kp1-PLAN.md` (~912 tok)
+- `261012-kp1-SUMMARY.md` — Summary: User-facing changelog (~182 tok)
+
 ## .planning/research/
 
 - `ARCHITECTURE.md` — Architecture Research: QueQue (~667 tok)
@@ -922,7 +928,7 @@
 
 - `config.example.json` — Example `~/.config/qq/config.json` incl. `"effort": "low"` (09.1-02). (~61 tok)
 - `EXTENSIONS.md` — QueQue Extension Seams; adapter options (09.1): `fetchCandidates(envelope, options?)`, `options.signal` must cancel the provider request, `onCandidate` streams validated rows. (~1540 tok)
-- `RELEASING.md` — Release Process (~1183 tok)
+- `RELEASING.md` — Release Process (~1426 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
 - `SYSTEM_DESIGN.md` — System Design; the IPC paragraph covers the streaming reply sequence (`candidate` rows, `candidates` done signal), the three pong flags, abort on socket close and D-16 (09.1-03). (~2900 tok)
 
@@ -930,6 +936,7 @@
 
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
 - `docker-homebrew-smoke-runner.sh` (~491 tok)
+- `semantic-release-user-notes.ts` — semantic-release generateNotes/prepare: LLM highlights from the changeset since the last tag plus collapsed commit details; strips `## [Unreleased]` before the changelog plugin prepends. (~1400 tok)
 - `smoke-homebrew-docker.sh` (~953 tok)
 - `strip-cursor-coauthor-from-msg.sh` — Removes Cursor co-author trailer lines from a git commit message file or stdin. (~114 tok)
 
@@ -1056,6 +1063,7 @@
 - `qq-config.test.ts` — qq-config schema and loader tests incl. `effort` (lenient enum, trim/lowercase, invalid → low) through a temp QQ_CONFIG_FILE (09.1-02). (~940 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
+- `semantic-release-user-notes.test.ts` — grouping, formatting, highlight JSON parse, generateNotes fallbacks, Unreleased strip. (~900 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d); adapters (b) model-call markers include `'messages.stream('` (09.1-04) (~2580 tok)
 - `tool-awareness.test.ts` — Characterization tests for missing-tool semantics, installer choice, package aliases, install forms/wrapping/blocked plans and annotateCandidates (incl. CR-02: no install form for a wrapper option value such as `sudo --user root`). (~3573 tok)

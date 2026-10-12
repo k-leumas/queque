@@ -2808,3 +2808,52 @@
 | 14:45 | 09.1-09 T3 gate: pnpm test:run 741/741 (37 files), typecheck, lint, build green (load ~6.5, no bug-206 flake) | — | green | ~500 |
 | 14:46 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-09-SUMMARY.md | — | ~4476 |
 | 14:47 | 09.1-09 complete: SUMMARY f80fca9, STATE/ROADMAP updated (9/9 plans), UAT test 5 re-test pending /gsd-verify-work | 09.1-09-SUMMARY.md, STATE.md, ROADMAP.md | done | ~1500 |
+| 14:49 | Session end: 19 writes across 9 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 16 reads | ~45136 tok |
+| 14:56 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-REVIEW.md | — | ~3229 |
+| 14:56 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-PLAN.md | — | ~974 |
+| 14:56 | Created scripts/semantic-release-user-notes.mjs | — | ~3284 |
+| 14:56 | Created tests/semantic-release-user-notes.test.ts | — | ~2667 |
+| 14:57 | Created .releaserc.json | — | ~363 |
+| 14:57 | Created .github/workflows/release.yaml | — | ~1842 |
+| 14:57 | Created docs/RELEASING.md | — | ~1272 |
+| 14:57 | Created docs/RELEASING.md | — | ~1521 |
+| 14:57 | Session end: 27 writes across 16 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 32 reads | ~73207 tok |
+| 14:57 | Created scripts/semantic-release-user-notes.mjs | — | ~3290 |
+| 14:59 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-SUMMARY.md | — | ~194 |
+| 14:59 | Created .planning/STATE.md | — | ~3817 |
+| 15:00 | User-facing changelog + LLM release notes plugin | CHANGELOG.md, scripts/semantic-release-user-notes.mjs, tests/semantic-release-user-notes.test.ts, .releaserc.json, docs/RELEASING.md | highlights + details; future notes from changeset | ~8k |
+| 15:00 | User-facing changelog + LLM release notes plugin | CHANGELOG.md, scripts/semantic-release-user-notes.mjs, tests/semantic-release-user-notes.test.ts, .releaserc.json, docs/RELEASING.md | highlights + details; future notes from changeset | ~8k |
+| 15:01 | Created scripts/semantic-release-user-notes.d.ts | — | ~624 |
+| 15:01 | Created tsconfig.json | — | ~179 |
+| 15:02 | Created scripts/semantic-release-user-notes.d.ts | — | ~712 |
+| 15:03 | Created tsconfig.json | — | ~180 |
+| 15:03 | Created scripts/semantic-release-user-notes.ts | — | ~4267 |
+| 15:03 | Created scripts/semantic-release-user-notes.ts | — | ~4232 |
+| 15:03 | Created scripts/semantic-release-user-notes.ts | — | ~4214 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~4181 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~4158 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~4042 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~4031 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~4008 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3979 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3968 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3973 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3970 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3956 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3917 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3913 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3903 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3966 |
+| 15:04 | Created tests/semantic-release-user-notes.test.ts | — | ~2670 |
+| 15:04 | Created tsconfig.json | — | ~179 |
+| 15:04 | Created .releaserc.json | — | ~363 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3961 |
+| 15:04 | Created docs/RELEASING.md | — | ~1521 |
+| 15:04 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-SUMMARY.md | — | ~194 |
+| 15:04 | Created scripts/semantic-release-user-notes.ts | — | ~3958 |
+| 15:05 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-VERIFICATION.md | — | ~6134 |
+| 15:06 | Created .planning/STATE.md | — | ~3819 |
+| 15:06 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-PLAN.md | — | ~973 |
+| 15:06 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-PLAN.md | — | ~973 |
+| 15:06 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-PLAN.md | — | ~973 |
+| 15:07 | 09.1 UAT (7 pass/1 issue/1 skip) → G-09.1-5 diagnosed, fixed by 09.1-09; re-review found CR-01 Backspace regression; verification gaps_found | .planning/phases/09.1-*/ | gaps_found | ~60k |

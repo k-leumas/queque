@@ -160,6 +160,7 @@ None yet.
 | 261011-e43 | fix top queque › line is clipped when modal is resized in zellij | 2026-10-11 | dbcbdd7 | [261011-e43-fix-top-queque-line-is-clipped-when-moda](./quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/) |
 | 261011-f9o | keep the zellij modal at its full-list height while filtering instead of shrinking | 2026-10-11 | 75655cc | [261011-f9o-keep-the-zellij-modal-at-its-full-list-h](./quick/261011-f9o-keep-the-zellij-modal-at-its-full-list-h/) |
 | 261011-jbh | instant first frame from the zsh widget + bundled, compile-cached client (modal no longer blank before loading) | 2026-10-11 | e8e3127 | [261011-jbh-instant-first-frame-from-the-zsh-widget-](./quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/) |
+| 261012-kp1 | rewrite CHANGELOG as user-facing highlights with detailed commits under details; LLM notes from the changeset at release | 2026-10-12 | 47faf6b | [261012-kp1-rewrite-changelog-md-to-user-facing-feat](./quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/) |
 
 ## Session Continuity
 
