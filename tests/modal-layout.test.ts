@@ -505,6 +505,16 @@ describe('estimateCandidateSelectLines — streamed list status row (09.1 D-08, 
     );
   });
 
+  it('estimates a partial list like an arriving one (the incomplete note takes the status row, D-16)', () => {
+    const complete = estimateCandidateSelectLines({ ...base, listState: 'complete' });
+    expect(estimateCandidateSelectLines({ ...base, listState: 'partial' })).toBe(
+      complete + LIST_STATUS_ROW_LINES,
+    );
+    expect(estimateCandidateSelectLines({ ...base, listState: 'partial' })).toBe(
+      estimateCandidateSelectLines({ ...base, listState: 'arriving' }),
+    );
+  });
+
   it('adds no status row while loading or on error (the spinner or error is the content)', () => {
     const loading = { ...base, candidates: null };
     expect(estimateCandidateSelectLines({ ...loading, listState: 'arriving' })).toBe(

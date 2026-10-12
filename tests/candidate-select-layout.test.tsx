@@ -43,6 +43,7 @@ import {
   type CandidateListState,
   estimateCandidateSelectLines,
   heldPaneLines,
+  INCOMPLETE_LIST_NOTE,
   MODAL_VIEWPORT_LINES,
   wrapText,
 } from '../src/ui/modal-layout.js';
@@ -997,6 +998,60 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
         await mounted.press(key);
       }
       await settle();
+      expect(spawnedHeights().join(',')).toBe(String(expected));
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('D-16: a partial list shows the incomplete note below the rows, no spinner, and Enter still selects', async () => {
+    const mounted = await mountStream(STREAM_LBUFFER);
+    try {
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'arriving');
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'partial');
+      const frame = lastFrame(mounted.stdout.writes).split('\n');
+      const noteRow = frame.findIndex((line) => line.includes(INCOMPLETE_LIST_NOTE));
+      const lastRow = frame.findIndex((line) => line.includes(GIT_LOG.explanation));
+      expect(lastRow).toBeGreaterThan(-1);
+      expect(noteRow).toBeGreaterThan(lastRow);
+      expect(frame.join('\n')).not.toContain('thinking');
+
+      await mounted.press('\u001B[B');
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([GIT_LOG.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('D-16/D-17: in Zellij a partial list reports once, like a complete one', async () => {
+    process.env.ZELLIJ = '0';
+    process.env.ZELLIJ_PANE_ID = '7';
+    process.env.QQ_PANE_HEIGHT = '24';
+
+    const mounted = await mountStream(LBUFFER, syncZellijFloatingPaneHeight);
+    try {
+      await mounted.arrive(RAW_CANDIDATES.slice(0, 1), 'arriving');
+      await mounted.arrive(RAW_CANDIDATES.slice(0, 2), 'arriving');
+      await settle();
+      expect(spawnedHeights().join(',')).toBe('');
+
+      const partial = RAW_CANDIDATES.slice(0, 2);
+      await mounted.arrive(partial, 'partial');
+      await settle();
+      const expected = resolveZellijPaneHeight(
+        heldPaneLines(0, {
+          candidates: partial,
+          initialQuery: LBUFFER,
+          query: '',
+          selectedIndex: 0,
+          contentWidth: CONTENT_WIDTH,
+          includeDevFooter: false,
+          installToggled: new Set(),
+          listState: 'partial',
+        }),
+        24,
+      );
       expect(spawnedHeights().join(',')).toBe(String(expected));
     } finally {
       mounted.close();

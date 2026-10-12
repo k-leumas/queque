@@ -132,7 +132,11 @@ vi.mock('node:tty', async (importOriginal) => {
 // After D-03 the modal always opens regardless of candidate count; the mock
 // immediately invokes onSelect with the first candidate's command so the
 // llm-mode test can complete without a real TTY interaction.
+// `inkMock.autoSelect = false` switches that off for one test (reset after each test), so a
+// test can inspect the rerendered element and call its onSelect/onCancel itself.
 // ---------------------------------------------------------------------------
+const inkMock = vi.hoisted(() => ({ autoSelect: true }));
+
 vi.mock('ink', () => ({
   render: vi.fn().mockImplementation(
     (element: {
@@ -143,7 +147,7 @@ vi.mock('ink', () => ({
     }) => {
       let currentElement = element;
       const { onSelect, candidates } = element.props;
-      if (onSelect && candidates) {
+      if (inkMock.autoSelect && onSelect && candidates) {
         Promise.resolve().then(() => {
           const cmd = candidates[0]?.command ?? 'git status';
           const expl = candidates[0]?.explanation || `see man ${cmd.split(' ')[0]}`;
@@ -161,7 +165,7 @@ vi.mock('ink', () => ({
           }) => {
             currentElement = newEl;
             const { onSelect: newOnSelect, candidates: newCandidates } = currentElement.props;
-            if (newOnSelect && newCandidates) {
+            if (inkMock.autoSelect && newOnSelect && newCandidates) {
               Promise.resolve().then(() => {
                 const cmd = newCandidates[0]?.command ?? 'git status';
                 const expl = newCandidates[0]?.explanation || `see man ${cmd.split(' ')[0]}`;
@@ -344,6 +348,7 @@ describe('runForegroundClient', () => {
   });
 
   afterEach(() => {
+    inkMock.autoSelect = true;
     try {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     } catch {
@@ -579,6 +584,92 @@ describe('runForegroundClient', () => {
     // D-14: a row that arrives after Enter is neither rendered nor kept.
     emit?.({ command: 'ls -la', explanation: 'list files' });
     expect(app.rerender).toHaveBeenCalledTimes(rerenders);
+  });
+
+  /** The element passed to the most recent rerender of the given render call. */
+  type StreamedElement = {
+    props: {
+      candidates: Array<{ command: string; explanation: string }> | null;
+      listState?: string;
+      error?: boolean;
+      onSelect: (command: string, explanation: string) => Promise<void>;
+      onCancel: () => Promise<void>;
+    };
+  };
+  async function rerenderedElements(renderCallIndex: number): Promise<StreamedElement[]> {
+    const { render } = await import('ink');
+    const app = vi.mocked(render).mock.results[renderCallIndex]?.value as {
+      rerender: ReturnType<typeof vi.fn>;
+    };
+    return app.rerender.mock.calls.map((call) => call[0] as StreamedElement);
+  }
+
+  it('a failure after a row arrived keeps the row selectable under a partial list (D-16)', async () => {
+    inkMock.autoSelect = false;
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: FetchOptions) =>
+        new Promise((_resolve, reject) => {
+          if (options?.onCandidate === undefined) {
+            reject(new Error('the client passed no onCandidate'));
+            return;
+          }
+          options.onCandidate({ command: 'git log', explanation: 'commit history' });
+          setTimeout(() => reject(new Error('boom')), 0);
+        }),
+    );
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    let last: StreamedElement | undefined;
+    await vi.waitFor(async () => {
+      last = (await rerenderedElements(renderCallIndex)).at(-1);
+      expect(last?.props.listState).toBe('partial');
+    });
+    expect(last?.props.candidates?.map((c) => c.command)).toEqual(['git log']);
+    expect(last?.props.error).toBeUndefined();
+    // No result yet: the user still picks a row or presses Esc.
+    expect(fs.existsSync(resultFile)).toBe(false);
+
+    await last?.props.onSelect('git log', 'commit history');
+    await run;
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({
+      kind: 'replace-buffer',
+      lbuffer: 'git log',
+      rbuffer: '  # commit history',
+      query: 'list files in src',
+    });
+  });
+
+  it('an AbortError after Esc with rows on screen writes nothing more and rerenders nothing (D-14)', async () => {
+    inkMock.autoSelect = false;
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: FetchOptions) =>
+        new Promise((_resolve, reject) => {
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+          options?.onCandidate?.({ command: 'git log', explanation: 'commit history' });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    let elements: StreamedElement[] = [];
+    await vi.waitFor(async () => {
+      elements = await rerenderedElements(renderCallIndex);
+      expect(elements).toHaveLength(1);
+    });
+    await elements[0]?.props.onCancel();
+    await run;
+    // Let the aborted fetch's rejection run through the client's catch handler.
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({ kind: 'cancel' });
+    expect(await rerenderedElements(renderCallIndex)).toHaveLength(1);
   });
 });
 

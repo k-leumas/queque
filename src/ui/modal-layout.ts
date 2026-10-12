@@ -135,10 +135,14 @@ export function filterCandidates<T extends DisplayCandidate>(
 export const MODAL_VIEWPORT_LINES = 18;
 
 /**
- * Where a streamed candidate list stands (09.1 D-05/D-08): `'arriving'` while more rows may
- * come, `'complete'` once the provider finished.
+ * Where a streamed candidate list stands (09.1 D-05/D-08/D-16): `'arriving'` while more rows
+ * may come, `'complete'` once the provider finished, `'partial'` when the call failed after
+ * at least one row arrived (the arrived rows stay selectable).
  */
-export type CandidateListState = 'arriving' | 'complete';
+export type CandidateListState = 'arriving' | 'complete' | 'partial';
+
+/** Dim status-row note under the rows of a `'partial'` list (D-16). */
+export const INCOMPLETE_LIST_NOTE = 'list may be incomplete';
 
 /**
  * Rows the list status row (the `thinking…` spinner under arriving rows) adds. It sits
