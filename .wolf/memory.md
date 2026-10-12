@@ -2356,3 +2356,18 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 21:14 | Closed quick 261011-jbh after user live-verified instant frame; resolved debug session | .planning/STATE.md, jbh SUMMARY, debug/resolved | done | ~2k |
+| 21:20 | Created .planning/debug/llm-response-latency-profile.md | — | ~606 |
+| 21:20 | Session end: 1 writes across 1 files (llm-response-latency-profile.md) | 1 reads | ~1217 tok |
+| 21:23 | Edited .planning/debug/llm-response-latency-profile.md | added nullish coalescing | ~851 |
+| 21:23 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/53463c49-1a58-49e3-96b6-bef08880d887/scratchpad/build-envelope.mjs | — | ~400 |
+| 21:24 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/53463c49-1a58-49e3-96b6-bef08880d887/scratchpad/ipc-fetch.mjs | — | ~726 |
+| 21:25 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/53463c49-1a58-49e3-96b6-bef08880d887/scratchpad/cli-probe.mjs | — | ~987 |
+| 21:27 | Session end: 5 writes across 4 files (llm-response-latency-profile.md, build-envelope.mjs, ipc-fetch.mjs, cli-probe.mjs) | 3 reads | ~4393 tok |
+| 21:28 | Edited .planning/debug/llm-response-latency-profile.md | modified buildPrompt() | ~1020 |
+| 21:30 | Edited .planning/debug/llm-response-latency-profile.md | 2→7 lines | ~379 |
+| 21:30 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/53463c49-1a58-49e3-96b6-bef08880d887/scratchpad/prespawn-probe.mjs | — | ~907 |
+| 21:35 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/53463c49-1a58-49e3-96b6-bef08880d887/scratchpad/e2e-tmux.py | — | ~692 |
+| 21:43 | Edited .planning/debug/llm-response-latency-profile.md | modified path() | ~3755 |
+| 21:43 | Edited .planning/debug/llm-response-latency-profile.md | modified hypothesis() | ~652 |
+| 21:58 | Profiled ?? LLM latency (diagnose-only): claude -p path dominates (4.87 s median), ranked fixes in debug file | .planning/debug/llm-response-latency-profile.md, .wolf/cerebrum.md, .wolf/buglog.json | diagnosed | ~60000 |
+| 21:46 | Edited .planning/debug/llm-response-latency-profile.md | expanded (+16 lines) | ~689 |

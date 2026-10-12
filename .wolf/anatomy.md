@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T21:03:45.304Z
-> Files: 418 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T03:46:35.891Z
+> Files: 424 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -10,6 +10,14 @@
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/1dec13a7-8fe5-4a46-95ee-c3eab55e9197/scratchpad/
 
 - `wolf.py` — Small helpers for .wolf bookkeeping: anatomy descriptions, memory lines, buglog entries. (~676 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/53463c49-1a58-49e3-96b6-bef08880d887/scratchpad/
+
+- `build-envelope.mjs` — Builds the same ContextEnvelope a real `??` sends for `show me how to use z3` (~400 tok)
+- `cli-probe.mjs` — Spawns `claude -p` with QueQue's exact argv (src/providers/claude-cli.ts) except the output (~987 tok)
+- `e2e-tmux.py` — End-to-end `??` timing through the REAL zsh widget + client + live daemon (claude -p path). (~692 tok)
+- `ipc-fetch.mjs` — Sends the real `fetch-candidates` IPC (same frame as src/daemon/fetch-client.ts) to a daemon (~726 tok)
+- `prespawn-probe.mjs` — Measures a PRE-SPAWNED `claude -p` (what a daemon-side warm process would look like): (~907 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/
 
@@ -429,6 +437,7 @@
 ## .planning/debug/
 
 - `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~3416 tok)
+- `llm-response-latency-profile.md` — Symptoms (~6991 tok)
 - `modal-blank-before-loading.md` — Symptoms (~493 tok)
 
 ## .planning/notes/
