@@ -4,7 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import { resetAnthropicClientCache } from '../src/providers/claude.js';
-import type { ClaudeTurnOptions } from '../src/providers/claude-process.js';
+import type {
+  ClaudeTurnOptions,
+  ClaudeTurnStage,
+  ClaudeTurnStageDetail,
+} from '../src/providers/claude-process.js';
 import { abortError, isAbortError } from '../src/providers/provider.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import {
@@ -445,5 +449,147 @@ describe('claudeDefaultAdapter', () => {
 
     expect(createMock).toHaveBeenCalled();
     expect(runClaudeTurnMock).not.toHaveBeenCalled();
+  });
+});
+
+type StageScript = Array<[ClaudeTurnStage, ClaudeTurnStageDetail?]>;
+
+/** Runner mock that plays `stages` through onStage, then settles with `outcome`. */
+function playStages(stages: StageScript, outcome: { text: string } | { error: Error }): void {
+  runClaudeTurnMock.mockImplementation(async (options) => {
+    for (const [stage, detail] of stages) {
+      options.onStage?.(stage, detail);
+    }
+    if ('error' in outcome) {
+      throw outcome.error;
+    }
+    return outcome.text;
+  });
+}
+
+interface CliStageLog {
+  message: string;
+  detail: Record<string, unknown> | undefined;
+}
+
+/** Provider debug lines whose message starts with `cli ` (other provider lines ignored). */
+function cliStageLogs(): CliStageLog[] {
+  return appendDebugLogMock.mock.calls
+    .filter((call) => call[0] === 'provider' && String(call[1]).startsWith('cli '))
+    .map((call) => ({
+      message: String(call[1]),
+      detail: call[2] as Record<string, unknown> | undefined,
+    }));
+}
+
+describe('claude -p turn stage logs and error copy (D-04)', () => {
+  beforeEach(() => {
+    delete process.env.ANTHROPIC_API_KEY;
+    runClaudeTurnMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
+    appendDebugLogMock.mockClear();
+    createMock.mockReset();
+  });
+
+  it('logs cli spawned, init, first delta, result and exit in order with elapsed ms', async () => {
+    playStages(
+      [
+        ['spawned', { pid: 4242 }],
+        ['init'],
+        ['first-delta'],
+        ['result'],
+        ['exit', { code: 0, signal: null }],
+      ],
+      { text: CANDIDATE_JSON },
+    );
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    const logs = cliStageLogs();
+    expect(logs.map((log) => log.message)).toEqual([
+      'cli spawned',
+      'cli init',
+      'cli first delta',
+      'cli result',
+      'cli exit',
+    ]);
+    for (const log of logs) {
+      expect(log.detail).toEqual(expect.objectContaining({ ms: expect.any(Number) }));
+    }
+    expect(logs.at(-1)?.detail).toEqual(expect.objectContaining({ code: 0, signal: null }));
+  });
+
+  it('logs cli aborted for an aborted turn', async () => {
+    playStages([['spawned', { pid: 4242 }], ['init'], ['aborted']], { error: abortError() });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope()).catch(() => undefined);
+
+    expect(cliStageLogs().map((log) => log.message)).toEqual([
+      'cli spawned',
+      'cli init',
+      'cli aborted',
+    ]);
+  });
+
+  it('logs cli timed out for a turn past its budget', async () => {
+    playStages([['spawned', { pid: 4242 }], ['timed-out']], { error: killedError() });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope()).catch(() => undefined);
+
+    expect(cliStageLogs().map((log) => log.message)).toEqual(['cli spawned', 'cli timed out']);
+  });
+
+  it('never logs the prompt, argv, env, streams or tokens in stage lines', async () => {
+    playStages(
+      [
+        ['spawned', { pid: 4242 }],
+        ['init'],
+        ['first-delta'],
+        ['result'],
+        ['exit', { code: 0, signal: null }],
+      ],
+      { text: CANDIDATE_JSON },
+    );
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const { buildPrompt } = await import('../src/providers/claude.js');
+    const envelope = gitEnvelopeWithSecretFile();
+
+    await claudeDefaultAdapter.fetchCandidates(envelope);
+
+    const logged = JSON.stringify(appendDebugLogMock.mock.calls);
+    expect(cliStageLogs().length).toBeGreaterThan(0);
+    expect(logged).not.toMatch(FORBIDDEN_DEBUG);
+    expect(logged).not.toContain(buildPrompt(envelope));
+  });
+
+  it('maps timeout, is_error auth and ENOENT failures to the existing copy, never a candidate', async () => {
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const cases: Array<[Error, RegExp, RegExp | null]> = [
+      [killedError(), /Claude timed out/, null],
+      [loggedOutError(), /Claude is not authenticated\. Run `claude \/login`/, /Install/],
+      [enoentError(), /Install Claude Code, run `claude \/login`/, null],
+    ];
+
+    for (const [failure, copy, notCopy] of cases) {
+      runClaudeTurnMock.mockReset();
+      runClaudeTurnMock.mockRejectedValue(failure);
+
+      const outcome = await claudeDefaultAdapter
+        .fetchCandidates(buildEnvelope())
+        .then((candidates) => ({ candidates }))
+        .catch((error: unknown) => ({ error }));
+
+      expect('candidates' in outcome).toBe(false);
+      const message = 'error' in outcome ? (outcome.error as Error).message : '';
+      expect(message).toMatch(copy);
+      if (notCopy) {
+        expect(message).not.toMatch(notCopy);
+      }
+    }
+    expect(createMock).not.toHaveBeenCalled();
   });
 });
