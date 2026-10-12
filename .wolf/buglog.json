@@ -5381,6 +5381,28 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:35:45.055909Z"
+    },
+    {
+      "id": "bug-329",
+      "timestamp": "2026-10-12T20:44:33.588Z",
+      "error_message": "User reported: only the third test fials.... when i type into the filter before candidates are populated, my filter text is appeneded onto the query text from the left of the `?` so \"how to use z3\" becomes \"how to use z3 smt\".... the filter value should be empty upon opening of the modal as the query text is displayed above this",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "AND-gate: (1) CandidateSelect seeded the FILTER query with the lbuffer (`useState(initialQuery ?? '')`, 03.1 D-01 pre-filter) and printable keys append to it, so text typed during `thinking…` extended the lbuffer; (2) the 09.1 WR-04 guard ran the arrival zero-match clears only while `query === initialQuery`, so once the user typed, the lbuffer+typed string was never cleared and the completed list showed `no matches`. The lbuffer already shows in the `queque ›` header (phase 04), so the seed was redundant.",
+      "fix": "Plan 09.1-09: seed the query with '' (FILTER opens on the `type to filter…` placeholder) and remove both arrival-time zero-match clears (they only undid the seed); keep the first-arrival selection/Tab reset, later-arrival keep-highlight and the WR-06 clamp; initialQuery documented as header + layout estimator only. New real-Ink G-09.1-5 describe (UAT case, empty lbuffer, typed text equal to the lbuffer); tests that encoded the pre-fill rewritten to the new contract, none deleted.",
+      "tags": [
+        "candidate-select",
+        "filter",
+        "lbuffer",
+        "ink",
+        "uat",
+        "G-09.1-5"
+      ],
+      "related_bugs": [
+        "bug-325",
+        "bug-219"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T20:44:33.588Z"
     }
   ]
 }

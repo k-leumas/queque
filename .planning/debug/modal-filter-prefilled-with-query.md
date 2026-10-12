@@ -2,7 +2,7 @@
 status: diagnosed
 trigger: "UAT 09.1 Test 5 (G-09.1-5): filter text typed during `thinking…` is appended onto the lbuffer query (\"how to use z3\" -> \"how to use z3 smt\"); filter should be empty when the modal opens because the query is shown as a header above it"
 created: 2026-10-12T20:10:00Z
-updated: 2026-10-12T20:25:00Z
+updated: 2026-10-12T20:55:00Z
 goal: find_root_cause_only
 symptoms_prefilled: true
 ---
@@ -103,7 +103,12 @@ started: Discovered during UAT 2026-10-12, after review fixes WR-04/WR-05/WR-06 
 ## Resolution
 
 root_cause: "src/ui/CandidateSelect.tsx seeds the FILTER query with the lbuffer — `const [query, setQuery] = useState(initialQuery ?? '')` — per phase 03.1 decision D-01 (pre-filter candidates by a non-empty lbuffer). Printable keys append (`setQuery((q) => q + input)`), so text typed during `thinking…` extends the lbuffer ('show me how to use z3' -> 'show me how to use z3 smt') while the same lbuffer is already shown in the `queque ›` header (added in phase 04). Contributing: the 09.1 WR-04 fix (17bf7d3) limits both zero-match clears to `query === (initialQuery ?? '')`, so once the user types, the seeded+typed string is never cleared and the whole list renders `no matches`; before 17bf7d3 the same seed instead wiped the typed text on a non-matching first row."
-fix:
-verification:
-files_changed: []
+fix: "Plan 09.1-09 (commit 6888d4d): src/ui/CandidateSelect.tsx seeds the FILTER query with an empty string (`useState('')`, still the second of four useState calls) and removes both arrival-time zero-match clears (the first-arrival `setQuery('')` and the later-arrival `nextQuery` branch), which only undid the lbuffer seed. The first-arrival selection/Tab reset, the later-arrival keep-highlight-by-candidateKey and the WR-06 clamp are unchanged. `initialQuery` keeps its name and is documented as header text and layout-estimator input only. run-foreground.ts and queque.zsh unchanged. Tests that encoded the pre-fill were rewritten to the new contract, none deleted (commit 8a1f430)."
+verification: "RED (commit f610b6c): the new real-Ink describe `G-09.1-5: FILTER opens empty` failed before the fix: UAT case `expected 'FILTER: show me how to use z3' to be 'FILTER: type to filter…'`, typed-equals-lbuffer case `expected 'FILTER: smtsmt' to be 'FILTER: smt'`; the empty-lbuffer case passed (neighbour pin); gsd tdd-red-evidence = RED_EVIDENCE_OK. GREEN: the describe passes 3/3 after the fix; tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx and tests/modal-layout.test.ts 120/120 after the rewrites (counts 32/43/41, none dropped); full pnpm test:run, typecheck, lint and build green (09.1-09 SUMMARY). Live re-test pending /gsd-verify-work UAT test 5."
+files_changed:
+  - src/ui/CandidateSelect.tsx
+  - src/ui/modal-layout.ts (comment only)
+  - tests/candidate-select-layout.test.tsx
+  - tests/candidate-select.test.tsx
+  - tests/modal-layout.test.ts
 suggested_fix_direction: "Seed `query` with '' (FILTER empty on open; the placeholder `type to filter…` shows); keep `initialQuery` only for the `queque ›` header and the layout estimator's header row (consider renaming to make that explicit). Remove the zero-match query clears in the arrival block (first-arrival and later-arrival) — they only existed to undo the lbuffer seed and with an empty seed can only ever discard user-typed text; keep the first-arrival selection/toggle reset and the later-arrival keep-highlight-by-candidateKey + WR-06 clamp. Rewrite (not delete) the tests listed in Evidence to the new contract, add a real-Ink regression for the UAT case (lbuffer 'show me how to use z3', type 'smt' during loading -> FILTER: smt, smt rows visible on complete) plus boundary neighbours (empty lbuffer; typed text equal to the lbuffer). Record D-01/D-02 as superseded in planning docs; no zsh instant-frame change needed (its FILTER row is already blank)."
