@@ -1,3 +1,10 @@
+## [0.5.1](https://github.com/k-leumas/queque/compare/v0.5.0...v0.5.1) (2026-10-12)
+
+
+### Bug Fixes
+
+* satisfy biome check ([908978b](https://github.com/k-leumas/queque/commit/908978b7edc4d0c92e97974cf2d8fba349ddb24a))
+
 # [0.5.0](https://github.com/k-leumas/queque/compare/v0.4.2...v0.5.0) (2026-10-12)
 
 
