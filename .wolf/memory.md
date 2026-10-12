@@ -2894,3 +2894,4 @@
 | 17:12 | quick 261012-nlf T1: isNormalStopReason allow list + finalCandidateList; SDK fails closed on every non-normal stop (WR-01-r2) | provider.ts, claude.ts, claude-provider.test.ts | 46/46 green | ~12k |
 | 17:14 | quick 261012-nlf T2: claude -p result stop_reason gate, 'truncated' runner failure + 4 fixture scenarios (WR-01-r2) | stream-json.ts, claude-process.ts, fake-claude-stream.mjs, claude-process.test.ts | 33/33 green | ~10k |
 | 17:17 | quick 261012-nlf T3: claude -p adapter keeps closed rows or throws truncation copy; claude-default pass-through; WR-01-r2 fixed (open 5), bug-331 | claude-cli.ts, claude-default.ts, claude-cli-*.test.ts, 09.1-REVIEW-DISPOSITION.md | 122/122 green | ~15k |
+| 16:56 | 09.1 UAT re-test passed; secure-phase: 31/32 closed, T-09.1-14 (SDK refusal fail-closed) open — user chose fix; ledger WR-01/02 IDs split | 09.1-SECURITY.md | blocked | ~25k |

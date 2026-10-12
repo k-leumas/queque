@@ -5,10 +5,10 @@ current_phase: "09.1"
 current_phase_name: provider-latency-and-cancellation
 status: executing
 stopped_at: Completed 09.1-10-PLAN.md
-last_updated: "2026-10-12T21:58:47.539Z"
+last_updated: "2026-10-12T23:19:42.754Z"
 last_activity: 2026-10-12
 last_activity_desc: Phase 09.1 execution started
-state_head: 8c55fdbb44af0ad19ebd9d1fb92faed3ad7a039d
+state_head: fd0518481ade56fa0f79005a1fdeaf4bda88d75e
 progress:
   total_phases: 12
   completed_phases: 8
@@ -164,10 +164,11 @@ None yet.
 | 261011-f9o | keep the zellij modal at its full-list height while filtering instead of shrinking | 2026-10-11 | 75655cc | [261011-f9o-keep-the-zellij-modal-at-its-full-list-h](./quick/261011-f9o-keep-the-zellij-modal-at-its-full-list-h/) |
 | 261011-jbh | instant first frame from the zsh widget + bundled, compile-cached client (modal no longer blank before loading) | 2026-10-11 | e8e3127 | [261011-jbh-instant-first-frame-from-the-zsh-widget-](./quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/) |
 | 261012-kp1 | rewrite CHANGELOG as user-facing highlights with detailed commits under details; LLM notes from the changeset at release | 2026-10-12 | 47faf6b | [261012-kp1-rewrite-changelog-md-to-user-facing-feat](./quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/) |
+| 261012-nlf | fix T-09.1-14 / WR-01-r2: fail closed on any non-normal SDK or claude -p stop_reason (no prose fallback on truncated text) | 2026-10-12 | fd05184 | [261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-](./quick/261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
+Last activity: 2026-10-12 - Completed quick task 261012-nlf: fail closed on any non-normal SDK or claude -p stop_reason (T-09.1-14)
 
 Last session: 2026-10-12T21:58:47.187Z
 Stopped at: Completed 09.1-10-PLAN.md
