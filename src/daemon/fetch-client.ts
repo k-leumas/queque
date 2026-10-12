@@ -148,20 +148,38 @@ export function requestDaemonFetch(
     client.on('error', (error) => {
       finish(new IpcTransportError(error.message));
     });
+
+    // A daemon that dies or hangs up mid-fetch is a transport failure now, not
+    // after the full fetch timeout.
+    client.on('close', () => {
+      finish(new IpcTransportError('daemon connection closed'));
+    });
   });
 }
 
 /**
  * Fetches candidates from the daemon when it is reachable; otherwise uses the
  * in-process Claude adapter (cold SDK in this process).
+ *
+ * D-16: once a streamed row has been forwarded, a transport failure is rethrown
+ * instead of re-querying in-process; a second query would duplicate the rows
+ * already on screen and pay a second cold provider call.
  */
 export async function fetchCandidatesForUi(
   socketPath: string,
   envelope: ContextEnvelope,
   options: FetchOptions = {},
 ): Promise<CandidateList> {
+  let forwarded = 0;
+  const daemonOptions: FetchOptions = {
+    signal: options.signal,
+    onCandidate: (candidate) => {
+      forwarded++;
+      options.onCandidate?.(candidate);
+    },
+  };
   try {
-    const candidates = await requestDaemonFetch(socketPath, envelope, undefined, options);
+    const candidates = await requestDaemonFetch(socketPath, envelope, undefined, daemonOptions);
     void appendDebugLog('client', 'candidates from daemon', { count: candidates.length });
     return candidates;
   } catch (error) {
@@ -171,6 +189,9 @@ export async function fetchCandidatesForUi(
     if (options.signal?.aborted) {
       // Never start an in-process fallback for a fetch the user already left.
       throw abortError();
+    }
+    if (forwarded > 0) {
+      throw error;
     }
     void appendDebugLog('client', 'daemon fetch fallback', { message: error.message });
     return resolveClaudeDefaultAdapter().fetchCandidates(envelope, options);
