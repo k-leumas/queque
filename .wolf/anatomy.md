@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T04:19:58.960Z
-> Files: 426 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T05:42:46.109Z
+> Files: 445 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -17,11 +17,21 @@
 - `cli-probe.mjs` — Spawns `claude -p` with QueQue's exact argv (src/providers/claude-cli.ts) except the output (~987 tok)
 - `e2e-tmux.py` — End-to-end `??` timing through the REAL zsh widget + client + live daemon (claude -p path). (~692 tok)
 - `ipc-fetch.mjs` — Sends the real `fetch-candidates` IPC (same frame as src/daemon/fetch-client.ts) to a daemon (~726 tok)
+- `p91-raw.mjs` — Phase 09.1 research probe: spawn /usr/local/bin/claude with arbitrary args, optionally write a (~747 tok)
+- `p91-sum.mjs` — Summarize p91-raw dumps: stage times relative to spawn (cold) or stdin write (warm). (~640 tok)
 - `prespawn-probe.mjs` — Measures a PRE-SPAWNED `claude -p` (what a daemon-side warm process would look like): (~907 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/
 
 - `gap-section.md` — Gap-Closure Review: Plan 09-06 (~2914 tok)
+
+## ../../../../tmp/gsd-0911-rev.YNlKgV/
+
+- `artifacts-table.md` (~1498 tok)
+- `crosscheck.py` — ancestors (~1039 tok)
+- `plan03-task2.md` (~791 tok)
+- `splice_tasks.py` — Replace the task blocks of a plan from the <task ...> whose <name> starts with a (~161 tok)
+- `splice.py` — Replace the "## Artifacts this phase produces" section (heading up to <tasks>) (~228 tok)
 
 ## ../../../../tmp/sv-03-reviewfix-9wn1wS/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -431,7 +441,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~5663 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~5961 tok)
 - `STATE.md` — Project State (~2442 tok)
 
 ## .planning/debug/
@@ -586,8 +596,20 @@
 
 ## .planning/phases/09.1-provider-latency-and-cancellation/
 
+- `09.1-01-PLAN.md` — Artifacts this phase produces (~10747 tok)
+- `09.1-02-PLAN.md` — Artifacts this phase produces (~6079 tok)
+- `09.1-03-PLAN.md` — Artifacts this phase produces (~6167 tok)
+- `09.1-04-PLAN.md` — Artifacts this phase produces (~6240 tok)
+- `09.1-05-PLAN.md` — Artifacts this phase produces (~7041 tok)
+- `09.1-06-PLAN.md` — Artifacts this phase produces (~5736 tok)
+- `09.1-07-PLAN.md` — Artifacts this phase produces (~6897 tok)
+- `09.1-08-PLAN.md` — Artifacts this phase produces (~5256 tok)
 - `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
 - `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
+- `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)
+- `09.1-RESEARCH.md` — Phase 09.1: Provider Latency and Cancellation - Research (~17961 tok)
+- `09.1-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2166 tok)
+- `COVERAGE.md` — API Coverage — Anthropic Messages API (TS SDK 0.92.0) and Claude Code print mode (2.1.285) (~681 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 

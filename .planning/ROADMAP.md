@@ -309,13 +309,28 @@ Plans:
    - Esc in the client closes the IPC request.
    - The daemon handles socket `close` and aborts the provider call through an `AbortSignal`: SDK `messages.create({signal})`, and a kill of the `claude -p` child.
    - This also fixes the deferred bug from quick 261011-jbh: Esc during `thinking…` leaves the client running.
+
 **Out of scope:** Switching models (Haiku-class), the API-key SDK path's `.env.local` cwd bug, and prompt caching (~0 gain, measured).
-**Requirements**: TBD
+**Requirements**: TBD (no REQ IDs mapped; coverage target is 09.1-CONTEXT.md D-01..D-17)
 **Depends on:** Phase 9
-**Plans:** 0 plans
+**Plans:** 8 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 09.1 to break down)
+**Wave 1**
+- [ ] 09.1-01-PLAN.md — Tracer: Esc kills the `claude -p` call end to end; stream-json turn with the prompt on stdin resolves on `result`; per-stage turn logs (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 09.1-02-PLAN.md — `--effort low` default with a config.json override; candidates parsed from the stream on the `claude -p` path (wave 2)
+- [ ] 09.1-03-PLAN.md — Streaming IPC: `candidate` messages, `streamCandidates` pong flag, no in-process re-query after rows (wave 2)
+- [ ] 09.1-06-PLAN.md — stream-json runner hardening: UTF-8 parser with carry cap, stderr cap, post-result backstop, every failure path proven against real children (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 09.1-04-PLAN.md — SDK path parity: `messages.stream` with abort signal, streamed candidates, `output_config.effort` (wave 3)
+- [ ] 09.1-05-PLAN.md — One prewarmed `claude -p` in the daemon, matched on cwd and argv, refilled after every query, one cold retry (wave 3)
+- [ ] 09.1-07-PLAN.md — Growing candidate list: steady highlight, spinner row, live filter, one Zellij resize at completion, partial-failure rows (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 09.1-08-PLAN.md — Phase gate: OpenWolf records, full suite and build, manual real-provider latency and cancel UAT (wave 4)
 
 ### Phase 999.1: Model-supplied install package names (BACKLOG)
 
