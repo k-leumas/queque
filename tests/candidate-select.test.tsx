@@ -703,6 +703,23 @@ describe('CandidateSelect — wrapping navigation', () => {
 
     expect(onSelect).toHaveBeenCalledWith('git status', 'see man git');
   });
+
+  it('CR-01: downArrow then Enter on one handler closure (one stdin read) inserts the moved row', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+    const candidates = [
+      { command: 'git status', explanation: '' },
+      { command: 'ls -la', explanation: '' },
+      { command: 'pwd', explanation: '' },
+    ];
+
+    // Ink runs every key event of one read through the same committed handler.
+    CandidateSelect({ candidates, onSelect, onCancel: vi.fn() });
+    capturedInputHandler?.('', { ...zeroKeys, downArrow: true });
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('ls -la', 'see man ls');
+  });
 });
 
 describe('CandidateSelect — missing-tool flag', () => {
@@ -972,6 +989,17 @@ describe('CandidateSelect — Tab install form', () => {
     capturedInputHandler?.('', tab);
     stateCallCount = 0;
     CandidateSelect(props);
+    capturedInputHandler?.('\r', { ...zeroKeys, return: true });
+
+    expect(onSelect).toHaveBeenCalledWith('brew install fd && fd -e ts', 'find ts files');
+  });
+
+  it('CR-01: Tab then Enter on one handler closure (one stdin read) inserts the install form', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const onSelect = vi.fn();
+
+    CandidateSelect({ candidates: [flagged], onSelect, onCancel: vi.fn() });
+    capturedInputHandler?.('', tab);
     capturedInputHandler?.('\r', { ...zeroKeys, return: true });
 
     expect(onSelect).toHaveBeenCalledWith('brew install fd && fd -e ts', 'find ts files');

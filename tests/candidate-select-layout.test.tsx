@@ -1387,6 +1387,93 @@ describe('CR-01: keys that share one stdin read (real hooks)', () => {
       mounted.close();
     }
   });
+
+  const DOWN = '\u001B[B';
+  const DEL = '\u007F';
+  const flaggedRows = (): readonly DisplayCandidate[] =>
+    annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
+  const flaggedForm = flaggedRows()[1]?.install?.form ?? '<row 1 has no install form>';
+
+  // Ink splits a chunk only at escape sequences and DEL/BS bytes; CR and Tab stay inside a
+  // text run (paste rule). So an arrow or a DEL sits between every typed letter, Tab and
+  // Enter below, and the joined chunk reaches the handler as the same key events as mode one.
+  it.each<{
+    name: string;
+    rows: () => readonly DisplayCandidate[];
+    before: readonly string[];
+    keys: readonly string[];
+    expected: string;
+  }>([
+    {
+      name: 'Down then Enter',
+      rows: () => [GIT_STATUS, GIT_LOG, LS_LA],
+      before: [],
+      keys: [DOWN, '\r'],
+      expected: GIT_LOG.command,
+    },
+    {
+      name: 'a typed filter with a correction, then Enter',
+      rows: () => [GIT_STATUS, GIT_LOG, LS_LA],
+      before: [],
+      keys: ['l', 's', 'x', DEL, '\r'],
+      expected: LS_LA.command,
+    },
+    {
+      // Typing resets the highlight to the first visible row (WR-05).
+      name: 'a typed key and a correction after a moved highlight, then Enter',
+      rows: () => [GIT_STATUS, GIT_LOG, LS_LA],
+      before: [DOWN],
+      keys: ['g', 'x', DEL, '\r'],
+      expected: GIT_STATUS.command,
+    },
+    {
+      name: 'Down on a filtered list, then Enter',
+      rows: () => [GIT_STATUS, LS_LA, GIT_LOG],
+      before: [],
+      keys: ['g', DOWN, '\r'],
+      expected: GIT_LOG.command,
+    },
+    {
+      // WR-05 parity: Backspace on an empty filter leaves the highlight.
+      name: 'Backspace on an empty filter keeps a moved highlight',
+      rows: () => [GIT_STATUS, GIT_LOG],
+      before: [],
+      keys: [DOWN, DEL, '\r'],
+      expected: GIT_LOG.command,
+    },
+    {
+      name: 'Down, Tab and a stray Backspace on a flagged row, then Enter',
+      rows: flaggedRows,
+      before: [],
+      keys: [DOWN, '\t', DEL, '\r'],
+      expected: flaggedForm,
+    },
+  ])('CR-01: $name inserts the same row one key per read and in one read', async ({
+    rows,
+    before,
+    keys,
+    expected,
+  }) => {
+    for (const mode of ['one key per read', 'one read'] as const) {
+      const mounted = await mountStream(STREAM_LBUFFER);
+      try {
+        await mounted.arrive(rows(), 'complete');
+        for (const key of before) {
+          await mounted.press(key);
+        }
+        if (mode === 'one read') {
+          await mounted.press(keys.join(''));
+        } else {
+          for (const key of keys) {
+            await mounted.press(key);
+          }
+        }
+        expect(`${mode}: ${mounted.selections.join('|')}`).toBe(`${mode}: ${expected}`);
+      } finally {
+        mounted.close();
+      }
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
