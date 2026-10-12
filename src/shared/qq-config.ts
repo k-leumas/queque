@@ -55,11 +55,19 @@ export type Effort = (typeof EFFORT_LEVELS)[number];
 /** Default effort for Claude turns (D-01). */
 export const DEFAULT_EFFORT: Effort = 'low';
 
-/** RED stub (09.1-02 Task 1): always drops the value until GREEN. */
+/**
+ * Trimmed, case-insensitive effort level. An invalid value becomes undefined (then
+ * DEFAULT_EFFORT) instead of failing the whole file, which would also drop the privacy
+ * and safety patterns. QueQue validates it because Claude Code only warns on stderr for
+ * an unknown `--effort` value and silently uses the account default (`xhigh`).
+ */
 const effortSchema = z
-  .unknown()
-  .transform((): Effort | undefined => undefined)
-  .optional();
+  .preprocess(
+    (value) => (typeof value === 'string' ? value.trim().toLowerCase() : value),
+    z.enum(EFFORT_LEVELS),
+  )
+  .optional()
+  .catch(undefined);
 
 export const qqConfigFileSchema = z.object({
   effort: effortSchema,
@@ -171,15 +179,18 @@ export function loadQqConfig(): ResolvedQqConfig {
     redactLogKeys: new Set(redactKeys),
     allowFileRead,
     destructiveCommandRegexes: compilePatterns(destructivePatterns),
-    effort: DEFAULT_EFFORT,
+    effort: file.effort ?? DEFAULT_EFFORT,
   };
 
   return cachedConfig;
 }
 
-/** RED stub (09.1-02 Task 1): implemented in GREEN. */
+/**
+ * The effort level for Claude turns: config.json `effort`, else `low` (D-01). The config
+ * is cached per process, so a daemon picks up a change only after it restarts.
+ */
 export function resolveEffort(): Effort {
-  throw new Error('resolveEffort: not implemented');
+  return loadQqConfig().effort;
 }
 
 /**

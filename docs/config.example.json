@@ -1,4 +1,5 @@
 {
+  "effort": "low",
   "privacy": {
     "sensitivePathPatterns": ["internal/secrets", "\\.key$"],
     "redactLogKeys": ["lbuffer", "rbuffer"],

@@ -1,6 +1,7 @@
 import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
+import { resolveEffort } from '../shared/qq-config.js';
 import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
 import {
   type ClaudeTurnStage,
@@ -19,8 +20,9 @@ export const CLAUDE_COMMAND = 'claude';
  * `claude -p` argv for one QueQue turn (Phase 09.1, D-04).
  *
  * stream-json in and out (`--output-format stream-json` requires `--verbose` in print
- * mode, Probe 1). No positional prompt: the prompt goes over stdin. No model flag (D-02)
- * and never `--bare` (it skips Keychain/OAuth for `/login` users).
+ * mode, Probe 1). No positional prompt: the prompt goes over stdin. `--effort` comes from
+ * config.json, default `low` (D-01). No model flag (D-02) and never `--bare` (it skips
+ * Keychain/OAuth for `/login` users).
  */
 export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
   return [
@@ -31,6 +33,8 @@ export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
     'stream-json',
     '--verbose',
     '--include-partial-messages',
+    '--effort',
+    resolveEffort(),
     '--safe-mode',
     '--tools',
     '',
