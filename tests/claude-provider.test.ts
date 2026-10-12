@@ -1,4 +1,7 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CommandCandidate } from '../src/contracts/candidates.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import {
@@ -7,9 +10,13 @@ import {
   DEFAULT_MODEL,
   QUEQUE_SYSTEM,
   resetAnthropicClientCache,
+  sdkOutputConfig,
 } from '../src/providers/claude.js';
 import { isAbortError } from '../src/providers/provider.js';
 import { buildSystemPrompt } from '../src/providers/steering.js';
+import { resetQqConfigCache } from '../src/shared/qq-config.js';
+
+const FORBIDDEN_DEBUG = /"args"|"env"|"argv"|"stdout"|"stderr"|apiKey|sk-ant-|sk-|token/i;
 
 const {
   streamMock,
@@ -176,6 +183,33 @@ function providerDebugMessages(): string[] {
   return appendDebugLogMock.mock.calls
     .filter((call) => call[0] === 'provider')
     .map((call) => String(call[1]));
+}
+
+// Every case reads an empty, per-test config dir so the developer's real
+// ~/.config/qq/config.json (effort, privacy patterns) never leaks into these tests.
+let configDir: string;
+let previousConfigFile: string | undefined;
+
+beforeEach(() => {
+  configDir = mkdtempSync(join(tmpdir(), 'qq-sdk-config-'));
+  previousConfigFile = process.env.QQ_CONFIG_FILE;
+  process.env.QQ_CONFIG_FILE = join(configDir, 'config.json');
+  resetQqConfigCache();
+});
+
+afterEach(() => {
+  resetQqConfigCache();
+  if (previousConfigFile === undefined) {
+    delete process.env.QQ_CONFIG_FILE;
+  } else {
+    process.env.QQ_CONFIG_FILE = previousConfigFile;
+  }
+  rmSync(configDir, { recursive: true, force: true });
+});
+
+function writeQqConfig(config: Record<string, unknown>): void {
+  writeFileSync(join(configDir, 'config.json'), JSON.stringify(config));
+  resetQqConfigCache();
 }
 
 function buildEnvelope(extras: ContextEnvelope['extras'] = []): ContextEnvelope {
@@ -507,5 +541,103 @@ describe('SDK streaming request, abort and streamed candidates (D-05, D-13)', ()
     await claudeAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
 
     expect(onCandidate).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('SDK effort as output_config (D-03)', () => {
+  let previousModel: string | undefined;
+
+  beforeEach(() => {
+    previousModel = process.env.QQ_MODEL;
+    process.env.ANTHROPIC_API_KEY = 'test-key';
+    delete process.env.QQ_MODEL;
+    delete process.env.QQ_FORCE_SELECTOR;
+    streamMock.mockReset();
+    anthropicCtorMock.mockClear();
+    appendDebugLogMock.mockClear();
+    readEnvValueFromDotEnvLocalMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
+    resetAnthropicClientCache();
+    streamText(TWO_CANDIDATES);
+  });
+
+  afterEach(() => {
+    if (previousModel === undefined) {
+      delete process.env.QQ_MODEL;
+    } else {
+      process.env.QQ_MODEL = previousModel;
+    }
+  });
+
+  it('sends output_config.effort low on the default model with no config', async () => {
+    await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    const request = streamRequest();
+    expect(request.model).toBe('claude-sonnet-5');
+    expect(request.output_config).toEqual({ effort: 'low' });
+    expect(request).not.toHaveProperty('thinking');
+  });
+
+  it('sends the config.json effort level', async () => {
+    writeQqConfig({ effort: 'high' });
+
+    await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    expect(streamRequest().output_config).toEqual({ effort: 'high' });
+  });
+
+  it.each([
+    'claude-haiku-4-5',
+    'claude-sonnet-4-5',
+  ])('omits output_config when QQ_MODEL=%s rejects effort', async (model) => {
+    process.env.QQ_MODEL = model;
+
+    await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    const request = streamRequest();
+    expect(request.model).toBe(model);
+    expect(request).not.toHaveProperty('output_config');
+  });
+
+  it('keeps output_config when QQ_MODEL names a model with effort support', async () => {
+    process.env.QQ_MODEL = 'claude-opus-5-5';
+
+    await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    expect(streamRequest().output_config).toEqual({ effort: 'low' });
+  });
+
+  it.each([
+    ['claude-sonnet-5', { effort: 'medium' }],
+    ['claude-opus-5-5', { effort: 'medium' }],
+    ['claude-haiku-4-5', undefined],
+    ['claude-sonnet-4-5', undefined],
+    ['claude-3-7-sonnet-latest', undefined],
+    ['claude-sonnet-4-20250514', undefined],
+  ])('sdkOutputConfig(%s, medium) is %o', (model, expected) => {
+    expect(sdkOutputConfig(model, 'medium')).toEqual(expected);
+  });
+
+  it('logs the effort on request start without secrets, argv or env', async () => {
+    writeQqConfig({ effort: 'max' });
+
+    await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    const start = appendDebugLogMock.mock.calls.find(
+      (call) => call[0] === 'provider' && call[1] === 'request start',
+    );
+    expect((start?.[2] as { effort?: string } | undefined)?.effort).toBe('max');
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toMatch(FORBIDDEN_DEBUG);
+  });
+
+  it('logs effort none on request start when the model rejects effort', async () => {
+    process.env.QQ_MODEL = 'claude-haiku-4-5';
+
+    await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    const start = appendDebugLogMock.mock.calls.find(
+      (call) => call[0] === 'provider' && call[1] === 'request start',
+    );
+    expect((start?.[2] as { effort?: string } | undefined)?.effort).toBe('none');
   });
 });

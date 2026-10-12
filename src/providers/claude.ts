@@ -8,6 +8,7 @@ import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
+import type { Effort } from '../shared/qq-config.js';
 import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
 import { abortError, type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
@@ -48,6 +49,11 @@ export async function getAnthropicClient(apiKey: string): Promise<Anthropic> {
  */
 export function resetAnthropicClientCache(): void {
   cachedAnthropic = undefined;
+}
+
+/** TDD RED stub (09.1-04 Task 2): replaced by the effort guard in GREEN. */
+export function sdkOutputConfig(_model: string, _effort: Effort): { effort: Effort } | undefined {
+  throw new Error('sdkOutputConfig is not implemented yet');
 }
 
 function resolveModel(): string {
