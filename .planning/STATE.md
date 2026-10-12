@@ -2,18 +2,18 @@
 gsd_state_version: "1.0"
 milestone: v1.0
 current_phase: "09.1"
-current_phase_name: Provider Latency and Cancellation
+current_phase_name: provider-latency-and-cancellation
 status: executing
-stopped_at: Completed 09.1-08-PLAN.md
-last_updated: "2026-10-12T07:49:49.638Z"
+stopped_at: Completed 09.1-09-PLAN.md
+last_updated: "2026-10-12T20:46:46.417Z"
 last_activity: 2026-10-12
-last_activity_desc: Phase 09.1 execution started
-state_head: 133d1f27158f3bb0634dc04036a91fd9e704448d
+last_activity_desc: Completed 09.1-09 (G-09.1-5 gap closure)
+state_head: f80fca902cdb9805c7b5a26b9b38b53a4d5826df
 progress:
   total_phases: 12
   completed_phases: 8
-  total_plans: 41
-  completed_plans: 37
+  total_plans: 42
+  completed_plans: 38
 milestone_name: milestone
 ---
 
@@ -24,15 +24,15 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-11)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 09.1 — Provider Latency and Cancellation
+**Current focus:** Phase 09.1 — provider-latency-and-cancellation
 
 ## Current Position
 
-Phase: 09.1 (Provider Latency and Cancellation) — EXECUTING
-Plan: 8 of 8
-Next: Verify Phase 09.1 (phase verifier, then end-of-phase UAT with the real claude -p)
-Status: All 8 plans complete — ready for verification
-Last activity: 2026-10-12 — Completed 09.1-08 (phase gate: OpenWolf records, full gate green)
+Phase: 09.1 (provider-latency-and-cancellation) — EXECUTING
+Plan: 9 of 9
+Next: /gsd-verify-work 09.1 — re-test UAT test 5 (G-09.1-5: FILTER opens empty, typed text is the whole filter)
+Status: All 9 plans complete — gap closure 09.1-09 done, UAT test 5 re-test pending
+Last activity: 2026-10-12 — Completed 09.1-09 (G-09.1-5: FILTER opens empty, lbuffer header-only)
 
 Progress: [███████░░░] 73%
 
@@ -72,6 +72,7 @@ Progress: [███████░░░] 73%
 | Phase 09 P04 | 7min | 2 tasks | 9 files |
 | Phase 09 P06 | 17 min | 2 tasks | 11 files |
 | Phase 09.1 P08 | 11min | 2 tasks | 4 files |
+| Phase 09.1 P09 | 8 min | 3 tasks | 12 files |
 
 ## Accumulated Context
 
@@ -118,6 +119,8 @@ Recent decisions affecting current work:
 - [Phase 09]: G-09-7 fix (09-06): render-phase candidate-arrival reset in CandidateSelect (prevCandidates) plus a serialized latest-wins Zellij resize queue; SIGWINCH /dev/tty resize wiring deliberately not done
 - [Phase 09]: RESIZE_SETTLE_TIMEOUT_MS = 2000 (about 5x the slowest measured zellij action); timer unref'd, a hung action is killed and the newest waiting height spawned
 - [Phase 09.1]: 09.1-08: phase OpenWolf records committed once by the gate plan; superseded claude -p advice kept as marked history; bug-270 is the live copy of the bug-206 flake
+- [Phase 09.1]: G-09.1-5: CandidateSelect FILTER query starts empty; the lbuffer is header-only (supersedes 03.1 D-01/D-02); both arrival-time zero-match clears removed
+- [Phase 09.1]: 09.1-09 kept the initialQuery prop name (header and layout estimator only); no run-foreground or zsh widget change
 
 ### Pending Todos
 
@@ -162,6 +165,6 @@ None yet.
 
 Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
 
-Last session: 2026-10-12T07:49:43.448Z
-Stopped at: Completed 09.1-08-PLAN.md
+Last session: 2026-10-12T20:46:46.006Z
+Stopped at: Completed 09.1-09-PLAN.md
 Resume file: None
