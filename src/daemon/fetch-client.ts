@@ -2,6 +2,7 @@ import * as net from 'node:net';
 import type { CandidateList } from '../contracts/candidates.js';
 import { ipcResponseSchema } from '../contracts/ipc.js';
 import type { ContextEnvelope } from '../contracts/request.js';
+import type { FetchOptions } from '../providers/provider.js';
 import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 
@@ -33,6 +34,7 @@ export function requestDaemonFetch(
   socketPath: string,
   envelope: ContextEnvelope,
   timeoutMs: number = FETCH_TIMEOUT_MS,
+  _options: FetchOptions = {},
 ): Promise<CandidateList> {
   return new Promise((resolve, reject) => {
     const client = net.createConnection(socketPath);
@@ -130,6 +132,7 @@ export function requestDaemonFetch(
 export async function fetchCandidatesForUi(
   socketPath: string,
   envelope: ContextEnvelope,
+  _options: FetchOptions = {},
 ): Promise<CandidateList> {
   try {
     const candidates = await requestDaemonFetch(socketPath, envelope);

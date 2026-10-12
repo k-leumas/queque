@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TOOL_HANDOFF_FILES } from '../src/client/tool-handoff.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
+import { abortError } from '../src/providers/provider.js';
 import { CATALOG_SET } from '../src/shared/tool-catalog.js';
 
 // ---------------------------------------------------------------------------
@@ -496,6 +497,41 @@ describe('runForegroundClient', () => {
     expect(parsed.message).toMatch(/ANTHROPIC_API_KEY/);
     expect(parsed.message).not.toMatch(/not wired yet/i);
     expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
+  });
+
+  it('Esc during thinking… writes cancel, aborts the fetch, never rerenders, and resolves (D-13/D-14/D-15)', async () => {
+    let receivedSignal: AbortSignal | undefined;
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          receivedSignal = options?.signal;
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderMock = vi.mocked(render);
+    const renderCallIndex = renderMock.mock.calls.length;
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    // The adapter is still pending: the loading element is on screen.
+    await vi.waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalledTimes(1));
+    const loadingElement = renderMock.mock.calls[renderCallIndex]?.[0] as unknown as {
+      props: { candidates: unknown; onCancel: () => Promise<void> };
+    };
+    const app = renderMock.mock.results[renderCallIndex]?.value as {
+      rerender: ReturnType<typeof vi.fn>;
+    };
+    expect(loadingElement.props.candidates).toBeNull();
+
+    await loadingElement.props.onCancel();
+    await run;
+    // Let the aborted fetch's rejection run through the client's catch handler.
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({ kind: 'cancel' });
+    expect(receivedSignal?.aborted).toBe(true);
+    expect(app.rerender).not.toHaveBeenCalled();
   });
 });
 

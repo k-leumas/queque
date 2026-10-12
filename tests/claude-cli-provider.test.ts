@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import { resetAnthropicClientCache } from '../src/providers/claude.js';
+import type { ClaudeTurnOptions } from '../src/providers/claude-process.js';
+import { abortError, isAbortError } from '../src/providers/provider.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import {
   clearProviderBackends,
@@ -20,6 +22,7 @@ const {
   createMock,
   anthropicCtorMock,
   AnthropicMock,
+  runClaudeTurnMock,
   execFileAsyncMock,
   readEnvValueFromDotEnvLocalMock,
   appendDebugLogMock,
@@ -42,7 +45,8 @@ const {
     createMock,
     anthropicCtorMock,
     AnthropicMock,
-    execFileAsyncMock: vi.fn(),
+    runClaudeTurnMock: vi.fn<(options: ClaudeTurnOptions) => Promise<string>>(),
+    execFileAsyncMock: vi.fn().mockRejectedValue(new Error('claude-exec must not run claude')),
     readEnvValueFromDotEnvLocalMock: vi.fn<(key: string, startDir?: string) => string | null>(),
     appendDebugLogMock: vi.fn().mockResolvedValue(undefined),
   };
@@ -52,9 +56,19 @@ vi.mock('@anthropic-ai/sdk', () => ({
   default: AnthropicMock,
 }));
 
+// Guard: the old argv runner must never spawn the real `claude` from this file.
 vi.mock('../src/providers/claude-exec.js', () => ({
   execFileAsync: execFileAsyncMock,
 }));
+
+// Only runClaudeTurn is replaced; exports added by later plans stay real.
+vi.mock('../src/providers/claude-process.js', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../src/providers/claude-process.js')>();
+  return {
+    ...actual,
+    runClaudeTurn: runClaudeTurnMock,
+  };
+});
 
 vi.mock('../src/shared/env-file.js', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../src/shared/env-file.js')>();
@@ -101,22 +115,32 @@ function gitEnvelopeWithSecretFile(): ContextEnvelope {
 function enoentError(): NodeJS.ErrnoException {
   const err = new Error('spawn claude ENOENT') as NodeJS.ErrnoException;
   err.code = 'ENOENT';
-  return err;
+  return Object.assign(err, { reason: 'spawn-error', sawInit: false });
 }
 
+/** The runner's is-error shape for the recorded auth failure (Probe 3). */
 function loggedOutError(): Error {
   return Object.assign(new Error('Command failed: claude'), {
     code: 1,
+    killed: false,
+    signal: null,
     stdout: 'Not logged in · Please run /login',
     stderr: '',
+    reason: 'is-error',
+    sawInit: true,
   });
 }
 
+/** The runner's budget-timeout shape: QueQue's own flags, not claude's exit 143. */
 function killedError(): Error {
-  return Object.assign(new Error('killed'), {
+  return Object.assign(new Error('Command timed out: claude'), {
     killed: true,
     signal: 'SIGTERM',
     code: null,
+    stdout: '',
+    stderr: '',
+    reason: 'timeout',
+    sawInit: true,
   });
 }
 
@@ -131,22 +155,16 @@ function sdkSuccess(): void {
   });
 }
 
-function spawnArgs(): string[] {
-  return execFileAsyncMock.mock.calls[0]?.[1] as string[];
+function turnOptions(): ClaudeTurnOptions {
+  const options = runClaudeTurnMock.mock.calls[0]?.[0];
+  if (!options) {
+    throw new Error('runClaudeTurn was not called');
+  }
+  return options;
 }
 
-function spawnOptions(): {
-  stdio?: unknown[];
-  cwd?: string;
-  timeout?: number;
-  env?: NodeJS.ProcessEnv;
-} {
-  return (execFileAsyncMock.mock.calls[0]?.[2] ?? {}) as {
-    stdio?: unknown[];
-    cwd?: string;
-    timeout?: number;
-    env?: NodeJS.ProcessEnv;
-  };
+function turnArgv(): string[] {
+  return [...turnOptions().argv];
 }
 
 function debugPaths(): string[] {
@@ -172,7 +190,8 @@ describe('claudeDefaultAdapter', () => {
     delete process.env.QQ_FORCE_SELECTOR;
     createMock.mockReset();
     anthropicCtorMock.mockClear();
-    execFileAsyncMock.mockReset();
+    runClaudeTurnMock.mockReset();
+    execFileAsyncMock.mockClear();
     readEnvValueFromDotEnvLocalMock.mockReset();
     readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
     appendDebugLogMock.mockClear();
@@ -190,74 +209,98 @@ describe('claudeDefaultAdapter', () => {
     }
   });
 
-  it('returns CLI stdout JSON via parseCandidates without calling the SDK', async () => {
-    execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
+  it('returns the result text via parseCandidates without calling the SDK', async () => {
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
-    expect(execFileAsyncMock).toHaveBeenCalled();
+    expect(runClaudeTurnMock).toHaveBeenCalled();
     expect(createMock).not.toHaveBeenCalled();
   });
 
-  it('spawns claude with locked print-mode argv, prompt last, and no --bare', async () => {
-    execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
+  it('runs claude with stream-json argv, the prompt on stdin, and no bare flag', async () => {
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
-    const claudeModule = (await import('../src/providers/claude.js')) as {
-      buildPrompt?: (envelope: ContextEnvelope) => string;
-    };
+    const { buildPrompt } = await import('../src/providers/claude.js');
+    const { buildSystemPrompt } = await import('../src/providers/steering.js');
     const envelope = gitEnvelopeWithSecretFile();
-    const prompt = claudeModule.buildPrompt?.(envelope);
+    const prompt = buildPrompt(envelope);
 
     await claudeDefaultAdapter.fetchCandidates(envelope);
 
-    expect(execFileAsyncMock.mock.calls[0]?.[0]).toBe('claude');
-    const args = spawnArgs();
+    expect(turnOptions().command).toBe('claude');
+    const args = turnArgv();
     expect(args).toContain('-p');
-    expect(args).toContain('--output-format');
-    expect(args).toContain('text');
+    expect(args[args.indexOf('--input-format') + 1]).toBe('stream-json');
+    expect(args[args.indexOf('--output-format') + 1]).toBe('stream-json');
+    expect(args).toContain('--verbose');
+    expect(args).toContain('--include-partial-messages');
     expect(args).toContain('--safe-mode');
-    expect(args).toContain('--tools');
+    expect(args.indexOf('--tools')).toBeGreaterThan(-1);
+    expect(args[args.indexOf('--tools') + 1]).toBe('');
     expect(args).toContain('--no-session-persistence');
-    expect(args).toContain('--system-prompt');
+    expect(args[args.indexOf('--system-prompt') + 1]).toBe(buildSystemPrompt(envelope));
     expect(args).not.toContain('--bare');
-    expect(args[args.indexOf('--output-format') + 1]).toBe('text');
-    expect(args[args.indexOf('--output-format') + 1]).not.toBe('json');
-    expect(prompt).toBeTypeOf('string');
-    expect(args.at(-1)).toBe(prompt);
-    expect(args.at(-1)).toContain('src/index.ts');
-    expect(args.at(-1)).not.toContain('.env');
+    expect(args).not.toContain('--model');
+    expect(args).not.toContain(prompt);
+    expect(turnOptions().prompt).toBe(prompt);
+    expect(turnOptions().prompt).toContain('src/index.ts');
+    expect(turnOptions().prompt).not.toContain('.env');
   });
 
   it('passes buildSystemPrompt(envelope) with installed-tools steering as --system-prompt', async () => {
-    execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
     const { buildSystemPrompt } = await import('../src/providers/steering.js');
     const envelope = buildEnvelope([{ kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } }]);
 
     await claudeDefaultAdapter.fetchCandidates(envelope);
 
-    const args = spawnArgs();
+    const args = turnArgv();
     const systemPrompt = args[args.indexOf('--system-prompt') + 1];
     expect(systemPrompt).toBe(buildSystemPrompt(envelope));
     expect(systemPrompt).toContain('Never include install steps');
     expect(systemPrompt).toContain('fd rg');
-    expect(args.at(-1)).not.toContain('Notable command-line tools');
+    expect(turnOptions().prompt).not.toContain('Notable command-line tools');
   });
 
-  it('ignores stdin, uses envelope cwd, and times out within the remaining budget', async () => {
-    execFileAsyncMock.mockResolvedValue({ stdout: CANDIDATE_JSON, stderr: '' });
+  it('uses the envelope cwd and the remaining budget', async () => {
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
-    const options = spawnOptions();
-    expect(options.stdio?.[0]).toBe('ignore');
-    expect(options.stdio?.[0]).not.toBe('inherit');
+    const options = turnOptions();
     expect(options.cwd).toBe('/repo');
-    expect(options.timeout).toBeLessThanOrEqual(25_000);
+    expect(options.budgetMs).toBeLessThanOrEqual(25_000);
+    expect(options.budgetMs).toBeGreaterThan(24_000);
     expect(options.env).toBe(process.env);
+  });
+
+  it('forwards the abort signal to the runner', async () => {
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const controller = new AbortController();
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { signal: controller.signal });
+
+    expect(turnOptions().signal).toBe(controller.signal);
+  });
+
+  it('re-throws an aborted turn unmapped, never as the D13 or timeout copy', async () => {
+    runClaudeTurnMock.mockRejectedValue(abortError());
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const error = await claudeDefaultAdapter
+      .fetchCandidates(buildEnvelope(), { signal: new AbortController().signal })
+      .catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
+    expect((error as Error).message).not.toMatch(D13_LOGIN);
+    expect((error as Error).message).not.toMatch(/timed out/i);
+    expect(createMock).not.toHaveBeenCalled();
   });
 
   it('uses the SDK and does not spawn when ANTHROPIC_API_KEY is set (D-08)', async () => {
@@ -268,7 +311,7 @@ describe('claudeDefaultAdapter', () => {
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
     expect(createMock).toHaveBeenCalled();
-    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
     const requestOptions = createMock.mock.calls[0]?.[1] as { timeout?: number };
     expect(requestOptions.timeout).toBeLessThanOrEqual(25_000);
     expect(requestOptions.timeout).toBeGreaterThan(24_000);
@@ -276,7 +319,7 @@ describe('claudeDefaultAdapter', () => {
 
   it('uses the SDK and does not spawn when a key is in the environment (D-09)', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
-    execFileAsyncMock.mockRejectedValue(enoentError());
+    runClaudeTurnMock.mockRejectedValue(enoentError());
     sdkSuccess();
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
@@ -284,11 +327,11 @@ describe('claudeDefaultAdapter', () => {
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(createMock).toHaveBeenCalled();
-    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 
   it('throws D-13 copy and skips SDK when CLI is ENOENT and no key exists (D-09, D-13)', async () => {
-    execFileAsyncMock.mockRejectedValue(enoentError());
+    runClaudeTurnMock.mockRejectedValue(enoentError());
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(D13_LOGIN);
@@ -314,7 +357,7 @@ describe('claudeDefaultAdapter', () => {
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(createMock).toHaveBeenCalled();
-    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 
   it('uses a .env.local key without spawning claude (D-09)', async () => {
@@ -328,7 +371,7 @@ describe('claudeDefaultAdapter', () => {
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
     expect(createMock).toHaveBeenCalled();
-    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 
   it('does not import detect.ts, detectProvider, or claudeAuthPresent (D-10)', () => {
@@ -349,15 +392,15 @@ describe('claudeDefaultAdapter', () => {
 
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
-    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
     expect(fetchSpy.mock.calls.some((call) => String(call[0]).includes('localhost:11434'))).toBe(
       false,
     );
     vi.unstubAllGlobals();
   });
 
-  it('throws D-13 copy when CLI fails and no key can rescue', async () => {
-    execFileAsyncMock.mockRejectedValue(loggedOutError());
+  it('throws D-13 copy when the result is_error auth text comes back and no key can rescue', async () => {
+    runClaudeTurnMock.mockRejectedValue(loggedOutError());
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     const error = await claudeDefaultAdapter
@@ -371,8 +414,8 @@ describe('claudeDefaultAdapter', () => {
     expect(createMock).not.toHaveBeenCalled();
   });
 
-  it('throws a timeout-style error when CLI is SIGTERM-killed and no key exists', async () => {
-    execFileAsyncMock.mockRejectedValue(killedError());
+  it('throws a timeout-style error when the turn runs past its budget and no key exists', async () => {
+    runClaudeTurnMock.mockRejectedValue(killedError());
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
     await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
@@ -409,6 +452,6 @@ describe('claudeDefaultAdapter', () => {
     await adapter.fetchCandidates(buildEnvelope());
 
     expect(createMock).toHaveBeenCalled();
-    expect(execFileAsyncMock).not.toHaveBeenCalled();
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 });

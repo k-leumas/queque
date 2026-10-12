@@ -204,6 +204,8 @@ export async function fetchCandidates(
   }
 }
 
+// The SDK adapter takes no options until plan 04 (no signal, no onCandidate): the wrapper
+// forwards only the envelope, so an options object can never land in `rbuffer`.
 export const claudeAdapter: LLMAdapter = {
-  fetchCandidates,
+  fetchCandidates: (envelope) => fetchCandidates(envelope),
 };

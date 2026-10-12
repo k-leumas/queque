@@ -3,6 +3,7 @@ import * as net from 'node:net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import { fetchCandidatesForUi, requestDaemonFetch } from '../src/daemon/fetch-client.js';
+import { abortError, type FetchOptions, isAbortError } from '../src/providers/provider.js';
 
 const { fetchMock } = vi.hoisted(() => ({
   fetchMock: vi.fn(),
@@ -128,6 +129,41 @@ describe('daemon fetch-candidates IPC', () => {
     const started = Date.now();
     await expect(requestDaemonFetch(socketPath, envelope)).rejects.toThrow(/not accepted/);
     expect(Date.now() - started).toBeLessThan(2000);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('aborting after fetch-accepted closes the socket and aborts the adapter signal (D-13)', async () => {
+    let received: AbortSignal | undefined;
+    fetchMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: FetchOptions) =>
+        new Promise((_resolve, reject) => {
+          received = options?.signal;
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+        }),
+    );
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    testServer = await startDaemonServer(socketPath);
+    const controller = new AbortController();
+
+    const pending = requestDaemonFetch(socketPath, buildEnvelope(), undefined, {
+      signal: controller.signal,
+    }).catch((caught: unknown) => caught);
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+    controller.abort();
+
+    expect(isAbortError(await pending)).toBe(true);
+    await vi.waitFor(() => expect(received?.aborted).toBe(true));
+  });
+
+  it('does not fall back to the in-process adapter once the fetch is aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    const error = await fetchCandidatesForUi('/tmp/qq-missing-abort.sock', buildEnvelope(), {
+      signal: controller.signal,
+    }).catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
