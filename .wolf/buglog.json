@@ -4105,6 +4105,294 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T06:14:33.762Z"
+    },
+    {
+      "id": "bug-252",
+      "timestamp": "2026-10-12T06:37:16.605Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "root_cause": "Had '../providers/resolver.js'",
+      "fix": "Changed to '../providers/provider.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:37:16.605Z"
+    },
+    {
+      "id": "bug-253",
+      "timestamp": "2026-10-12T06:40:01.415Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/tests/daemon-fetch.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:40:01.415Z"
+    },
+    {
+      "id": "bug-254",
+      "timestamp": "2026-10-12T06:40:16.365Z",
+      "error_message": "Wrong reference: CATALOG_SET should be abortError",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/tests/client-result.test.ts",
+      "root_cause": "Used \"CATALOG_SET\" instead of \"abortError\"",
+      "fix": "Changed CATALOG_SET → abortError",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:40:16.365Z"
+    },
+    {
+      "id": "bug-255",
+      "timestamp": "2026-10-12T06:40:28.154Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/tests/client-result.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:40:28.154Z"
+    },
+    {
+      "id": "bug-256",
+      "timestamp": "2026-10-12T06:43:08.309Z",
+      "error_message": "Wrong return value",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-default.ts",
+      "root_cause": "Was returning: await fetchClaudeCliCandidates(envelope, remaining",
+      "fix": "Now returns: await fetchClaudeCliCandidates(envelope, remaining",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:43:08.309Z"
+    },
+    {
+      "id": "bug-257",
+      "timestamp": "2026-10-12T06:43:17.494Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 19→31 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:43:17.494Z"
+    },
+    {
+      "id": "bug-258",
+      "timestamp": "2026-10-12T06:43:19.518Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:43:19.518Z"
+    },
+    {
+      "id": "bug-259",
+      "timestamp": "2026-10-12T06:43:21.091Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "root_cause": "Had ';\n      void appendDebugLog('",
+      "fix": "Changed to ';\n      const connectionAbort = new AbortControll",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:43:21.091Z"
+    },
+    {
+      "id": "bug-260",
+      "timestamp": "2026-10-12T06:43:29.757Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: signal?.addEventListener('abort', onAbort, { once: true }); | Also: options: FetchOptions = {},; const candidates = await requestDaemonFetch(socketPath, enve",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-10-12T06:43:36.736Z"
+    },
+    {
+      "id": "bug-261",
+      "timestamp": "2026-10-12T06:43:50.319Z",
+      "error_message": "Missing guard clause",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "root_cause": "No early return/throw for edge case: resolved",
+      "fix": "Added guard clause: if (resolved)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:43:50.319Z"
+    },
+    {
+      "id": "bug-262",
+      "timestamp": "2026-10-12T06:43:58.766Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/cli/main.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:43:58.766Z"
+    },
+    {
+      "id": "bug-263",
+      "timestamp": "2026-10-12T06:44:00.439Z",
+      "error_message": "Wrong reference: execFileAsyncMock should be readEnvValueFromDotEnvLocalMock",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "root_cause": "Used \"execFileAsyncMock\" instead of \"readEnvValueFromDotEnvLocalMock\"",
+      "fix": "Changed execFileAsyncMock → readEnvValueFromDotEnvLocalMock",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:44:00.439Z"
+    },
+    {
+      "id": "bug-264",
+      "timestamp": "2026-10-12T06:46:12.267Z",
+      "error_message": "Missing error handling in playStages",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:46:12.267Z"
+    },
+    {
+      "id": "bug-265",
+      "timestamp": "2026-10-12T06:47:05.692Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-cli.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:47:05.692Z"
+    },
+    {
+      "id": "bug-266",
+      "timestamp": "2026-10-12T06:49:10.812Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4→5 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:49:10.812Z"
+    },
+    {
+      "id": "bug-267",
+      "timestamp": "2026-10-12T06:49:18.658Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "root_cause": "Had `server.ts`",
+      "fix": "Changed to `requestDaemonFetch(…, timeoutMs?, options?)`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T06:49:34.321Z"
+    },
+    {
+      "id": "bug-268",
+      "timestamp": "2026-10-12T06:49:23.045Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:49:23.045Z"
+    },
+    {
+      "id": "bug-269",
+      "timestamp": "2026-10-12T06:49:45.474Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-ad6a431a4e19000a0/.wolf/cerebrum.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:49:45.474Z"
     }
   ]
 }

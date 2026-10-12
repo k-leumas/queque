@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T06:14:33.738Z
-> Files: 445 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T06:51:48.630Z
+> Files: 463 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -377,6 +377,48 @@
 ## .claude/worktrees/agent-accab398/tests/
 
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~2156 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-01-SUMMARY.md` — Phase 09.1 Plan 01: Cancellable stream-json claude -p turn Summary (~4826 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/.wolf/
+
+- `anatomy.md` — anatomy.md (~15102 tok)
+- `cerebrum.md` — Cerebrum (~9939 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/cli/
+
+- `main.ts` — Exports main (~1322 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~5020 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/
+
+- `fetch-client.ts` — How long to wait for `{kind:'fetch-accepted'}` before treating the daemon as stale. (~1455 tok)
+- `server.ts` — Starts the daemon Unix-socket server. (~1614 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/providers/
+
+- `claude-cli.ts` — The Claude Code binary, resolved on PATH. (~918 tok)
+- `claude-default.ts` — Returns milliseconds left before `deadline`, floored at zero. (~1131 tok)
+- `claude-process.ts` — One `claude -p` stream-json turn on a child process (Phase 09.1, D-04, D-13). (~2440 tok)
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~2046 tok)
+- `provider.ts` — Per-call options shared by every adapter (Phase 09.1). (~341 tok)
+- `stream-json.ts` — Pure helpers for `claude -p --input-format stream-json --output-format stream-json (~846 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/tests/
+
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~6155 tok)
+- `claude-process.test.ts` — ClaudeTurnFailure: scratchDir, startTurn, stageNames (~1636 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~10922 tok)
+- `daemon-fetch.test.ts` — FetchOptions: buildEnvelope (~2064 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/tests/fixtures/
+
+- `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~1827 tok)
 
 ## .claude/worktrees/agent-adabf5a43d4a36218/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
 

@@ -141,6 +141,71 @@
       "count": 1,
       "tokens": 2166,
       "first_read": "2026-10-12T06:04:20.571Z"
+    },
+    "/Users/samuel/.claude/gsd-core/workflows/execute-phase.md": {
+      "count": 3,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:20:07.226Z"
+    },
+    "/Users/samuel/.claude/gsd-core/workflows/execute-plan.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:08.467Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/09.1-01-PLAN.md": {
+      "count": 1,
+      "tokens": 12953,
+      "first_read": "2026-10-12T06:32:08.852Z"
+    },
+    "/Users/samuel/.claude/gsd-core/references/tdd.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:12.768Z"
+    },
+    "/Users/samuel/.claude/gsd-core/references/worktree-path-safety.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:13.118Z"
+    },
+    "/Users/samuel/.claude/gsd-core/templates/summary.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:13.415Z"
+    },
+    "/Users/samuel/.claude/gsd-core/references/checkpoints.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:21.885Z"
+    },
+    "/Users/samuel/.claude/gsd-core/references/executor-examples.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:22.103Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/cerebrum.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:32:48.478Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.claude/skills/spike-findings-tui-llm/SKILL.md": {
+      "count": 1,
+      "tokens": 585,
+      "first_read": "2026-10-12T06:32:48.513Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/09.1-RESEARCH.md": {
+      "count": 4,
+      "tokens": 17961,
+      "first_read": "2026-10-12T06:32:57.561Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/client-result.test.ts": {
+      "count": 1,
+      "tokens": 10435,
+      "first_read": "2026-10-12T06:40:18.987Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-12T06:48:58.143Z"
     }
   },
   "files_written": [
@@ -521,6 +586,342 @@
       "action": "edit",
       "tokens": 627,
       "at": "2026-10-12T06:14:33.758Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/fixtures/fake-claude-stream.mjs",
+      "action": "create",
+      "tokens": 1958,
+      "at": "2026-10-12T06:36:47.918Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/provider.ts",
+      "action": "create",
+      "tokens": 334,
+      "at": "2026-10-12T06:36:58.951Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/stream-json.ts",
+      "action": "create",
+      "tokens": 340,
+      "at": "2026-10-12T06:37:03.239Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-process.ts",
+      "action": "create",
+      "tokens": 555,
+      "at": "2026-10-12T06:37:10.321Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-10-12T06:37:14.623Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 38,
+      "at": "2026-10-12T06:37:16.601Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-10-12T06:37:22.300Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-process.test.ts",
+      "action": "create",
+      "tokens": 1636,
+      "at": "2026-10-12T06:38:38.772Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/provider.ts",
+      "action": "edit",
+      "tokens": 27,
+      "at": "2026-10-12T06:38:43.756Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude.ts",
+      "action": "edit",
+      "tokens": 80,
+      "at": "2026-10-12T06:38:45.657Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "create",
+      "tokens": 4793,
+      "at": "2026-10-12T06:39:52.783Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/daemon-fetch.test.ts",
+      "action": "edit",
+      "tokens": 432,
+      "at": "2026-10-12T06:40:01.410Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/daemon-fetch.test.ts",
+      "action": "edit",
+      "tokens": 52,
+      "at": "2026-10-12T06:40:03.274Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 43,
+      "at": "2026-10-12T06:40:16.360Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/client-result.test.ts",
+      "action": "edit",
+      "tokens": 543,
+      "at": "2026-10-12T06:40:28.147Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/stream-json.ts",
+      "action": "create",
+      "tokens": 846,
+      "at": "2026-10-12T06:42:24.680Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-process.ts",
+      "action": "create",
+      "tokens": 2440,
+      "at": "2026-10-12T06:42:51.752Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-cli.ts",
+      "action": "create",
+      "tokens": 632,
+      "at": "2026-10-12T06:43:03.873Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-default.ts",
+      "action": "edit",
+      "tokens": 43,
+      "at": "2026-10-12T06:43:05.772Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-default.ts",
+      "action": "edit",
+      "tokens": 99,
+      "at": "2026-10-12T06:43:08.305Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-default.ts",
+      "action": "edit",
+      "tokens": 24,
+      "at": "2026-10-12T06:43:09.674Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "action": "edit",
+      "tokens": 416,
+      "at": "2026-10-12T06:43:17.489Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "action": "edit",
+      "tokens": 80,
+      "at": "2026-10-12T06:43:19.513Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "action": "edit",
+      "tokens": 42,
+      "at": "2026-10-12T06:43:21.085Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts",
+      "action": "edit",
+      "tokens": 103,
+      "at": "2026-10-12T06:43:23.310Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 226,
+      "at": "2026-10-12T06:43:29.751Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 53,
+      "at": "2026-10-12T06:43:31.742Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 203,
+      "at": "2026-10-12T06:43:36.728Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts",
+      "action": "edit",
+      "tokens": 21,
+      "at": "2026-10-12T06:43:38.203Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 108,
+      "at": "2026-10-12T06:43:43.289Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 55,
+      "at": "2026-10-12T06:43:45.208Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 51,
+      "at": "2026-10-12T06:43:46.756Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 29,
+      "at": "2026-10-12T06:43:48.366Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 81,
+      "at": "2026-10-12T06:43:50.313Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 74,
+      "at": "2026-10-12T06:43:52.359Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts",
+      "action": "edit",
+      "tokens": 32,
+      "at": "2026-10-12T06:43:54.072Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/cli/main.ts",
+      "action": "edit",
+      "tokens": 88,
+      "at": "2026-10-12T06:43:58.761Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "edit",
+      "tokens": 16,
+      "at": "2026-10-12T06:44:00.434Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "edit",
+      "tokens": 23,
+      "at": "2026-10-12T06:44:02.345Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "edit",
+      "tokens": 0,
+      "at": "2026-10-12T06:44:04.292Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "edit",
+      "tokens": 10,
+      "at": "2026-10-12T06:44:05.849Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "edit",
+      "tokens": 1473,
+      "at": "2026-10-12T06:46:12.256Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts",
+      "action": "edit",
+      "tokens": 36,
+      "at": "2026-10-12T06:46:13.832Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-cli.ts",
+      "action": "edit",
+      "tokens": 362,
+      "at": "2026-10-12T06:47:05.686Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-cli.ts",
+      "action": "edit",
+      "tokens": 73,
+      "at": "2026-10-12T06:47:07.466Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 537,
+      "at": "2026-10-12T06:49:10.806Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 204,
+      "at": "2026-10-12T06:49:14.793Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 187,
+      "at": "2026-10-12T06:49:18.653Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 92,
+      "at": "2026-10-12T06:49:21.444Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 40,
+      "at": "2026-10-12T06:49:23.039Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 190,
+      "at": "2026-10-12T06:49:26.837Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 61,
+      "at": "2026-10-12T06:49:28.803Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 58,
+      "at": "2026-10-12T06:49:30.813Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 167,
+      "at": "2026-10-12T06:49:34.314Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.wolf/cerebrum.md",
+      "action": "edit",
+      "tokens": 587,
+      "at": "2026-10-12T06:49:45.470Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/09.1-01-SUMMARY.md",
+      "action": "create",
+      "tokens": 5516,
+      "at": "2026-10-12T06:51:48.664Z"
     }
   ],
   "edit_counts": {
@@ -531,11 +932,29 @@
     ".planning/phases/09.1-provider-latency-and-cancellation/09.1-05-PLAN.md": 7,
     ".planning/phases/09.1-provider-latency-and-cancellation/09.1-06-PLAN.md": 6,
     ".planning/phases/09.1-provider-latency-and-cancellation/09.1-07-PLAN.md": 9,
-    ".planning/phases/09.1-provider-latency-and-cancellation/09.1-08-PLAN.md": 7
+    ".planning/phases/09.1-provider-latency-and-cancellation/09.1-08-PLAN.md": 7,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/tests/fixtures/fake-claude-stream.mjs": 1,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/provider.ts": 2,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/stream-json.ts": 2,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-process.ts": 2,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/fetch-client.ts": 7,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-process.test.ts": 1,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude.ts": 1,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/tests/claude-cli-provider.test.ts": 7,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/tests/daemon-fetch.test.ts": 2,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/tests/client-result.test.ts": 2,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-cli.ts": 3,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/providers/claude-default.ts": 3,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/server.ts": 4,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/client/run-foreground.ts": 7,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/src/cli/main.ts": 1,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md": 9,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/.wolf/cerebrum.md": 1,
+    ".claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/09.1-01-SUMMARY.md": 1
   },
-  "anatomy_hits": 22,
-  "anatomy_misses": 5,
-  "repeated_reads_warned": 14,
+  "anatomy_hits": 26,
+  "anatomy_misses": 14,
+  "repeated_reads_warned": 19,
   "cerebrum_warnings": 0,
-  "stop_count": 6
+  "stop_count": 8
 }
