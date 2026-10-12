@@ -141,13 +141,53 @@ describe('daemon bootstrap', () => {
     }
   });
 
-  it('keeps a live daemon whose pong has both capabilities', async () => {
-    testServer = net.createServer((socket) => {
+  it('replaces a live daemon whose pong lacks streamCandidates', async () => {
+    // Pre-09.1 daemon: accepts installed-tools envelopes but never streams
+    // `candidate` messages to a `stream: true` client.
+    const legacyServer = net.createServer((socket) => {
       socket.on('data', (chunk) => {
         const line = chunk.toString();
         if (line.includes('"ping"')) {
           socket.write(
             `${JSON.stringify({ kind: 'pong', fetchCandidates: true, installedTools: true })}\n`,
+          );
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      legacyServer.listen(socketPath, () => resolve());
+      legacyServer.once('error', reject);
+    });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+    try {
+      await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+    } finally {
+      legacyServer.close();
+      legacyServer.unref();
+    }
+  });
+
+  it('keeps a live daemon whose pong has all three capabilities', async () => {
+    testServer = net.createServer((socket) => {
+      socket.on('data', (chunk) => {
+        const line = chunk.toString();
+        if (line.includes('"ping"')) {
+          socket.write(
+            `${JSON.stringify({
+              kind: 'pong',
+              fetchCandidates: true,
+              installedTools: true,
+              streamCandidates: true,
+            })}\n`,
           );
         }
       });
@@ -248,6 +288,7 @@ describe('daemon server', () => {
       kind: 'pong',
       fetchCandidates: true,
       installedTools: true,
+      streamCandidates: true,
     });
   });
 });

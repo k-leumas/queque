@@ -1,12 +1,18 @@
 import * as fs from 'node:fs';
 import * as net from 'node:net';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { CommandCandidate } from '../src/contracts/candidates.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
-import { fetchCandidatesForUi, requestDaemonFetch } from '../src/daemon/fetch-client.js';
+import {
+  fetchCandidatesForUi,
+  IpcTransportError,
+  requestDaemonFetch,
+} from '../src/daemon/fetch-client.js';
 import { abortError, type FetchOptions, isAbortError } from '../src/providers/provider.js';
 
-const { fetchMock } = vi.hoisted(() => ({
+const { fetchMock, appendDebugLogMock } = vi.hoisted(() => ({
   fetchMock: vi.fn(),
+  appendDebugLogMock: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('../src/providers/resolver.js', () => ({
@@ -15,6 +21,74 @@ vi.mock('../src/providers/resolver.js', () => ({
   }),
   resolveAdapter: vi.fn(),
 }));
+
+vi.mock('../src/shared/debug-log.js', () => ({
+  appendDebugLog: appendDebugLogMock,
+}));
+
+const ROW_A: CommandCandidate = { command: 'git status', explanation: 'Show status' };
+const ROW_B: CommandCandidate = { command: 'git log', explanation: 'Show history' };
+const ROW_C: CommandCandidate = { command: 'git diff', explanation: 'Show changes' };
+
+type RawMessage = { kind: string; [key: string]: unknown };
+
+/** Sends one raw request and collects every reply until `candidates` or `fetch-error`. */
+function rawFetch(socketPath: string, request: unknown): Promise<RawMessage[]> {
+  return new Promise((resolve, reject) => {
+    const messages: RawMessage[] = [];
+    let buf = '';
+    const client = net.createConnection(socketPath, () => {
+      client.write(`${JSON.stringify(request)}\n`);
+    });
+    client.setEncoding('utf8');
+    client.on('data', (chunk) => {
+      buf += String(chunk);
+      let nl = buf.indexOf('\n');
+      while (nl !== -1) {
+        const line = buf.slice(0, nl);
+        buf = buf.slice(nl + 1);
+        nl = buf.indexOf('\n');
+        const message = JSON.parse(line) as RawMessage;
+        messages.push(message);
+        if (message.kind === 'candidates' || message.kind === 'fetch-error') {
+          client.destroy();
+          resolve(messages);
+          return;
+        }
+      }
+    });
+    client.on('error', reject);
+  });
+}
+
+/** A scripted listener: on `fetch-candidates` it runs `script` against the socket. */
+function scriptedListener(
+  socketPath: string,
+  script: (socket: net.Socket) => void,
+): Promise<net.Server> {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer((socket) => {
+      let started = false;
+      socket.on('data', (chunk) => {
+        if (!started && chunk.toString().includes('"fetch-candidates"')) {
+          started = true;
+          script(socket);
+        }
+      });
+      socket.on('error', () => {
+        // the client may hang up first
+      });
+    });
+    server.listen(socketPath, () => resolve(server));
+    server.once('error', reject);
+  });
+}
+
+function loggedStages(scope: string): Array<{ message: string; details: unknown }> {
+  return appendDebugLogMock.mock.calls
+    .filter((call) => call[0] === scope)
+    .map((call) => ({ message: call[1] as string, details: call[2] }));
+}
 
 function buildEnvelope(): ContextEnvelope {
   return {
@@ -39,6 +113,7 @@ describe('daemon fetch-candidates IPC', () => {
     const suffix = Math.random().toString(36).slice(2);
     socketPath = `/tmp/qq-fetch-${suffix}.sock`;
     fetchMock.mockReset();
+    appendDebugLogMock.mockClear();
   });
 
   afterEach(() => {
@@ -179,5 +254,167 @@ describe('daemon fetch-candidates IPC', () => {
     const started = Date.now();
     await expect(requestDaemonFetch(socketPath, buildEnvelope())).rejects.toThrow(/not accepted/);
     expect(Date.now() - started).toBeLessThan(2000);
+  });
+
+  describe('streamed candidates (D-05)', () => {
+    it('writes one candidate message per streamed row, then the final candidates list', async () => {
+      fetchMock.mockImplementation(async (_envelope: ContextEnvelope, options?: FetchOptions) => {
+        options?.onCandidate?.(ROW_A);
+        options?.onCandidate?.(ROW_B);
+        return [ROW_A, ROW_B];
+      });
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const messages = await rawFetch(socketPath, {
+        kind: 'fetch-candidates',
+        envelope: buildEnvelope(),
+        stream: true,
+      });
+
+      expect(messages.map((m) => m.kind)).toEqual([
+        'fetch-accepted',
+        'candidate',
+        'candidate',
+        'candidates',
+      ]);
+      // Invariant: every streamed row precedes the done signal and matches the head of the list.
+      const streamed = messages.filter((m) => m.kind === 'candidate').map((m) => m.candidate);
+      expect(streamed).toEqual([ROW_A, ROW_B]);
+      const final = messages.at(-1)?.candidates as CommandCandidate[];
+      expect(final.slice(0, streamed.length)).toEqual(streamed);
+    });
+
+    it('keeps one candidates reply and no onCandidate for a request without stream', async () => {
+      let received: FetchOptions | undefined;
+      fetchMock.mockImplementation(async (_envelope: ContextEnvelope, options?: FetchOptions) => {
+        received = options;
+        options?.onCandidate?.(ROW_A);
+        return [ROW_A];
+      });
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const messages = await rawFetch(socketPath, {
+        kind: 'fetch-candidates',
+        envelope: buildEnvelope(),
+      });
+
+      expect(messages.map((m) => m.kind)).toEqual(['fetch-accepted', 'candidates']);
+      expect(received?.signal).toBeInstanceOf(AbortSignal);
+      expect(received?.onCandidate).toBeUndefined();
+    });
+
+    it('requestDaemonFetch forwards each streamed row to onCandidate before it resolves', async () => {
+      fetchMock.mockImplementation(async (_envelope: ContextEnvelope, options?: FetchOptions) => {
+        options?.onCandidate?.(ROW_A);
+        options?.onCandidate?.(ROW_B);
+        return [ROW_A, ROW_B];
+      });
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+      const recorded: CommandCandidate[] = [];
+
+      const candidates = await requestDaemonFetch(socketPath, buildEnvelope(), undefined, {
+        onCandidate: (candidate) => recorded.push(candidate),
+      }).then((list) => {
+        expect(recorded).toEqual([ROW_A, ROW_B]);
+        return list;
+      });
+
+      expect(candidates).toEqual([ROW_A, ROW_B]);
+    });
+
+    it('writes nothing and logs candidate dropped for a row reported after the client left (D-14)', async () => {
+      let received: FetchOptions | undefined;
+      let release: ((list: CommandCandidate[]) => void) | undefined;
+      fetchMock.mockImplementation(
+        (_envelope: ContextEnvelope, options?: FetchOptions) =>
+          new Promise<CommandCandidate[]>((resolve) => {
+            received = options;
+            release = resolve;
+          }),
+      );
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const client = net.createConnection(socketPath, () => {
+        client.write(
+          `${JSON.stringify({ kind: 'fetch-candidates', envelope: buildEnvelope(), stream: true })}\n`,
+        );
+      });
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+      client.destroy();
+      await vi.waitFor(() => expect(received?.signal?.aborted).toBe(true));
+
+      expect(received?.onCandidate).toBeTypeOf('function');
+      expect(() => received?.onCandidate?.(ROW_C)).not.toThrow();
+      release?.([ROW_C]);
+
+      await vi.waitFor(() =>
+        expect(loggedStages('daemon').map((s) => s.message)).toContain('candidate dropped'),
+      );
+      const dropped = loggedStages('daemon').find((s) => s.message === 'candidate dropped');
+      expect(dropped?.details).toEqual({ index: expect.any(Number) });
+      expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('git diff');
+      expect(loggedStages('daemon').map((s) => s.message)).not.toContain('replied candidate');
+    });
+
+    it('keeps a multi-byte character intact when a candidate is split across socket reads', async () => {
+      const row: CommandCandidate = { command: 'z3 -h', explanation: 'ⓘ shows z3 help' };
+      const line = Buffer.from(`${JSON.stringify({ kind: 'candidate', candidate: row })}\n`);
+      const split = line.indexOf(Buffer.from('ⓘ')) + 1; // inside the 3-byte sequence
+      testServer = await scriptedListener(socketPath, (socket) => {
+        socket.write(`${JSON.stringify({ kind: 'fetch-accepted' })}\n`);
+        socket.write(line.subarray(0, split));
+        setTimeout(() => {
+          socket.write(line.subarray(split));
+          socket.write(`${JSON.stringify({ kind: 'candidates', candidates: [row] })}\n`);
+        }, 30);
+      });
+      const recorded: CommandCandidate[] = [];
+
+      const candidates = await requestDaemonFetch(socketPath, buildEnvelope(), undefined, {
+        onCandidate: (candidate) => recorded.push(candidate),
+      });
+
+      expect(recorded).toEqual([row]);
+      expect(candidates).toEqual([row]);
+    });
+
+    it('rejects a candidate message with an empty command as a transport error', async () => {
+      testServer = await scriptedListener(socketPath, (socket) => {
+        socket.write(`${JSON.stringify({ kind: 'fetch-accepted' })}\n`);
+        socket.write(
+          `${JSON.stringify({ kind: 'candidate', candidate: { command: '', explanation: 'x' } })}\n`,
+        );
+      });
+
+      const error = await requestDaemonFetch(socketPath, buildEnvelope()).catch(
+        (caught: unknown) => caught,
+      );
+
+      expect(error).toBeInstanceOf(IpcTransportError);
+    });
+
+    it('sends stream: true on the fetch-candidates request', async () => {
+      let request: Record<string, unknown> | undefined;
+      testServer = await new Promise<net.Server>((resolve, reject) => {
+        const server = net.createServer((socket) => {
+          socket.on('data', (chunk) => {
+            request = JSON.parse(chunk.toString().split('\n')[0] ?? '{}');
+            socket.write(`${JSON.stringify({ kind: 'fetch-accepted' })}\n`);
+            socket.write(`${JSON.stringify({ kind: 'candidates', candidates: [ROW_A] })}\n`);
+          });
+        });
+        server.listen(socketPath, () => resolve(server));
+        server.once('error', reject);
+      });
+
+      await requestDaemonFetch(socketPath, buildEnvelope());
+
+      expect(request?.kind).toBe('fetch-candidates');
+      expect(request?.stream).toBe(true);
+    });
   });
 });
