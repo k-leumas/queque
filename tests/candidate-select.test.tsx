@@ -262,6 +262,32 @@ describe('CandidateSelect — selectedIndex reset on query change', () => {
     capturedInputHandler?.('', { ...zeroKeys, backspace: true });
     expect(stateValues[0]).toBe(1);
   });
+
+  it('CR-01: typed text and Backspace on one handler closure (one stdin read) compose', async () => {
+    const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
+    const props = {
+      candidates: [
+        { command: 'git status', explanation: '' },
+        { command: 'ls -la', explanation: '' },
+      ],
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    };
+    const backspace = { ...zeroKeys, backspace: true };
+
+    // Ink runs every key event of one read through the same committed handler.
+    CandidateSelect(props);
+    capturedInputHandler?.('ab', zeroKeys);
+    capturedInputHandler?.('', backspace);
+    capturedInputHandler?.('', backspace);
+    expect(stateValues[1]).toBe('');
+
+    resetState();
+    CandidateSelect(props);
+    capturedInputHandler?.('a', zeroKeys);
+    capturedInputHandler?.('', backspace);
+    expect(stateValues[1]).toBe('');
+  });
 });
 
 describe('CandidateSelect — zero-match after filter', () => {

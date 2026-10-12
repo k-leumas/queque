@@ -2870,3 +2870,10 @@
 | 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | inline fix | ~56 |
 | 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | inline fix | ~63 |
 | 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | "useInput" → "smt" | ~78 |
+| 15:29 | Session end: 72 writes across 23 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 50 reads | ~259451 tok |
+| 15:31 | Session end: 72 writes across 23 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 51 reads | ~259451 tok |
+| 15:38 | Session end: 72 writes across 23 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 51 reads | ~259451 tok |
+| 15:39 | Edited tests/candidate-select-layout.test.tsx | added 1 condition(s) | ~1007 |
+| 15:39 | Edited tests/candidate-select.test.tsx | expanded (+26 lines) | ~288 |
+| 15:39 | Created ../../../../tmp/gsd-0911-10-wolf.py | — | ~831 |
+| 15:39 | 09.1-10 T1 RED: CR-01 one-chunk Backspace tests (real-hooks describe + mocked same-closure case) fail as planned (FILTER: ab / a / smtx; 'ab') | tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx | RED | ~3000 |

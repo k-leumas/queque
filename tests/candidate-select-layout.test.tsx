@@ -1299,6 +1299,97 @@ describe('G-09.1-5: FILTER opens empty; the lbuffer is only the header (real hoo
 });
 
 // ---------------------------------------------------------------------------
+// CR-01 (09.1 review): Ink 7 parses one stdin read into several key events (each text run,
+// each escape sequence, each DEL/BS byte) and runs them back to back through useInput before
+// React renders. Keys that share one read must compose exactly like keys sent one per read.
+// Each `press` below is ONE stdin.push, so a multi-key string models one coalesced read.
+// ---------------------------------------------------------------------------
+
+describe('CR-01: keys that share one stdin read (real hooks)', () => {
+  const savedEnv: Partial<Record<(typeof ENV_KEYS)[number], string>> = {};
+  const [smtRow] = RAW_CANDIDATES as [CommandCandidate, CommandCandidate, CommandCandidate];
+
+  beforeEach(() => {
+    for (const key of ENV_KEYS) {
+      savedEnv[key] = process.env[key];
+      delete process.env[key];
+    }
+    spawnMock.mockReset();
+    spawnMock.mockImplementation(() => fakeChild());
+    resetZellijPaneHeightCache();
+  });
+
+  afterEach(() => {
+    for (const key of ENV_KEYS) {
+      const value = savedEnv[key];
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    resetZellijPaneHeightCache();
+  });
+
+  it('CR-01: `ab` and two Backspaces in one read bring back the placeholder and the full list', async () => {
+    const mounted = await mountStream(LBUFFER);
+    try {
+      await mounted.arrive(RAW_CANDIDATES, 'complete');
+      await mounted.press('ab\u007F\u007F');
+      expect(filterLine(mounted.stdout.writes)).toBe(FILTER_PLACEHOLDER);
+      const frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(smtRow.command);
+      expect(frame).toContain('declare-const');
+      expect(frame).toContain('python3');
+      expect(frame).not.toContain('no matches');
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([smtRow.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('CR-01: `a` and one Backspace in one read leave FILTER empty', async () => {
+    const mounted = await mountStream(LBUFFER);
+    try {
+      await mounted.arrive(RAW_CANDIDATES, 'complete');
+      await mounted.press('a\u007F');
+      expect(filterLine(mounted.stdout.writes)).toBe(FILTER_PLACEHOLDER);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('CR-01: a filter edited inside one read while rows stream in is exactly what is left', async () => {
+    const mounted = await mountStream(LBUFFER);
+    try {
+      // While `thinking…` shows (no rows yet).
+      await mounted.press('smtx\u007F');
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      await mounted.arrive([RAW_CANDIDATES[1] as CommandCandidate], 'arriving');
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      // Between arrivals.
+      await mounted.press('q\u007F');
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      await mounted.arrive(RAW_CANDIDATES, 'complete');
+      const frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(smtRow.command);
+      expect(frame).not.toContain('python3');
+      expect(frame).not.toContain('no matches');
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([smtRow.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Instant frame takeover (quick 261011-jbh, LD-1): the zsh widget paints the header and a
 // loading row before Node starts; Ink's first frame must replace them in place. The widget
 // bytes come from the real widget (spawnSync zsh), the frame from a real Ink render.
