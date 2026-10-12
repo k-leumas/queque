@@ -2769,3 +2769,4 @@
 | 02:32 | Fixed 09.1 WR-05: query reset moved from [query] effect into key handlers; mocked + real-hooks tests | src/ui/CandidateSelect.tsx, tests/candidate-select*.tsx | fixed | ~4k |
 | 02:33 | Fixed 09.1 WR-06: arrow keys no-op on empty visible list + clamp arrival index; real-hooks tests | src/ui/CandidateSelect.tsx, tests/candidate-select-layout.test.tsx | fixed | ~3k |
 | 02:35 | Fixed 09.1 WR-07: SDK max_tokens 16000 + fail closed on max_tokens truncation; 3 tests | src/providers/claude.ts, tests/claude-provider.test.ts | fixed | ~4k |
+| 02:37 | 09.1 review-fix pass: WR-01..WR-07 fixed (7 commits), WR-08 skipped (CR-005 socket auth out of scope); typecheck/lint/738 tests green | src/, tests/ | done | ~60k |
