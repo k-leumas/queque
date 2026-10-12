@@ -1,6 +1,8 @@
 import * as fs from 'node:fs';
 import * as net from 'node:net';
+import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { shutdownDaemon, trackConnections } from '../src/cli/commands/daemon.js';
 import type { CommandCandidate } from '../src/contracts/candidates.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import {
@@ -8,7 +10,16 @@ import {
   IpcTransportError,
   requestDaemonFetch,
 } from '../src/daemon/fetch-client.js';
+import {
+  disablePrewarm,
+  enablePrewarm,
+  type PrewarmSpec,
+  prewarmSnapshot,
+  schedulePrewarm,
+} from '../src/providers/claude-prewarm.js';
 import { abortError, type FetchOptions, isAbortError } from '../src/providers/provider.js';
+
+const FIXTURE = fileURLToPath(new URL('./fixtures/fake-claude-stream.mjs', import.meta.url));
 
 const { fetchMock, appendDebugLogMock } = vi.hoisted(() => ({
   fetchMock: vi.fn(),
@@ -566,6 +577,72 @@ describe('daemon fetch-candidates IPC', () => {
 
       expect(isAbortError(await pending)).toBe(true);
       expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('daemon shutdown (WR-03)', () => {
+    const prewarmSpec: PrewarmSpec = {
+      command: process.execPath,
+      argv: [FIXTURE, 'success'],
+      cwd: process.cwd(),
+    };
+
+    afterEach(() => {
+      disablePrewarm();
+    });
+
+    it('aborts an in-flight fetch and keeps the pool off, so its refill spawns nothing', async () => {
+      let received: AbortSignal | undefined;
+      fetchMock.mockImplementation(
+        (_envelope: ContextEnvelope, options?: FetchOptions) =>
+          new Promise((_resolve, reject) => {
+            received = options?.signal;
+            options?.signal?.addEventListener(
+              'abort',
+              () => {
+                // claude-cli refills the slot in `finally` once its turn settles.
+                schedulePrewarm(prewarmSpec);
+                reject(abortError());
+              },
+              { once: true },
+            );
+          }),
+      );
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      const server = await startDaemonServer(socketPath);
+      const connections = trackConnections(server);
+      enablePrewarm();
+      const pending = requestDaemonFetch(socketPath, buildEnvelope()).catch(
+        (caught: unknown) => caught,
+      );
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
+      expect(connections.size).toBe(1);
+      const exit = vi.fn();
+
+      shutdownDaemon(server, connections, { exit, graceMs: 50 });
+
+      await vi.waitFor(() => expect(exit).toHaveBeenCalledTimes(1));
+      expect(received?.aborted).toBe(true);
+      expect(prewarmSnapshot()).toEqual({ enabled: false, state: 'empty' });
+      expect(await pending).toBeInstanceOf(Error);
+      expect(connections.size).toBe(0);
+    });
+
+    it('retires the idle child, turns the pool off and exits at once with no connection', async () => {
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      const server = await startDaemonServer(socketPath);
+      const connections = trackConnections(server);
+      enablePrewarm();
+      schedulePrewarm(prewarmSpec);
+      expect(prewarmSnapshot().state).toBe('idle');
+      const exit = vi.fn();
+
+      shutdownDaemon(server, connections, { exit, graceMs: 60_000 });
+
+      await vi.waitFor(() => expect(exit).toHaveBeenCalledTimes(1));
+      expect(prewarmSnapshot()).toEqual({ enabled: false, state: 'empty' });
+      schedulePrewarm(prewarmSpec);
+      expect(prewarmSnapshot()).toEqual({ enabled: false, state: 'empty' });
     });
   });
 });

@@ -77,7 +77,10 @@ export function enablePrewarm(): void {
   enabled = true;
 }
 
-/** Retires any idle child and turns the pool off (tests, and symmetry with enable). */
+/**
+ * Retires any idle child and turns the pool off: daemon shutdown (so an in-flight query's
+ * refill cannot spawn a new child afterwards, review WR-03) and tests.
+ */
 export function disablePrewarm(): void {
   retirePrewarmed();
   enabled = false;
@@ -211,7 +214,8 @@ export function takePrewarmed(spec: PrewarmSpec): PrewarmTake {
 
 /**
  * Empties the slot and retires its child: stdin EOF, then SIGKILL after `graceMs` if it
- * is still running (unref'd timer, so it never holds the daemon open). Daemon shutdown.
+ * is still running (unref'd timer, so it never holds the daemon open). Leaves the pool
+ * enabled, so the next schedulePrewarm refills it; daemon shutdown uses disablePrewarm.
  */
 export function retirePrewarmed(graceMs: number = SIGKILL_GRACE_MS): void {
   retireSlot(graceMs);

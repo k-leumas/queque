@@ -5284,6 +5284,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:25:08.750674Z"
+    },
+    {
+      "id": "bug-324",
+      "timestamp": "2026-10-12T08:27:14.821731Z",
+      "error_message": "Daemon shutdown retired the prewarm slot but left the pool enabled, so an in-flight query's finally { schedulePrewarm } spawned a new idle claude (~190 MB) after retirePrewarmed(); in-flight turn children were also never aborted (09.1 WR-03)",
+      "file": "src/cli/commands/daemon.ts",
+      "root_cause": "shutdown() called retirePrewarmed() (slot only) instead of disablePrewarm(), and server.close() waits for open connections instead of ending them, so turn children kept running and their kill timers died with process.exit.",
+      "fix": "New shutdownDaemon(server, connections): disablePrewarm(), destroy every tracked connection (its close aborts the turn, runClaudeTurn SIGTERMs the child), then exit after SIGKILL_GRACE_MS+100 when any were in flight so the SIGKILL backstop can fire. trackConnections(server) records sockets.",
+      "tags": [
+        "daemon",
+        "shutdown",
+        "prewarm",
+        "abort",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:27:14.821731Z"
     }
   ]
 }
