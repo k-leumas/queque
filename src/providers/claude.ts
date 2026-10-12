@@ -1,10 +1,15 @@
 import type Anthropic from '@anthropic-ai/sdk';
-import { type CandidateList, candidateListSchema } from '../contracts/candidates.js';
+import {
+  type CandidateList,
+  type CommandCandidate,
+  candidateListSchema,
+} from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
-import type { LLMAdapter } from './provider.js';
+import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
+import { abortError, type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
 
 /** Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. */
@@ -148,11 +153,20 @@ export function buildPrompt(envelope: ContextEnvelope): string {
  * Optional `timeoutMs` defaults to 25000 so SDK rescue can pass remaining budget.
  * The envelope describes the request intent and execution environment, while Phase 4's
  * TUI remains responsible for deciding how the raw shell buffers are rewritten.
+ *
+ * The request streams (`messages.stream` + `finalMessage()`, Phase 09.1): `options.signal`
+ * travels in the request options, so an abort cancels the HTTP request and rejects with an
+ * AbortError (D-13); a raw streaming iterator is not used because it ends silently on abort.
+ * With `options.onCandidate`, each candidate is scanned out of the streamed text and handed
+ * over as soon as its object closes, never after the signal aborts (D-05). The final list
+ * is the strict parse of the final text; if that fails after rows streamed, the streamed
+ * (already validated) rows; only when nothing streamed, parseCandidates' fallback.
  */
 export async function fetchCandidates(
   envelope: ContextEnvelope,
   rbuffer: string = '',
   timeoutMs: number = 25_000,
+  options: FetchOptions = {},
 ): Promise<CandidateList> {
   const apiKey =
     usableSecret(process.env.ANTHROPIC_API_KEY) ??
@@ -172,30 +186,52 @@ export async function fetchCandidates(
     extras: envelope.extras.map((chunk) => chunk.kind),
   });
 
+  const { onCandidate, signal } = options;
+  const streamed: CommandCandidate[] = [];
+
   try {
-    const response = await client.messages.create(
+    const stream = client.messages.stream(
       {
         model,
         max_tokens: 1024,
         system: buildSystemPrompt(envelope),
         messages: [{ role: 'user', content: prompt }],
       },
-      {
-        timeout: timeoutMs,
-      },
+      { timeout: timeoutMs, signal: options.signal },
     );
 
-    const text = extractText(response.content);
-    const candidates = ensureSelectableCandidates(parseCandidates(text));
+    if (onCandidate) {
+      const scan = createCandidateScanner((candidate) => {
+        streamed.push(candidate);
+        if (!signal?.aborted) {
+          onCandidate(candidate);
+        }
+      });
+      stream.on('text', (textDelta) => {
+        scan(textDelta);
+      });
+    }
+
+    const message = await stream.finalMessage();
+    const text = extractText(message.content);
+    const finalList =
+      parseStrictCandidateList(text) ?? (streamed.length > 0 ? streamed : parseCandidates(text));
+    const candidates = ensureSelectableCandidates(finalList);
 
     void appendDebugLog('provider', 'response parsed', {
       model,
       candidateCount: candidates.length,
+      streamedCount: streamed.length,
       forceSelector: shouldForceSelector(),
     });
 
     return candidates;
   } catch (error) {
+    if (isAbortError(error) || signal?.aborted) {
+      // D-13: an aborted request is not a failure; the daemon writes nothing for it.
+      void appendDebugLog('provider', 'request aborted', { model });
+      throw abortError();
+    }
     void appendDebugLog('provider', 'request failed', {
       model,
       message: error instanceof Error ? error.message : String(error),
@@ -204,8 +240,8 @@ export async function fetchCandidates(
   }
 }
 
-// The SDK adapter takes no options until plan 04 (no signal, no onCandidate): the wrapper
-// forwards only the envelope, so an options object can never land in `rbuffer`.
+// Options always travel in the fourth slot, never in `rbuffer`, so the registered `claude`
+// backend forwards the abort signal and onCandidate to the streamed SDK request.
 export const claudeAdapter: LLMAdapter = {
-  fetchCandidates: (envelope) => fetchCandidates(envelope),
+  fetchCandidates: (envelope, options) => fetchCandidates(envelope, '', 25_000, options),
 };

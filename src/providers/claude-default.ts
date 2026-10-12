@@ -92,7 +92,9 @@ export const claudeDefaultAdapter: LLMAdapter = {
       void appendDebugLog('provider', 'sdk path', {
         path: 'sdk',
       });
-      return fetchSdkCandidates(envelope, '', remainingMs(deadline));
+      // A direct return outside the CLI try/catch: hardError never sees an SDK error, so an
+      // SDK AbortError reaches the daemon unmapped (D-13), like the CLI branch's re-throw.
+      return fetchSdkCandidates(envelope, '', remainingMs(deadline), options);
     }
 
     try {
