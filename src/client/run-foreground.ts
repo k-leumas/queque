@@ -4,6 +4,7 @@ import * as tty from 'node:tty';
 import { render } from 'ink';
 import React from 'react';
 import { gatherContext } from '../context/pipeline.js';
+import type { CommandCandidate } from '../contracts/candidates.js';
 import {
   type ContextEnvelope,
   type NormalizedRequest,
@@ -19,7 +20,7 @@ import { socketPathForUid } from '../shared/socket-path.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
-import { MODAL_VIEWPORT_LINES } from '../ui/modal-layout.js';
+import { type CandidateListState, MODAL_VIEWPORT_LINES } from '../ui/modal-layout.js';
 import {
   armInstantFrameTakeover,
   INLINE_SURFACE_CLEAR,
@@ -275,15 +276,20 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           // the daemon socket, and the daemon aborts the provider call on `close`.
           const fetchAbort = new AbortController();
 
+          // Rows streamed so far (09.1 D-05), in the order the provider reported them.
+          const streamed: CommandCandidate[] = [];
+
           // Build initial element with null candidates (D-06 loading state)
           const buildCandidateElement = (
             candidates: Parameters<typeof CandidateSelect>[0]['candidates'],
             errorState?: boolean,
+            listState: CandidateListState = 'complete',
           ) =>
             React.createElement(CandidateSelect, {
               candidates,
               initialQuery: request.lbuffer,
               error: errorState,
+              listState,
               onSelect: async (command: string, explanation: string) => {
                 if (resolved) return;
                 resolved = true;
@@ -347,17 +353,38 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             resolve();
           };
 
+          // D-05 (client half): each streamed row is shown as soon as it arrives, below the
+          // rows before it, with the spinner under them ('arriving'). annotateCandidates stays
+          // synchronous on the Ink thread: at most MAX_STREAMED_CANDIDATES rows against the
+          // inventory already in memory, never re-read per arrival.
+          const onCandidate = (candidate: CommandCandidate) => {
+            // D-14: a row that arrives after Esc or Enter is neither rendered nor kept.
+            if (resolved) return;
+            streamed.push(candidate);
+            if (streamed.length === 1) {
+              void appendDebugLog('client', 'first candidate received');
+            }
+            app.rerender(
+              buildCandidateElement(
+                annotateCandidates([...streamed], toolInventory),
+                undefined,
+                'arriving',
+              ),
+            );
+          };
+
           // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
-          fetchCandidatesForUi(socketPath, envelope, { signal: fetchAbort.signal })
+          fetchCandidatesForUi(socketPath, envelope, { signal: fetchAbort.signal, onCandidate })
             .then((candidates) => {
               // D-14: once a result is written, nothing the provider produced is shown.
               if (resolved) return;
               const displayCandidates = annotateCandidates(candidates, toolInventory);
               void appendDebugLog('client', 'candidates received', {
                 count: candidates.length,
+                streamed: streamed.length,
                 flagged: displayCandidates.filter((c) => c.missingTools !== undefined).length,
               });
-              app.rerender(buildCandidateElement(displayCandidates));
+              app.rerender(buildCandidateElement(displayCandidates, undefined, 'complete'));
             })
             .catch(async (err) => {
               if (isAbortError(err)) {

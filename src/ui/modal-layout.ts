@@ -210,6 +210,9 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
         lines += 1; // marginBottom per candidate block
       }
     }
+    if (input.listState === 'arriving') {
+      lines += LIST_STATUS_ROW_LINES; // spinner row under the arrived rows (D-08)
+    }
   }
 
   const visible =

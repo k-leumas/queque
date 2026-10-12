@@ -98,6 +98,7 @@ export function CandidateSelect({
   onCancel,
   error,
   onLayoutLinesChange,
+  listState = 'complete',
 }: Props): ReactElement {
   const { isRawModeSupported } = useStdin();
   const { stdout } = useStdout();
@@ -119,10 +120,15 @@ export function CandidateSelect({
     lines: 0,
   });
 
-  // Reset selection and Tab toggles when candidates arrive (Pitfall 2 fix, D-09).
-  // Also clear the initialQuery pre-filter if it produces zero matches — the lbuffer
-  // was already used as context for Claude; filtering candidates by it too is
-  // harmful when no command literally contains the lbuffer text.
+  // Candidate arrival. Rows stream in (09.1 D-05): run-foreground rerenders with a new array
+  // per arrived row, then once with the final list.
+  // - First arrival (loading → rows): reset selection and Tab toggles (Pitfall 2 fix, D-09),
+  //   and clear the initialQuery pre-filter if it matches nothing — the lbuffer was already
+  //   used as context for Claude; filtering candidates by it too is harmful when no command
+  //   literally contains the lbuffer text.
+  // - Later arrival: keep the highlighted row by candidateKey (D-06) and the Tab toggles
+  //   (keyed by candidateKey). The zero-match clear runs only while the user has not typed,
+  //   so a typed filter keeps applying to later rows (D-09, Pitfall 9).
   // This runs during render (React's "adjust state when a prop changes" pattern), not in
   // an effect: an effect would commit one stale render first, and the layout effect would
   // report that render's 'no matches' height to Zellij (G-09-7). React discards this
@@ -130,15 +136,38 @@ export function CandidateSelect({
   // Each setter runs only when its value would change.
   if (candidates !== prevCandidates) {
     setPrevCandidates(candidates);
-    if (selectedIndex !== 0) {
-      setSelectedIndex(0);
-    }
-    if (installToggled.size > 0) {
-      setInstallToggled(new Set());
-    }
-    // Toggles are being cleared, so the filter matches the plain commands.
-    if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
-      setQuery('');
+    if (prevCandidates === null) {
+      if (selectedIndex !== 0) {
+        setSelectedIndex(0);
+      }
+      if (installToggled.size > 0) {
+        setInstallToggled(new Set());
+      }
+      // Toggles are being cleared, so the filter matches the plain commands.
+      if (candidates && candidates.length > 0 && filterCandidates(candidates, query).length === 0) {
+        setQuery('');
+      }
+    } else if (candidates !== null) {
+      const highlighted = filterCandidates(prevCandidates, query)[selectedIndex];
+      let nextQuery = query;
+      if (
+        query === (initialQuery ?? '') &&
+        candidates.length > 0 &&
+        filterCandidates(candidates, query).length === 0
+      ) {
+        nextQuery = '';
+        setQuery('');
+      }
+      const visible = filterCandidates(candidates, nextQuery);
+      const highlightedKey = highlighted === undefined ? undefined : candidateKey(highlighted);
+      const kept =
+        highlightedKey === undefined
+          ? -1
+          : visible.findIndex((candidate) => candidateKey(candidate) === highlightedKey);
+      const nextIndex = kept >= 0 ? kept : Math.min(selectedIndex, Math.max(0, visible.length - 1));
+      if (nextIndex !== selectedIndex) {
+        setSelectedIndex(nextIndex);
+      }
     }
   }
 
@@ -161,11 +190,17 @@ export function CandidateSelect({
   // unfiltered list, and while the same candidates array is shown it never shrinks: filtering
   // and Backspace report the held height (an equal height spawns no resize), and only a taller
   // frame grows it. A new candidates array resets the hold. No state is set here (G-09-7).
+  // While rows stream in (`'arriving'`) nothing is reported either (09.1 D-10/D-17): the pane
+  // keeps the cap it opened with, and the completion report is the single shrink-to-fit (the
+  // final array is new, so its hold starts at 0). Fewer reports mean fewer `zellij action`s.
   useEffect(() => {
     if (!onLayoutLinesChange) {
       return;
     }
     if (candidates === null && error !== true) {
+      return;
+    }
+    if (listState === 'arriving' && error !== true) {
       return;
     }
     const layout = {
@@ -177,6 +212,7 @@ export function CandidateSelect({
       contentWidth,
       includeDevFooter,
       installToggled,
+      listState,
     };
     const previousHeld = paneHold.current.candidates === candidates ? paneHold.current.lines : 0;
     const lines = heldPaneLines(previousHeld, layout);
@@ -191,6 +227,7 @@ export function CandidateSelect({
     contentWidth,
     includeDevFooter,
     installToggled,
+    listState,
     onLayoutLinesChange,
   ]);
 
@@ -357,6 +394,9 @@ export function CandidateSelect({
       )}
       <SearchInput query={query} />
       {content}
+      {/* D-08: while rows stream in, the spinner sits directly under the last row block, whose
+          own bottom margin is the gap (LIST_STATUS_ROW_LINES), so it has no margin of its own. */}
+      {candidates !== null && error !== true && listState === 'arriving' && <LoadingSpinner />}
       {showDestructiveWarning && (
         <Box marginTop={1}>
           <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>
