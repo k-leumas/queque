@@ -127,6 +127,17 @@ export function CandidateSelect({
     candidates: null,
     lines: 0,
   });
+  // The input snapshot (CR-01). Ink 7 parses one stdin read into several key events and runs
+  // them back to back through useInput, whose useEffectEvent holds the handler of the last
+  // committed render. State set by an earlier event of the same read is not in that handler's
+  // closure yet, so the snapshot carries it for the rest of the read. A ref, not state: the
+  // mocked test indexes four useState calls by order and counts two effects. Eager initial
+  // value, like the hooks above.
+  const pendingInput = useRef<{ render: object; query: string } | null>(null);
+  // A new identity on every render. The handlers of one committed render share it, so the
+  // snapshot counts only for edits made since that render committed; after the next commit
+  // the closure state already holds them and the snapshot is ignored.
+  const renderToken = {};
 
   // Candidate arrival. Rows stream in (09.1 D-05): run-foreground rerenders with a new array
   // per arrived row, then once with the final list. Arrival never touches the query: FILTER
@@ -178,7 +189,8 @@ export function CandidateSelect({
   // row in the key handlers below, in the same update as the query. Not a `[query]` effect:
   // that also fired after the arrival branch's former query clear (removed in G-09.1-5) and
   // undid the index it had just chosen (review WR-05), and it committed one render with the
-  // stale index first.
+  // stale index first. The handlers read the live snapshot (`pendingInput`), not the
+  // render-closure query, because keys that share a stdin read must compose (CR-01).
 
   const includeDevFooter = process.env.QQ_DEV_ROOT != null;
 
@@ -232,6 +244,10 @@ export function CandidateSelect({
   // "Raw mode is not supported" as an uncaughtException (production ZLE crash fix).
   useInput(
     (input, key) => {
+      // The query including edits made by earlier keys of this stdin read (CR-01).
+      const liveQuery =
+        pendingInput.current?.render === renderToken ? pendingInput.current.query : query;
+
       if (key.escape) {
         onCancel();
         return;
@@ -239,10 +255,13 @@ export function CandidateSelect({
 
       if (key.backspace) {
         // Backspace on an empty query changes nothing, so the selection stays put.
-        if (query.length > 0) {
-          setQuery((q) => q.slice(0, -1));
-          setSelectedIndex(0);
+        if (liveQuery === '') {
+          return;
         }
+        const next = liveQuery.slice(0, -1);
+        pendingInput.current = { render: renderToken, query: next };
+        setQuery(next);
+        setSelectedIndex(0);
         return;
       }
 
@@ -282,7 +301,9 @@ export function CandidateSelect({
       }
 
       if (input && !key.ctrl && !key.meta) {
-        setQuery((q) => q + input);
+        const next = liveQuery + input;
+        pendingInput.current = { render: renderToken, query: next };
+        setQuery(next);
         setSelectedIndex(0);
         return;
       }

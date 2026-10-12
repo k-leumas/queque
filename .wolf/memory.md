@@ -2877,3 +2877,4 @@
 | 15:39 | Edited tests/candidate-select.test.tsx | expanded (+26 lines) | ~288 |
 | 15:39 | Created ../../../../tmp/gsd-0911-10-wolf.py | — | ~831 |
 | 15:39 | 09.1-10 T1 RED: CR-01 one-chunk Backspace tests (real-hooks describe + mocked same-closure case) fail as planned (FILTER: ab / a / smtx; 'ab') | tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx | RED | ~3000 |
+| 15:41 | 09.1-10 T1 GREEN: Backspace and typing read/write the pendingInput snapshot (renderToken); 83/83 in both CandidateSelect files, typecheck ok | src/ui/CandidateSelect.tsx | GREEN | ~2500 |
