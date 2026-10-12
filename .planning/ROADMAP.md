@@ -313,11 +313,11 @@ Plans:
 **Out of scope:** Switching models (Haiku-class), the API-key SDK path's `.env.local` cwd bug, and prompt caching (~0 gain, measured).
 **Requirements**: TBD (no REQ IDs mapped; coverage target is 09.1-CONTEXT.md D-01..D-17)
 **Depends on:** Phase 9
-**Plans:** 8 plans
+**Plans:** 1/8 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 09.1-01-PLAN.md — Tracer: Esc kills the `claude -p` call end to end; stream-json turn with the prompt on stdin resolves on `result`; per-stage turn logs (wave 1)
+- [x] 09.1-01-PLAN.md — Tracer: Esc kills the `claude -p` call end to end; stream-json turn with the prompt on stdin resolves on `result`; per-stage turn logs (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 09.1-02-PLAN.md — `--effort low` default with a config.json override; candidates parsed from the stream on the `claude -p` path (wave 2)
