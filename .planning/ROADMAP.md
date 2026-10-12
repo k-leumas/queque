@@ -293,6 +293,30 @@ Plans:
 
 ## Backlog
 
+### Phase 09.1: Provider Latency and Cancellation (INSERTED)
+
+**Goal:** Cut the `??` thinking→candidates wait on the `claude -p` path from ~5.3 s (keypress → candidates, measured median) toward ~2 s to the first candidate, and make Esc actually stop the in-flight model call. Evidence and measurements: `.planning/debug/llm-response-latency-profile.md`.
+**Scope:**
+1. Pass `--effort low` to `claude -p`. Today QueQue passes no `--model`/`--effort`, so it inherits the account default (Opus 5.5 at `xhigh`). Saves ~1.05 s and the thinking variance.
+2. `--output-format stream-json`. Resolve on the `result` event, not process exit (−0.44 s). Rules:
+   - Parse only the final result text, after checking `is_error`.
+   - Use a line-buffered, UTF-8-safe parser.
+   - Keep the auth-failure error contract.
+   - Let the child exit on its own, with a backstop kill.
+3. Stream the first candidate early: a new daemon IPC message and a candidate list that grows as candidates arrive (first row ~3.3 s, ~2.3 s with #1).
+4. Keep one prewarmed `claude -p` process in the daemon (−0.93 s). The prompt then goes over stdin instead of argv, which closes T-08-02-07.
+5. Cancellation end to end:
+   - Esc in the client closes the IPC request.
+   - The daemon handles socket `close` and aborts the provider call through an `AbortSignal`: SDK `messages.create({signal})`, and a kill of the `claude -p` child.
+   - This also fixes the deferred bug from quick 261011-jbh: Esc during `thinking…` leaves the client running.
+**Out of scope:** Switching models (Haiku-class), the API-key SDK path's `.env.local` cwd bug, and prompt caching (~0 gain, measured).
+**Requirements**: TBD
+**Depends on:** Phase 9
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 09.1 to break down)
+
 ### Phase 999.1: Model-supplied install package names (BACKLOG)
 
 **Goal:** [Captured for future planning] Send the OS and detected package manager in the envelope; each candidate returns optional `packages: [{tool, package}]` for the tools it uses. The client still builds the install form locally (SAFE_PACKAGE_NAME_RE, no `-y`, insert-only), using the model's name for missing tools, falling back to `PACKAGE_ALIASES`, else no install form. Needs the candidate schema, both adapters' output formats (SDK and `claude -p`), and a pong capability flag so stale daemons get replaced. Replaces the hand-typed Linux alias names (phase 9 WR-01).

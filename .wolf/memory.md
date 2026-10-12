@@ -2371,3 +2371,4 @@
 | 21:43 | Edited .planning/debug/llm-response-latency-profile.md | modified hypothesis() | ~652 |
 | 21:58 | Profiled ?? LLM latency (diagnose-only): claude -p path dominates (4.87 s median), ranked fixes in debug file | .planning/debug/llm-response-latency-profile.md, .wolf/cerebrum.md, .wolf/buglog.json | diagnosed | ~60000 |
 | 21:46 | Edited .planning/debug/llm-response-latency-profile.md | expanded (+16 lines) | ~689 |
+| 22:00 | Edited .planning/ROADMAP.md | expanded (+14 lines) | ~432 |

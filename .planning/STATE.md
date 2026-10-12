@@ -1,20 +1,19 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 7
-current_phase_name: Context-Aware Learning and Ambient Suggestions
+current_phase: "09.1"
+current_phase_name: Provider Latency and Cancellation
 status: planning
-stopped_at: Phase 9 complete, ready to plan Phase 7
-last_updated: "2026-10-11T18:40:41.988Z"
+stopped_at: Phase 09.1 inserted, ready to plan
+last_updated: "2026-10-12T04:00:51.338Z"
 last_activity: 2026-10-11
 last_activity_desc: Completed quick task 261011-jbh
-state_head: 75655cc368d6f1053a51e10bcbca3a92fba2766e
+state_head: 09c2352812f30670da773cb9c105c88cb0450ce0
 progress:
-  total_phases: 11
+  total_phases: 12
   completed_phases: 8
   total_plans: 33
   completed_plans: 29
-  percent: 73
 milestone_name: milestone
 ---
 
@@ -29,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-10-11)
 
 ## Current Position
 
-Phase: 7 — Context-Aware Learning and Ambient Suggestions
+Phase: 09.1 — Provider Latency and Cancellation (INSERTED)
 Plan: Not started
-Next: Plan Phase 7 (/gsd-discuss-phase 7 or /gsd-plan-phase 7)
+Next: Plan Phase 09.1 (/gsd-plan-phase 09.1)
 Status: Ready to plan
 Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
 
@@ -82,6 +81,7 @@ Progress: [███████░░░] 73%
 - Phase 5 deferred (2026-06-17): In-TUI clarification chat is nice-to-have; users can Esc, edit query, and re-trigger `??`. Phase 6 proceeds without Phase 5. Revisit after Phase 8 zero-config.
 - Phase 9 added (2026-10-07): Installed-Only Command Awareness — zsh $commands handoff, installed∩catalog prompt steering, flag candidates using missing tools (from spikes 001–003).
 - Phase 8 scope expanded (2026-07-31): 08-01 must fix macOS Keychain detection gap — prototype `detectProvider()` only checks credentials file, missing `/login` sessions on darwin.
+- Phase 09.1 inserted after Phase 9: Provider Latency and Cancellation: effort low, stream-json, early first candidate, prewarmed claude -p, Esc aborts the model call (from debug llm-response-latency-profile) (URGENT)
 
 ### Decisions
 

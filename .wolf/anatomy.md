@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T03:46:35.891Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T04:00:41.510Z
 > Files: 424 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -431,7 +431,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~5222 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~5663 tok)
 - `STATE.md` — Project State (~2442 tok)
 
 ## .planning/debug/
