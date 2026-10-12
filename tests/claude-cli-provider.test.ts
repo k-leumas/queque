@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -16,6 +17,7 @@ import {
   getProviderAdapter,
   listProviderBackends,
 } from '../src/registry/provider-backends.js';
+import { resetQqConfigCache } from '../src/shared/qq-config.js';
 
 const CANDIDATE_JSON = '[{"command":"git status","explanation":"Show repo status"}]';
 const D13_LOGIN = /claude \/login/;
@@ -176,6 +178,28 @@ function debugPaths(): string[] {
 function sourcePath(relative: string): string {
   return join(dirname(fileURLToPath(import.meta.url)), relative);
 }
+
+// Every case reads an empty, per-test config dir so the developer's real
+// ~/.config/qq/config.json (effort, privacy patterns) never leaks into these tests.
+let configDir: string;
+let previousConfigFile: string | undefined;
+
+beforeEach(() => {
+  configDir = mkdtempSync(join(tmpdir(), 'qq-cli-config-'));
+  previousConfigFile = process.env.QQ_CONFIG_FILE;
+  process.env.QQ_CONFIG_FILE = join(configDir, 'config.json');
+  resetQqConfigCache();
+});
+
+afterEach(() => {
+  resetQqConfigCache();
+  if (previousConfigFile === undefined) {
+    delete process.env.QQ_CONFIG_FILE;
+  } else {
+    process.env.QQ_CONFIG_FILE = previousConfigFile;
+  }
+  rmSync(configDir, { recursive: true, force: true });
+});
 
 describe('claudeDefaultAdapter', () => {
   let previousApiKey: string | undefined;
@@ -591,5 +615,42 @@ describe('claude -p turn stage logs and error copy (D-04)', () => {
       }
     }
     expect(createMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('claude -p effort and streamed candidates', () => {
+  beforeEach(() => {
+    delete process.env.ANTHROPIC_API_KEY;
+    delete process.env.QQ_FORCE_SELECTOR;
+    runClaudeTurnMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
+    appendDebugLogMock.mockClear();
+    createMock.mockReset();
+  });
+
+  it('passes --effort low by default and never a model flag (D-01, D-02)', async () => {
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    const args = turnArgv();
+    expect(args.indexOf('--effort')).toBeGreaterThan(-1);
+    expect(args[args.indexOf('--effort') + 1]).toBe('low');
+    expect(args).not.toContain('--model');
+  });
+
+  it('passes the config.json effort level (D-01)', async () => {
+    writeFileSync(join(configDir, 'config.json'), JSON.stringify({ effort: 'high' }));
+    resetQqConfigCache();
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    const args = turnArgv();
+    expect(args[args.indexOf('--effort') + 1]).toBe('high');
+    expect(args).not.toContain('--model');
   });
 });

@@ -47,7 +47,22 @@ const safetyConfigSchema = z
   })
   .optional();
 
+/** `claude --help` effort levels (also the SDK OutputConfig values). */
+export const EFFORT_LEVELS = ['low', 'medium', 'high', 'xhigh', 'max'] as const;
+
+export type Effort = (typeof EFFORT_LEVELS)[number];
+
+/** Default effort for Claude turns (D-01). */
+export const DEFAULT_EFFORT: Effort = 'low';
+
+/** RED stub (09.1-02 Task 1): always drops the value until GREEN. */
+const effortSchema = z
+  .unknown()
+  .transform((): Effort | undefined => undefined)
+  .optional();
+
 export const qqConfigFileSchema = z.object({
+  effort: effortSchema,
   privacy: privacyConfigSchema,
   safety: safetyConfigSchema,
 });
@@ -59,6 +74,7 @@ export interface ResolvedQqConfig {
   redactLogKeys: Set<string>;
   allowFileRead: boolean;
   destructiveCommandRegexes: RegExp[];
+  effort: Effort;
 }
 
 let cachedConfig: ResolvedQqConfig | null = null;
@@ -155,9 +171,15 @@ export function loadQqConfig(): ResolvedQqConfig {
     redactLogKeys: new Set(redactKeys),
     allowFileRead,
     destructiveCommandRegexes: compilePatterns(destructivePatterns),
+    effort: DEFAULT_EFFORT,
   };
 
   return cachedConfig;
+}
+
+/** RED stub (09.1-02 Task 1): implemented in GREEN. */
+export function resolveEffort(): Effort {
+  throw new Error('resolveEffort: not implemented');
 }
 
 /**
