@@ -2753,3 +2753,8 @@
 | 01:46 | 09.1-08: full gate green (721/721 tests, typecheck, lint, build; load avg ~20-32 on 12 CPUs, no bug-270 flake); scratch latency summarizer in mktemp -d, fails loudly on an empty log (exit 2, 9/9 stages missing) | (scratch only) | ready for end-of-phase UAT | ~6k |
 | 01:46 | Session summary 09.1-08: OpenWolf records of plans 02-07 applied (anatomy, cerebrum learnings + Decision Log + superseded claude -p advice, buglog bug-316..320); phase gate green; real-provider latency/cancel checks handed to end-of-phase UAT | .wolf/* | phase 09.1 plans complete | ~20k |
 | 01:48 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-08-SUMMARY.md | — | ~6071 |
+| 01:53 | Session end: 249 writes across 53 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 57 reads | ~319026 tok |
+| 02:01 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-REVIEW.md | — | ~4243 |
+| 02:03 | Session end: 250 writes across 54 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 57 reads | ~323572 tok |
+| 02:09 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-VERIFICATION.md | — | ~6504 |
+| 02:10 | Executed phase 09.1 (8 plans, 4 waves); review 0C/8W/5I; verify human_needed, UAT 9 items | .planning/phases/09.1-*/ | done | ~40k |
