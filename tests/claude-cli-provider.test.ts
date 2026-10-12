@@ -653,4 +653,135 @@ describe('claude -p effort and streamed candidates', () => {
     expect(args[args.indexOf('--effort') + 1]).toBe('high');
     expect(args).not.toContain('--model');
   });
+
+  const STREAMED_ANSWER =
+    '[{"command":"tldr z3","explanation":"Show concise usage examples"},' +
+    '{"command":"z3 -h","explanation":"Print z3 options ⓘ"}]';
+  const STREAMED_CANDIDATES = [
+    { command: 'tldr z3', explanation: 'Show concise usage examples' },
+    { command: 'z3 -h', explanation: 'Print z3 options ⓘ' },
+  ];
+
+  /** Splits `text` into small text_delta-sized pieces. */
+  function deltaPieces(text: string, size = 7): string[] {
+    const pieces: string[] = [];
+    for (let index = 0; index < text.length; index += size) {
+      pieces.push(text.slice(index, index + size));
+    }
+    return pieces;
+  }
+
+  /** Runner mock that feeds `deltas` through onTextDelta, then resolves with `resultText`. */
+  function playDeltas(
+    deltas: string[],
+    resultText: string,
+    hooks: { afterDelta?: (index: number) => void; beforeResolve?: () => void } = {},
+  ): void {
+    runClaudeTurnMock.mockImplementation(async (options) => {
+      deltas.forEach((delta, index) => {
+        options.onTextDelta?.(delta);
+        hooks.afterDelta?.(index);
+      });
+      hooks.beforeResolve?.();
+      return resultText;
+    });
+  }
+
+  it('hands each streamed candidate to onCandidate in order before the fetch resolves', async () => {
+    const onCandidate = vi.fn();
+    let callsBeforeResolve = -1;
+    playDeltas(deltaPieces(STREAMED_ANSWER), STREAMED_ANSWER, {
+      beforeResolve: () => {
+        callsBeforeResolve = onCandidate.mock.calls.length;
+      },
+    });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(callsBeforeResolve).toBe(2);
+    expect(onCandidate.mock.calls.map((call) => call[0])).toEqual(STREAMED_CANDIDATES);
+    expect(result).toEqual(STREAMED_CANDIDATES);
+  });
+
+  it('stops calling onCandidate once the signal is aborted', async () => {
+    const onCandidate = vi.fn();
+    const controller = new AbortController();
+    const firstClose = STREAMED_ANSWER.indexOf('}') + 1;
+    playDeltas(
+      [STREAMED_ANSWER.slice(0, firstClose), STREAMED_ANSWER.slice(firstClose)],
+      STREAMED_ANSWER,
+      {
+        afterDelta: (index) => {
+          if (index === 0) {
+            controller.abort();
+          }
+        },
+      },
+    );
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter
+      .fetchCandidates(buildEnvelope(), { signal: controller.signal, onCandidate })
+      .catch(() => undefined);
+
+    expect(onCandidate).toHaveBeenCalledTimes(1);
+    expect(onCandidate).toHaveBeenCalledWith(STREAMED_CANDIDATES[0]);
+  });
+
+  it('creates no scanner without onCandidate', async () => {
+    runClaudeTurnMock.mockResolvedValue(CANDIDATE_JSON);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    expect(turnOptions().onTextDelta).toBeUndefined();
+  });
+
+  it('uses the strict parse of a valid result text as the final list', async () => {
+    playDeltas(deltaPieces(STREAMED_ANSWER), CANDIDATE_JSON);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), {
+      onCandidate: vi.fn(),
+    });
+
+    expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
+  });
+
+  it('falls back to the streamed rows when the result text fails the strict parse', async () => {
+    playDeltas(deltaPieces(STREAMED_ANSWER), `${STREAMED_ANSWER}\nHope that helps!`);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), {
+      onCandidate: vi.fn(),
+    });
+
+    expect(result).toEqual(STREAMED_CANDIDATES);
+  });
+
+  it('keeps the parseCandidates prose fallback when nothing streamed', async () => {
+    const prose = 'git status --short';
+    playDeltas([prose], prose);
+    const onCandidate = vi.fn();
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(onCandidate).not.toHaveBeenCalled();
+    expect(result).toEqual([{ command: 'git status --short', explanation: '' }]);
+  });
+
+  it('logs cli first candidate once per turn with elapsed ms', async () => {
+    playDeltas(deltaPieces(STREAMED_ANSWER), STREAMED_ANSWER);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate: vi.fn() });
+
+    const firstCandidateLogs = cliStageLogs().filter(
+      (log) => log.message === 'cli first candidate',
+    );
+    expect(firstCandidateLogs).toHaveLength(1);
+    expect(firstCandidateLogs[0]?.detail).toEqual({ ms: expect.any(Number) });
+  });
 });
