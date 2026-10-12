@@ -78,6 +78,17 @@ interface Props {
 }
 
 /**
+ * The input state the key handlers have produced since the last committed render (CR-01).
+ * `render` is the token of the render whose handler wrote it; any other render ignores it.
+ */
+interface PendingInput {
+  render: object;
+  query: string;
+  selectedIndex: number;
+  installToggled: ReadonlySet<string>;
+}
+
+/**
  * Strips leading and trailing whitespace from a shell command string.
  */
 function normalizeCommand(command: string): string {
@@ -130,10 +141,11 @@ export function CandidateSelect({
   // The input snapshot (CR-01). Ink 7 parses one stdin read into several key events and runs
   // them back to back through useInput, whose useEffectEvent holds the handler of the last
   // committed render. State set by an earlier event of the same read is not in that handler's
-  // closure yet, so the snapshot carries it for the rest of the read. A ref, not state: the
-  // mocked test indexes four useState calls by order and counts two effects. Eager initial
-  // value, like the hooks above.
-  const pendingInput = useRef<{ render: object; query: string } | null>(null);
+  // closure yet, so the snapshot carries it for the rest of the read. Every key handler reads
+  // it (query, highlight, Tab toggles), so a key sequence gives the same result however stdin
+  // chunks it. A ref, not state: the mocked test indexes four useState calls by order and
+  // counts two effects. Eager initial value, like the hooks above.
+  const pendingInput = useRef<PendingInput | null>(null);
   // A new identity on every render. The handlers of one committed render share it, so the
   // snapshot counts only for edits made since that render committed; after the next commit
   // the closure state already holds them and the snapshot is ignored.
@@ -189,8 +201,25 @@ export function CandidateSelect({
   // row in the key handlers below, in the same update as the query. Not a `[query]` effect:
   // that also fired after the arrival branch's former query clear (removed in G-09.1-5) and
   // undid the index it had just chosen (review WR-05), and it committed one render with the
-  // stale index first. The handlers read the live snapshot (`pendingInput`), not the
-  // render-closure query, because keys that share a stdin read must compose (CR-01).
+  // stale index first. Every key handler reads the live snapshot (`pendingInput`: query,
+  // highlight, Tab toggles), not the render-closure state, because keys that share a stdin
+  // read must compose (CR-01).
+
+  // Stores the next input state as the snapshot and queues it as React state. Values, never
+  // functional updaters (the snapshot and the queued state agree by construction), and each
+  // setter only when its value changes (the Set by identity), like the arrival block.
+  const applyInput = (live: PendingInput, next: PendingInput): void => {
+    pendingInput.current = next;
+    if (next.query !== live.query) {
+      setQuery(next.query);
+    }
+    if (next.selectedIndex !== live.selectedIndex) {
+      setSelectedIndex(next.selectedIndex);
+    }
+    if (next.installToggled !== live.installToggled) {
+      setInstallToggled(next.installToggled);
+    }
+  };
 
   const includeDevFooter = process.env.QQ_DEV_ROOT != null;
 
@@ -244,9 +273,11 @@ export function CandidateSelect({
   // "Raw mode is not supported" as an uncaughtException (production ZLE crash fix).
   useInput(
     (input, key) => {
-      // The query including edits made by earlier keys of this stdin read (CR-01).
-      const liveQuery =
-        pendingInput.current?.render === renderToken ? pendingInput.current.query : query;
+      // The input state including edits made by earlier keys of this stdin read (CR-01).
+      const live: PendingInput =
+        pendingInput.current?.render === renderToken
+          ? pendingInput.current
+          : { render: renderToken, query, selectedIndex, installToggled };
 
       if (key.escape) {
         onCancel();
@@ -255,13 +286,10 @@ export function CandidateSelect({
 
       if (key.backspace) {
         // Backspace on an empty query changes nothing, so the selection stays put.
-        if (liveQuery === '') {
+        if (live.query === '') {
           return;
         }
-        const next = liveQuery.slice(0, -1);
-        pendingInput.current = { render: renderToken, query: next };
-        setQuery(next);
-        setSelectedIndex(0);
+        applyInput(live, { ...live, query: live.query.slice(0, -1), selectedIndex: 0 });
         return;
       }
 
@@ -269,19 +297,17 @@ export function CandidateSelect({
       // install form. Always consumed so Tab never reaches the search filter.
       if (key.tab) {
         if (!candidates) return;
-        const visible = filterCandidates(candidates, query);
-        const selected = visible[selectedIndex] ?? visible[0];
+        const visible = filterCandidates(candidates, live.query);
+        const selected = visible[live.selectedIndex] ?? visible[0];
         if (selected?.install?.form == null) return;
         const id = candidateKey(selected);
-        setInstallToggled((previous) => {
-          const next = new Set(previous);
-          if (next.has(id)) {
-            next.delete(id);
-          } else {
-            next.add(id);
-          }
-          return next;
-        });
+        const toggled = new Set(live.installToggled);
+        if (toggled.has(id)) {
+          toggled.delete(id);
+        } else {
+          toggled.add(id);
+        }
+        applyInput(live, { ...live, installToggled: toggled });
         return;
       }
 
@@ -289,11 +315,11 @@ export function CandidateSelect({
       // Enter sends '\r' as `input` (truthy), which would otherwise be consumed by
       // setQuery and prevent the accept action from firing.
       if (key.return && candidates) {
-        const visible = filterCandidates(candidates, query);
+        const visible = filterCandidates(candidates, live.query);
         if (visible.length === 0) return;
-        const selected = visible[selectedIndex] ?? visible[0];
+        const selected = visible[live.selectedIndex] ?? visible[0];
         // Insert exactly what the row shows; the fallback names the original tool, not the installer.
-        const command = displayedCommand(selected, installToggled);
+        const command = displayedCommand(selected, live.installToggled);
         const original = normalizeCommand(selected.command);
         const explanation = selected.explanation || `see man ${original.split(' ')[0]}`;
         onSelect(command, explanation);
@@ -301,26 +327,24 @@ export function CandidateSelect({
       }
 
       if (input && !key.ctrl && !key.meta) {
-        const next = liveQuery + input;
-        pendingInput.current = { render: renderToken, query: next };
-        setQuery(next);
-        setSelectedIndex(0);
+        applyInput(live, { ...live, query: live.query + input, selectedIndex: 0 });
         return;
       }
 
       // Navigation: guard against null candidates and an empty visible list, where wrapping
       // would leave the index NaN ((i + 1) % 0) or -1 (review WR-06).
       if (key.upArrow && candidates) {
-        const visible = filterCandidates(candidates, query);
+        const visible = filterCandidates(candidates, live.query);
         if (visible.length === 0) return;
-        setSelectedIndex((i) => (i <= 0 ? visible.length - 1 : i - 1));
+        const index = live.selectedIndex;
+        applyInput(live, { ...live, selectedIndex: index <= 0 ? visible.length - 1 : index - 1 });
         return;
       }
 
       if (key.downArrow && candidates) {
-        const visible = filterCandidates(candidates, query);
+        const visible = filterCandidates(candidates, live.query);
         if (visible.length === 0) return;
-        setSelectedIndex((i) => (i + 1) % visible.length);
+        applyInput(live, { ...live, selectedIndex: (live.selectedIndex + 1) % visible.length });
         return;
       }
     },

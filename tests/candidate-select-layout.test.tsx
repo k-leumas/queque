@@ -1394,16 +1394,19 @@ describe('CR-01: keys that share one stdin read (real hooks)', () => {
     annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin');
   const flaggedForm = flaggedRows()[1]?.install?.form ?? '<row 1 has no install form>';
 
-  // Ink splits a chunk only at escape sequences and DEL/BS bytes; CR and Tab stay inside a
-  // text run (paste rule). So an arrow or a DEL sits between every typed letter, Tab and
-  // Enter below, and the joined chunk reaches the handler as the same key events as mode one.
-  it.each<{
+  /** One key sequence of the invariance table: `before` keys go one per read in both modes. */
+  interface InvarianceRow {
     name: string;
     rows: () => readonly DisplayCandidate[];
     before: readonly string[];
     keys: readonly string[];
     expected: string;
-  }>([
+  }
+
+  // Ink splits a chunk only at escape sequences and DEL/BS bytes; CR and Tab stay inside a
+  // text run (paste rule). So an arrow or a DEL sits between every typed letter, Tab and
+  // Enter below, and the joined chunk reaches the handler as the same key events as mode one.
+  const INVARIANCE_ROWS: readonly InvarianceRow[] = [
     {
       name: 'Down then Enter',
       rows: () => [GIT_STATUS, GIT_LOG, LS_LA],
@@ -1448,7 +1451,11 @@ describe('CR-01: keys that share one stdin read (real hooks)', () => {
       keys: [DOWN, '\t', DEL, '\r'],
       expected: flaggedForm,
     },
-  ])('CR-01: $name inserts the same row one key per read and in one read', async ({
+  ];
+
+  it.each(
+    INVARIANCE_ROWS,
+  )('CR-01: $name inserts the same row one key per read and in one read', async ({
     rows,
     before,
     keys,

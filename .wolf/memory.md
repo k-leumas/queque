@@ -2879,3 +2879,4 @@
 | 15:39 | 09.1-10 T1 RED: CR-01 one-chunk Backspace tests (real-hooks describe + mocked same-closure case) fail as planned (FILTER: ab / a / smtx; 'ab') | tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx | RED | ~3000 |
 | 15:41 | 09.1-10 T1 GREEN: Backspace and typing read/write the pendingInput snapshot (renderToken); 83/83 in both CandidateSelect files, typecheck ok | src/ui/CandidateSelect.tsx | GREEN | ~2500 |
 | 15:42 | 09.1-10 T2 RED: CR-01 invariance it.each (6 rows, one-read mode fails) + 2 mocked same-closure Enter cases fail as planned | tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx | RED | ~4000 |
+| 15:49 | 09.1-10 T2 GREEN: Enter/Tab/arrows read the PendingInput snapshot via applyInput; 91/91 both files (one zsh-helper flake at load 42, rerun green), typecheck+lint ok | src/ui/CandidateSelect.tsx, tests/candidate-select-layout.test.tsx | GREEN | ~4000 |
