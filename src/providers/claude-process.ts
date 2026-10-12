@@ -73,6 +73,10 @@ export interface ClaudeTurnOptions {
   signal?: AbortSignal;
   onTextDelta?: (text: string) => void;
   onStage?: (stage: ClaudeTurnStage, detail?: ClaudeTurnStageDetail) => void;
+  /** Delay after a `result` before a still-running child is terminated. */
+  backstopMs?: number;
+  /** SIGTERM → SIGKILL grace for every kill this turn makes. */
+  killGraceMs?: number;
 }
 
 export type ClaudeChild = ChildProcessByStdio<Writable, Readable, Readable>;
