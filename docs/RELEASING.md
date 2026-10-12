@@ -25,7 +25,7 @@ Runs only on **push to main** (after CI passes):
 
 1. **Re-runs all CI checks** (lint, typecheck, test, build) as a safety gate
 2. **Runs semantic-release** only if all checks pass
-3. **Creates release** with auto-generated notes and git tag
+3. **Creates release** with user-facing notes (LLM highlights + collapsed commit list) and a git tag
 
 **Safety:** Release is completely blocked if tests or builds fail.
 
@@ -51,9 +51,21 @@ Every push to `main` automatically runs:
 ### What Gets Updated
 
 1. **package.json** — Version field updated
-2. **CHANGELOG.md** — Release notes auto-generated and appended
+2. **CHANGELOG.md** — Release notes prepended (see Changelog format below)
 3. **Git tag** — New semantic version tag created (e.g., `v0.2.0`)
-4. **GitHub Release** — Release created with auto-generated notes
+4. **GitHub Release** — Same notes as the changelog section for that version
+
+### Changelog format
+
+Each version is meant to be scanned, not read as a ticket dump:
+
+- **Features** — how the product got better, written as outcome copy
+- **Bug Fixes** — what stopped hurting in the terminal
+- **Deprecations** — only when something user-facing was removed or broken; omitted otherwise
+
+Under each of those headings, the conventional-commit list is hidden in a `<details>Detailed changes</details>` control.
+
+`scripts/semantic-release-user-notes.ts` writes that section. It asks Claude to summarize `git log` / `git diff --stat` since the last tag (`ANTHROPIC_API_KEY` on the release job; override the model with `CHANGELOG_MODEL`). If the key is missing or the model call fails, the release still publishes with the commit list in details and no highlight bullets. A leading `## [Unreleased]` block is stripped before the new version is prepended so in-progress notes are not duplicated.
 
 ---
 
