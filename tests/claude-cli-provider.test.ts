@@ -26,6 +26,7 @@ const FORBIDDEN_DEBUG = /"args"|"env"|"argv"|"stdout"|"stderr"|apiKey|sk-ant-|sk
 
 const {
   createMock,
+  streamMock,
   anthropicCtorMock,
   AnthropicMock,
   runClaudeTurnMock,
@@ -33,21 +34,33 @@ const {
   appendDebugLogMock,
 } = vi.hoisted(() => {
   const createMock = vi.fn();
+  const streamMock = vi.fn();
   const anthropicCtorMock = vi.fn();
 
   class AnthropicMock {
-    messages: { create: typeof createMock };
+    messages: {
+      create: typeof createMock;
+      stream: (params: unknown, requestOptions?: unknown) => unknown;
+    };
 
     constructor(options: unknown) {
       anthropicCtorMock(options);
       this.messages = {
         create: createMock,
+        // createMock records every SDK Messages request (create or stream), so the
+        // CLI-path cases' `expect(createMock).not.toHaveBeenCalled()` still proves the SDK
+        // stayed idle; streamMock scripts the streamed response.
+        stream: (params, requestOptions) => {
+          createMock(params, requestOptions);
+          return streamMock(params, requestOptions);
+        },
       };
     }
   }
 
   return {
     createMock,
+    streamMock,
     anthropicCtorMock,
     AnthropicMock,
     runClaudeTurnMock: vi.fn<(options: ClaudeTurnOptions) => Promise<string>>(),
@@ -143,15 +156,79 @@ function killedError(): Error {
   });
 }
 
+interface SdkStreamScript {
+  /** Text pieces emitted as `text` events, in order, before finalMessage settles. */
+  pieces: string[];
+  /** finalMessage stays pending after the pieces until the request signal aborts. */
+  hangUntilAbort?: boolean;
+}
+
+interface SdkRequestOptions {
+  timeout?: number;
+  signal?: AbortSignal | null;
+}
+
+/** The SDK 0.92.0 abort error: MessageStream.finalMessage() rejects with it on abort. */
+function apiUserAbortError(): Error {
+  const error = new Error('Request was aborted.');
+  error.name = 'APIUserAbortError';
+  return error;
+}
+
+/** MessageStream stand-in: `text` listeners plus a finalMessage() that plays the pieces. */
+function fakeSdkStream(script: SdkStreamScript, requestOptions?: SdkRequestOptions) {
+  const textListeners: Array<(delta: string, snapshot: string) => void> = [];
+  const signal = requestOptions?.signal ?? undefined;
+  const stream = {
+    on(event: string, listener: (delta: string, snapshot: string) => void) {
+      if (event === 'text') {
+        textListeners.push(listener);
+      }
+      return stream;
+    },
+    async finalMessage() {
+      let snapshot = '';
+      for (const piece of script.pieces) {
+        await Promise.resolve();
+        if (signal?.aborted) {
+          throw apiUserAbortError();
+        }
+        snapshot += piece;
+        for (const listener of textListeners) {
+          listener(piece, snapshot);
+        }
+      }
+      if (script.hangUntilAbort) {
+        await new Promise<never>((_resolve, reject) => {
+          if (signal?.aborted) {
+            reject(apiUserAbortError());
+            return;
+          }
+          signal?.addEventListener('abort', () => reject(apiUserAbortError()), { once: true });
+        });
+      }
+      return { content: [{ type: 'text', text: snapshot }] };
+    },
+  };
+  return stream;
+}
+
+function sdkStream(script: SdkStreamScript): void {
+  streamMock.mockImplementation((_params: unknown, requestOptions?: SdkRequestOptions) =>
+    fakeSdkStream(script, requestOptions),
+  );
+}
+
 function sdkSuccess(): void {
-  createMock.mockResolvedValue({
-    content: [
-      {
-        type: 'text',
-        text: CANDIDATE_JSON,
-      },
-    ],
-  });
+  sdkStream({ pieces: [CANDIDATE_JSON] });
+}
+
+function sdkRequestOptions(): SdkRequestOptions {
+  const requestOptions = streamMock.mock.calls[0]?.[1] as SdkRequestOptions | undefined;
+  if (!requestOptions) {
+    throw new Error('messages.stream was not called');
+  }
+  return requestOptions;
 }
 
 function turnOptions(): ClaudeTurnOptions {
@@ -189,6 +266,7 @@ beforeEach(() => {
   previousConfigFile = process.env.QQ_CONFIG_FILE;
   process.env.QQ_CONFIG_FILE = join(configDir, 'config.json');
   resetQqConfigCache();
+  streamMock.mockReset();
 });
 
 afterEach(() => {
@@ -330,9 +408,9 @@ describe('claudeDefaultAdapter', () => {
 
     await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
-    expect(createMock).toHaveBeenCalled();
+    expect(streamMock).toHaveBeenCalled();
     expect(runClaudeTurnMock).not.toHaveBeenCalled();
-    const requestOptions = createMock.mock.calls[0]?.[1] as { timeout?: number };
+    const requestOptions = sdkRequestOptions();
     expect(requestOptions.timeout).toBeLessThanOrEqual(25_000);
     expect(requestOptions.timeout).toBeGreaterThan(24_000);
   });
@@ -346,7 +424,7 @@ describe('claudeDefaultAdapter', () => {
     const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
-    expect(createMock).toHaveBeenCalled();
+    expect(streamMock).toHaveBeenCalled();
     expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 
@@ -376,7 +454,7 @@ describe('claudeDefaultAdapter', () => {
     const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
-    expect(createMock).toHaveBeenCalled();
+    expect(streamMock).toHaveBeenCalled();
     expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 
@@ -390,7 +468,7 @@ describe('claudeDefaultAdapter', () => {
     const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
 
     expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
-    expect(createMock).toHaveBeenCalled();
+    expect(streamMock).toHaveBeenCalled();
     expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 
@@ -471,7 +549,7 @@ describe('claudeDefaultAdapter', () => {
 
     await adapter.fetchCandidates(buildEnvelope());
 
-    expect(createMock).toHaveBeenCalled();
+    expect(streamMock).toHaveBeenCalled();
     expect(runClaudeTurnMock).not.toHaveBeenCalled();
   });
 });
@@ -783,5 +861,88 @@ describe('claude -p effort and streamed candidates', () => {
     );
     expect(firstCandidateLogs).toHaveLength(1);
     expect(firstCandidateLogs[0]?.detail).toEqual({ ms: expect.any(Number) });
+  });
+});
+
+describe('SDK path streaming and abort', () => {
+  let previousApiKey: string | undefined;
+
+  beforeEach(() => {
+    previousApiKey = process.env.ANTHROPIC_API_KEY;
+    process.env.ANTHROPIC_API_KEY = 'test-key';
+    delete process.env.QQ_MODEL;
+    delete process.env.QQ_FORCE_SELECTOR;
+    createMock.mockReset();
+    anthropicCtorMock.mockClear();
+    runClaudeTurnMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReset();
+    readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
+    appendDebugLogMock.mockClear();
+    resetAnthropicClientCache();
+  });
+
+  afterEach(() => {
+    if (previousApiKey === undefined) {
+      delete process.env.ANTHROPIC_API_KEY;
+    } else {
+      process.env.ANTHROPIC_API_KEY = previousApiKey;
+    }
+  });
+
+  it('passes the abort signal and the remaining budget to the SDK stream request', async () => {
+    sdkSuccess();
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const controller = new AbortController();
+
+    await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { signal: controller.signal });
+
+    const requestOptions = sdkRequestOptions();
+    expect(requestOptions.signal).toBe(controller.signal);
+    expect(requestOptions.timeout).toBeLessThanOrEqual(25_000);
+    expect(requestOptions.timeout).toBeGreaterThan(24_000);
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
+  });
+
+  it('hands streamed SDK candidates to onCandidate through claudeDefaultAdapter', async () => {
+    const answer =
+      '[{"command":"git status","explanation":"Show repo status"},{"command":"git diff","explanation":"Show changes"}]';
+    sdkStream({ pieces: [answer.slice(0, 30), answer.slice(30, 70), answer.slice(70)] });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const onCandidate = vi.fn();
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(onCandidate.mock.calls.map((call) => call[0])).toEqual([
+      { command: 'git status', explanation: 'Show repo status' },
+      { command: 'git diff', explanation: 'Show changes' },
+    ]);
+    expect(result).toEqual(onCandidate.mock.calls.map((call) => call[0]));
+  });
+
+  it('re-throws an aborted SDK request unmapped, never as the timeout or D13 copy', async () => {
+    sdkStream({ pieces: [CANDIDATE_JSON.slice(0, 20)], hangUntilAbort: true });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const controller = new AbortController();
+
+    const pending = claudeDefaultAdapter
+      .fetchCandidates(buildEnvelope(), { signal: controller.signal })
+      .catch((caught: unknown) => caught);
+    await vi.waitFor(() => {
+      expect(streamMock).toHaveBeenCalled();
+    });
+    controller.abort();
+    const error = await pending;
+
+    expect(isAbortError(error)).toBe(true);
+    expect((error as Error).message).not.toMatch(/timed out/i);
+    expect((error as Error).message).not.toMatch(D13_LOGIN);
+    expect((error as Error).message).not.toMatch(D13_KEY);
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
+    const providerMessages = appendDebugLogMock.mock.calls
+      .filter((call) => call[0] === 'provider')
+      .map((call) => String(call[1]));
+    expect(providerMessages).toContain('request aborted');
+    expect(providerMessages).not.toContain('request failed');
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toMatch(FORBIDDEN_DEBUG);
   });
 });

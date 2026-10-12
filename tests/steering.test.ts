@@ -239,7 +239,13 @@ describe('adapters', () => {
   });
 
   it('adapters: (b) every file that hands a system prompt to a model uses buildSystemPrompt', () => {
-    const modelCalls = ['messages.create(', "'--system-prompt'", '/api/chat', 'chat/completions'];
+    const modelCalls = [
+      'messages.create(',
+      'messages.stream(',
+      "'--system-prompt'",
+      '/api/chat',
+      'chat/completions',
+    ];
     for (const [name, source] of sources) {
       if (modelCalls.some((marker) => source.includes(marker))) {
         expect(source, `${name} sends a system prompt without buildSystemPrompt(`).toContain(
