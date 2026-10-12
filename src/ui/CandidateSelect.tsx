@@ -59,6 +59,11 @@ function linePrefix(active: boolean, lineIndex: number): string {
  */
 interface Props {
   candidates: readonly DisplayCandidate[] | null;
+  /**
+   * The lbuffer (the text left of `??`). Shown only as the dim `queque ›` header and counted
+   * as the header row by the layout estimator. It never seeds or filters FILTER, which opens
+   * empty (G-09.1-5; superseded 03.1 D-01/D-02).
+   */
   initialQuery?: string;
   onSelect: (command: string, explanation: string) => void;
   onCancel: () => void;
@@ -106,7 +111,9 @@ export function CandidateSelect({
   const modalWidth = Math.min(MODAL_MAX_WIDTH, stdout.columns || MODAL_MAX_WIDTH);
   const contentWidth = modalWidth - MODAL_PADDING_X - ROW_GUTTER.length;
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [query, setQuery] = useState(initialQuery ?? '');
+  // FILTER opens empty (G-09.1-5): the lbuffer is already the `queque ›` header, and only
+  // keystrokes change the query, so text typed while `thinking…` shows is the whole filter.
+  const [query, setQuery] = useState('');
   // Third useState (tests index state by call order): keys (candidateKey) of rows showing
   // their install form. Eager initial value — the test mock never calls lazy initializers.
   const [installToggled, setInstallToggled] = useState<ReadonlySet<string>>(new Set());
@@ -122,16 +129,12 @@ export function CandidateSelect({
   });
 
   // Candidate arrival. Rows stream in (09.1 D-05): run-foreground rerenders with a new array
-  // per arrived row, then once with the final list.
-  // - First arrival (loading → rows): reset selection and Tab toggles (Pitfall 2 fix, D-09),
-  //   and clear the initialQuery pre-filter if it matches nothing — the lbuffer was already
-  //   used as context for Claude; filtering candidates by it too is harmful when no command
-  //   literally contains the lbuffer text. Text the user typed while `thinking…` showed is
-  //   never cleared: with streaming the first array is a single row, and a typed filter
-  //   keeps applying to the rows that follow (D-09, review WR-04).
+  // per arrived row, then once with the final list. Arrival never touches the query: FILTER
+  // starts empty (G-09.1-5) and only keystrokes change it, so a filter typed while
+  // `thinking…` showed keeps applying to every row that arrives, matching or not (D-09).
+  // - First arrival (loading → rows): reset selection and Tab toggles (Pitfall 2 fix, D-09).
   // - Later arrival: keep the highlighted row by candidateKey (D-06) and the Tab toggles
-  //   (keyed by candidateKey). The zero-match clear runs only while the user has not typed,
-  //   so a typed filter keeps applying to later rows (D-09, Pitfall 9).
+  //   (keyed by candidateKey), or clamp the index onto the visible rows (review WR-06).
   // This runs during render (React's "adjust state when a prop changes" pattern), not in
   // an effect: an effect would commit one stale render first, and the layout effect would
   // report that render's 'no matches' height to Zellij (G-09-7). React discards this
@@ -146,27 +149,9 @@ export function CandidateSelect({
       if (installToggled.size > 0) {
         setInstallToggled(new Set());
       }
-      // Toggles are being cleared, so the filter matches the plain commands.
-      if (
-        candidates &&
-        candidates.length > 0 &&
-        query === (initialQuery ?? '') &&
-        filterCandidates(candidates, query).length === 0
-      ) {
-        setQuery('');
-      }
     } else if (candidates !== null) {
       const highlighted = filterCandidates(prevCandidates, query)[selectedIndex];
-      let nextQuery = query;
-      if (
-        query === (initialQuery ?? '') &&
-        candidates.length > 0 &&
-        filterCandidates(candidates, query).length === 0
-      ) {
-        nextQuery = '';
-        setQuery('');
-      }
-      const visible = filterCandidates(candidates, nextQuery);
+      const visible = filterCandidates(candidates, query);
       const highlightedKey = highlighted === undefined ? undefined : candidateKey(highlighted);
       const kept =
         highlightedKey === undefined
@@ -191,8 +176,9 @@ export function CandidateSelect({
 
   // A query the user changes (typing, Backspace) resets the selection to the first visible
   // row in the key handlers below, in the same update as the query. Not a `[query]` effect:
-  // that also fired after the arrival branch's own query clear and undid the index it had
-  // just chosen (review WR-05), and it committed one render with the stale index first.
+  // that also fired after the arrival branch's former query clear (removed in G-09.1-5) and
+  // undid the index it had just chosen (review WR-05), and it committed one render with the
+  // stale index first.
 
   const includeDevFooter = process.env.QQ_DEV_ROOT != null;
 

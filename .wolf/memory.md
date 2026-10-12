@@ -2797,3 +2797,9 @@
 | 14:38 | Edited tests/candidate-select-layout.test.tsx | added nullish coalescing | ~1594 |
 | 14:39 | Created ../../../../tmp/wolf-clean-0911-09.py | — | ~496 |
 | 14:40 | 09.1-09 T1 RED: G-09.1-5 real-Ink describe (UAT case, empty lbuffer, typed=lbuffer); UAT + typed=lbuffer fail on the FILTER line (lbuffer seed), empty-lbuffer passes; RED_EVIDENCE_OK | tests/candidate-select-layout.test.tsx | RED confirmed | ~3000 |
+| 14:40 | Edited src/ui/CandidateSelect.tsx | 2→7 lines | ~93 |
+| 14:40 | Edited src/ui/CandidateSelect.tsx | modified empty() | ~65 |
+| 14:40 | Edited src/ui/CandidateSelect.tsx | CSS: query | ~190 |
+| 14:40 | Edited src/ui/CandidateSelect.tsx | modified if() | ~75 |
+| 14:40 | Edited src/ui/CandidateSelect.tsx | 2→3 lines | ~60 |
+| 14:43 | 09.1-09 T1 GREEN: query state seeded with an empty string, both arrival zero-match clears removed, initialQuery JSDoc (header + estimator only); G-09.1-5 describe 3/3 green, typecheck clean; (d)/(e) smt2/WR-04/mocked zero-match now fail as planned for Task 2 | src/ui/CandidateSelect.tsx | GREEN | ~2500 |
