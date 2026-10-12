@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T04:00:41.510Z
-> Files: 424 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T04:19:58.960Z
+> Files: 426 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -583,6 +583,11 @@
 - `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~6301 tok)
 - `COVERAGE.md` — No external API integration declaration for Phase 9 (~44 tok)
 - `deferred-items.md` — Phase 09 — Deferred Items (~280 tok)
+
+## .planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
+- `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
