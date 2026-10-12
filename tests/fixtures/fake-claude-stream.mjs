@@ -13,7 +13,8 @@
 // Scenarios: success, auth, sigterm-slow (plan 01); hang-after-result, exit-no-result,
 // die-before-init, stderr-flood, stdout-flood (plan 06, failure paths); ignore-eof
 // (plan 05, prewarm retire backstop: ignores stdin EOF and SIGTERM, only SIGKILL ends it);
-// hang-before-init (review WR-02: a stale prewarm that stalls before `init`).
+// hang-before-init (review WR-02: a stale prewarm that stalls before `init`); refusal,
+// null-stop-reason, stop-sequence, no-stop-reason (review WR-01-r2: result stop_reason).
 // New scenarios slot into SCENARIOS without touching the existing ones.
 import { writeFileSync } from 'node:fs';
 
@@ -153,7 +154,59 @@ async function writeSuccessTurn() {
   });
 }
 
+const REFUSAL_FRAGMENT = '[{"command": "find . -name';
+
+/**
+ * One turn whose answer is `text`, ending with `stopReason` (review WR-01-r2). The
+ * message_delta and the result carry the stop_reason key only when it is not undefined;
+ * null is written as JSON null. Then exits 0 after 300 ms, like `success`.
+ */
+async function writeStopReasonTurn(text, stopReason) {
+  writeLine(initEvent());
+  writeLine(
+    streamEvent({
+      type: 'content_block_start',
+      index: 0,
+      content_block: { type: 'text', text: '' },
+    }),
+  );
+  writeLine(textDelta(text));
+  writeLine(assistantMessage(text));
+  writeLine(streamEvent({ type: 'content_block_stop', index: 0 }));
+  if (stopReason !== undefined) {
+    writeLine(streamEvent({ type: 'message_delta', delta: { stop_reason: stopReason } }));
+  }
+  writeLine(streamEvent({ type: 'message_stop' }));
+  writeLine({
+    type: 'result',
+    subtype: 'success',
+    is_error: false,
+    ...(stopReason !== undefined ? { stop_reason: stopReason } : {}),
+    result: text,
+    session_id: SESSION_ID,
+  });
+  await sleep(300);
+  process.exit(0);
+}
+
 const SCENARIOS = {
+  async refusal() {
+    await writeStopReasonTurn(REFUSAL_FRAGMENT, 'refusal');
+  },
+
+  async 'null-stop-reason'() {
+    await writeStopReasonTurn(REFUSAL_FRAGMENT, null);
+  },
+
+  async 'stop-sequence'() {
+    await writeStopReasonTurn(SUCCESS_ANSWER, 'stop_sequence');
+  },
+
+  async 'no-stop-reason'() {
+    // Older Claude Code builds write no stop_reason on `result`: treated as end_turn.
+    await writeStopReasonTurn(SUCCESS_ANSWER, undefined);
+  },
+
   async success() {
     await writeSuccessTurn();
     await sleep(300);

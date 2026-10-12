@@ -22,6 +22,11 @@ export const streamJsonResultSchema = z.object({
   result: z.string().optional(),
   subtype: z.string().optional(),
   duration_api_ms: z.number().optional(),
+  /**
+   * Claude Code 2.1.285 records it on `result` (Probe 2, `"end_turn"`); older builds and the
+   * Probe 3 auth result leave it out. Null is kept so the runner can fail closed on it.
+   */
+  stop_reason: z.string().nullable().optional(),
 });
 
 export type StreamJsonResult = z.infer<typeof streamJsonResultSchema>;

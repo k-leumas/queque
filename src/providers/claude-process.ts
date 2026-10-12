@@ -1,7 +1,7 @@
 import { type ChildProcess, type ChildProcessByStdio, spawn } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
 import { StringDecoder } from 'node:string_decoder';
-import { abortError } from './provider.js';
+import { abortError, isNormalStopReason } from './provider.js';
 import {
   buildStreamJsonUserLine,
   createLineParser,
@@ -59,7 +59,8 @@ export type ClaudeTurnFailureReason =
   | 'timeout'
   | 'spawn-error'
   | 'invalid-result'
-  | 'stale-prewarm';
+  | 'stale-prewarm'
+  | 'truncated';
 
 /** Same fields as the old claude-exec SpawnFailure, so claude-default maps it unchanged. */
 export interface ClaudeTurnFailure extends Error {
@@ -68,6 +69,8 @@ export interface ClaudeTurnFailure extends Error {
   signal?: NodeJS.Signals | string | null;
   stdout?: string;
   stderr?: string;
+  /** The `result` event's stop_reason; set on a `truncated` failure (WR-01-r2). */
+  stopReason?: string | null;
   reason: ClaudeTurnFailureReason;
   sawInit: boolean;
 }
@@ -175,8 +178,11 @@ export function terminateChild(child: ChildProcess, graceMs: number = SIGKILL_GR
  * Rejects with abortError() on abort, a `timeout` failure past `budgetMs` (at kill time,
  * not at exit), an `is-error` failure carrying the result text as `stdout` (the auth
  * message, so it never reaches parseCandidates), a `spawn-error` (ENOENT), an
- * `invalid-result` (also a stdout line past the carry cap), `exit-without-result`, or
- * `stale-prewarm` (no `init` within `initDeadlineMs` of the write).
+ * `invalid-result` (also a stdout line past the carry cap), `exit-without-result`,
+ * `stale-prewarm` (no `init` within `initDeadlineMs` of the write), or `truncated` (a
+ * result whose stop_reason is present and not end_turn or stop_sequence, WR-01-r2),
+ * carrying the result text as `stdout` and the value as `stopReason`, so it never reaches
+ * parseCandidates on its own.
  * The turn settles exactly once: nothing the child writes after it settles reaches
  * `onTextDelta` or `onStage`, except the final `exit` stage, and a later kill, `exit` or
  * `close` never re-settles it.
@@ -362,6 +368,25 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
               signal: null,
               stdout: parsed.data.result ?? '',
               stderr,
+            }),
+          ),
+        );
+        return;
+      }
+      // Review WR-01-r2 (T-09.1-14): a result with no stop_reason key counts as end_turn, for
+      // Claude Code builds that predate the key. Null and every value isNormalStopReason
+      // rejects fail closed as `truncated`, so a cut-off fragment never resolves as an answer.
+      const stopReason = parsed.data.stop_reason;
+      if (stopReason !== undefined && !isNormalStopReason(parsed.data.stop_reason)) {
+        finish(() =>
+          reject(
+            turnFailure('Command failed: claude', 'truncated', sawInit, {
+              code: null,
+              killed: false,
+              signal: null,
+              stdout: parsed.data.result ?? '',
+              stderr,
+              stopReason,
             }),
           ),
         );

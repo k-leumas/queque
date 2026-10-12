@@ -165,6 +165,49 @@ describe('runClaudeTurn', () => {
   });
 });
 
+// The `result` stop_reason gate (review WR-01-r2, T-09.1-14): only end_turn and
+// stop_sequence resolve; an absent key counts as end_turn for older Claude Code builds.
+describe('runClaudeTurn result stop_reason (WR-01-r2)', () => {
+  const FRAGMENT = '[{"command": "find . -name';
+
+  it('rejects a refusal result as truncated with the fragment as stdout', async () => {
+    const { promise, stages } = startTurn('refusal');
+
+    const error = (await promise.catch((caught: unknown) => caught)) as ClaudeTurnFailure;
+
+    expect(error).toBeInstanceOf(Error);
+    expect(error.reason).toBe('truncated');
+    expect(error.stopReason).toBe('refusal');
+    expect(error.stdout).toBe(FRAGMENT);
+    expect(error.killed).toBe(false);
+    expect(stageNames(stages)).not.toContain('result');
+    await vi.waitFor(() => expect(stageNames(stages)).toContain('exit'), { timeout: 5000 });
+  });
+
+  it('rejects a null stop_reason as truncated', async () => {
+    const { promise } = startTurn('null-stop-reason');
+
+    const error = (await promise.catch((caught: unknown) => caught)) as ClaudeTurnFailure;
+
+    expect(error.reason).toBe('truncated');
+    expect(error.stopReason).toBeNull();
+    expect(error.stdout).toBe(FRAGMENT);
+  });
+
+  it('resolves a stop_sequence result', async () => {
+    const { promise, stages } = startTurn('stop-sequence');
+
+    await expect(promise).resolves.toBe(SUCCESS_ANSWER);
+    expect(stageNames(stages)).toContain('result');
+  });
+
+  it('resolves a result with no stop_reason key (older Claude Code builds)', async () => {
+    const { promise } = startTurn('no-stop-reason');
+
+    await expect(promise).resolves.toBe(SUCCESS_ANSWER);
+  });
+});
+
 // Failure paths (plan 06, D-04/D-13): each ends in the shape claude-default maps to
 // today's copy, against a real child. Stage order and failure shapes only, no timings.
 describe('runClaudeTurn failure paths', () => {

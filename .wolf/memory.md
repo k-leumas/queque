@@ -2892,3 +2892,4 @@
 | 16:24 | Session end: 78 writes across 26 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 52 reads | ~276618 tok |
 | 16:33 | CR-02 override recorded (user decision), comment + ROADMAP corrected, disposition deferred, fingerprint recomputed → human_needed | 09.1-VERIFICATION.md, CandidateSelect.tsx | done | ~15k |
 | 17:12 | quick 261012-nlf T1: isNormalStopReason allow list + finalCandidateList; SDK fails closed on every non-normal stop (WR-01-r2) | provider.ts, claude.ts, claude-provider.test.ts | 46/46 green | ~12k |
+| 17:14 | quick 261012-nlf T2: claude -p result stop_reason gate, 'truncated' runner failure + 4 fixture scenarios (WR-01-r2) | stream-json.ts, claude-process.ts, fake-claude-stream.mjs, claude-process.test.ts | 33/33 green | ~10k |
