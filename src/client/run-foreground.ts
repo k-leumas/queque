@@ -394,6 +394,22 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               const message = err instanceof Error ? err.message : String(err);
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;
+              // D-16: rows already on screen stay selectable under a dim "list may be
+              // incomplete" note; the user picks one or presses Esc through the normal
+              // onSelect/onCancel path. The error view shows only when no row arrived.
+              if (streamed.length > 0) {
+                void appendDebugLog('client', 'llm request failed after rows', {
+                  count: streamed.length,
+                });
+                app.rerender(
+                  buildCandidateElement(
+                    annotateCandidates([...streamed], toolInventory),
+                    undefined,
+                    'partial',
+                  ),
+                );
+                return;
+              }
               resolved = true;
               // Clears the instant frame only if Ink never drew (a no-op after its first frame,
               // so the skipClear behaviour below is unchanged).

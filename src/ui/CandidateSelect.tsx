@@ -12,6 +12,7 @@ import {
   explanationText,
   filterCandidates,
   heldPaneLines,
+  INCOMPLETE_LIST_NOTE,
   MISSING_TOOL_MARK,
   missingToolsLegend,
   wrapText,
@@ -394,9 +395,13 @@ export function CandidateSelect({
       )}
       <SearchInput query={query} />
       {content}
-      {/* D-08: while rows stream in, the spinner sits directly under the last row block, whose
-          own bottom margin is the gap (LIST_STATUS_ROW_LINES), so it has no margin of its own. */}
+      {/* The status row sits directly under the last row block, whose own bottom margin is the
+          gap (LIST_STATUS_ROW_LINES), so it has no margin of its own: the spinner while rows
+          stream in (D-08), the dim incomplete note after a late failure (D-16). */}
       {candidates !== null && error !== true && listState === 'arriving' && <LoadingSpinner />}
+      {candidates !== null && error !== true && listState === 'partial' && (
+        <Text dimColor>{INCOMPLETE_LIST_NOTE}</Text>
+      )}
       {showDestructiveWarning && (
         <Box marginTop={1}>
           <Text color="yellow">{DESTRUCTIVE_WARNING_TEXT}</Text>

@@ -214,8 +214,9 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
         lines += 1; // marginBottom per candidate block
       }
     }
-    if (input.listState === 'arriving') {
-      lines += LIST_STATUS_ROW_LINES; // spinner row under the arrived rows (D-08)
+    if (input.listState === 'arriving' || input.listState === 'partial') {
+      // Spinner (D-08) or incomplete note (D-16) under the arrived rows.
+      lines += LIST_STATUS_ROW_LINES;
     }
   }
 
