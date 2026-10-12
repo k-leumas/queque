@@ -1,3 +1,58 @@
+# Changelog
+
+All notable changes to this project are documented in this file.
+
+Highlights describe how QueQue got better. Expand **Detailed changes** for the commit list.
+
+## [Unreleased]
+
+### Features
+
+- **Suggestions appear as they arrive.** You no longer wait for the full model response to see the first command. Rows show up in the list as soon as they are ready, and you can pick one even if the rest are still coming.
+- **Esc actually stops the wait.** Cancelling during `thinking…` stops the provider request instead of leaving it running in the background.
+- **Claude Code answers get out of the way faster.** A warm `claude` process stays ready in the daemon, and queries run at a low-effort default you can raise in `config.json` — so ordinary `??` lookups spend less time thinking.
+- **A late failure still leaves you a list.** If the request dies after some rows arrived, those rows stay selectable instead of the modal going empty.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **09.1-04:** send the effort setting as output_config on the SDK path ([6fbce51](https://github.com/k-leumas/queque/commit/6fbce51a7188faeb7888faaa7d9fc8f9d3fb2b18))
+* **09.1-07:** keep arrived rows selectable after a late provider failure ([3ece3aa](https://github.com/k-leumas/queque/commit/3ece3aaa21afedff7347ff95025503a004b7c037))
+* **09.1-05:** use the prewarmed claude -p process in the daemon and refill it ([5534823](https://github.com/k-leumas/queque/commit/5534823dc5e59f24c2e4aa821dfcf45f5f50d49b))
+* **09.1-07:** render streamed rows as a growing list in the modal ([4254ffd](https://github.com/k-leumas/queque/commit/4254ffdb2fbdbefbd6a3ab94afdea172fa1eb536))
+* **09.1-04:** stream the SDK request with abort and incremental candidates ([f73f5d4](https://github.com/k-leumas/queque/commit/f73f5d49c1896d1df823b9300545c65a63a1f0c7))
+* **09.1-05:** run a turn on a prewarmed child and keep a one-slot prewarm pool ([f4cf882](https://github.com/k-leumas/queque/commit/f4cf882ed4aca002411f4b5bd381a879576d1997))
+* **09.1-06:** bound the claude -p runner and arm the post-result backstop ([8d3b81d](https://github.com/k-leumas/queque/commit/8d3b81d2d2331423b6f517b3dc5706cb0d73025a))
+* **09.1-03:** never re-query in-process after streamed rows arrived ([7f89384](https://github.com/k-leumas/queque/commit/7f893846b6226c4cc600d40bebb1954d25ac9f3a))
+* **09.1-02:** stream validated claude -p candidates as they arrive ([388c6bc](https://github.com/k-leumas/queque/commit/388c6bc53995ceba08e758710226430c0a6edfd7))
+* **09.1-03:** stream each candidate to a stream:true client over IPC ([b421548](https://github.com/k-leumas/queque/commit/b4215488944e236efa6b9108675c2b628cbac210))
+* **09.1-06:** cap the stream-json parser carry at 1 MiB ([fa9d062](https://github.com/k-leumas/queque/commit/fa9d06276159c5aefc069fa2216931f843bcf078))
+* **09.1-02:** run claude -p at low effort, overridable in config.json ([97b60cb](https://github.com/k-leumas/queque/commit/97b60cb8a2725d94f4f5fb8aeb3c32f5d0499d41))
+* **09.1-01:** log each claude -p turn stage with elapsed ms ([6fc2b3c](https://github.com/k-leumas/queque/commit/6fc2b3c4269a881b7aec09f4fb1810feff9592b3))
+* **09.1-01:** cancel the claude -p turn on Esc and resolve it on the stream-json result ([0b358bb](https://github.com/k-leumas/queque/commit/0b358bb747dbc1e06b4b0278ea74c7c72b7ea8e2))
+
+</details>
+
+### Bug Fixes
+
+- **FILTER starts empty.** The text you already typed stays in the header; the filter box opens blank so you can narrow the list without fighting a pre-filled query.
+- **Typing during `thinking…` still filters.** Text you enter while rows are arriving is the whole filter, not an append onto the original query.
+- **The list does not lose your place.** Arrowing through an empty filter, streamed updates, and Tab toggles keep a valid selection instead of jumping or highlighting nothing.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **09.1-09:** open the filter empty and show the lbuffer only in the header (G-09.1-5) ([6888d4d](https://github.com/k-leumas/queque/commit/6888d4d6e3b476855d05111f5f06f0db6b043abe))
+* **09.1:** fail closed on a truncated sdk answer and raise max_tokens (WR-07) ([b9bc1b3](https://github.com/k-leumas/queque/commit/b9bc1b3f4470b5d6ab880f00ea26a3a0f47e42a7))
+* **09.1:** keep the selection index valid on an empty filtered list (WR-06) ([2776f9a](https://github.com/k-leumas/queque/commit/2776f9ac490c799450fa6a938534273a3a99cac5))
+* **09.1:** reset the selection in the key handlers, not a query effect (WR-05) ([a1eef40](https://github.com/k-leumas/queque/commit/a1eef40fc7f8d418f9d6ab56721115246decef96))
+* **09.1:** keep a filter typed during loading on the first streamed row (WR-04) ([17bf7d3](https://github.com/k-leumas/queque/commit/17bf7d3e55248394749b1cafdf8f2c2f5ee5222f))
+* **09.1:** disable prewarm and abort in-flight turns on daemon shutdown (WR-03) ([c66ce51](https://github.com/k-leumas/queque/commit/c66ce5164760b9162196e861c6775878420c88db))
+* **09.1:** retry a prewarmed child that stalls before init cold (WR-02) ([5ed66aa](https://github.com/k-leumas/queque/commit/5ed66aa84d5b6e7c820ad48e67cbda87f97476a5))
+* **09.1:** decode daemon ipc input as utf-8 across chunks (WR-01) ([0175c3e](https://github.com/k-leumas/queque/commit/0175c3e2061d0726ed28c9afeb0a9b10682e4661))
+
+</details>
+
 ## [0.5.2](https://github.com/k-leumas/queque/compare/v0.5.1...v0.5.2) (2026-10-17)
 
 
@@ -14,8 +69,40 @@
 
 # [0.5.0](https://github.com/k-leumas/queque/compare/v0.4.2...v0.5.0) (2026-10-12)
 
+### Features
+
+- **Suggestions prefer tools you already have.** QueQue now asks zsh which commands exist and steers ranked suggestions toward them. A suggestion that needs a missing tool is marked ⓘ, and Tab prepends an install command — nothing is installed until you accept it.
+- **`??` appears immediately.** The modal paints from the shell widget before Node starts, so you see `thinking…` instead of a blank terminal.
+- **Answers are faster when you have an API key.** Requests go through a warm daemon and the Anthropic SDK instead of booting Claude Code on every query. Claude Code `/login` still works on macOS without a key.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **08-01:** implement platform-aware claudeAuthPresent detection ([ddad55b](https://github.com/k-leumas/queque/commit/ddad55bfb5fb9d071cadf2570560df004bb5b400))
+* **08-02:** implement Claude CLI adapter with SDK rescue ([f42dec1](https://github.com/k-leumas/queque/commit/f42dec17137f3fb201109de7cd8bd41e7ab4f67f))
+* **08-02:** resolve Claude default and bypass detect selector ([29d7318](https://github.com/k-leumas/queque/commit/29d7318880b54286ba059743087a4e219d5bf9b6))
+* **08:** fetch via Anthropic SDK first through a warm daemon client ([07738ca](https://github.com/k-leumas/queque/commit/07738ca65661a07b5438afaa11a8bb28336d1fd2))
+* **09-01:** count flag footer and mark overflow rows in the layout ([4fdd6f8](https://github.com/k-leumas/queque/commit/4fdd6f802ab426fc57421416c63ddcb4be85ff61))
+* **09-01:** flag candidates that use tools zsh cannot resolve ([086ba1f](https://github.com/k-leumas/queque/commit/086ba1f076f29c587e8819dab1e43bf02b9278ae))
+* **09-03:** implement catalog chunk schemas and steering builder ([fad6ef3](https://github.com/k-leumas/queque/commit/fad6ef3ed034a97e45b79db9ec1489ec2d82f099))
+* **09-03:** route claude sdk and cli paths through buildSystemPrompt ([f11d400](https://github.com/k-leumas/queque/commit/f11d400d945e9ebaab87e276793348e6218adbe6))
+* **09-04:** implement installer choice, package map and guarded install forms ([b9fa02d](https://github.com/k-leumas/queque/commit/b9fa02dac814162968439327cfc13c2e21bd9295))
+* **09-04:** tab toggles flagged rows to their install form ([22553c5](https://github.com/k-leumas/queque/commit/22553c52802a3e8984298f68ab2578c26bb69061))
+* **09-05:** client sends the validated installed-tools chunk ([c105e57](https://github.com/k-leumas/queque/commit/c105e5762f0edd502b4aa25c3c7b19c6b297b534))
+* **09-05:** pong advertises installedTools so stale daemons get replaced ([f225215](https://github.com/k-leumas/queque/commit/f225215c89c1a59e692a9308024c2c2af7e9a774))
+* **quick-261011-jbh:** paint an instant frame from the zsh widget ([f16212f](https://github.com/k-leumas/queque/commit/f16212f8bbfdc9ad4328f4549e3fc5d7adee1b9c))
+* **quick-261011-jbh:** bundle the client behind a compile-cache launcher ([e8e3127](https://github.com/k-leumas/queque/commit/e8e3127f80ef0668e5e6990929cd8c94f2d6008a))
+
+</details>
 
 ### Bug Fixes
+
+- **The Zellij modal stays readable.** The floating pane no longer empties, clips the header, or shrinks while you filter, and height changes apply in order.
+- **Missing-tool UI stays still.** ⓘ sits on the explanation, the legend does not jump when you move the selection, and undoing Tab keeps the row on screen.
+- **Install hints match your OS.** Linux is not offered Homebrew package names, apt will not suggest packages that are not in Debian, and install forms ignore comments and heredocs.
+
+<details>
+<summary>Detailed changes</summary>
 
 * **08-02:** build execFileAsync on spawn so stdin is ignored ([264d430](https://github.com/k-leumas/queque/commit/264d430e835666514eaea481041e50ff49e845ea))
 * **09-05:** drop the tab chip from the controls; the ⓘ legend explains tab ([88b08dc](https://github.com/k-leumas/queque/commit/88b08dc1fc80f5256d6a1ab2541d6dc888f1438d))
@@ -37,42 +124,51 @@
 * **quick-261011-e43:** reserve a pane row for Ink's cursor line ([dbcbdd7](https://github.com/k-leumas/queque/commit/dbcbdd75c03e6d688fc3ac00947bb406367676d8))
 * **quick-261011-f9o:** hold the zellij pane height while filtering ([bd0c426](https://github.com/k-leumas/queque/commit/bd0c4265521dc84f6b96cfa19fdbe3a5b0e1d909))
 
-
-### Features
-
-* **08-01:** implement platform-aware claudeAuthPresent detection ([ddad55b](https://github.com/k-leumas/queque/commit/ddad55bfb5fb9d071cadf2570560df004bb5b400))
-* **08-02:** implement Claude CLI adapter with SDK rescue ([f42dec1](https://github.com/k-leumas/queque/commit/f42dec17137f3fb201109de7cd8bd41e7ab4f67f))
-* **08-02:** resolve Claude default and bypass detect selector ([29d7318](https://github.com/k-leumas/queque/commit/29d7318880b54286ba059743087a4e219d5bf9b6))
-* **08:** fetch via Anthropic SDK first through a warm daemon client ([07738ca](https://github.com/k-leumas/queque/commit/07738ca65661a07b5438afaa11a8bb28336d1fd2))
-* **09-01:** count flag footer and mark overflow rows in the layout ([4fdd6f8](https://github.com/k-leumas/queque/commit/4fdd6f802ab426fc57421416c63ddcb4be85ff61))
-* **09-01:** flag candidates that use tools zsh cannot resolve ([086ba1f](https://github.com/k-leumas/queque/commit/086ba1f076f29c587e8819dab1e43bf02b9278ae))
-* **09-03:** implement catalog chunk schemas and steering builder ([fad6ef3](https://github.com/k-leumas/queque/commit/fad6ef3ed034a97e45b79db9ec1489ec2d82f099))
-* **09-03:** route claude sdk and cli paths through buildSystemPrompt ([f11d400](https://github.com/k-leumas/queque/commit/f11d400d945e9ebaab87e276793348e6218adbe6))
-* **09-04:** implement installer choice, package map and guarded install forms ([b9fa02d](https://github.com/k-leumas/queque/commit/b9fa02dac814162968439327cfc13c2e21bd9295))
-* **09-04:** tab toggles flagged rows to their install form ([22553c5](https://github.com/k-leumas/queque/commit/22553c52802a3e8984298f68ab2578c26bb69061))
-* **09-05:** client sends the validated installed-tools chunk ([c105e57](https://github.com/k-leumas/queque/commit/c105e5762f0edd502b4aa25c3c7b19c6b297b534))
-* **09-05:** pong advertises installedTools so stale daemons get replaced ([f225215](https://github.com/k-leumas/queque/commit/f225215c89c1a59e692a9308024c2c2af7e9a774))
-* **quick-261011-jbh:** paint an instant frame from the zsh widget ([f16212f](https://github.com/k-leumas/queque/commit/f16212f8bbfdc9ad4328f4549e3fc5d7adee1b9c))
-
-
-### Performance Improvements
-
-* **quick-261011-jbh:** bundle the client behind a compile-cache launcher ([e8e3127](https://github.com/k-leumas/queque/commit/e8e3127f80ef0668e5e6990929cd8c94f2d6008a))
+</details>
 
 ## [0.4.2](https://github.com/k-leumas/queque/compare/v0.4.1...v0.4.2) (2026-07-30)
 
-
 ### Bug Fixes
+
+- **Claude suggestions work again.** QueQue no longer sends a sampling parameter current Claude models reject, so `??` stops failing on the default model.
+
+<details>
+<summary>Detailed changes</summary>
 
 * **provider:** remove deprecated temperature param from Anthropic request ([df712a9](https://github.com/k-leumas/queque/commit/df712a94b010212f3b5202d2be52f5fe08312a99))
 * update claude provider to expose model to fix broken test ([2f6f2c5](https://github.com/k-leumas/queque/commit/2f6f2c59ead9dbeb02973cbc65475d6390014244))
+
+</details>
 
 ## [0.4.1](https://github.com/k-leumas/queque/compare/v0.4.0...v0.4.1) (2026-07-29)
 
 # [0.4.0](https://github.com/k-leumas/queque/compare/v0.3.9...v0.4.0) (2026-06-19)
 
+### Features
+
+- **Destructive commands are marked before you accept them.** Suggestions that look like they can delete or overwrite data show a yellow warning, so you can still pick them with eyes open.
+- **Sensitive paths stay off the wire.** Configurable privacy defaults keep those paths out of provider requests and logs.
+- **The Zellij pane fits the list.** The floating pane resizes to the suggestion list instead of leaving a large empty frame.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **06:** harden privacy defaults and registry extension seams ([77eb61c](https://github.com/k-leumas/queque/commit/77eb61c3bad1077477e424cf50c9b236e38d41dd))
+* **privacy:** add configurable privacy defaults across stack ([c372b94](https://github.com/k-leumas/queque/commit/c372b94cdae2f3266e634cb06776553438da7972))
+* **registry:** resolve LLM adapters through provider backend registry ([6c14dd4](https://github.com/k-leumas/queque/commit/6c14dd43aed5aff853f0b201c2279f4a78b6c7ac))
+* **safety:** broaden destructive command detection and pin pnpm 11.8 ([1045a22](https://github.com/k-leumas/queque/commit/1045a22637729d99a055af686cf7162f390ee553))
+* **ui:** add yellow warning mark on destructive candidates ([7e1fdac](https://github.com/k-leumas/queque/commit/7e1fdac78b23e7b6d934f9f5e5f2049eeb70cf8f))
+* **zellij:** resize floating pane to fit modal content ([99adc79](https://github.com/k-leumas/queque/commit/99adc79119e05b59e42ad71a966afd2836783921))
+
+</details>
 
 ### Bug Fixes
+
+- **`qq init` only wires a real install.** It looks for actual shell integration, not any mention of queque in your rc file.
+- **The candidate list stays aligned.** The gutter and selection marker no longer jump as you move through wrapped rows.
+
+<details>
+<summary>Detailed changes</summary>
 
 * **build:** allow esbuild install scripts and ignore stray workspace yaml ([8fcc723](https://github.com/k-leumas/queque/commit/8fcc723b0e2eded1e77fbf43ce6fd08c63a3e0ae))
 * **ci:** allow esbuild and lefthook build scripts in pnpm 11 ([d09bfeb](https://github.com/k-leumas/queque/commit/d09bfeb1b7a8563fb039bf4830b9595534db4217))
@@ -82,15 +178,7 @@
 * **ui:** stabilize candidate list gutter and extend selection tail ([1eb196c](https://github.com/k-leumas/queque/commit/1eb196ce78a86009aeef2341addeb7905835cc86))
 * **zellij:** keep config pane height until candidates load ([1d2b2cd](https://github.com/k-leumas/queque/commit/1d2b2cd7cb9204b240d7a72a905819baa7169f5b))
 
-
-### Features
-
-* **06:** harden privacy defaults and registry extension seams ([77eb61c](https://github.com/k-leumas/queque/commit/77eb61c3bad1077477e424cf50c9b236e38d41dd))
-* **privacy:** add configurable privacy defaults across stack ([c372b94](https://github.com/k-leumas/queque/commit/c372b94cdae2f3266e634cb06776553438da7972))
-* **registry:** resolve LLM adapters through provider backend registry ([6c14dd4](https://github.com/k-leumas/queque/commit/6c14dd43aed5aff853f0b201c2279f4a78b6c7ac))
-* **safety:** broaden destructive command detection and pin pnpm 11.8 ([1045a22](https://github.com/k-leumas/queque/commit/1045a22637729d99a055af686cf7162f390ee553))
-* **ui:** add yellow warning mark on destructive candidates ([7e1fdac](https://github.com/k-leumas/queque/commit/7e1fdac78b23e7b6d934f9f5e5f2049eeb70cf8f))
-* **zellij:** resize floating pane to fit modal content ([99adc79](https://github.com/k-leumas/queque/commit/99adc79119e05b59e42ad71a966afd2836783921))
+</details>
 
 ## [0.3.9](https://github.com/k-leumas/queque/compare/v0.3.8...v0.3.9) (2026-06-09)
 
@@ -112,8 +200,24 @@
 
 # [0.3.0](https://github.com/k-leumas/queque/compare/v0.2.13...v0.3.0) (2026-06-09)
 
+### Features
+
+- **Dev builds show what you are running.** The TUI includes a version and git SHA badge so a local build is obvious next to a Homebrew install.
+
+<details>
+<summary>Detailed changes</summary>
+
+* embed git SHA + version in bundle; show dev badge in TUI ([e8d94bb](https://github.com/k-leumas/queque/commit/e8d94bb8298bffd385533e97f9c19a8258f26222))
+
+</details>
 
 ### Bug Fixes
+
+- **Errors show up on the terminal.** Provider failures print where you can see them, including in zsh and Zellij, instead of disappearing.
+- **The Zellij title no longer stacks or repeats.** The modal keeps a single title row and stays within the terminal width.
+
+<details>
+<summary>Detailed changes</summary>
 
 * **build:** add src/ path to paths watched by the build dashboard script ([1e59602](https://github.com/k-leumas/queque/commit/1e59602c84ced74cb2b54058b9f99b557c7fec34))
 * cap modal width at terminal columns to fix title stacking in zellij ([58a1b96](https://github.com/k-leumas/queque/commit/58a1b969198078dd4f890eb6bd32c0b38179cc54))
@@ -123,53 +227,86 @@
 * use plain print for error so ZLE positions error message above next prompt ([b3fbb85](https://github.com/k-leumas/queque/commit/b3fbb8584c231530fda216a5ac8747faa91fd473))
 * write errors to TTY directly so they are always visible ([8fee954](https://github.com/k-leumas/queque/commit/8fee954423c014229c87bd7928fa2a8c71f11bd8))
 
-
-### Features
-
-* embed git SHA + version in bundle; show dev badge in TUI ([e8d94bb](https://github.com/k-leumas/queque/commit/e8d94bb8298bffd385533e97f9c19a8258f26222))
+</details>
 
 ## [0.2.13](https://github.com/k-leumas/queque/compare/v0.2.12...v0.2.13) (2026-06-04)
 
-
 ### Bug Fixes
+
+- **The Homebrew `qq` binary actually starts.** A symlink install no longer skips `main`, so `??` works from a brew prefix.
+
+<details>
+<summary>Detailed changes</summary>
 
 * resolve symlink in isDirectRun check so Homebrew binary invokes main ([a46d7a5](https://github.com/k-leumas/queque/commit/a46d7a5a52087a7532a2e1c096430a30319b4231))
 
+</details>
+
 ## [0.2.12](https://github.com/k-leumas/queque/compare/v0.2.11...v0.2.12) (2026-06-04)
 
-
 ### Bug Fixes
+
+- **Production stays quiet, and shell install is safer.** Error noise is limited in prod, and the zshrc append will not blindly duplicate integration.
+
+<details>
+<summary>Detailed changes</summary>
 
 * err only logs in prod + add guard for zsh install script append zhrc ([ef82529](https://github.com/k-leumas/queque/commit/ef825293f2aa6123d65d89b8e575b616f255244b))
 * resolve biome lint errors and tighten lefthook to staged files ([9f926c6](https://github.com/k-leumas/queque/commit/9f926c66bde83c5348bc9b4bb55d3134ed328ede))
 
+</details>
+
 ## [0.2.11](https://github.com/k-leumas/queque/compare/v0.2.10...v0.2.11) (2026-05-30)
 
-
 ### Bug Fixes
+
+- **Git hooks are skipped outside a git repo.** Installing the package in a non-repo prefix no longer tries to set up lefthook.
+
+<details>
+<summary>Detailed changes</summary>
 
 * skip lefthook install when not in a git repo ([8035e23](https://github.com/k-leumas/queque/commit/8035e23b03b463adf61f230baa128ffba79dfa29))
 
+</details>
+
 ## [0.2.10](https://github.com/k-leumas/queque/compare/v0.2.9...v0.2.10) (2026-05-30)
 
-
 ### Bug Fixes
+
+- **Homebrew builds the CLI before installing it.** The formula compiles `dist` first so the installed `qq` is a complete binary.
+
+<details>
+<summary>Detailed changes</summary>
 
 * build dist before npm global install in homebrew formula ([6a4b60d](https://github.com/k-leumas/queque/commit/6a4b60d3c4bce091990a382e8128fcb975ca3fa5))
 
+</details>
+
 ## [0.2.9](https://github.com/k-leumas/queque/compare/v0.2.8...v0.2.9) (2026-05-30)
 
-
 ### Bug Fixes
+
+- **Homebrew links `qq` from the npm libexec path.** The formula points at the real binary instead of a missing wrapper.
+
+<details>
+<summary>Detailed changes</summary>
 
 * symlink qq binary directly from npm libexec path in homebrew formula ([3736a05](https://github.com/k-leumas/queque/commit/3736a05228d69378a5a307b1a40befb758e657f1))
 
-## [0.2.8](https://github.com/k-leumas/queque/compare/v0.2.7...v0.2.8) (2026-05-30)
+</details>
 
+## [0.2.8](https://github.com/k-leumas/queque/compare/v0.2.7...v0.2.8) (2026-05-30)
 
 ### Bug Fixes
 
+- **The widget finds the real `qq` binary.** A shell function named `qq` no longer shadows the CLI when the widget resolves it.
+
+<details>
+<summary>Detailed changes</summary>
+
 * use whence -p in widget to bypass qq shell function when resolving binary ([dcc1623](https://github.com/k-leumas/queque/commit/dcc1623e4f70651b6a6bd0231686d5207a2f936b))
+
+</details>
 
 ## [0.2.7](https://github.com/k-leumas/queque/compare/v0.2.6...v0.2.7) (2026-05-30)
 
@@ -187,15 +324,76 @@
 
 # [0.2.0](https://github.com/k-leumas/queque/compare/v0.1.0...v0.2.0) (2026-05-30)
 
-
 ### Features
+
+- **`qq init` sets up shell integration.** The widget script is `queque.zsh`, so install is a command instead of a hand-edited rc snippet.
+
+<details>
+<summary>Detailed changes</summary>
 
 * add qq init command and rename shell script to queque.zsh ([c7a1b56](https://github.com/k-leumas/queque/commit/c7a1b560e50cd14e18f4380758406ecc1699c0e9))
 
+</details>
+
 # 1.0.0 (2026-05-23)
 
+### Features
+
+- **Type `??` on the zsh command line to get ranked shell commands.** Pick one and it returns to your live buffer — QueQue never runs it for you.
+- **A selection UI explains each command.** Filter the list, read what a suggestion does, and accept or cancel without leaving the terminal.
+- **Zellij gets a floating pane; everyone else gets an inline modal.** Either way, cancel restores the prompt you were editing.
+- **A background daemon keeps repeat `??` invocations warm.** You are not paying a full cold start on every question.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **01-01:** implement shell and IPC contracts with socket path helper ([8ba3e29](https://github.com/k-leumas/que-que/commit/8ba3e29e2dfd4136dfc053a28af0943a694b2135))
+* **01-02:** implement zsh ZLE widget with ?? trigger and result application ([6ce8139](https://github.com/k-leumas/que-que/commit/6ce813968bd109d6dfbdde30dc19dfa15379c5f2))
+* **01-03:** implement daemon bootstrap, server, and CLI wiring ([faa5af3](https://github.com/k-leumas/que-que/commit/faa5af3436e9a1a030ecfc4dc4914dbe1e250587))
+* **01-03:** implement foreground client loop, result writer, and client CLI wiring ([4ab40a1](https://github.com/k-leumas/que-que/commit/4ab40a12e1df966814dcf31ceac250ac68683d1e))
+* **02-01:** add request contracts ([9b96f9b](https://github.com/k-leumas/que-que/commit/9b96f9bbfecb5db0fe581b9cc42f6f0c4efa1ef1))
+* **02-01:** implement classifyIntent router ([3e0b195](https://github.com/k-leumas/que-que/commit/3e0b195a38d15416137e18923c7d2cfaf5fb006a))
+* **02-02:** add context pipeline and candidate selection ([3ed1520](https://github.com/k-leumas/que-que/commit/3ed1520b4377d43f9caaf89a7cf6eea3c25be508))
+* **02-02:** add Task 3 — multi-candidate response and minimal selection UI ([a1e8d02](https://github.com/k-leumas/que-que/commit/a1e8d023437772205d6ec89de623fd0d07dfb504))
+* **02-03:** add registry bootstrap for built-in providers ([a8b8e02](https://github.com/k-leumas/que-que/commit/a8b8e02d6589b582dd79a3ddd62fca7651dcada1))
+* **03-01:** create LLMAdapter interface in src/providers/provider.ts ([dc14eec](https://github.com/k-leumas/que-que/commit/dc14eec87a565bfa6c8084ecdd0663c4a18004e3))
+* **03-01:** refactor claude.ts and extend shellResultSchema — tests green ([330c416](https://github.com/k-leumas/que-que/commit/330c41684ca62971613f7459c5aef2ee9fec9ce3))
+* **03-02:** add confidence to NormalizedRequest, error ShellResult on failure, register Claude backend ([bf52146](https://github.com/k-leumas/que-que/commit/bf521460c4ac25e9f3a495641cc16a30c9ed772a))
+* **03-03:** add error) case to both case blocks in qq.zsh (GREEN) ([5a0add7](https://github.com/k-leumas/que-que/commit/5a0add71bd540980562a025a31b26e1684e70a56))
+* **03.1-02:** create Modal.tsx with 80-col width, no footer prop ([3e86b9b](https://github.com/k-leumas/que-que/commit/3e86b9b24b35157bab380ce25145944dcde251e3))
+* **03.1-02:** create SearchInput, ControlsLine, LoadingSpinner components ([d12001d](https://github.com/k-leumas/que-que/commit/d12001d522e96b5d6dacfb0528bc5250fa0d28c3))
+* **03.1-03:** refactor run-foreground to modal-first async with rerender ([2e5d257](https://github.com/k-leumas/que-que/commit/2e5d2577b10f911f82d2fd5aea12aa3439f63358))
+* **03.1-03:** rewrite CandidateSelect with monocle contract ([7187358](https://github.com/k-leumas/que-que/commit/7187358bf7e31845560bcd8a6eda0158e17caafc))
+* **03.2-02:** add Zellij branch to run-foreground.ts ([4b2b993](https://github.com/k-leumas/que-que/commit/4b2b99323ff2cd526e513cc2394371ba9ee74f7f))
+* **03.2-02:** implement FIFO-aware writeShellResult in result-writer.ts ([f44478a](https://github.com/k-leumas/que-que/commit/f44478a296b2edd98252824402edc1fd5f2ac864))
+* **03.2-03:** rewrite qq-question-widget with Zellij FIFO IPC ([5251bdd](https://github.com/k-leumas/que-que/commit/5251bddf46daf18dad08a0399f8c4233d2d7e277))
+* **04:** execute Wave 1 — useEffect reset hook + FIFO error handlers ([c0e5254](https://github.com/k-leumas/que-que/commit/c0e52540a458d88dcf56a875db264e587fc520d2))
+* **260522-vfd:** add DetectedProvider union and detectProvider() waterfall ([1147fbe](https://github.com/k-leumas/que-que/commit/1147fbed0468029298909b6926d7d7f599ded264))
+* **260522-vfd:** wire detectProvider() into run-foreground.ts ([1a66b8b](https://github.com/k-leumas/que-que/commit/1a66b8ba2124f9f0720014292553123b56949e6b))
+* add dev restart watcher ([dd774e7](https://github.com/k-leumas/que-que/commit/dd774e7d92f418dbfc3977e59fabc98e8d4ee516))
+* add non-Zellij inline fallback + cursor placement + explanation flow ([90d2044](https://github.com/k-leumas/que-que/commit/90d204458fc6218ae218df47f15459f1d5389d2d))
+* add non-Zellij inline fallback + cursor placement + explanation flow ([ad4f343](https://github.com/k-leumas/que-que/commit/ad4f343dbea638a78232feaf1124fb2ddb28b9b3))
+* add non-Zellij inline fallback + cursor placement + explanation flow ([ef9fd34](https://github.com/k-leumas/que-que/commit/ef9fd3475c433fbc809449d47c76bd0849cc3c15))
+* **build-dashboard:** add --ignore-paths flag to suppress pre/post build script rebuilds ([7b2957a](https://github.com/k-leumas/que-que/commit/7b2957a52a63072d0f1ba89215e46f2e278964db))
+* **build-dashboard:** add git/worktree/root info header and cap build output at 512KB ([b43bc13](https://github.com/k-leumas/que-que/commit/b43bc1340600509b90c136b248d332541e77768f))
+* **build-dashboard:** force build, self-restart, sha fingerprint, token filter fix ([0825b3e](https://github.com/k-leumas/que-que/commit/0825b3e88ed9c3931de6bc5af4ecff0f73b4882a))
+* **build-dashboard:** read esbuild define block and display resolved values in header ([4563303](https://github.com/k-leumas/que-que/commit/4563303452bc593583a8e95f8d7f85fc984da75c))
+* **build-dashboard:** read esbuild define block, refresh on each build, filter token keys ([bb81beb](https://github.com/k-leumas/que-que/commit/bb81bebe99bc09700b9fdb8d61ffe66083475c27))
+* select available claude model ([b74f2e2](https://github.com/k-leumas/que-que/commit/b74f2e26911317303208d7e344066b231ea51019))
+* show selection summary above PS1 and restore query to LBUFFER ([563b8a9](https://github.com/k-leumas/que-que/commit/563b8a9152eb35a53f85b60184599537a85b7811))
+* tighten shell bridge logging ([e8d8a1d](https://github.com/k-leumas/que-que/commit/e8d8a1d0430b85994c7c886c169e7c28409e391e))
+* **ui:** add forced selector candidate mode ([908fa17](https://github.com/k-leumas/que-que/commit/908fa176bde48e01aa162227fb257a832432151f))
+* **ui:** phase-04 UAT fixes — two-row layout, FILTER label, zellij name, context header ([ac90c65](https://github.com/k-leumas/que-que/commit/ac90c65096994cb7195eee31e3064893a90ecb05))
+
+</details>
 
 ### Bug Fixes
+
+- **The TUI cleans up on cancel and signals.** Leaving the modal does not leave leftover UI on the prompt.
+- **The selected command lands on a fresh prompt.** Accepting a suggestion no longer fights zsh line editing.
+
+<details>
+<summary>Detailed changes</summary>
 
 * **01:** cap per-connection buffer at 64 kb to prevent memory exhaustion (cr-03) ([0b693af](https://github.com/k-leumas/que-que/commit/0b693af21fca9647f3ef84c43687f4898e61f16b))
 * **01:** check qq script exists before spawning daemon to catch missing build (wr-02) ([4726543](https://github.com/k-leumas/que-que/commit/4726543e433491904244badca8d88d05bb6bc1c3))
@@ -251,67 +449,58 @@
 * **ui:** unmount Ink TUI on SIGHUP/SIGTERM to clear terminal artifacts ([599bb99](https://github.com/k-leumas/que-que/commit/599bb99c09af56fcc20a6ed10fc7131004a94d04))
 * **widget:** selected command appears in new PS1 after selection ([b0e5c65](https://github.com/k-leumas/que-que/commit/b0e5c65c04b8e6f3d15e1cea3a652201ffc93aea))
 
+</details>
+
+# [1.1.0](https://github.com/k-leumas/que-que/compare/v1.0.0...v1.1.0) (2026-05-02)
 
 ### Features
+
+- **Early development snapshot (versioning was later reset).** Intent routing and a first candidate-selection UI landed here before the 0.2 numbering.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **02-01:** add request contracts ([9b96f9b](https://github.com/k-leumas/que-que/commit/9b96f9bbfecb5db0fe581b9cc42f6f0c4efa1ef1))
+* **02-01:** implement classifyIntent router ([3e0b195](https://github.com/k-leumas/que-que/commit/3e0b195a38d15416137e18923c7d2cfaf5fb006a))
+* **02-02:** add context pipeline and candidate selection ([3ed1520](https://github.com/k-leumas/que-que/commit/3ed1520b4377d43f9caaf89a7cf6eea3c25be508))
+* **02-03:** add registry bootstrap for built-in providers ([a8b8e02](https://github.com/k-leumas/que-que/commit/a8b8e02d6589b582dd79a3ddd62fca7651dcada1))
+* **ui:** add forced selector candidate mode ([908fa17](https://github.com/k-leumas/que-que/commit/908fa176bde48e01aa162227fb257a832432151f))
+
+</details>
+
+### Bug Fixes
+
+<details>
+<summary>Detailed changes</summary>
+
+* **build:** manually fix linting issues ([8149904](https://github.com/k-leumas/que-que/commit/814990466d6745e81d51bd9c7b7e1fabb4be1b3b))
+
+</details>
+
+# 1.0.0 (2026-05-02)
+
+### Features
+
+- **First cut of the zsh `??` bridge.** The widget, daemon, and result contract existed as a usable prototype before the later 0.x release line.
+
+<details>
+<summary>Detailed changes</summary>
 
 * **01-01:** implement shell and IPC contracts with socket path helper ([8ba3e29](https://github.com/k-leumas/que-que/commit/8ba3e29e2dfd4136dfc053a28af0943a694b2135))
 * **01-02:** implement zsh ZLE widget with ?? trigger and result application ([6ce8139](https://github.com/k-leumas/que-que/commit/6ce813968bd109d6dfbdde30dc19dfa15379c5f2))
 * **01-03:** implement daemon bootstrap, server, and CLI wiring ([faa5af3](https://github.com/k-leumas/que-que/commit/faa5af3436e9a1a030ecfc4dc4914dbe1e250587))
 * **01-03:** implement foreground client loop, result writer, and client CLI wiring ([4ab40a1](https://github.com/k-leumas/que-que/commit/4ab40a12e1df966814dcf31ceac250ac68683d1e))
-* **02-01:** add request contracts ([9b96f9b](https://github.com/k-leumas/que-que/commit/9b96f9bbfecb5db0fe581b9cc42f6f0c4efa1ef1))
-* **02-01:** implement classifyIntent router ([3e0b195](https://github.com/k-leumas/que-que/commit/3e0b195a38d15416137e18923c7d2cfaf5fb006a))
-* **02-02:** add context pipeline and candidate selection ([3ed1520](https://github.com/k-leumas/que-que/commit/3ed1520b4377d43f9caaf89a7cf6eea3c25be508))
 * **02-02:** add Task 3 — multi-candidate response and minimal selection UI ([a1e8d02](https://github.com/k-leumas/que-que/commit/a1e8d023437772205d6ec89de623fd0d07dfb504))
-* **02-03:** add registry bootstrap for built-in providers ([a8b8e02](https://github.com/k-leumas/que-que/commit/a8b8e02d6589b582dd79a3ddd62fca7651dcada1))
-* **03-01:** create LLMAdapter interface in src/providers/provider.ts ([dc14eec](https://github.com/k-leumas/que-que/commit/dc14eec87a565bfa6c8084ecdd0663c4a18004e3))
-* **03-01:** refactor claude.ts and extend shellResultSchema — tests green ([330c416](https://github.com/k-leumas/que-que/commit/330c41684ca62971613f7459c5aef2ee9fec9ce3))
-* **03-02:** add confidence to NormalizedRequest, error ShellResult on failure, register Claude backend ([bf52146](https://github.com/k-leumas/que-que/commit/bf521460c4ac25e9f3a495641cc16a30c9ed772a))
-* **03-03:** add error) case to both case blocks in qq.zsh (GREEN) ([5a0add7](https://github.com/k-leumas/que-que/commit/5a0add71bd540980562a025a31b26e1684e70a56))
-* **03.1-02:** create Modal.tsx with 80-col width, no footer prop ([3e86b9b](https://github.com/k-leumas/que-que/commit/3e86b9b24b35157bab380ce25145944dcde251e3))
-* **03.1-02:** create SearchInput, ControlsLine, LoadingSpinner components ([d12001d](https://github.com/k-leumas/que-que/commit/d12001d522e96b5d6dacfb0528bc5250fa0d28c3))
-* **03.1-03:** refactor run-foreground to modal-first async with rerender ([2e5d257](https://github.com/k-leumas/que-que/commit/2e5d2577b10f911f82d2fd5aea12aa3439f63358))
-* **03.1-03:** rewrite CandidateSelect with monocle contract ([7187358](https://github.com/k-leumas/que-que/commit/7187358bf7e31845560bcd8a6eda0158e17caafc))
-* **03.2-02:** add Zellij branch to run-foreground.ts ([4b2b993](https://github.com/k-leumas/que-que/commit/4b2b99323ff2cd526e513cc2394371ba9ee74f7f))
-* **03.2-02:** implement FIFO-aware writeShellResult in result-writer.ts ([f44478a](https://github.com/k-leumas/que-que/commit/f44478a296b2edd98252824402edc1fd5f2ac864))
-* **03.2-03:** rewrite qq-question-widget with Zellij FIFO IPC ([5251bdd](https://github.com/k-leumas/que-que/commit/5251bddf46daf18dad08a0399f8c4233d2d7e277))
-* **04:** execute Wave 1 — useEffect reset hook + FIFO error handlers ([c0e5254](https://github.com/k-leumas/que-que/commit/c0e52540a458d88dcf56a875db264e587fc520d2))
-* **260522-vfd:** add DetectedProvider union and detectProvider() waterfall ([1147fbe](https://github.com/k-leumas/que-que/commit/1147fbed0468029298909b6926d7d7f599ded264))
-* **260522-vfd:** wire detectProvider() into run-foreground.ts ([1a66b8b](https://github.com/k-leumas/que-que/commit/1a66b8ba2124f9f0720014292553123b56949e6b))
 * add dev restart watcher ([dd774e7](https://github.com/k-leumas/que-que/commit/dd774e7d92f418dbfc3977e59fabc98e8d4ee516))
-* add non-Zellij inline fallback + cursor placement + explanation flow ([90d2044](https://github.com/k-leumas/que-que/commit/90d204458fc6218ae218df47f15459f1d5389d2d))
-* add non-Zellij inline fallback + cursor placement + explanation flow ([ad4f343](https://github.com/k-leumas/que-que/commit/ad4f343dbea638a78232feaf1124fb2ddb28b9b3))
-* add non-Zellij inline fallback + cursor placement + explanation flow ([ef9fd34](https://github.com/k-leumas/que-que/commit/ef9fd3475c433fbc809449d47c76bd0849cc3c15))
-* **build-dashboard:** add --ignore-paths flag to suppress pre/post build script rebuilds ([7b2957a](https://github.com/k-leumas/que-que/commit/7b2957a52a63072d0f1ba89215e46f2e278964db))
-* **build-dashboard:** add git/worktree/root info header and cap build output at 512KB ([b43bc13](https://github.com/k-leumas/que-que/commit/b43bc1340600509b90c136b248d332541e77768f))
-* **build-dashboard:** force build, self-restart, sha fingerprint, token filter fix ([0825b3e](https://github.com/k-leumas/que-que/commit/0825b3e88ed9c3931de6bc5af4ecff0f73b4882a))
-* **build-dashboard:** read esbuild define block and display resolved values in header ([4563303](https://github.com/k-leumas/que-que/commit/4563303452bc593583a8e95f8d7f85fc984da75c))
-* **build-dashboard:** read esbuild define block, refresh on each build, filter token keys ([bb81beb](https://github.com/k-leumas/que-que/commit/bb81bebe99bc09700b9fdb8d61ffe66083475c27))
 * select available claude model ([b74f2e2](https://github.com/k-leumas/que-que/commit/b74f2e26911317303208d7e344066b231ea51019))
-* show selection summary above PS1 and restore query to LBUFFER ([563b8a9](https://github.com/k-leumas/que-que/commit/563b8a9152eb35a53f85b60184599537a85b7811))
 * tighten shell bridge logging ([e8d8a1d](https://github.com/k-leumas/que-que/commit/e8d8a1d0430b85994c7c886c169e7c28409e391e))
-* **ui:** add forced selector candidate mode ([908fa17](https://github.com/k-leumas/que-que/commit/908fa176bde48e01aa162227fb257a832432151f))
-* **ui:** phase-04 UAT fixes — two-row layout, FILTER label, zellij name, context header ([ac90c65](https://github.com/k-leumas/que-que/commit/ac90c65096994cb7195eee31e3064893a90ecb05))
 
-# [1.1.0](https://github.com/k-leumas/que-que/compare/v1.0.0...v1.1.0) (2026-05-02)
-
+</details>
 
 ### Bug Fixes
 
-* **build:** manually fix linting issues ([8149904](https://github.com/k-leumas/que-que/commit/814990466d6745e81d51bd9c7b7e1fabb4be1b3b))
-
-
-### Features
-
-* **02-01:** add request contracts ([9b96f9b](https://github.com/k-leumas/que-que/commit/9b96f9bbfecb5db0fe581b9cc42f6f0c4efa1ef1))
-* **02-01:** implement classifyIntent router ([3e0b195](https://github.com/k-leumas/que-que/commit/3e0b195a38d15416137e18923c7d2cfaf5fb006a))
-* **02-02:** add context pipeline and candidate selection ([3ed1520](https://github.com/k-leumas/que-que/commit/3ed1520b4377d43f9caaf89a7cf6eea3c25be508))
-* **02-03:** add registry bootstrap for built-in providers ([a8b8e02](https://github.com/k-leumas/que-que/commit/a8b8e02d6589b582dd79a3ddd62fca7651dcada1))
-* **ui:** add forced selector candidate mode ([908fa17](https://github.com/k-leumas/que-que/commit/908fa176bde48e01aa162227fb257a832432151f))
-
-# 1.0.0 (2026-05-02)
-
-
-### Bug Fixes
+<details>
+<summary>Detailed changes</summary>
 
 * **01:** cap per-connection buffer at 64 kb to prevent memory exhaustion (cr-03) ([0b693af](https://github.com/k-leumas/que-que/commit/0b693af21fca9647f3ef84c43687f4898e61f16b))
 * **01:** check qq script exists before spawning daemon to catch missing build (wr-02) ([4726543](https://github.com/k-leumas/que-que/commit/4726543e433491904244badca8d88d05bb6bc1c3))
@@ -330,30 +519,4 @@
 * **release:** add semantic-release dependencies ([6c502bd](https://github.com/k-leumas/que-que/commit/6c502bd89cf3bacc255f7a1d2be66e72f0571688))
 * **test:** run zsh helper tests without startup files ([07bbfb3](https://github.com/k-leumas/que-que/commit/07bbfb39f874f93a3dac123de932fba694f29d1a))
 
-
-### Features
-
-* **01-01:** implement shell and IPC contracts with socket path helper ([8ba3e29](https://github.com/k-leumas/que-que/commit/8ba3e29e2dfd4136dfc053a28af0943a694b2135))
-* **01-02:** implement zsh ZLE widget with ?? trigger and result application ([6ce8139](https://github.com/k-leumas/que-que/commit/6ce813968bd109d6dfbdde30dc19dfa15379c5f2))
-* **01-03:** implement daemon bootstrap, server, and CLI wiring ([faa5af3](https://github.com/k-leumas/que-que/commit/faa5af3436e9a1a030ecfc4dc4914dbe1e250587))
-* **01-03:** implement foreground client loop, result writer, and client CLI wiring ([4ab40a1](https://github.com/k-leumas/que-que/commit/4ab40a12e1df966814dcf31ceac250ac68683d1e))
-* **02-02:** add Task 3 — multi-candidate response and minimal selection UI ([a1e8d02](https://github.com/k-leumas/que-que/commit/a1e8d023437772205d6ec89de623fd0d07dfb504))
-* add dev restart watcher ([dd774e7](https://github.com/k-leumas/que-que/commit/dd774e7d92f418dbfc3977e59fabc98e8d4ee516))
-* select available claude model ([b74f2e2](https://github.com/k-leumas/que-que/commit/b74f2e26911317303208d7e344066b231ea51019))
-* tighten shell bridge logging ([e8d8a1d](https://github.com/k-leumas/que-que/commit/e8d8a1d0430b85994c7c886c169e7c28409e391e))
-
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [Unreleased]
-
-### Added
-
-- Semantic versioning and automated changelog generation
-- Automated release workflow via GitHub Actions
-- Conventional Commits integration for automatic version bumping
-- CI workflow for linting, type checking, testing, and building
+</details>
