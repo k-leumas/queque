@@ -2857,3 +2857,16 @@
 | 15:06 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-PLAN.md | — | ~973 |
 | 15:06 | Created .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/261012-kp1-PLAN.md | — | ~973 |
 | 15:07 | 09.1 UAT (7 pass/1 issue/1 skip) → G-09.1-5 diagnosed, fixed by 09.1-09; re-review found CR-01 Backspace regression; verification gaps_found | .planning/phases/09.1-*/ | gaps_found | ~60k |
+| 15:07 | Session end: 63 writes across 22 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 39 reads | ~189252 tok |
+| 15:07 | Session end: 63 writes across 22 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 39 reads | ~189252 tok |
+| 15:10 | Session end: 63 writes across 22 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 42 reads | ~201882 tok |
+| 15:26 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | — | ~11574 |
+| 15:26 | Edited .planning/ROADMAP.md | inline fix | ~8 |
+| 15:26 | Edited .planning/ROADMAP.md | 1→4 lines | ~131 |
+| 15:27 | Planned 09.1-10 gap closure (CR-01 coalesced-read Backspace): 3 tasks, pendingInput snapshot for all key handlers | .planning/phases/09.1-*/09.1-10-PLAN.md, ROADMAP.md | planned | ~60k |
+| 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | "D-06/D-07: no key handler" → "D-06/D-07: no key handler" | ~129 |
+| 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | 1→3 lines | ~225 |
+| 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | 8→9 lines | ~400 |
+| 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | inline fix | ~56 |
+| 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | inline fix | ~63 |
+| 15:28 | Edited .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-PLAN.md | "useInput" → "smt" | ~78 |
