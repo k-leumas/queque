@@ -1,7 +1,8 @@
-import type { CandidateList } from '../contracts/candidates.js';
+import type { CandidateList, CommandCandidate } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { resolveEffort } from '../shared/qq-config.js';
+import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
 import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
 import {
   type ClaudeTurnStage,
@@ -48,6 +49,11 @@ export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
  * Runs one `claude -p` stream-json turn and parses the `result` text with the shared
  * candidate contract. Throws on spawn failure, an is_error result, exit without a result,
  * timeout or abort. Does not rescue via the SDK.
+ *
+ * With `options.onCandidate`, each candidate is scanned out of the text deltas and handed
+ * over as soon as its object closes (D-05), never after `options.signal` aborts. The final
+ * list is the strict parse of the result text; if that fails after rows streamed, the
+ * streamed (already validated) rows; only when nothing streamed, parseCandidates' fallback.
  */
 export async function fetchClaudeCliCandidates(
   envelope: ContextEnvelope,
@@ -55,6 +61,19 @@ export async function fetchClaudeCliCandidates(
   options: FetchOptions = {},
 ): Promise<CandidateList> {
   const startedAt = Date.now();
+  const streamed: CommandCandidate[] = [];
+  const { onCandidate, signal } = options;
+  const onTextDelta = onCandidate
+    ? createCandidateScanner((candidate) => {
+        streamed.push(candidate);
+        if (streamed.length === 1) {
+          void appendDebugLog('provider', 'cli first candidate', { ms: Date.now() - startedAt });
+        }
+        if (!signal?.aborted) {
+          onCandidate(candidate);
+        }
+      })
+    : undefined;
   const text = await runClaudeTurn({
     command: CLAUDE_COMMAND,
     argv: buildClaudeCliArgv(envelope),
@@ -62,12 +81,15 @@ export async function fetchClaudeCliCandidates(
     env: process.env,
     prompt: buildPrompt(envelope),
     budgetMs: remainingBudgetMs,
-    signal: options.signal,
+    signal,
+    onTextDelta,
     onStage: (stage, detail) => {
       logTurnStage(stage, detail, Date.now() - startedAt);
     },
   });
-  return ensureSelectableCandidates(parseCandidates(text));
+  const finalList =
+    parseStrictCandidateList(text) ?? (streamed.length > 0 ? streamed : parseCandidates(text));
+  return ensureSelectableCandidates(finalList);
 }
 
 const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
