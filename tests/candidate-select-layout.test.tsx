@@ -1027,6 +1027,34 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
     }
   });
 
+  it.each([
+    ['down', '\u001B[B'],
+    ['up', '\u001B[A'],
+  ])('WR-06: %s on an empty filtered list still highlights the next matching row', async (_name, arrow) => {
+    const rgFoo: CommandCandidate = { command: 'rg foo', explanation: 'search with ripgrep' };
+    const grepFoo: CommandCandidate = { command: 'grep -r foo .', explanation: 'search tree' };
+    const mounted = await mountStream('gr');
+    try {
+      for (const key of ['e', 'p']) {
+        await mounted.press(key);
+      }
+      await mounted.arrive([rgFoo], 'arriving');
+      // Nothing matches `grep` yet: the arrow key must not corrupt the index (NaN or -1).
+      await mounted.press(arrow);
+      await mounted.press(arrow);
+
+      await mounted.arrive([rgFoo, grepFoo], 'arriving');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(grepFoo.command);
+      await mounted.press('\u001B[B');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(grepFoo.command);
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([grepFoo.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+
   it('D-10/D-17: in Zellij no resize while rows arrive, one at completion, none when filtering after', async () => {
     process.env.ZELLIJ = '0';
     process.env.ZELLIJ_PANE_ID = '7';

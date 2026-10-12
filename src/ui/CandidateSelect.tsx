@@ -172,7 +172,9 @@ export function CandidateSelect({
         highlightedKey === undefined
           ? -1
           : visible.findIndex((candidate) => candidateKey(candidate) === highlightedKey);
-      const nextIndex = kept >= 0 ? kept : Math.min(selectedIndex, Math.max(0, visible.length - 1));
+      // Never carry a NaN or negative index forward (review WR-06).
+      const current = Number.isFinite(selectedIndex) && selectedIndex >= 0 ? selectedIndex : 0;
+      const nextIndex = kept >= 0 ? kept : Math.max(0, Math.min(current, visible.length - 1));
       if (nextIndex !== selectedIndex) {
         setSelectedIndex(nextIndex);
       }
@@ -299,15 +301,18 @@ export function CandidateSelect({
         return;
       }
 
-      // Navigation: guard against null candidates
+      // Navigation: guard against null candidates and an empty visible list, where wrapping
+      // would leave the index NaN ((i + 1) % 0) or -1 (review WR-06).
       if (key.upArrow && candidates) {
         const visible = filterCandidates(candidates, query);
-        setSelectedIndex((i) => (i === 0 ? visible.length - 1 : i - 1));
+        if (visible.length === 0) return;
+        setSelectedIndex((i) => (i <= 0 ? visible.length - 1 : i - 1));
         return;
       }
 
       if (key.downArrow && candidates) {
         const visible = filterCandidates(candidates, query);
+        if (visible.length === 0) return;
         setSelectedIndex((i) => (i + 1) % visible.length);
         return;
       }

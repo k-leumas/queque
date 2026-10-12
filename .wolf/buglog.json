@@ -5341,6 +5341,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:32:19.357757Z"
+    },
+    {
+      "id": "bug-327",
+      "timestamp": "2026-10-12T08:33:41.389129Z",
+      "error_message": "Arrow keys on an empty visible list (typed filter while rows stream in) set selectedIndex to NaN ((i + 1) % 0) or -1, which survived later arrivals: no row highlighted, arrows stuck, Enter silently picked visible[0] (09.1 WR-06)",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "The arrow handlers wrapped modulo/over visible.length without guarding length 0, and the later-arrival branch carried Math.min(selectedIndex, ...) forward, which keeps NaN and -1.",
+      "fix": "Arrow handlers return early when no row is visible (up also wraps on i <= 0), and the later-arrival branch clamps a non-finite or negative index to 0 before Math.min. Real-hooks it.each test for up and down.",
+      "tags": [
+        "ui",
+        "candidate-select",
+        "selection",
+        "NaN",
+        "streaming",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:33:41.389129Z"
     }
   ]
 }
