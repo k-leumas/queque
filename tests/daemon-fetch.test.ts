@@ -417,4 +417,87 @@ describe('daemon fetch-candidates IPC', () => {
       expect(request?.stream).toBe(true);
     });
   });
+
+  describe('no in-process re-query after rows (D-16 transport)', () => {
+    /** Settles with the fetch outcome, or 'hung' if it is still pending after `ms`. */
+    function settleWithin(promise: Promise<unknown>, ms = 2000): Promise<unknown> {
+      return Promise.race([
+        promise.then(
+          (value) => ({ resolved: value }),
+          (error: unknown) => error,
+        ),
+        new Promise((resolve) => setTimeout(() => resolve('hung'), ms)),
+      ]);
+    }
+
+    it('rejects without calling the in-process adapter when the connection drops after a row', async () => {
+      fetchMock.mockResolvedValue([ROW_B]);
+      testServer = await scriptedListener(socketPath, (socket) => {
+        socket.write(`${JSON.stringify({ kind: 'fetch-accepted' })}\n`);
+        socket.write(`${JSON.stringify({ kind: 'candidate', candidate: ROW_A })}\n`, () => {
+          socket.destroy();
+        });
+      });
+      const recorded: CommandCandidate[] = [];
+
+      const outcome = await settleWithin(
+        fetchCandidatesForUi(socketPath, buildEnvelope(), {
+          onCandidate: (candidate) => recorded.push(candidate),
+        }),
+      );
+
+      expect(outcome).toBeInstanceOf(IpcTransportError);
+      expect(recorded).toEqual([ROW_A]);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it('falls back in-process with the same options when the connection drops before any row', async () => {
+      fetchMock.mockResolvedValue([ROW_B]);
+      testServer = await scriptedListener(socketPath, (socket) => {
+        socket.write(`${JSON.stringify({ kind: 'fetch-accepted' })}\n`, () => {
+          socket.destroy();
+        });
+      });
+      const options: FetchOptions = {
+        signal: new AbortController().signal,
+        onCandidate: () => {},
+      };
+
+      const outcome = await settleWithin(
+        fetchCandidatesForUi(socketPath, buildEnvelope(), options),
+      );
+
+      expect(outcome).toEqual({ resolved: [ROW_B] });
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0]?.[1]).toBe(options);
+    });
+
+    it('falls back in-process with the same options when no daemon listens', async () => {
+      fetchMock.mockResolvedValue([ROW_B]);
+      const options: FetchOptions = { onCandidate: () => {} };
+
+      const candidates = await fetchCandidatesForUi(socketPath, buildEnvelope(), options);
+
+      expect(candidates).toEqual([ROW_B]);
+      expect(fetchMock.mock.calls[0]?.[1]).toBe(options);
+    });
+
+    it('rejects with an AbortError and no fallback when the signal aborted before the transport failed', async () => {
+      const controller = new AbortController();
+      testServer = await scriptedListener(socketPath, (socket) => {
+        socket.write(`${JSON.stringify({ kind: 'fetch-accepted' })}\n`);
+        socket.write(`${JSON.stringify({ kind: 'candidate', candidate: ROW_A })}\n`);
+      });
+
+      const pending = fetchCandidatesForUi(socketPath, buildEnvelope(), {
+        signal: controller.signal,
+        onCandidate: () => {
+          controller.abort();
+        },
+      }).catch((caught: unknown) => caught);
+
+      expect(isAbortError(await pending)).toBe(true);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
 });
