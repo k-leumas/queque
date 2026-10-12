@@ -5322,6 +5322,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:30:45.103149Z"
+    },
+    {
+      "id": "bug-326",
+      "timestamp": "2026-10-12T08:32:19.357757Z",
+      "error_message": "When a later candidates array triggered the zero-match clear, the arrival branch chose the next highlight index and the useEffect(() => setSelectedIndex(0), [query]) then reset it to 0 (09.1 WR-05)",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "The selection reset lived in an effect keyed on `query`, so it also fired for the render-phase arrival branch's own setQuery(''), after commit, undoing the index that branch had set (and committing one render with the stale index first).",
+      "fix": "Removed the [query] effect and reset the selection in the key handlers that change the query (printable input; Backspace when the query is non-empty). Mocked effect-count test updated to 2 and now checks the handler reset; real-hooks tests for the kept position and for typing/Backspace.",
+      "tags": [
+        "ui",
+        "candidate-select",
+        "useEffect",
+        "selection",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:32:19.357757Z"
     }
   ]
 }

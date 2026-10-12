@@ -984,6 +984,49 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
     }
   });
 
+  it('WR-05: a later list that clears the lbuffer pre-filter keeps the highlight position', async () => {
+    const pwd: CommandCandidate = { command: 'pwd', explanation: 'print directory' };
+    const du: CommandCandidate = { command: 'du -sh .', explanation: 'disk usage' };
+    const mounted = await mountStream('git');
+    try {
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'arriving');
+      await mounted.press('\u001B[B');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_LOG.command);
+
+      // The final list has no row matching the untouched lbuffer `git`: the filter clears
+      // and the highlight stays on the second row instead of jumping back to the first.
+      await mounted.arrive([LS_LA, pwd, du], 'complete');
+      await settle();
+      expect(lastFrame(mounted.stdout.writes)).not.toContain('FILTER: git');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(pwd.command);
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([pwd.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('WR-05: typing and Backspace move the highlight to the first visible row', async () => {
+    const mounted = await mountStream(STREAM_LBUFFER);
+    try {
+      await mounted.arrive([GIT_STATUS, GIT_LOG], 'complete');
+      await mounted.press('\u001B[B');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_LOG.command);
+
+      await mounted.press('g');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_STATUS.command);
+
+      await mounted.press('\u001B[B');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_LOG.command);
+      await mounted.press('\u007F');
+      expect(lastFrame(mounted.stdout.writes)).not.toContain('FILTER: g');
+      expect(highlightedLine(mounted.stdout.writes)).toContain(GIT_STATUS.command);
+    } finally {
+      mounted.close();
+    }
+  });
+
   it('D-10/D-17: in Zellij no resize while rows arrive, one at completion, none when filtering after', async () => {
     process.env.ZELLIJ = '0';
     process.env.ZELLIJ_PANE_ID = '7';

@@ -214,23 +214,44 @@ describe('CandidateSelect — D-01 pre-filter', () => {
 describe('CandidateSelect — selectedIndex reset on query change', () => {
   beforeEach(resetState);
 
-  it('registers a useEffect hook for query dependency', async () => {
+  it('resets selectedIndex in the key handler when typing or Backspace changes the query', async () => {
     const { CandidateSelect } = await import('../src/ui/CandidateSelect.js');
     const { useEffect } = await import('react');
-    const onSelect = vi.fn();
-    const onCancel = vi.fn();
-    CandidateSelect({
+    const props = {
       candidates: [
         { command: 'git status', explanation: '' },
         { command: 'ls -la', explanation: '' },
       ],
-      onSelect,
-      onCancel,
-    });
-    // Three effects: the isRawModeSupported cancel guard (prod-tui-crash fix), the
-    // useEffect([query]) selectedIndex reset (Plan 04-02) and the layout report.
-    // The candidate-arrival reset runs during render since 09-06 (G-09-7), not in an effect.
-    expect(useEffect).toHaveBeenCalledTimes(3);
+      onSelect: vi.fn(),
+      onCancel: vi.fn(),
+    };
+    CandidateSelect(props);
+    // Two effects: the isRawModeSupported cancel guard (prod-tui-crash fix) and the layout
+    // report. The query reset lives in the key handlers since review WR-05 (a `[query]`
+    // effect undid the arrival branch's kept index); the candidate-arrival reset runs
+    // during render since 09-06 (G-09-7).
+    expect(useEffect).toHaveBeenCalledTimes(2);
+
+    stateValues[0] = 1;
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('s', zeroKeys);
+    expect(stateValues[1]).toBe('s');
+    expect(stateValues[0]).toBe(0);
+
+    stateValues[0] = 1;
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('', { ...zeroKeys, backspace: true });
+    expect(stateValues[1]).toBe('');
+    expect(stateValues[0]).toBe(0);
+
+    // Backspace on an empty query changes nothing, so the selection stays.
+    stateValues[0] = 1;
+    stateCallCount = 0;
+    CandidateSelect(props);
+    capturedInputHandler?.('', { ...zeroKeys, backspace: true });
+    expect(stateValues[0]).toBe(1);
   });
 });
 

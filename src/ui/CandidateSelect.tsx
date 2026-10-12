@@ -187,10 +187,10 @@ export function CandidateSelect({
     }
   }, [isRawModeSupported, onCancel]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: reset selectedIndex when query changes to prevent out-of-bounds access after filter narrows visible list
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
+  // A query the user changes (typing, Backspace) resets the selection to the first visible
+  // row in the key handlers below, in the same update as the query. Not a `[query]` effect:
+  // that also fired after the arrival branch's own query clear and undid the index it had
+  // just chosen (review WR-05), and it committed one render with the stale index first.
 
   const includeDevFooter = process.env.QQ_DEV_ROOT != null;
 
@@ -250,7 +250,11 @@ export function CandidateSelect({
       }
 
       if (key.backspace) {
-        setQuery((q) => q.slice(0, -1));
+        // Backspace on an empty query changes nothing, so the selection stays put.
+        if (query.length > 0) {
+          setQuery((q) => q.slice(0, -1));
+          setSelectedIndex(0);
+        }
         return;
       }
 
@@ -291,6 +295,7 @@ export function CandidateSelect({
 
       if (input && !key.ctrl && !key.meta) {
         setQuery((q) => q + input);
+        setSelectedIndex(0);
         return;
       }
 
