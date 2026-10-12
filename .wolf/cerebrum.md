@@ -106,6 +106,7 @@
 - [2026-10-12] In a worktree-isolated GSD executor the harness refuses Bash writes under `<repo>/.git/worktrees/<id>/`, so the #3968 commit-ledger file cannot be written there; measure `commits:` against the dispatch's expected base.
 
 ## Do-Not-Repeat
+- [2026-10-12] In the Claude Code Bash tool `rm` is aliased to `rm -i` (like `cp -i`): a scripted `rm file` waits on an invisible `remove …?` prompt and the command hangs until timeout. Use `/bin/rm -f` for scripted deletes.
 - [2026-10-12] commitlint `body-max-line-length` is 100: RED commits in 09.1-01 and 09.1-04 were rejected for long body bullets. Wrap every commit body line to 100 chars or less before committing.
 - [2026-10-12] Do not give a timeout test against a fake child a budget near node boot time (200 ms): `sigterm-slow` installs its SIGTERM handler only after it reads stdin, so under load the child dies by signal instead of exiting 143. Use a budget well past child boot (1000 ms) on a long-streaming scenario.
 - [2026-10-11] Do not adjust state on a prop change inside a useEffect when another effect reports layout to an outside process (Zellij resize). The stale committed render leaks out first (G-09-7). Use the render-phase `prevX` pattern (`if (prop !== prevProp) { setPrevProp(prop); … }`) and call each setter only when its value changes.
