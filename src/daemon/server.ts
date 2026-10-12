@@ -1,4 +1,5 @@
 import * as net from 'node:net';
+import { commandCandidateSchema } from '../contracts/candidates.js';
 import { ipcRequestSchema } from '../contracts/ipc.js';
 import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
@@ -8,10 +9,14 @@ import { appendDebugLog } from '../shared/debug-log.js';
  * Starts the daemon Unix-socket server.
  *
  * Handles newline-delimited JSON IPC messages. Supported requests:
- *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true}
+ *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true,
+ *                                   streamCandidates: true}
  *   {kind: 'ensure-session'}    → {kind: 'session-ready', socketPath}
  *   {kind: 'run-query'}         → {kind: 'query-accepted', requestId}
- *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'} then {kind: 'candidates'} | {kind: 'fetch-error'}
+ *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'}, then {kind: 'candidate'} × N when the
+ *                                   request has `stream: true`, then {kind: 'candidates'} (the done
+ *                                   signal and authoritative list) | {kind: 'fetch-error'};
+ *                                   aborted when the client closes its socket
  *
  * The server is intentionally free of Ink, React, and /dev/tty assumptions —
  * it runs fully in the background without a TTY. LLM fetch lives here so the
@@ -74,7 +79,12 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
 
           switch (req.kind) {
             case 'ping': {
-              writeJson({ kind: 'pong', fetchCandidates: true, installedTools: true });
+              writeJson({
+                kind: 'pong',
+                fetchCandidates: true,
+                installedTools: true,
+                streamCandidates: true,
+              });
               void appendDebugLog('daemon', 'replied pong');
               break;
             }
@@ -92,12 +102,35 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
             case 'fetch-candidates': {
               writeJson({ kind: 'fetch-accepted' });
               const envelope = req.envelope;
+              // D-05: stream rows only to a client that asked; an older client would fail
+              // its zod parse on the unknown `candidate` kind and re-query cold.
+              let streamedIndex = 0;
+              const onCandidate =
+                req.stream === true
+                  ? (candidate: unknown) => {
+                      const index = streamedIndex++;
+                      if (connectionAbort.signal.aborted) {
+                        // D-14: the client left; nothing more is written for this fetch.
+                        void appendDebugLog('daemon', 'candidate dropped', { index });
+                        return;
+                      }
+                      const row = commandCandidateSchema.safeParse(candidate);
+                      if (!row.success) {
+                        return;
+                      }
+                      writeJson({ kind: 'candidate', candidate: row.data });
+                      void appendDebugLog('daemon', 'replied candidate', { index });
+                    }
+                  : undefined;
               // Resolution throws stay inside the chain so they become fetch-error.
               void Promise.resolve()
                 .then(() => {
                   bootstrapBuiltins();
                   const adapter = resolveClaudeDefaultAdapter();
-                  return adapter.fetchCandidates(envelope, { signal: connectionAbort.signal });
+                  return adapter.fetchCandidates(envelope, {
+                    signal: connectionAbort.signal,
+                    onCandidate,
+                  });
                 })
                 .then((candidates) => {
                   if (connectionAbort.signal.aborted) {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { candidateListSchema } from './candidates.js';
+import { candidateListSchema, commandCandidateSchema } from './candidates.js';
 import { contextEnvelopeSchema } from './request.js';
 import { shellRequestSchema } from './shell.js';
 
@@ -22,6 +22,9 @@ export const ipcRequestSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('fetch-candidates'),
     envelope: contextEnvelopeSchema,
+    // The client wants one `candidate` message per parsed row before the final
+    // `candidates` message (Phase 09.1). Old daemons strip the key and reply once.
+    stream: z.literal(true).optional(),
   }),
 ]);
 
@@ -36,6 +39,8 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
     fetchCandidates: z.literal(true).optional(),
     // Daemon accepts envelopes carrying the `installed-tools` chunk (Phase 9).
     installedTools: z.literal(true).optional(),
+    // Daemon streams `candidate` messages to a `stream: true` request (Phase 09.1).
+    streamCandidates: z.literal(true).optional(),
   }),
   z.object({
     kind: z.literal('session-ready'),
@@ -48,6 +53,12 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('fetch-accepted'),
   }),
+  // One streamed row, sent only when the request carried `stream: true`.
+  z.object({
+    kind: z.literal('candidate'),
+    candidate: commandCandidateSchema,
+  }),
+  // The done signal and the authoritative final list, for every request.
   z.object({
     kind: z.literal('candidates'),
     candidates: candidateListSchema,

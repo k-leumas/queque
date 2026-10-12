@@ -39,10 +39,12 @@ function tryConnect(socketPath: string): Promise<boolean> {
  * Whether the listener on `socketPath` can handle the current `fetch-candidates`
  * envelope.
  *
- * - `yes`: pong includes both `fetchCandidates: true` and `installedTools: true`
- * - `no`: pong missing either flag (older production daemon — replace it). Such a
+ * - `yes`: pong includes `fetchCandidates: true`, `installedTools: true` and
+ *   `streamCandidates: true`
+ * - `no`: pong missing any flag (older production daemon — replace it). Such a
  *   daemon silently drops `fetch-candidates` envelopes it cannot validate, which
- *   costs the 800 ms ack timeout plus a cold in-process fetch on every `??`.
+ *   costs the 800 ms ack timeout plus a cold in-process fetch on every `??`, or
+ *   (without `streamCandidates`) never streams rows to a `stream: true` client.
  * - `unknown`: no reply, timeout or unparseable reply (tests' dumb
  *   `net.createServer`, or a hung socket — keep)
  *
@@ -94,7 +96,9 @@ export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | '
         return;
       }
       const current =
-        response.data.fetchCandidates === true && response.data.installedTools === true;
+        response.data.fetchCandidates === true &&
+        response.data.installedTools === true &&
+        response.data.streamCandidates === true;
       done(current ? 'yes' : 'no');
     });
 
@@ -203,10 +207,11 @@ function spawnDaemon(socketPath: string): void {
  * Algorithm:
  *   1. Try to connect. If it succeeds, ping. Keep listeners that advertise every
  *      capability or do not reply (test sockets). Replace a live pong lacking
- *      either `fetchCandidates` or `installedTools` — such a daemon silently
- *      drops `fetch-candidates` envelopes it cannot validate and stalls the
- *      client. Envelope SHAPE changes need a new pong flag; catalog CONTENT
- *      changes do not (the daemon filters unknown names).
+ *      any of `fetchCandidates`, `installedTools` or `streamCandidates` — such a
+ *      daemon silently drops `fetch-candidates` envelopes it cannot validate and
+ *      stalls the client, or never streams rows. IPC SHAPE changes need a new
+ *      pong flag; catalog CONTENT changes do not (the daemon filters unknown
+ *      names).
  *   2. If the socket file exists but the connect failed, unlink it (stale socket).
  *   3. Spawn `qq daemon --socket <path>` as a detached, unreferenced child.
  *   4. Poll until the new daemon starts listening, then return.

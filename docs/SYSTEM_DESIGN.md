@@ -198,6 +198,8 @@ Files:
 
 The daemon listens on `/tmp/qq-<uid>.sock`. IPC: `ping`, `ensure-session`, `run-query` (ack-only), and `fetch-candidates` (warm Anthropic SDK / `claude -p` in the daemon process). The foreground client still owns Ink; it sends the context envelope over the socket and renders the candidate list.
 
+`fetch-candidates` is acked at once with `fetch-accepted`. When the request carries `stream: true` (the current client always sends it), the daemon then writes one `candidate` message per row as soon as the provider parses it, and finally `candidates`: the done signal and the authoritative final list (or `fetch-error`). A request without `stream` gets only `fetch-accepted` then `candidates`, so an older installed client never sees the unknown `candidate` kind. The pong advertises `fetchCandidates`, `installedTools` and `streamCandidates`; `ensureDaemon` replaces a live daemon whose pong lacks any of them. When the client closes its socket (Esc, Enter, exit) the daemon aborts the provider call and writes nothing more for that fetch; a row the provider still reports is dropped (`candidate dropped` in the debug log).
+
 ## Contracts
 
 - `ShellRequest` — `lbuffer`/`rbuffer` split buffer at trigger time (shell ↔ Node boundary).

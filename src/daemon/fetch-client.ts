@@ -29,6 +29,11 @@ export class IpcTransportError extends Error {
  * New daemons ack immediately with `{kind:'fetch-accepted'}`. A listener that
  * swallows unknown IPC kinds (pre-fetch daemons) produces no ack; we fail in
  * `FETCH_ACK_MS` instead of waiting the full LLM timeout.
+ *
+ * The request carries `stream: true` (D-05): each `{kind:'candidate'}` row goes to
+ * `options.onCandidate` as it arrives, and `{kind:'candidates'}` is the done
+ * signal with the authoritative list. A daemon that does not stream simply sends
+ * the final list.
  */
 export function requestDaemonFetch(
   socketPath: string,
@@ -91,6 +96,12 @@ export function requestDaemonFetch(
         clearTimeout(ackTimer);
         return;
       }
+      if (response.data.kind === 'candidate') {
+        accepted = true;
+        clearTimeout(ackTimer);
+        options.onCandidate?.(response.data.candidate);
+        return;
+      }
       if (response.data.kind === 'candidates') {
         accepted = true;
         finish(undefined, response.data.candidates);
@@ -105,11 +116,13 @@ export function requestDaemonFetch(
     };
 
     client.on('connect', () => {
-      client.write(`${JSON.stringify({ kind: 'fetch-candidates', envelope })}\n`);
+      client.write(`${JSON.stringify({ kind: 'fetch-candidates', envelope, stream: true })}\n`);
     });
 
+    // Decode as a utf8 stream so a multi-byte character split across reads stays intact.
+    client.setEncoding('utf8');
     client.on('data', (chunk) => {
-      buf += chunk.toString();
+      buf += String(chunk);
       let nl = buf.indexOf('\n');
       while (nl !== -1) {
         const line = buf.slice(0, nl).trim();
