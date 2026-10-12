@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T06:51:48.630Z
-> Files: 463 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T07:14:16.858Z
+> Files: 484 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -282,6 +282,24 @@
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~4737 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~518 tok)
 
+## .claude/worktrees/agent-a95663009d2772251/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-06-SUMMARY.md` — Phase 09.1 Plan 06: Bounded, backstopped claude -p runner Summary (~4845 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/src/providers/
+
+- `claude-process.ts` — One `claude -p` stream-json turn on a child process (Phase 09.1, D-04, D-13). (~3269 tok)
+- `stream-json.ts` — Pure helpers for `claude -p --input-format stream-json --output-format stream-json (~1190 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/tests/
+
+- `claude-process.test.ts` — ClaudeTurnFailure: scratchDir, startTurn, stageNames (~3636 tok)
+- `claude-stream-json.test.ts` — textDeltaLine: collect (~1583 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/tests/fixtures/
+
+- `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~2305 tok)
+
 ## .claude/worktrees/agent-aa6153ab/.planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-03-SUMMARY.md` — Phase 01 Plan 03: Daemon Bootstrap and Client Seam Summary (~1393 tok)
@@ -341,6 +359,20 @@
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3380 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~6022 tok)
 
+## .claude/worktrees/agent-ab8a809b1692afb63/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-02-SUMMARY.md` — Phase 09.1 Plan 02: claude -p effort and streamed candidates Summary (~5315 tok)
+
+## .claude/worktrees/agent-ab8a809b1692afb63/src/providers/
+
+- `candidate-stream.ts` — At most this many candidates are streamed per turn (candidateListSchema max). (~190 tok)
+
+## .claude/worktrees/agent-ab8a809b1692afb63/tests/
+
+- `candidate-stream.test.ts` — A recorded `claude -p` answer (Phase 09.1 probes), including the non-ASCII ⓘ. (~1381 tok)
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~8231 tok)
+- `qq-config.test.ts` — parsed: writeConfig (~1070 tok)
+
 ## .claude/worktrees/agent-ab9387af30d3d2b0f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
 
 - `03.2-02-SUMMARY.md` — Phase 3.2 Plan 02: Wave 2 — FIFO-Aware Write and Zellij Branch Implementation Summary (~1955 tok)
@@ -377,6 +409,23 @@
 ## .claude/worktrees/agent-accab398/tests/
 
 - `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~2156 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-03-SUMMARY.md` — Phase 09.1 Plan 03: Streamed candidate IPC Summary (~4943 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/docs/
+
+- `SYSTEM_DESIGN.md` — System Design (~2881 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/src/daemon/
+
+- `server.ts` — Starts the daemon Unix-socket server. (~1938 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/
+
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~2663 tok)
+- `daemon-fetch.test.ts` — Sends one raw request and collects every reply until `candidates` or `fetch-error`. (~5689 tok)
 
 ## .claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/
 
@@ -862,8 +911,8 @@
 - `index.ts` (~86 tok)
 - `provider.ts` — `LLMAdapter.fetchCandidates(envelope, options?)`, `FetchOptions { signal?, onCandidate? }`, `abortError()` (name AbortError, 'QueQue: request aborted'), `isAbortError` (AbortError or the SDK's APIUserAbortError) (09.1-01). (~350 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
-- `stream-json.ts` — Pure stream-json helpers (09.1-01): `streamJsonResultSchema` (non-strict; is_error gate, subtype not a success signal), `createLineParser` (carry + newline split, non-JSON lines skipped), `textDeltaOf`, `isInitEvent`, `buildStreamJsonUserLine`, `STREAM_JSON_CARRY_CAP_BYTES` (enforced in plan 06). (~700 tok)
 - `steering.ts` — `QUEQUE_SYSTEM` (moved from claude.ts), `buildSteeringText(tools)` (catalog re-filter, dedupe, sort, 4 lines D-15/16/17), `buildSystemPrompt(envelope)` (filterContextEnvelope first; byte-identical without the chunk). (~700 tok)
+- `stream-json.ts` — Pure stream-json helpers (09.1-01): `streamJsonResultSchema` (non-strict; is_error gate, subtype not a success signal), `createLineParser` (carry + newline split, non-JSON lines skipped), `textDeltaOf`, `isInitEvent`, `buildStreamJsonUserLine`, `STREAM_JSON_CARRY_CAP_BYTES` (enforced in plan 06). (~700 tok)
 
 ## src/registry/
 
@@ -901,8 +950,8 @@
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (d) smt2 pre-filter draws filtered but reports the unfiltered height; (e) "header row": pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases. (~9500 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
 - `claude-cli-provider.test.ts` — claudeDefaultAdapter with `runClaudeTurn` mocked (importOriginal spread): stream-json argv, prompt on stdin not argv, cwd/budget, signal forwarded, abort re-thrown unmapped, SDK-path cases, D13/ENOENT/timeout copy; `claude -p turn stage logs` describe (cli stage order filtered to `cli ` lines, FORBIDDEN_DEBUG). (~5200 tok)
-- `claude-process.test.ts` — runClaudeTurn against real `fake-claude-stream.mjs` children: settles on result before exit, one stdin user line and no prompt in argv, SIGTERM abort drops later deltas and exit 143, is_error auth rejection; afterEach SIGKILLs recorded pids. Plans 05/06 extend it. (~1500 tok)
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
+- `claude-process.test.ts` — runClaudeTurn against real `fake-claude-stream.mjs` children: settles on result before exit, one stdin user line and no prompt in argv, SIGTERM abort drops later deltas and exit 143, is_error auth rejection; afterEach SIGKILLs recorded pids. Plans 05/06 extend it. (~1500 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)
 - `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; Esc during loading (onCancel from the ink render mock) writes cancel, aborts the adapter signal, never rerenders; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM). (~8300 tok)
 - `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms (best of up to 3 runs, logged); 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
@@ -933,5 +982,5 @@
 ## tests/fixtures/
 
 - `command-words-cases.ts` — `COMMAND_WORD_CASES` / `CommandWordCase`: the 40 spike 002 cases verbatim (`stretch` is a label, not an opt-out); `REVIEW_CASES`: 09-REVIEW regression commands (heredocs, continuations, wrapper options) with their expected externals. (~900 tok)
-- `fake-claude-stream.mjs` — Real-child fake of `claude -p` stream-json (Claude Code 2.1.285 shapes, Probes 2/3/5/8); scenario = argv[2]: `success` (deltas 20 ms apart, ⓘ bytes split across two writes, result then exit 0 after 300 ms), `auth` (is_error result, subtype success, exit 1), `sigterm-slow` (deltas every 100 ms, on SIGTERM keeps writing 300 ms then exit 143); silent until the first stdin line, EOF with no line = exit 0; `FAKE_CLAUDE_STDIN_FILE`, `FAKE_CLAUDE_ARGV_FILE`. Plans 05/06 add scenarios to `SCENARIOS`. (~1800 tok)
 - `command-words-fuzz-child.mjs` — Fuzz child that imports `src/shared/command-words.ts` via Node 24 type stripping; modes `fuzz <count> [seed]` (mulberry32), `one <input>`, `deep <n>`; exit 0 ok / 2 slow / 3 undefined leak / 64 unknown mode. (~800 tok)
+- `fake-claude-stream.mjs` — Real-child fake of `claude -p` stream-json (Claude Code 2.1.285 shapes, Probes 2/3/5/8); scenario = argv[2]: `success` (deltas 20 ms apart, ⓘ bytes split across two writes, result then exit 0 after 300 ms), `auth` (is_error result, subtype success, exit 1), `sigterm-slow` (deltas every 100 ms, on SIGTERM keeps writing 300 ms then exit 143); silent until the first stdin line, EOF with no line = exit 0; `FAKE_CLAUDE_STDIN_FILE`, `FAKE_CLAUDE_ARGV_FILE`. Plans 05/06 add scenarios to `SCENARIOS`. (~1800 tok)
