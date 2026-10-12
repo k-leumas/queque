@@ -10,7 +10,13 @@ import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
 import { type Effort, resolveEffort } from '../shared/qq-config.js';
 import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
-import { abortError, type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
+import {
+  abortError,
+  type FetchOptions,
+  isAbortError,
+  isNormalStopReason,
+  type LLMAdapter,
+} from './provider.js';
 import { buildSystemPrompt } from './steering.js';
 
 /** Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. */
@@ -27,7 +33,10 @@ export const DEFAULT_MODEL = 'claude-sonnet-5';
  */
 export const SDK_MAX_TOKENS = 16_000;
 
-/** The error for a response cut off at `max_tokens` with no complete candidate in it. */
+/**
+ * The error for a response that stopped for any reason other than `end_turn` or
+ * `stop_sequence` with no complete candidate in it (WR-07, WR-01-r2).
+ */
 export const TRUNCATED_RESPONSE_MESSAGE = 'QueQue: Claude response was truncated';
 
 let cachedAnthropic: { apiKey: string; client: Anthropic } | undefined;
@@ -129,6 +138,40 @@ export function parseCandidates(text: string): CandidateList {
   }
 }
 
+/**
+ * The one final-list rule for the SDK and `claude -p` paths (WR-01-r2, T-09.1-14).
+ *
+ * The strict parse of the final text wins; then the streamed (already validated) rows.
+ * When neither gives a row and the answer did not finish normally (see
+ * isNormalStopReason), only the candidate objects that closed in the text are kept, and
+ * with none it logs `response truncated` (with `logFields`, never the text) and throws
+ * TRUNCATED_RESPONSE_MESSAGE. parseCandidates' prose fallback is reached only after a
+ * normal stop, so a cut-off fragment never becomes a command.
+ */
+export function finalCandidateList(
+  text: string,
+  streamed: CommandCandidate[],
+  finishedNormally: boolean,
+  logFields: Record<string, unknown> = {},
+): CandidateList {
+  const strict = parseStrictCandidateList(text);
+  if (strict) {
+    return strict;
+  }
+  if (streamed.length > 0) {
+    return streamed;
+  }
+  if (!finishedNormally) {
+    const complete = completeCandidates(text);
+    if (complete.length === 0) {
+      void appendDebugLog('provider', 'response truncated', logFields);
+      throw new Error(TRUNCATED_RESPONSE_MESSAGE);
+    }
+    return complete;
+  }
+  return parseCandidates(text);
+}
+
 function shouldForceSelector(): boolean {
   const configured =
     process.env.QQ_FORCE_SELECTOR ?? readEnvValueFromDotEnvLocal('QQ_FORCE_SELECTOR');
@@ -201,8 +244,10 @@ export function buildPrompt(envelope: ContextEnvelope): string {
  * AbortError (D-13); a raw streaming iterator is not used because it ends silently on abort.
  * With `options.onCandidate`, each candidate is scanned out of the streamed text and handed
  * over as soon as its object closes, never after the signal aborts (D-05). The final list
- * is the strict parse of the final text; if that fails after rows streamed, the streamed
- * (already validated) rows; only when nothing streamed, parseCandidates' fallback.
+ * comes from finalCandidateList: the strict parse of the final text; if that fails after
+ * rows streamed, the streamed (already validated) rows; when nothing streamed,
+ * parseCandidates' fallback only after a normal stop (end_turn or stop_sequence), else the
+ * closed rows or TRUNCATED_RESPONSE_MESSAGE (WR-01-r2).
  */
 export async function fetchCandidates(
   envelope: ContextEnvelope,
@@ -259,25 +304,12 @@ export async function fetchCandidates(
 
     const message = await stream.finalMessage();
     const text = extractText(message.content);
-    const strict = parseStrictCandidateList(text);
-    let finalList: CandidateList;
-    if (strict) {
-      finalList = strict;
-    } else if (streamed.length > 0) {
-      finalList = streamed;
-    } else if (message.stop_reason === 'max_tokens') {
-      // Cut off at the ceiling (WR-07): never hand the partial JSON to parseCandidates'
-      // prose fallback, which would turn the fragment into a command. Keep the rows that
-      // closed before the cut, or fail closed.
-      const complete = completeCandidates(text);
-      if (complete.length === 0) {
-        void appendDebugLog('provider', 'response truncated', { model });
-        throw new Error(TRUNCATED_RESPONSE_MESSAGE);
-      }
-      finalList = complete;
-    } else {
-      finalList = parseCandidates(text);
-    }
+    // Only end_turn and stop_sequence reach the prose fallback (WR-07, WR-01-r2): any other
+    // stop keeps the rows that closed, or fails closed.
+    const finalList = finalCandidateList(text, streamed, isNormalStopReason(message.stop_reason), {
+      model,
+      stopReason: message.stop_reason,
+    });
     const candidates = ensureSelectableCandidates(finalList);
 
     void appendDebugLog('provider', 'response parsed', {

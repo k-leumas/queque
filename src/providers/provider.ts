@@ -24,6 +24,19 @@ export function abortError(): Error {
   return error;
 }
 
+/**
+ * True only for `end_turn` and `stop_sequence`: the two stop reasons after which a
+ * provider's final text is a whole answer (review WR-01-r2, threat T-09.1-14).
+ *
+ * Every other value means the text may be a fragment and must never reach
+ * parseCandidates' prose fallback: `max_tokens`, `refusal`, `pause_turn`, `tool_use`,
+ * `model_context_window_exceeded`, null, or a value a later SDK adds. The check is an
+ * allow list of the good values, so a stop reason added later fails closed.
+ */
+export function isNormalStopReason(stopReason: string | null | undefined): boolean {
+  return stopReason === 'end_turn' || stopReason === 'stop_sequence';
+}
+
 /** True for QueQue's own abort error and the Anthropic SDK's `APIUserAbortError`. */
 export function isAbortError(error: unknown): boolean {
   if (error === null || typeof error !== 'object') {

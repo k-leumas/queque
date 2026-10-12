@@ -14,7 +14,7 @@ import {
   sdkOutputConfig,
   TRUNCATED_RESPONSE_MESSAGE,
 } from '../src/providers/claude.js';
-import { isAbortError } from '../src/providers/provider.js';
+import { isAbortError, isNormalStopReason } from '../src/providers/provider.js';
 import { buildSystemPrompt } from '../src/providers/steering.js';
 import { resetQqConfigCache } from '../src/shared/qq-config.js';
 
@@ -77,8 +77,8 @@ interface FakeStreamScript {
   error?: Error;
   /** finalMessage stays pending after the pieces until the request signal aborts. */
   hangUntilAbort?: boolean;
-  /** The final message's stop_reason (default `end_turn`). */
-  stopReason?: string;
+  /** The final message's stop_reason (default `end_turn`; a scripted null is kept). */
+  stopReason?: string | null;
 }
 
 interface RequestOptions {
@@ -142,7 +142,7 @@ function createFakeStream(script: FakeStreamScript, requestOptions?: RequestOpti
       }
       return {
         content: [{ type: 'text', text: snapshot }],
-        stop_reason: script.stopReason ?? 'end_turn',
+        stop_reason: script.stopReason !== undefined ? script.stopReason : 'end_turn',
       };
     },
   };
@@ -546,6 +546,80 @@ describe('SDK streaming request, abort and streamed candidates (D-05, D-13)', ()
       { command: 'git status', explanation: 'Show repo status' },
       { command: 'git log --oneline', explanation: 'Show history' },
     ]);
+  });
+
+  it('fails closed on a refusal fragment and never calls onCandidate (WR-01-r2)', async () => {
+    scriptStream({ pieces: ['[{"command": "find . -name'], stopReason: 'refusal' });
+    const onCandidate = vi.fn();
+
+    const error = await claudeAdapter
+      .fetchCandidates(buildEnvelope(), { onCandidate })
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe(TRUNCATED_RESPONSE_MESSAGE);
+    expect(onCandidate).not.toHaveBeenCalled();
+    const truncatedLog = appendDebugLogMock.mock.calls.find(
+      (call) => call[0] === 'provider' && call[1] === 'response truncated',
+    );
+    expect(truncatedLog).toBeDefined();
+    expect(truncatedLog?.[2]).toMatchObject({ stopReason: 'refusal' });
+  });
+
+  it.each([
+    'refusal',
+    'pause_turn',
+    'tool_use',
+    'model_context_window_exceeded',
+    null,
+  ])('closes the prose fallback on stop reason %s (WR-01-r2)', async (stopReason) => {
+    scriptStream({ pieces: ['not ', 'json'], stopReason });
+
+    await expect(claudeAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
+      TRUNCATED_RESPONSE_MESSAGE,
+    );
+  });
+
+  it('keeps the rows that closed before a refusal when nothing streamed (WR-01-r2)', async () => {
+    const truncated = `${TWO_CANDIDATES.slice(0, -1)},{"command":"git di`;
+    scriptStream({ pieces: [truncated], stopReason: 'refusal' });
+
+    const result = await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    expect(result).toEqual([
+      { command: 'git status', explanation: 'Show repo status' },
+      { command: 'git log --oneline', explanation: 'Show history' },
+    ]);
+  });
+
+  it('keeps the streamed rows on a refusal (WR-01-r2)', async () => {
+    const truncated = `${TWO_CANDIDATES.slice(0, -1)},{"command":"git di`;
+    scriptStream({ pieces: splitAt(truncated, [40, 80]), stopReason: 'refusal' });
+    const onCandidate = vi.fn();
+
+    const result = await claudeAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(result).toEqual([
+      { command: 'git status', explanation: 'Show repo status' },
+      { command: 'git log --oneline', explanation: 'Show history' },
+    ]);
+    expect(onCandidate).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps the prose fallback after a stop_sequence stop (WR-01-r2)', async () => {
+    scriptStream({ pieces: ['not ', 'json'], stopReason: 'stop_sequence' });
+
+    const result = await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    expect(result).toEqual([{ command: 'not json', explanation: '' }]);
+  });
+
+  it('isNormalStopReason allows only end_turn and stop_sequence (WR-01-r2)', () => {
+    expect(isNormalStopReason('end_turn')).toBe(true);
+    expect(isNormalStopReason('stop_sequence')).toBe(true);
+    for (const value of ['max_tokens', 'refusal', 'pause_turn', 'tool_use', null, undefined, '']) {
+      expect(isNormalStopReason(value)).toBe(false);
+    }
   });
 
   it('keeps the parseCandidates prose fallback when nothing streamed', async () => {
