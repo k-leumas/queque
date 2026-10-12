@@ -313,7 +313,7 @@ Plans:
 **Out of scope:** Switching models (Haiku-class), the API-key SDK path's `.env.local` cwd bug, and prompt caching (~0 gain, measured).
 **Requirements**: TBD (no REQ IDs mapped; coverage target is 09.1-CONTEXT.md D-01..D-17)
 **Depends on:** Phase 9
-**Plans:** 9/10 plans executed
+**Plans:** 10/10 plans executed
 
 Plans:
 **Wave 1**
@@ -336,7 +336,7 @@ Plans:
 - [x] 09.1-09-PLAN.md — (gap closure) G-09.1-5 filter pre-filled with the lbuffer: FILTER opens empty (lbuffer only in the `queque ›` header), text typed during `thinking…` is the whole filter; real-Ink regression, pre-fill tests rewritten (none deleted), 03.1 D-01/D-02 marked superseded
 
 **Gap closure** *(verification CR-01 / P9-6)*
-- [ ] 09.1-10-PLAN.md — (gap closure) CR-01 Backspace dropped when it shares a stdin read with typed keys: key handlers read a per-render `pendingInput` snapshot (query, highlight, Tab toggles), so Backspace, Enter, Tab and the arrows give the same result however stdin is chunked; real-Ink one-chunk and invariance regressions, CR-01 marked fixed
+- [x] 09.1-10-PLAN.md — (gap closure) CR-01 Backspace dropped when it shares a stdin read with typed keys: key handlers read a per-render `pendingInput` snapshot (query, highlight, Tab toggles), so Backspace, Enter, Tab and the arrows give the same result however stdin is chunked; real-Ink one-chunk and invariance regressions, CR-01 marked fixed
 
 ### Phase 999.1: Model-supplied install package names (BACKLOG)
 

@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "09.1"
 current_phase_name: provider-latency-and-cancellation
 status: executing
-stopped_at: Completed 09.1-09-PLAN.md
-last_updated: "2026-10-12T21:30:37.004Z"
+stopped_at: Completed 09.1-10-PLAN.md
+last_updated: "2026-10-12T21:58:47.539Z"
 last_activity: 2026-10-12
-last_activity_desc: Completed 09.1-09 (G-09.1-5 gap closure)
-state_head: e893c6156b50c1511f29f32337bc22536f8e3c71
+last_activity_desc: Phase 09.1 execution started
+state_head: 8c55fdbb44af0ad19ebd9d1fb92faed3ad7a039d
 progress:
   total_phases: 12
   completed_phases: 8
   total_plans: 43
-  completed_plans: 38
+  completed_plans: 39
 milestone_name: milestone
 ---
 
@@ -28,11 +28,11 @@ See: .planning/PROJECT.md (updated 2026-10-11)
 
 ## Current Position
 
-Phase: 09.1 (provider-latency-and-cancellation) — READY TO EXECUTE
-Plan: 10 of 10 (09.1-10 planned, not executed)
+Phase: 09.1 (provider-latency-and-cancellation) — EXECUTING
+Plan: 2 of 10
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
-Status: Verification gaps_found (CR-01 Backspace regression); gap plan 09.1-10 verified and ready to execute
-Last activity: 2026-10-12 — Completed 09.1-09 (G-09.1-5: FILTER opens empty, lbuffer header-only)
+Status: Ready to execute
+Last activity: 2026-10-12 — Phase 09.1 execution started
 
 Progress: [███████░░░] 73%
 
@@ -73,6 +73,7 @@ Progress: [███████░░░] 73%
 | Phase 09 P06 | 17 min | 2 tasks | 11 files |
 | Phase 09.1 P08 | 11min | 2 tasks | 4 files |
 | Phase 09.1 P09 | 8 min | 3 tasks | 12 files |
+| Phase 09.1 P10 | 22min | 3 tasks | 8 files |
 
 ## Accumulated Context
 
@@ -121,6 +122,8 @@ Recent decisions affecting current work:
 - [Phase 09.1]: 09.1-08: phase OpenWolf records committed once by the gate plan; superseded claude -p advice kept as marked history; bug-270 is the live copy of the bug-206 flake
 - [Phase 09.1]: G-09.1-5: CandidateSelect FILTER query starts empty; the lbuffer is header-only (supersedes 03.1 D-01/D-02); both arrival-time zero-match clears removed
 - [Phase 09.1]: 09.1-09 kept the initialQuery prop name (header and layout estimator only); no run-foreground or zsh widget change
+- [Phase 09.1]: CR-01: pending input snapshot (pendingInput ref + per-render renderToken) instead of an unconditional Backspace reset; keeps WR-05 empty-filter no-op
+- [Phase 09.1]: CR-01 snapshot covers query, selectedIndex and installToggled so Enter/Tab/arrows act on earlier keys of the same stdin read
 
 ### Pending Todos
 
@@ -166,6 +169,6 @@ None yet.
 
 Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
 
-Last session: 2026-10-12T20:46:46.006Z
-Stopped at: Completed 09.1-09-PLAN.md
+Last session: 2026-10-12T21:58:47.187Z
+Stopped at: Completed 09.1-10-PLAN.md
 Resume file: None

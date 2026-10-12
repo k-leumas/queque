@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T21:39:37.827Z
-> Files: 529 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T21:58:36.653Z
+> Files: 530 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -772,6 +772,7 @@
 - `09.1-09-PLAN.md` — Gap closure G-09.1-5 (UAT test 5): FILTER opens empty, lbuffer header-only, typed text is the whole filter; tracer real-Ink regression + CandidateSelect seed fix, pre-fill tests rewritten (none deleted), 03.1 D-01/D-02 superseded, OpenWolf/debug records (~9359 tok)
 - `09.1-09-SUMMARY.md` — Phase 09.1 Plan 09: Empty FILTER on Open (G-09.1-5) Summary (~4197 tok)
 - `09.1-10-PLAN.md` — Gap closure CR-01 (verification P9-6): Backspace dropped when it shares a stdin read with typed keys; tracer real-Ink one-chunk regression + per-render `pendingInput` snapshot read by every CandidateSelect key handler (Backspace, typing, Tab, Enter, arrows), invariance it.each (arrow/DEL-separated chunks; Ink keeps CR/Tab inside text runs), CR-01 disposition fixed, OpenWolf records (~11136 tok)
+- `09.1-10-SUMMARY.md` — Phase 09.1 Plan 10: Coalesced stdin read (CR-01) Summary (~3051 tok)
 - `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
 - `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
 - `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)

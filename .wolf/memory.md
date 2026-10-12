@@ -2881,3 +2881,5 @@
 | 15:42 | 09.1-10 T2 RED: CR-01 invariance it.each (6 rows, one-read mode fails) + 2 mocked same-closure Enter cases fail as planned | tests/candidate-select-layout.test.tsx, tests/candidate-select.test.tsx | RED | ~4000 |
 | 15:49 | 09.1-10 T2 GREEN: Enter/Tab/arrows read the PendingInput snapshot via applyInput; 91/91 both files (one zsh-helper flake at load 42, rerun green), typecheck+lint ok | src/ui/CandidateSelect.tsx, tests/candidate-select-layout.test.tsx | GREEN | ~4000 |
 | 15:56 | 09.1-10 T3: CR-01 fixed in REVIEW-DISPOSITION (open 6→5); cerebrum Key Learning + Do-Not-Repeat + Decision Log; buglog bug-330; gate: typecheck/lint/build ok, full suite 48 child-process timing fails at load 25 (Docker), all 6 files green in isolation | 09.1-REVIEW-DISPOSITION.md, .wolf/* | done | ~3000 |
+| 15:58 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-SUMMARY.md | — | ~3254 |
+| 15:59 | 09.1-10 complete: SUMMARY written, STATE/ROADMAP advanced (D-ids not in REQUIREMENTS.md) | 09.1-10-SUMMARY.md, .planning/STATE.md, ROADMAP.md | done | ~3000 |
