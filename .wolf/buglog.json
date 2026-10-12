@@ -5428,6 +5428,29 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-12T21:50:41.000Z"
+    },
+    {
+      "id": "bug-331",
+      "timestamp": "2026-10-12T22:45:00.000Z",
+      "error_message": "Review WR-01-r2 / security T-09.1-14: a streamed SDK answer that stops with `refusal` (or pause_turn, null, or any stop except max_tokens) leaving a fragment such as `[{\"command\": \"find . -name` reaches parseCandidates' prose fallback and is offered as a shell-buffer command; claude -p never reads the result stop_reason at all",
+      "file": "src/providers/claude.ts",
+      "root_cause": "The WR-07 guard checked one bad stop reason (max_tokens) instead of allowing only the good ones, and the claude -p `result` stop_reason was never read",
+      "fix": "isNormalStopReason allow list (end_turn, stop_sequence) in provider.ts; finalCandidateList in claude.ts shared by both paths (strict, streamed, then closed rows or TRUNCATED_RESPONSE_MESSAGE when not normal, prose fallback only after a normal stop); runClaudeTurn rejects a non-normal result stop_reason as 'truncated' (absent key = end_turn, null fails closed); claude-cli routes it through finalCandidateList without a cold retry; claude-default hardError passes TRUNCATED_RESPONSE_MESSAGE through instead of the D13 copy",
+      "tags": [
+        "09.1",
+        "review-fix",
+        "WR-01-r2",
+        "T-09.1-14",
+        "stop_reason",
+        "refusal",
+        "fail-closed",
+        "provider"
+      ],
+      "related_bugs": [
+        "bug-328"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T22:45:00.000Z"
     }
   ]
 }

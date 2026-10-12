@@ -2,7 +2,7 @@ import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
-import { fetchCandidates as fetchSdkCandidates } from './claude.js';
+import { fetchCandidates as fetchSdkCandidates, TRUNCATED_RESPONSE_MESSAGE } from './claude.js';
 import { fetchClaudeCliCandidates } from './claude-cli.js';
 import { type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 
@@ -67,6 +67,10 @@ function lookupApiKey(): string | undefined {
 }
 
 function hardError(error: unknown): Error {
+  // WR-01-r2: a cut-off answer shows the same copy as the SDK path, never the D13 login copy.
+  if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {
+    return error;
+  }
   if (isEnoent(error)) {
     return new Error(ENOENT_MESSAGE);
   }

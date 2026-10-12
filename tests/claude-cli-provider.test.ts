@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
-import { resetAnthropicClientCache } from '../src/providers/claude.js';
+import { resetAnthropicClientCache, TRUNCATED_RESPONSE_MESSAGE } from '../src/providers/claude.js';
 import type {
   ClaudeTurnOptions,
   ClaudeTurnStage,
@@ -140,6 +140,20 @@ function loggedOutError(): Error {
     stderr: '',
     reason: 'is-error',
     sawInit: true,
+  });
+}
+
+/** The runner's truncated shape: a result whose stop_reason is not normal (WR-01-r2). */
+function truncatedFailure(stdout: string, stopReason: string | null = 'refusal'): Error {
+  return Object.assign(new Error('Command failed: claude'), {
+    code: null,
+    killed: false,
+    signal: null,
+    stdout,
+    stderr: '',
+    reason: 'truncated',
+    sawInit: true,
+    stopReason,
   });
 }
 
@@ -848,6 +862,63 @@ describe('claude -p effort and streamed candidates', () => {
 
     expect(onCandidate).not.toHaveBeenCalled();
     expect(result).toEqual([{ command: 'git status --short', explanation: '' }]);
+  });
+
+  it('shows the truncation copy for a truncated refusal fragment, not D13 (WR-01-r2)', async () => {
+    runClaudeTurnMock.mockRejectedValue(truncatedFailure('[{"command": "find . -name'));
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const error = await claudeDefaultAdapter
+      .fetchCandidates(buildEnvelope())
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe(TRUNCATED_RESPONSE_MESSAGE);
+    expect((error as Error).message).not.toMatch(/not authenticated/);
+    expect((error as Error).message).not.toMatch(/timed out/);
+    expect(createMock).not.toHaveBeenCalled();
+    const truncatedLog = appendDebugLogMock.mock.calls.find(
+      (call) => call[0] === 'provider' && call[1] === 'response truncated',
+    );
+    expect(truncatedLog?.[2]).toMatchObject({ stopReason: 'refusal' });
+  });
+
+  it.each([
+    'refusal',
+    null,
+  ])('closes the prose fallback on a truncated %s turn (WR-01-r2)', async (stopReason) => {
+    runClaudeTurnMock.mockRejectedValue(truncatedFailure('git status --short', stopReason));
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await expect(
+      claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate: vi.fn() }),
+    ).rejects.toThrow(TRUNCATED_RESPONSE_MESSAGE);
+  });
+
+  it('keeps the rows that closed in a truncated result text (WR-01-r2)', async () => {
+    const cut = `${STREAMED_ANSWER.slice(0, -1)},{"command":"git di`;
+    runClaudeTurnMock.mockRejectedValue(truncatedFailure(cut));
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    expect(result).toEqual(STREAMED_CANDIDATES);
+  });
+
+  it('keeps the streamed rows when the turn ends truncated (WR-01-r2)', async () => {
+    runClaudeTurnMock.mockImplementation(async (options) => {
+      for (const delta of deltaPieces(STREAMED_ANSWER)) {
+        options.onTextDelta?.(delta);
+      }
+      throw truncatedFailure('[{"command": "find . -name');
+    });
+    const onCandidate = vi.fn();
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(result).toEqual(STREAMED_CANDIDATES);
+    expect(onCandidate).toHaveBeenCalledTimes(2);
   });
 
   it('logs cli first candidate once per turn with elapsed ms', async () => {

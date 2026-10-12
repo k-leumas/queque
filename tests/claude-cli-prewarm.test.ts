@@ -90,6 +90,20 @@ function isErrorFailure(): Error {
   });
 }
 
+/** The runner's failure shape for a result whose stop_reason is not normal (WR-01-r2). */
+function truncatedFailure(): Error {
+  return Object.assign(new Error('Command failed: claude'), {
+    code: null,
+    killed: false,
+    signal: null,
+    stdout: '[{"command": "find . -name',
+    stderr: '',
+    reason: 'truncated',
+    sawInit: true,
+    stopReason: 'refusal',
+  });
+}
+
 /** The runner's failure shape for a warm child that sent no `init` in time (WR-02). */
 function stalePrewarm(): Error {
   return Object.assign(new Error('Command failed: claude'), {
@@ -325,6 +339,7 @@ describe('claude -p prewarm selection (D-11, D-12, D-13)', () => {
     ['is-error', isErrorFailure],
     ['timeout', timeoutFailure],
     ['abort', abortError],
+    ['truncated', truncatedFailure],
   ])('never retries a warm %s failure', async (_name, failure) => {
     runTurns(async () => {
       throw failure();

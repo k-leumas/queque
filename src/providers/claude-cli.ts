@@ -2,8 +2,8 @@ import type { CandidateList, CommandCandidate } from '../contracts/candidates.js
 import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { resolveEffort } from '../shared/qq-config.js';
-import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
-import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
+import { createCandidateScanner } from './candidate-stream.js';
+import { buildPrompt, ensureSelectableCandidates, finalCandidateList } from './claude.js';
 import { type PrewarmSpec, schedulePrewarm, takePrewarmed } from './claude-prewarm.js';
 import {
   type ClaudeChild,
@@ -75,14 +75,18 @@ export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
  *
  * With `options.onCandidate`, each candidate is scanned out of the text deltas and handed
  * over as soon as its object closes (D-05), never after `options.signal` aborts. The final
- * list is the strict parse of the result text; if that fails after rows streamed, the
- * streamed (already validated) rows; only when nothing streamed, parseCandidates' fallback.
+ * list comes from finalCandidateList: the strict parse of the result text; if that fails
+ * after rows streamed, the streamed (already validated) rows; only when nothing streamed,
+ * parseCandidates' fallback. A result whose stop_reason is not end_turn or stop_sequence
+ * (a `truncated` runner failure, WR-01-r2) keeps only the strict list, the streamed rows or
+ * the closed rows in its text, or throws TRUNCATED_RESPONSE_MESSAGE: it never reaches the
+ * prose fallback and is never retried cold.
  *
  * Prewarm (D-11, D-12, D-13): the turn runs on the pool's idle child when its cwd and argv
  * match this query, otherwise cold. A warm turn whose child ended without a `result`, or
  * sent no `init` within warmInitDeadlineMs, and streamed no row is retried once cold within
  * the remaining budget (a stale prewarm after a long idle or laptop sleep, RESEARCH A3);
- * is_error, timeout and abort never are. A warm child that stalls after `init` (a request
+ * is_error, timeout, truncated and abort never are. A warm child that stalls after `init` (a request
  * stuck on a dead connection) is not detected and still ends as a timeout. Once
  * the last attempt settled, the slot is refilled for this query's cwd and argv, so the
  * next boot does not compete with the turn. The pool is only enabled in the daemon.
@@ -140,32 +144,47 @@ export async function fetchClaudeCliCandidates(
     });
 
   try {
-    const take = takePrewarmed(spec);
     let text: string;
-    if ('child' in take) {
-      void appendDebugLog('provider', 'prewarm hit');
-      try {
-        text = await runTurn(take.child, remainingBudgetMs, warmInitDeadlineMs(take.spawnedAt));
-      } catch (error) {
-        const leftMs = deadline - Date.now();
-        if (
-          !isStalePrewarmFailure(error) ||
-          streamed.length > 0 ||
-          signal?.aborted ||
-          leftMs <= 0
-        ) {
-          throw error;
+    let finishedNormally = true;
+    let stopReason: string | null | undefined;
+    try {
+      const take = takePrewarmed(spec);
+      if ('child' in take) {
+        void appendDebugLog('provider', 'prewarm hit');
+        try {
+          text = await runTurn(take.child, remainingBudgetMs, warmInitDeadlineMs(take.spawnedAt));
+        } catch (error) {
+          const leftMs = deadline - Date.now();
+          if (
+            !isStalePrewarmFailure(error) ||
+            streamed.length > 0 ||
+            signal?.aborted ||
+            leftMs <= 0
+          ) {
+            throw error;
+          }
+          void appendDebugLog('provider', 'prewarm retry cold', { ms: Date.now() - startedAt });
+          text = await runTurn(undefined, leftMs);
         }
-        void appendDebugLog('provider', 'prewarm retry cold', { ms: Date.now() - startedAt });
-        text = await runTurn(undefined, leftMs);
+      } else {
+        void appendDebugLog('provider', 'prewarm miss', { reason: take.miss });
+        text = await runTurn(undefined, remainingBudgetMs);
       }
-    } else {
-      void appendDebugLog('provider', 'prewarm miss', { reason: take.miss });
-      text = await runTurn(undefined, remainingBudgetMs);
+    } catch (error) {
+      // WR-01-r2: a result that stopped for any reason except end_turn/stop_sequence. Its text
+      // only feeds finalCandidateList's closed-row scan, never the prose fallback; every other
+      // rejection (abort, timeout, is-error, spawn-error, ...) keeps its own path.
+      if (!isTruncatedFailure(error)) {
+        throw error;
+      }
+      const stdout = (error as { stdout?: unknown }).stdout;
+      text = typeof stdout === 'string' ? stdout : '';
+      finishedNormally = false;
+      stopReason = (error as { stopReason?: string | null }).stopReason;
     }
-    const finalList =
-      parseStrictCandidateList(text) ?? (streamed.length > 0 ? streamed : parseCandidates(text));
-    return ensureSelectableCandidates(finalList);
+    return ensureSelectableCandidates(
+      finalCandidateList(text, streamed, finishedNormally, { stopReason }),
+    );
   } finally {
     // D-11/D-13: refill after every settle (success, error or abort), in this query's cwd
     // with this query's argv. A no-op outside the daemon.
@@ -183,6 +202,18 @@ function isStalePrewarmFailure(error: unknown): boolean {
   }
   const reason = (error as { reason?: unknown }).reason;
   return reason === 'exit-without-result' || reason === 'stale-prewarm';
+}
+
+/**
+ * A turn whose `result` stop_reason was not end_turn or stop_sequence (WR-01-r2). Not a
+ * stale prewarm: a truncated warm turn is never retried cold (no second paid turn).
+ */
+function isTruncatedFailure(error: unknown): boolean {
+  if (error === null || typeof error !== 'object') {
+    return false;
+  }
+  const reason = (error as { reason?: unknown }).reason;
+  return reason === 'truncated';
 }
 
 const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
