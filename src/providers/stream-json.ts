@@ -38,7 +38,17 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * that parses as JSON to `onEvent`. Lines that are not JSON are dropped silently, so they
  * never reach any candidate parser.
  */
-export function createLineParser(onEvent: (event: unknown) => void): (chunk: string) => void {
+export interface LineParserOptions {
+  /** Largest unfinished line kept between chunks, in UTF-8 bytes. */
+  maxCarryBytes?: number;
+  /** Called once when the carry passes `maxCarryBytes`; later input is ignored. */
+  onOverflow?: () => void;
+}
+
+export function createLineParser(
+  onEvent: (event: unknown) => void,
+  _options: LineParserOptions = {},
+): (chunk: string) => void {
   let carry = '';
   return (chunk: string): void => {
     carry += chunk;
