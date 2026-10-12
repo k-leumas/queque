@@ -1,3 +1,50 @@
+# [0.5.0](https://github.com/k-leumas/queque/compare/v0.4.2...v0.5.0) (2026-10-12)
+
+
+### Bug Fixes
+
+* **08-02:** build execFileAsync on spawn so stdin is ignored ([264d430](https://github.com/k-leumas/queque/commit/264d430e835666514eaea481041e50ff49e845ea))
+* **09-05:** drop the tab chip from the controls; the ⓘ legend explains tab ([88b08dc](https://github.com/k-leumas/queque/commit/88b08dc1fc80f5256d6a1ab2541d6dc888f1438d))
+* **09-05:** show ⓘ before the explanation and a not-installed legend above the controls ([866956d](https://github.com/k-leumas/queque/commit/866956d934dcd630cc5e42581fc31f4014f92c09))
+* **09-05:** the ⓘ legend explains that tab prepends the install command ([05c3534](https://github.com/k-leumas/queque/commit/05c35344c79a660502142c240dbe5827fc10fc4b))
+* **09-05:** the ⓘ legend explains the mark without naming tools ([612fa07](https://github.com/k-leumas/queque/commit/612fa07fbf3a545fd2041f871a9e979181ff7380))
+* **09-05:** use ⓘ for missing tools and drop the footer note that made the modal jump ([3209e9b](https://github.com/k-leumas/queque/commit/3209e9b02a983478d8b2cf0e229ef804daf996a6))
+* **09-06:** reset candidate arrival state during render so no stale height leaks ([9a7d4cf](https://github.com/k-leumas/queque/commit/9a7d4cf74fa6c1d76274797db00ef5eb1683f2aa))
+* **09-06:** serialize zellij pane resizes so the newest height always wins ([37edd9a](https://github.com/k-leumas/queque/commit/37edd9ab83b14ad85abb05886e978c34322ab857))
+* **09:** filter rows by the command text they show, install form included (WR-04) ([6069f44](https://github.com/k-leumas/queque/commit/6069f446bd7104ebbcd59e95c92f5392015ab336))
+* **09:** keep a row visible after tab undoes its install form ([674ca9f](https://github.com/k-leumas/queque/commit/674ca9fc23477bfb2f8b0be4b269bf5fa4cc256f))
+* **09:** keep timing guards but take the best of 3 runs under load (WR-03) ([ebafa0d](https://github.com/k-leumas/queque/commit/ebafa0d2015ccdd781673d99b13369b64caad4bc))
+* **09:** key package aliases by installer so linux never gets brew names (WR-01) ([75f72bd](https://github.com/k-leumas/queque/commit/75f72bd6d9dba521162317d16474a04b4fe468f6))
+* **09:** make lookup-only operands of command -v, type and which explicit (WR-05) ([d0cf4e8](https://github.com/k-leumas/queque/commit/d0cf4e870452fda2d28c942df3246b9f7229a9f4))
+* **09:** offer no apt install form for kubectl, which is not in debian main ([aa55dd5](https://github.com/k-leumas/queque/commit/aa55dd5f3937991e0ca6a39841daa6422f139d22))
+* **09:** read wrapper long options and quoted operands correctly (CR-02) ([b235597](https://github.com/k-leumas/queque/commit/b235597689e51791ff4f8ffbfe59a30f0144f70e))
+* **09:** reserve 18 lines for the modal and document the real row count (WR-02) ([eb6fad1](https://github.com/k-leumas/queque/commit/eb6fad1b10e62480279ec56cc58c52f75441d1cd))
+* **09:** skip heredoc bodies and line continuations in the lexer (CR-01) ([b8ea9d7](https://github.com/k-leumas/queque/commit/b8ea9d7f57bb182fd1817c455ed4280d8dc361b3))
+* **quick-261011-e43:** reserve a pane row for Ink's cursor line ([dbcbdd7](https://github.com/k-leumas/queque/commit/dbcbdd75c03e6d688fc3ac00947bb406367676d8))
+* **quick-261011-f9o:** hold the zellij pane height while filtering ([bd0c426](https://github.com/k-leumas/queque/commit/bd0c4265521dc84f6b96cfa19fdbe3a5b0e1d909))
+
+
+### Features
+
+* **08-01:** implement platform-aware claudeAuthPresent detection ([ddad55b](https://github.com/k-leumas/queque/commit/ddad55bfb5fb9d071cadf2570560df004bb5b400))
+* **08-02:** implement Claude CLI adapter with SDK rescue ([f42dec1](https://github.com/k-leumas/queque/commit/f42dec17137f3fb201109de7cd8bd41e7ab4f67f))
+* **08-02:** resolve Claude default and bypass detect selector ([29d7318](https://github.com/k-leumas/queque/commit/29d7318880b54286ba059743087a4e219d5bf9b6))
+* **08:** fetch via Anthropic SDK first through a warm daemon client ([07738ca](https://github.com/k-leumas/queque/commit/07738ca65661a07b5438afaa11a8bb28336d1fd2))
+* **09-01:** count flag footer and mark overflow rows in the layout ([4fdd6f8](https://github.com/k-leumas/queque/commit/4fdd6f802ab426fc57421416c63ddcb4be85ff61))
+* **09-01:** flag candidates that use tools zsh cannot resolve ([086ba1f](https://github.com/k-leumas/queque/commit/086ba1f076f29c587e8819dab1e43bf02b9278ae))
+* **09-03:** implement catalog chunk schemas and steering builder ([fad6ef3](https://github.com/k-leumas/queque/commit/fad6ef3ed034a97e45b79db9ec1489ec2d82f099))
+* **09-03:** route claude sdk and cli paths through buildSystemPrompt ([f11d400](https://github.com/k-leumas/queque/commit/f11d400d945e9ebaab87e276793348e6218adbe6))
+* **09-04:** implement installer choice, package map and guarded install forms ([b9fa02d](https://github.com/k-leumas/queque/commit/b9fa02dac814162968439327cfc13c2e21bd9295))
+* **09-04:** tab toggles flagged rows to their install form ([22553c5](https://github.com/k-leumas/queque/commit/22553c52802a3e8984298f68ab2578c26bb69061))
+* **09-05:** client sends the validated installed-tools chunk ([c105e57](https://github.com/k-leumas/queque/commit/c105e5762f0edd502b4aa25c3c7b19c6b297b534))
+* **09-05:** pong advertises installedTools so stale daemons get replaced ([f225215](https://github.com/k-leumas/queque/commit/f225215c89c1a59e692a9308024c2c2af7e9a774))
+* **quick-261011-jbh:** paint an instant frame from the zsh widget ([f16212f](https://github.com/k-leumas/queque/commit/f16212f8bbfdc9ad4328f4549e3fc5d7adee1b9c))
+
+
+### Performance Improvements
+
+* **quick-261011-jbh:** bundle the client behind a compile-cache launcher ([e8e3127](https://github.com/k-leumas/queque/commit/e8e3127f80ef0668e5e6990929cd8c94f2d6008a))
+
 ## [0.4.2](https://github.com/k-leumas/queque/compare/v0.4.1...v0.4.2) (2026-07-30)
 
 
