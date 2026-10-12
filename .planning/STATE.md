@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: "09.1"
 current_phase_name: Provider Latency and Cancellation
 status: executing
-stopped_at: Phase 09.1 context gathered
-last_updated: "2026-10-12T06:30:32.978Z"
+stopped_at: Completed 09.1-08-PLAN.md
+last_updated: "2026-10-12T07:49:49.638Z"
 last_activity: 2026-10-12
 last_activity_desc: Phase 09.1 execution started
-state_head: 94cfd65edecd3be0330d4671a032d2398b2b67ad
+state_head: 133d1f27158f3bb0634dc04036a91fd9e704448d
 progress:
   total_phases: 12
   completed_phases: 8
   total_plans: 41
-  completed_plans: 29
+  completed_plans: 37
 milestone_name: milestone
 ---
 
@@ -29,10 +29,10 @@ See: .planning/PROJECT.md (updated 2026-10-11)
 ## Current Position
 
 Phase: 09.1 (Provider Latency and Cancellation) — EXECUTING
-Plan: 1 of 8
-Next: Plan Phase 09.1 (/gsd-plan-phase 09.1)
-Status: Executing Phase 09.1
-Last activity: 2026-10-12 — Phase 09.1 execution started
+Plan: 8 of 8
+Next: Verify Phase 09.1 (phase verifier, then end-of-phase UAT with the real claude -p)
+Status: All 8 plans complete — ready for verification
+Last activity: 2026-10-12 — Completed 09.1-08 (phase gate: OpenWolf records, full gate green)
 
 Progress: [███████░░░] 73%
 
@@ -71,6 +71,7 @@ Progress: [███████░░░] 73%
 | Phase 09 P03 | 5min | 3 tasks | 11 files |
 | Phase 09 P04 | 7min | 2 tasks | 9 files |
 | Phase 09 P06 | 17 min | 2 tasks | 11 files |
+| Phase 09.1 P08 | 11min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -116,6 +117,7 @@ Recent decisions affecting current work:
 - [Phase 09]: 09-04: displayedCommand/isInstallToggled live in modal-layout.ts so the render and layout estimate share one displayed-text rule
 - [Phase 09]: G-09-7 fix (09-06): render-phase candidate-arrival reset in CandidateSelect (prevCandidates) plus a serialized latest-wins Zellij resize queue; SIGWINCH /dev/tty resize wiring deliberately not done
 - [Phase 09]: RESIZE_SETTLE_TIMEOUT_MS = 2000 (about 5x the slowest measured zellij action); timer unref'd, a hung action is killed and the newest waiting height spawned
+- [Phase 09.1]: 09.1-08: phase OpenWolf records committed once by the gate plan; superseded claude -p advice kept as marked history; bug-270 is the live copy of the bug-206 flake
 
 ### Pending Todos
 
@@ -160,6 +162,6 @@ None yet.
 
 Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
 
-Last session: 2026-10-12T04:20:01.696Z
-Stopped at: Phase 09.1 context gathered
-Resume file: .planning/phases/09.1-provider-latency-and-cancellation/09.1-CONTEXT.md
+Last session: 2026-10-12T07:49:43.448Z
+Stopped at: Completed 09.1-08-PLAN.md
+Resume file: None

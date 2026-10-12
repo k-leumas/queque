@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T07:40:03.671Z
-> Files: 510 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T07:48:56.334Z
+> Files: 516 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -762,6 +762,7 @@
 - `09.1-06-PLAN.md` — Artifacts this phase produces (~6783 tok)
 - `09.1-07-PLAN.md` — Artifacts this phase produces (~8155 tok)
 - `09.1-08-PLAN.md` — Artifacts this phase produces (~6502 tok)
+- `09.1-08-SUMMARY.md` — Phase 09.1 Plan 08: Phase Gate, OpenWolf Records and Latency UAT Prep Summary (~5691 tok)
 - `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
 - `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
 - `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)

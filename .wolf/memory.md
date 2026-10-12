@@ -2605,3 +2605,151 @@
 | 00:49 | Edited .claude/worktrees/agent-ad6a431a4e19000a0/.wolf/anatomy.md | 1→2 lines | ~156 |
 | 00:49 | Edited .claude/worktrees/agent-ad6a431a4e19000a0/.wolf/cerebrum.md | added nullish coalescing | ~548 |
 | 00:51 | Created .claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/09.1-01-SUMMARY.md | — | ~5148 |
+| 00:45 | 09.1-01 Task 1 GREEN: stream-json runner (claude-process.ts, stream-json.ts), claude-cli on stdin prompt + stream-json argv, abort wiring client→socket→daemon→runner, process.exit in client action | src/providers/*, src/daemon/{server,fetch-client}.ts, src/client/run-foreground.ts, src/cli/main.ts | 80/80 target tests, typecheck clean | ~40000 |
+| 00:56 | 09.1-01 Task 2: per-stage claude -p debug lines (cli spawned/init/first delta/result/exit/aborted/timed out, ms only) + stage-order and error-copy tests | src/providers/claude-cli.ts, tests/claude-cli-provider.test.ts | 22/22, full suite 594/594 (fuzz flake bug-206 once under load), typecheck clean | ~8000 |
+| 00:57 | OpenWolf for 09.1-01: anatomy (provider/stream-json/claude-process/fixture/tests + updated lines), cerebrum claude -p contract + cancellation chain + worktree biome note, buglog bug-252 (Esc leaves client running) and bug-206 occurrence | .wolf/anatomy.md, .wolf/cerebrum.md, .wolf/buglog.json | recorded | ~4000 |
+| 01:02 | Session end: 119 writes across 26 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 41 reads | ~162831 tok |
+| 01:03 | Created .claude/worktrees/agent-a95663009d2772251/tests/claude-stream-json.test.ts | — | ~1583 |
+| 01:03 | Created .claude/worktrees/agent-ab8a809b1692afb63/tests/qq-config.test.ts | — | ~1070 |
+| 01:03 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts | modified createLineParser() | ~115 |
+| 01:04 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts | added 2 condition(s) | ~847 |
+| 01:04 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts | 3→4 lines | ~34 |
+| 01:04 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts | added optional chaining | ~2040 |
+| 01:04 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-bootstrap.test.ts | added 1 condition(s) | ~477 |
+| 01:04 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-bootstrap.test.ts | 5→6 lines | ~30 |
+| 01:04 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts | added nullish coalescing | ~186 |
+| 01:05 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts | added optional chaining | ~88 |
+| 01:05 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts | modified for() | ~568 |
+| 01:05 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/stream-json.ts | inline fix | ~31 |
+| 01:05 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/src/daemon/server.ts | added 2 condition(s) | ~470 |
+| 01:06 | Created .claude/worktrees/agent-ab8a809b1692afb63/src/providers/candidate-stream.ts | — | ~190 |
+| 01:06 | Created .claude/worktrees/agent-ab8a809b1692afb63/tests/candidate-stream.test.ts | — | ~1381 |
+| 01:06 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/docs/SYSTEM_DESIGN.md | 1→3 lines | ~360 |
+| 01:06 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/docs/SYSTEM_DESIGN.md | removed 1 lines | ~11 |
+| 01:07 | Edited .claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs | modified writeFlushed() | ~130 |
+| 01:07 | Edited .claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs | modified success() | ~51 |
+| 01:07 | Edited .claude/worktrees/agent-ab8a809b1692afb63/tests/claude-cli-provider.test.ts | added optional chaining | ~1466 |
+| 01:07 | Edited .claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs | modified for() | ~355 |
+| 01:07 | Edited .claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs | writeLine() → stringify() | ~34 |
+| 01:07 | Edited .claude/worktrees/agent-a95663009d2772251/tests/fixtures/fake-claude-stream.mjs | 1→3 lines | ~63 |
+| 01:07 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | 2→6 lines | ~77 |
+| 01:07 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts | modified settleWithin() | ~948 |
+| 01:08 | Edited .claude/worktrees/agent-a95663009d2772251/tests/claude-process.test.ts | 5→6 lines | ~106 |
+| 01:08 | Created .claude/worktrees/agent-ab8a809b1692afb63/src/providers/candidate-stream.ts | — | ~1026 |
+| 01:08 | Edited .claude/worktrees/agent-a95663009d2772251/tests/claude-process.test.ts | added error handling | ~1996 |
+| 01:08 | Edited .claude/worktrees/agent-a95663009d2772251/tests/claude-process.test.ts | 2→3 lines | ~24 |
+| 01:08 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/daemon-fetch.test.ts | 1→3 lines | ~34 |
+| 01:08 | Edited .claude/worktrees/agent-a95663009d2772251/tests/claude-process.test.ts | "resolves on hang-after-re" → "resolves, then the backst" | ~31 |
+| 01:09 | Edited .claude/worktrees/agent-acf756ac8b7aeb0ed/docs/SYSTEM_DESIGN.md | inline fix | ~74 |
+| 01:09 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | added 1 import(s) | ~44 |
+| 01:09 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | modified Bounds() | ~153 |
+| 01:09 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | 4→4 lines | ~77 |
+| 01:10 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | added nullish coalescing | ~172 |
+| 01:10 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | added 4 condition(s) | ~619 |
+| 01:10 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | 4→6 lines | ~70 |
+| 01:10 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | 5→3 lines | ~45 |
+| 01:10 | Edited .claude/worktrees/agent-a95663009d2772251/src/providers/claude-process.ts | 2→2 lines | ~21 |
+| 01:10 | Created .claude/worktrees/agent-ab8a809b1692afb63/.planning/phases/09.1-provider-latency-and-cancellation/09.1-02-SUMMARY.md | — | ~5669 |
+| 01:11 | Session end: 160 writes across 33 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 46 reads | ~200403 tok |
+| 01:12 | Created .claude/worktrees/agent-acf756ac8b7aeb0ed/.planning/phases/09.1-provider-latency-and-cancellation/09.1-03-SUMMARY.md | — | ~5273 |
+| 01:12 | Session end: 161 writes across 34 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 46 reads | ~206053 tok |
+| 01:14 | Created .claude/worktrees/agent-a95663009d2772251/.planning/phases/09.1-provider-latency-and-cancellation/09.1-06-SUMMARY.md | — | ~5168 |
+| 01:19 | Session end: 162 writes across 35 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 47 reads | ~219954 tok |
+| 01:21 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts | modified stands() | ~161 |
+| 01:21 | Created .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-prewarm.ts | — | ~328 |
+| 01:21 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts | 2→4 lines | ~42 |
+| 01:21 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | 2→4 lines | ~48 |
+| 01:21 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | 3→4 lines | ~21 |
+| 01:21 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts | 3→8 lines | ~86 |
+| 01:21 | Edited .claude/worktrees/agent-a6493f5431239884a/tests/fixtures/fake-claude-stream.mjs | 1→2 lines | ~47 |
+| 01:22 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/modal-layout.test.ts | 2→3 lines | ~19 |
+| 01:22 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/modal-layout.test.ts | expanded (+50 lines) | ~660 |
+| 01:22 | Edited .claude/worktrees/agent-a6493f5431239884a/tests/claude-process.test.ts | 8→10 lines | ~68 |
+| 01:22 | Edited .claude/worktrees/agent-a6493f5431239884a/tests/claude-process.test.ts | added 1 condition(s) | ~762 |
+| 01:22 | Created .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-provider.test.ts | — | ~5008 |
+| 01:23 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | expanded (+6 lines) | ~45 |
+| 01:23 | Created .claude/worktrees/agent-a6493f5431239884a/tests/claude-prewarm.test.ts | — | ~2130 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | modified constructor() | ~294 |
+| 01:23 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | modified 07() | ~203 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | added optional chaining | ~670 |
+| 01:23 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | CSS: arrival, command | ~222 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | 3→4 lines | ~34 |
+| 01:23 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | CSS: form | ~134 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | 6→6 lines | ~79 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | 8→8 lines | ~89 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | 8→8 lines | ~100 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | 8→8 lines | ~88 |
+| 01:23 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | 4→4 lines | ~43 |
+| 01:24 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | added error handling | ~2962 |
+| 01:24 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-cli-provider.test.ts | added 1 condition(s) | ~1034 |
+| 01:24 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/steering.test.ts | expanded (+6 lines) | ~45 |
+| 01:24 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts | added 1 condition(s) | ~679 |
+| 01:24 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts | inline fix | ~22 |
+| 01:25 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts | added 3 condition(s) | ~222 |
+| 01:25 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts | added nullish coalescing | ~27 |
+| 01:25 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts | modified if() | ~53 |
+| 01:25 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts | modified isRunning() | ~88 |
+| 01:25 | Created .claude/worktrees/agent-aee12978fe710dd1a/.planning/phases/09.1-provider-latency-and-cancellation/.red-0904-mk.cjs | — | ~109 |
+| 01:25 | Created .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-prewarm.ts | — | ~2012 |
+| 01:26 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts | added 1 condition(s) | ~59 |
+| 01:26 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-process.ts | 2→7 lines | ~103 |
+| 01:26 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | 2→3 lines | ~22 |
+| 01:26 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | added nullish coalescing | ~708 |
+| 01:26 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | added 1 condition(s) | ~225 |
+| 01:26 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | 3→4 lines | ~19 |
+| 01:26 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | 8→13 lines | ~192 |
+| 01:26 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | modified fetchCandidates() | ~360 |
+| 01:26 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | CSS: D-08 | ~98 |
+| 01:26 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | added optional chaining | ~539 |
+| 01:26 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude-default.ts | added error handling | ~76 |
+| 01:27 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/client/run-foreground.ts | 9→14 lines | ~178 |
+| 01:27 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/client/run-foreground.ts | added 2 condition(s) | ~500 |
+| 01:27 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/client/run-foreground.ts | inline fix | ~25 |
+| 01:27 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/client/run-foreground.ts | added 1 import(s) | ~36 |
+| 01:27 | Created .claude/worktrees/agent-a6493f5431239884a/tests/claude-cli-prewarm.test.ts | — | ~3013 |
+| 01:28 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts | modified stands() | ~133 |
+| 01:28 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/modal-layout.test.ts | expanded (+10 lines) | ~170 |
+| 01:28 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-provider.test.ts | expanded (+7 lines) | ~226 |
+| 01:28 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-provider.test.ts | added 1 condition(s) | ~271 |
+| 01:28 | Edited .claude/worktrees/agent-aee12978fe710dd1a/tests/claude-provider.test.ts | added optional chaining | ~1022 |
+| 01:28 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | added 1 import(s) | ~44 |
+| 01:28 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | modified sdkOutputConfig() | ~78 |
+| 01:28 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | modified for() | ~631 |
+| 01:28 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/candidate-select-layout.test.tsx | 3→4 lines | ~22 |
+| 01:28 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-cli.ts | added 1 import(s) | ~80 |
+| 01:28 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts | modified if() | ~220 |
+| 01:28 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-cli.ts | added error handling | ~1048 |
+| 01:28 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts | modified if() | ~47 |
+| 01:28 | Edited .claude/worktrees/agent-a6493f5431239884a/src/providers/claude-cli.ts | modified logTurnStage() | ~147 |
+| 01:28 | Edited .claude/worktrees/agent-a6493f5431239884a/src/cli/commands/daemon.ts | added 1 import(s) | ~58 |
+| 01:28 | Edited .claude/worktrees/agent-a6493f5431239884a/src/cli/commands/daemon.ts | modified pool() | ~192 |
+| 01:29 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts | 9→10 lines | ~70 |
+| 01:29 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/tests/client-result.test.ts | added 1 condition(s) | ~1110 |
+| 01:29 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | added 1 condition(s) | ~242 |
+| 01:29 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | inline fix | ~20 |
+| 01:29 | Edited .claude/worktrees/agent-aee12978fe710dd1a/src/providers/claude.ts | added optional chaining | ~216 |
+| 01:30 | Edited .claude/worktrees/agent-aee12978fe710dd1a/README.md | inline fix | ~93 |
+| 01:30 | Edited .claude/worktrees/agent-aee12978fe710dd1a/docs/EXTENSIONS.md | 2→3 lines | ~182 |
+| 01:30 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/modal-layout.ts | modified if() | ~55 |
+| 01:30 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | CSS: own | ~146 |
+| 01:30 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/CandidateSelect.tsx | 2→3 lines | ~18 |
+| 01:30 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/src/client/run-foreground.ts | added 1 condition(s) | ~274 |
+| 01:32 | Created .claude/worktrees/agent-a6493f5431239884a/.planning/phases/09.1-provider-latency-and-cancellation/09.1-05-SUMMARY.md | — | ~5022 |
+| 01:32 | Edited .claude/worktrees/agent-a6493f5431239884a/.planning/phases/09.1-provider-latency-and-cancellation/09.1-05-SUMMARY.md | 3→8 lines | ~83 |
+| 01:32 | Created .claude/worktrees/agent-aee12978fe710dd1a/.planning/phases/09.1-provider-latency-and-cancellation/09.1-04-SUMMARY.md | — | ~5047 |
+| 01:32 | Created .claude/worktrees/agent-a3da1de95c7a05a60/.planning/phases/09.1-provider-latency-and-cancellation/09.1-07-SUMMARY.md | — | ~4769 |
+| 01:33 | Edited .claude/worktrees/agent-a3da1de95c7a05a60/.planning/phases/09.1-provider-latency-and-cancellation/09.1-07-SUMMARY.md | expanded (+6 lines) | ~86 |
+| 01:33 | Edited .claude/worktrees/agent-aee12978fe710dd1a/.planning/phases/09.1-provider-latency-and-cancellation/09.1-04-SUMMARY.md | expanded (+7 lines) | ~104 |
+| 01:33 | Session end: 247 writes across 51 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 57 reads | ~307318 tok |
+| 01:34 | Session end: 247 writes across 51 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 57 reads | ~307318 tok |
+| 01:36 | Session end: 247 writes across 51 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 57 reads | ~308564 tok |
+| 07:09 | 09.1-02: --effort low + lenient effort config, streamed candidate scanner wired into claude-cli | qq-config.ts, claude-cli.ts, candidate-stream.ts, README, docs/config.example.json, 3 test files | 626/626 tests, typecheck clean | ~7k |
+| 07:15 | 09.1-03: per-candidate IPC rows for stream:true clients, streamCandidates pong flag, no re-query after rows, client settles on socket close | ipc.ts, server.ts, bootstrap.ts, fetch-client.ts, SYSTEM_DESIGN.md, daemon tests | 606/606 tests | ~8k |
+| 07:18 | 09.1-06: stream-json carry cap 1 MiB, stderr cap 64 KiB, post-result backstop SIGTERM→SIGKILL, new fixture scenarios | stream-json.ts, claude-process.ts, fake-claude-stream.mjs, 2 test files | 614/614 (bug-270 flake 2 of 3 runs at load 62-77) | ~8k |
+| 07:30 | 09.1-04: SDK path on messages.stream + finalMessage with abort, streamed rows, output_config.effort | claude.ts, claude-default.ts, README, EXTENSIONS.md, 3 test files | tests green | ~9k |
+| 07:31 | 09.1-05: one-slot claude -p prewarm pool in the daemon, cwd+argv key, refill after settle, one cold retry | claude-prewarm.ts, claude-process.ts, claude-cli.ts, daemon.ts, 3 test files | tests green | ~9k |
+| 07:32 | 09.1-07 streamed rows in the modal (listState, partial list) | modal-layout.ts, CandidateSelect.tsx, run-foreground.ts, 3 tests | 673 tests pass | ~10k |
+| 01:41 | 09.1-08: applied the deferred OpenWolf records of plans 02-07 (anatomy entries, cerebrum learnings + Decision Log + superseded claude -p advice marked, buglog bug-316..319 + bug-270/225 updates) | .wolf/anatomy.md, .wolf/cerebrum.md, .wolf/buglog.json, .wolf/memory.md | buglog valid JSON, grep checks pass | ~12k |
+| 01:46 | 09.1-08: full gate green (721/721 tests, typecheck, lint, build; load avg ~20-32 on 12 CPUs, no bug-270 flake); scratch latency summarizer in mktemp -d, fails loudly on an empty log (exit 2, 9/9 stages missing) | (scratch only) | ready for end-of-phase UAT | ~6k |
+| 01:46 | Session summary 09.1-08: OpenWolf records of plans 02-07 applied (anatomy, cerebrum learnings + Decision Log + superseded claude -p advice, buglog bug-316..320); phase gate green; real-provider latency/cancel checks handed to end-of-phase UAT | .wolf/* | phase 09.1 plans complete | ~20k |
+| 01:48 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-08-SUMMARY.md | — | ~6071 |
