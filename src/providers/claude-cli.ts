@@ -1,7 +1,12 @@
 import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
+import { appendDebugLog } from '../shared/debug-log.js';
 import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
-import { runClaudeTurn } from './claude-process.js';
+import {
+  type ClaudeTurnStage,
+  type ClaudeTurnStageDetail,
+  runClaudeTurn,
+} from './claude-process.js';
 import type { FetchOptions, LLMAdapter } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
 
@@ -45,6 +50,7 @@ export async function fetchClaudeCliCandidates(
   remainingBudgetMs: number,
   options: FetchOptions = {},
 ): Promise<CandidateList> {
+  const startedAt = Date.now();
   const text = await runClaudeTurn({
     command: CLAUDE_COMMAND,
     argv: buildClaudeCliArgv(envelope),
@@ -53,8 +59,35 @@ export async function fetchClaudeCliCandidates(
     prompt: buildPrompt(envelope),
     budgetMs: remainingBudgetMs,
     signal: options.signal,
+    onStage: (stage, detail) => {
+      logTurnStage(stage, detail, Date.now() - startedAt);
+    },
   });
   return ensureSelectableCandidates(parseCandidates(text));
+}
+
+const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
+  spawned: 'cli spawned',
+  init: 'cli init',
+  'first-delta': 'cli first delta',
+  result: 'cli result',
+  exit: 'cli exit',
+  aborted: 'cli aborted',
+  'timed-out': 'cli timed out',
+};
+
+/**
+ * One debug line per turn stage with the ms since the turn started (D-04). Only `ms`,
+ * plus `code` and `signal` on exit: never the prompt, argv, env, stdout or stderr.
+ */
+function logTurnStage(
+  stage: ClaudeTurnStage,
+  detail: ClaudeTurnStageDetail | undefined,
+  ms: number,
+): void {
+  const fields: Record<string, unknown> =
+    stage === 'exit' ? { ms, code: detail?.code ?? null, signal: detail?.signal ?? null } : { ms };
+  void appendDebugLog('provider', STAGE_LOG_NAMES[stage], fields);
 }
 
 /**

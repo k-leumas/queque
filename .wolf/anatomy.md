@@ -818,7 +818,7 @@
 ## src/cli/
 
 - `launcher.ts` — CLI launcher built as dist/cli/main.js (quick 261011-jbh, LD-2): Node built-ins only; enables the module compile cache in `${XDG_CACHE_HOME:-~/.cache}/queque/node-compile-cache` (0700; queque parent + leaf lstat-checked: real dir, owned by getuid, no group/world write; skipped when NODE_COMPILE_CACHE / NODE_DISABLE_COMPILE_CACHE is set; silent on failure), then imports `new URL('./app.js', import.meta.url)` and awaits `main()`. (~955 tok)
-- `main.ts` — Exports main (~1261 tok)
+- `main.ts` — Exports main; the `client` action calls `process.exit(process.exitCode ?? 0)` after clientCommand (D-15, 09.1-01). (~1300 tok)
 
 ## src/cli/commands/
 
@@ -830,7 +830,7 @@
 
 - `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): SAVE_CURSOR/RESTORE_CURSOR/ERASE_BELOW/CURSOR_HOME/SYNC_UPDATE_BEGIN, INLINE_SURFACE_CLEAR (ESC 8 + CSI J on the client's own save), PANE_SURFACE_CLEAR (CSI H + CSI J), `inlineScrollReserve(lines)` (byte-identical to the widget's reserve), `armInstantFrameTakeover(stream, clear)` → `{ clearNow }` (inserts the clear into the first visible write, after a leading `CSI ?2026 h`). (~1291 tok)
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Foreground client: request parse, tool handoff read, llm branch opens /dev/tty streams first, writes `inlineScrollReserve(MODAL_VIEWPORT_LINES)` and arms `armInstantFrameTakeover` (inline / Zellij clear) before classify/context/render; `clearNow()` in pre-frame failure paths; `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk), Ink modal, clearScrollReserve = INLINE_SURFACE_CLEAR, ⓘ annotation, buildShellBuffers. (~4600 tok)
+- `run-foreground.ts` — Foreground client: request parse, tool handoff read, llm branch opens /dev/tty streams first, writes `inlineScrollReserve(MODAL_VIEWPORT_LINES)` and arms `armInstantFrameTakeover` (inline / Zellij clear) before classify/context/render; `clearNow()` in pre-frame failure paths; `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk), Ink modal, clearScrollReserve = INLINE_SURFACE_CLEAR, ⓘ annotation, buildShellBuffers; `fetchAbort` AbortController aborted by onSelect/onCancel/cleanupOnSignal, no rerender once resolved, AbortError → `fetch aborted` log only (09.1-01). (~4700 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Zellij floating-pane sizing: `readMaxZellijPaneHeight` (QQ_PANE_HEIGHT, default 24), `resolveZellijPaneHeight` (content + 2 frame rows `ZELLIJ_FLOATING_FRAME_LINES` + 1 Ink cursor row `INK_TRAILING_CURSOR_ROWS`, min 6, capped), `formatZellijPaneId`; `syncZellijFloatingPaneHeight` runs a serialized latest-wins queue: one `zellij action change-floating-pane-coordinates` at a time, heights requested meanwhile collapse to the newest, slot released on exit, on child error (no crash when zellij is missing) or after `RESIZE_SETTLE_TIMEOUT_MS` (2000, kills the hung action; timer unref'd); `resetZellijPaneHeightCache` (tests only). (~1900 tok)
 
@@ -848,18 +848,21 @@
 ## src/daemon/
 
 - `bootstrap.ts` — Ensures a current daemon: ping must advertise `fetchCandidates` AND `installedTools` (else replace the stale listener; no reply = keep), spawn if needed. (~2200 tok)
-- `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`. (~1100 tok)
-- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates: true, installedTools: true}`; drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter. (~1310 tok)
+- `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`; `requestDaemonFetch(…, timeoutMs?, options?)` rejects with abortError() on signal abort and destroys the socket; `fetchCandidatesForUi(…, options?)` never falls back in-process after an abort (09.1-01). (~1300 tok)
+- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates: true, installedTools: true}`; drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter inside a Promise chain with a per-connection AbortController (socket `close` aborts it; aborted fetches log `fetch aborted` and write nothing) (09.1-01). (~1450 tok)
 
 ## src/providers/
 
-- `claude-cli.ts` — Spawns `claude -p` print mode (`--system-prompt` from `buildSystemPrompt(envelope)`) and parses stdout with the shared candidate contract. (~480 tok)
-- `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`. (~900 tok)
-- `claude-exec.ts` — Options for `execFileAsync`. Built on `spawn` so `stdio` is actually applied — (~1256 tok)
-- `claude.ts` — Reused Anthropic SDK client (async `getAnthropicClient`: lazy `import('@anthropic-ai/sdk')`, type-only static import, cache re-checked after the await); re-exports `QUEQUE_SYSTEM`; SDK `system` comes from `buildSystemPrompt(envelope)`. (~2050 tok)
+- `claude-cli.ts` — `CLAUDE_COMMAND`, `buildClaudeCliArgv(envelope)` (`-p --input-format stream-json --output-format stream-json --verbose --include-partial-messages --safe-mode --tools '' --no-session-persistence --system-prompt buildSystemPrompt(envelope)`, no prompt, no model, never bare); `fetchClaudeCliCandidates(envelope, budget, options)` runs `runClaudeTurn` with the prompt on stdin, forwards `signal`, logs `cli spawned|init|first delta|result|exit|aborted|timed out` with `ms` (exit adds code/signal) (09.1-01). (~900 tok)
+- `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`; forwards FetchOptions to the CLI path; an AbortError is logged `claude-cli aborted` and re-thrown unmapped (09.1-01). (~950 tok)
+- `claude-exec.ts` — Old argv `execFileAsync` runner on `spawn`. Unused by src/ since 09.1-01 (kept with its test; removal deferred). (~1256 tok)
+- `claude-process.ts` — One `claude -p` stream-json turn on a child (09.1-01): `runClaudeTurn` (stdin user line + `stdin.end()`, settle on zod-validated `result`, is_error gate → `is-error` with result text as stdout, budget timer rejects at kill time with killed/SIGTERM, abort → abortError(), spawn-error, exit-without-result, invalid-result; stages spawned/init/first-delta/result/exit/aborted/timed-out), `spawnClaudeChild`, `terminateChild` (SIGTERM then SIGKILL after `SIGKILL_GRACE_MS` 1500); declares `POST_RESULT_BACKSTOP_MS`, `STDERR_CAP_BYTES` for plan 06. argv stays opaque here. (~2000 tok)
+- `claude.ts` — Reused Anthropic SDK client (async `getAnthropicClient`: lazy `import('@anthropic-ai/sdk')`, type-only static import, cache re-checked after the await); re-exports `QUEQUE_SYSTEM`; SDK `system` comes from `buildSystemPrompt(envelope)`; `claudeAdapter` wraps the SDK fetch and drops FetchOptions until plan 04 (never lands in `rbuffer`). (~2080 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
+- `provider.ts` — `LLMAdapter.fetchCandidates(envelope, options?)`, `FetchOptions { signal?, onCandidate? }`, `abortError()` (name AbortError, 'QueQue: request aborted'), `isAbortError` (AbortError or the SDK's APIUserAbortError) (09.1-01). (~350 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
+- `stream-json.ts` — Pure stream-json helpers (09.1-01): `streamJsonResultSchema` (non-strict; is_error gate, subtype not a success signal), `createLineParser` (carry + newline split, non-JSON lines skipped), `textDeltaOf`, `isInitEvent`, `buildStreamJsonUserLine`, `STREAM_JSON_CARRY_CAP_BYTES` (enforced in plan 06). (~700 tok)
 - `steering.ts` — `QUEQUE_SYSTEM` (moved from claude.ts), `buildSteeringText(tools)` (catalog re-filter, dedupe, sort, 4 lines D-15/16/17), `buildSystemPrompt(envelope)` (filterContextEnvelope first; byte-identical without the chunk). (~700 tok)
 
 ## src/registry/
@@ -897,16 +900,17 @@
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (d) smt2 pre-filter draws filtered but reports the unfiltered height; (e) "header row": pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases. (~9500 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search, Tab install toggle, Enter/Esc, effect count (3). Cannot see effect ordering — use candidate-select-layout.test.tsx for that. (~6500 tok)
-- `claude-cli-provider.test.ts` — CANDIDATE_JSON: buildEnvelope, gitEnvelopeWithSecretFile, enoentError + 7 more (~3931 tok)
+- `claude-cli-provider.test.ts` — claudeDefaultAdapter with `runClaudeTurn` mocked (importOriginal spread): stream-json argv, prompt on stdin not argv, cwd/budget, signal forwarded, abort re-thrown unmapped, SDK-path cases, D13/ENOENT/timeout copy; `claude -p turn stage logs` describe (cli stage order filtered to `cli ` lines, FORBIDDEN_DEBUG). (~5200 tok)
+- `claude-process.test.ts` — runClaudeTurn against real `fake-claude-stream.mjs` children: settles on result before exit, one stdin user line and no prompt in argv, SIGTERM abort drops later deltas and exit 143, is_error auth rejection; afterEach SIGKILLs recorded pids. Plans 05/06 extend it. (~1500 tok)
 - `claude-exec.test.ts` — Unmocked stdin-EOF child plus execFile stdio-ignore documentation (~386 tok)
 - `claude-provider.test.ts` — createMock: buildEnvelope (~2261 tok)
-- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM). (~8300 tok)
+- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; Esc during loading (onCancel from the ink render mock) writes cancel, aborts the adapter signal, never rerenders; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM). (~8300 tok)
 - `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms (best of up to 3 runs, logged); 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
 - `command-words.test.ts` — Spike 002 40-case table + 09-REVIEW regression table (zsh -f `${(k)builtins}` builtins), kind classification, D-06 install words, robustness (8193 chars, prototype keys, `"rg\`), frozen lexHand op/redir/comment token contract incl. heredoc-body and continuation tokens. (~1700 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
 - `controls-line.test.tsx` — Calls `ControlsLine(props)` directly and flattens its element tree; asserts no tab chip without a hint, the exact chip order with `tabHint: 'install'`, and the `undo install` chip. (~500 tok)
 - `daemon-bootstrap.test.ts` — ensureDaemon keep/replace/spawn cases incl. pongs lacking `fetchCandidates` or `installedTools`; server pong advertises both flags. (~2300 tok)
-- `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s). (~1600 tok)
+- `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s), abort after fetch-accepted reaches the adapter signal via socket close, no fallback after abort. (~2000 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
 - `env-file.test.ts` — Declares root (~862 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
@@ -929,4 +933,5 @@
 ## tests/fixtures/
 
 - `command-words-cases.ts` — `COMMAND_WORD_CASES` / `CommandWordCase`: the 40 spike 002 cases verbatim (`stretch` is a label, not an opt-out); `REVIEW_CASES`: 09-REVIEW regression commands (heredocs, continuations, wrapper options) with their expected externals. (~900 tok)
+- `fake-claude-stream.mjs` — Real-child fake of `claude -p` stream-json (Claude Code 2.1.285 shapes, Probes 2/3/5/8); scenario = argv[2]: `success` (deltas 20 ms apart, ⓘ bytes split across two writes, result then exit 0 after 300 ms), `auth` (is_error result, subtype success, exit 1), `sigterm-slow` (deltas every 100 ms, on SIGTERM keeps writing 300 ms then exit 143); silent until the first stdin line, EOF with no line = exit 0; `FAKE_CLAUDE_STDIN_FILE`, `FAKE_CLAUDE_ARGV_FILE`. Plans 05/06 add scenarios to `SCENARIOS`. (~1800 tok)
 - `command-words-fuzz-child.mjs` — Fuzz child that imports `src/shared/command-words.ts` via Node 24 type stripping; modes `fuzz <count> [seed]` (mulberry32), `one <input>`, `deep <n>`; exit 0 ok / 2 slow / 3 undefined leak / 64 unknown mode. (~800 tok)
