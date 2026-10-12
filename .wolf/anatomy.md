@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T07:14:16.858Z
-> Files: 484 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T07:33:12.070Z
+> Files: 509 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -226,6 +226,25 @@
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3290 tok)
 
+## .claude/worktrees/agent-a3da1de95c7a05a60/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-07-SUMMARY.md` — Phase 09.1 Plan 07: Streamed candidate list in the modal Summary (~4532 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~5608 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/
+
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~4808 tok)
+- `modal-layout.ts` — Mark that starts the explanation of a candidate using a tool zsh cannot resolve (D-08). (~3030 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/tests/
+
+- `candidate-select-layout.test.tsx` — tests/candidate-select-layout.test.tsx (~13823 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~12687 tok)
+- `modal-layout.test.ts` — lines: flaggedWithForm (~5740 tok)
+
 ## .claude/worktrees/agent-a4210920/.planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-01-SUMMARY.md` — Phase 01 Plan 01: Toolchain Baseline and Shell/IPC Contracts Summary (~1742 tok)
@@ -260,6 +279,30 @@
 
 - `claude-provider.test.ts` — ContextEnvelope: buildEnvelope (~1262 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-05-SUMMARY.md` — Phase 09.1 Plan 05: Prewarmed claude -p Process Summary (~4766 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/src/cli/commands/
+
+- `daemon.ts` — Real daemon command handler. (~586 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/src/providers/
+
+- `claude-cli.ts` — The Claude Code binary, resolved on PATH. (~1995 tok)
+- `claude-prewarm.ts` — One-slot prewarm pool for `claude -p` (Phase 09.1, D-11, D-12, RESEARCH Pattern 8). (~2012 tok)
+- `claude-process.ts` — One `claude -p` stream-json turn on a child process (Phase 09.1, D-04, D-13). (~3683 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/tests/
+
+- `claude-cli-prewarm.test.ts` — The runner's failure shape for a child that ended without a `result`. (~3013 tok)
+- `claude-prewarm.test.ts` — The idle child's pid once the slot holds a spawned child. (~2130 tok)
+- `claude-process.test.ts` — ClaudeChild: scratchDir, startTurn, stageNames (~4378 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/tests/fixtures/
+
+- `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~2333 tok)
 
 ## .claude/worktrees/agent-a78bb2a4d3d56c042/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
@@ -497,6 +540,30 @@
 ## .claude/worktrees/agent-ae3ff4eb91307526b/tests/
 
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~6651 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/
+
+- `README.md` — Project documentation (~1229 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `.red-0904-mk.cjs` — Builds a RED-evidence record from a captured TAP report (scratch helper, not committed). (~109 tok)
+- `09.1-04-SUMMARY.md` — Phase 09.1 Plan 04: Streamed, abortable SDK request with effort Summary (~4810 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/docs/
+
+- `EXTENSIONS.md` — QueQue Extension Seams (~1541 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/src/providers/
+
+- `claude-default.ts` — Returns milliseconds left before `deadline`, floored at zero. (~1186 tok)
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~2835 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/tests/
+
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~10001 tok)
+- `claude-provider.test.ts` — Text pieces emitted as `text` events, in order, before finalMessage settles. (~6282 tok)
+- `steering.test.ts` — API routes: GET (3 endpoints) (~2948 tok)
 
 ## .claude/worktrees/agent-af8d008deef4b25ca/.wolf/
 

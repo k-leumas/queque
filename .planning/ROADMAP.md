@@ -313,7 +313,7 @@ Plans:
 **Out of scope:** Switching models (Haiku-class), the API-key SDK path's `.env.local` cwd bug, and prompt caching (~0 gain, measured).
 **Requirements**: TBD (no REQ IDs mapped; coverage target is 09.1-CONTEXT.md D-01..D-17)
 **Depends on:** Phase 9
-**Plans:** 4/8 plans executed
+**Plans:** 7/8 plans executed
 
 Plans:
 **Wave 1**
@@ -325,9 +325,9 @@ Plans:
 - [x] 09.1-06-PLAN.md — stream-json runner hardening: UTF-8 parser with carry cap, stderr cap, post-result backstop, every failure path proven against real children (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 09.1-04-PLAN.md — SDK path parity: `messages.stream` with abort signal, streamed candidates, `output_config.effort` (wave 3)
-- [ ] 09.1-05-PLAN.md — One prewarmed `claude -p` in the daemon, matched on cwd and argv, refilled after every query, one cold retry (wave 3)
-- [ ] 09.1-07-PLAN.md — Growing candidate list: steady highlight, spinner row, live filter, one Zellij resize at completion, partial-failure rows (wave 3)
+- [x] 09.1-04-PLAN.md — SDK path parity: `messages.stream` with abort signal, streamed candidates, `output_config.effort` (wave 3)
+- [x] 09.1-05-PLAN.md — One prewarmed `claude -p` in the daemon, matched on cwd and argv, refilled after every query, one cold retry (wave 3)
+- [x] 09.1-07-PLAN.md — Growing candidate list: steady highlight, spinner row, live filter, one Zellij resize at completion, partial-failure rows (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 09.1-08-PLAN.md — Phase gate: OpenWolf records, full suite and build, manual real-provider latency and cancel UAT (wave 4)
