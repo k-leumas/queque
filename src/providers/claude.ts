@@ -18,6 +18,18 @@ export { QUEQUE_SYSTEM } from './steering.js';
 
 export const DEFAULT_MODEL = 'claude-sonnet-5';
 
+/**
+ * Output ceiling for the SDK request. Thinking stays adaptive by omission, and thinking
+ * tokens count against `max_tokens`, so at effort `high`, `xhigh` or `max` a 1024 ceiling
+ * could end the visible answer before the first candidate closed (review WR-07). It is a
+ * ceiling only: a normal 1-3 candidate answer stops long before it, and the request
+ * streams, so a large value risks no HTTP timeout.
+ */
+export const SDK_MAX_TOKENS = 16_000;
+
+/** The error for a response cut off at `max_tokens` with no complete candidate in it. */
+export const TRUNCATED_RESPONSE_MESSAGE = 'QueQue: Claude response was truncated';
+
 let cachedAnthropic: { apiKey: string; client: Anthropic } | undefined;
 
 /**
@@ -81,6 +93,15 @@ function extractText(content: Array<{ type: string; text?: string }>): string {
     .map((block) => block.text ?? '')
     .join('')
     .trim();
+}
+
+/** The candidate objects that closed in `text`, scanned like a stream (no prose fallback). */
+function completeCandidates(text: string): CommandCandidate[] {
+  const rows: CommandCandidate[] = [];
+  createCandidateScanner((candidate) => {
+    rows.push(candidate);
+  })(text);
+  return rows;
 }
 
 function stripCodeFence(raw: string): string {
@@ -216,7 +237,7 @@ export async function fetchCandidates(
     const stream = client.messages.stream(
       {
         model,
-        max_tokens: 1024,
+        max_tokens: SDK_MAX_TOKENS,
         system: buildSystemPrompt(envelope),
         messages: [{ role: 'user', content: prompt }],
         ...(outputConfig ? { output_config: outputConfig } : {}),
@@ -238,8 +259,25 @@ export async function fetchCandidates(
 
     const message = await stream.finalMessage();
     const text = extractText(message.content);
-    const finalList =
-      parseStrictCandidateList(text) ?? (streamed.length > 0 ? streamed : parseCandidates(text));
+    const strict = parseStrictCandidateList(text);
+    let finalList: CandidateList;
+    if (strict) {
+      finalList = strict;
+    } else if (streamed.length > 0) {
+      finalList = streamed;
+    } else if (message.stop_reason === 'max_tokens') {
+      // Cut off at the ceiling (WR-07): never hand the partial JSON to parseCandidates'
+      // prose fallback, which would turn the fragment into a command. Keep the rows that
+      // closed before the cut, or fail closed.
+      const complete = completeCandidates(text);
+      if (complete.length === 0) {
+        void appendDebugLog('provider', 'response truncated', { model });
+        throw new Error(TRUNCATED_RESPONSE_MESSAGE);
+      }
+      finalList = complete;
+    } else {
+      finalList = parseCandidates(text);
+    }
     const candidates = ensureSelectableCandidates(finalList);
 
     void appendDebugLog('provider', 'response parsed', {

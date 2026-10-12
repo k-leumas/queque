@@ -10,7 +10,9 @@ import {
   DEFAULT_MODEL,
   QUEQUE_SYSTEM,
   resetAnthropicClientCache,
+  SDK_MAX_TOKENS,
   sdkOutputConfig,
+  TRUNCATED_RESPONSE_MESSAGE,
 } from '../src/providers/claude.js';
 import { isAbortError } from '../src/providers/provider.js';
 import { buildSystemPrompt } from '../src/providers/steering.js';
@@ -75,6 +77,8 @@ interface FakeStreamScript {
   error?: Error;
   /** finalMessage stays pending after the pieces until the request signal aborts. */
   hangUntilAbort?: boolean;
+  /** The final message's stop_reason (default `end_turn`). */
+  stopReason?: string;
 }
 
 interface RequestOptions {
@@ -136,7 +140,10 @@ function createFakeStream(script: FakeStreamScript, requestOptions?: RequestOpti
       if (script.error) {
         throw script.error;
       }
-      return { content: [{ type: 'text', text: snapshot }] };
+      return {
+        content: [{ type: 'text', text: snapshot }],
+        stop_reason: script.stopReason ?? 'end_turn',
+      };
     },
   };
   return stream;
@@ -443,7 +450,8 @@ describe('SDK streaming request, abort and streamed candidates (D-05, D-13)', ()
     expect(streamMock).toHaveBeenCalledTimes(1);
     const request = streamRequest();
     expect(request.model).toBe(DEFAULT_MODEL);
-    expect(request.max_tokens).toBe(1024);
+    expect(request.max_tokens).toBe(SDK_MAX_TOKENS);
+    expect(request.max_tokens).toBeGreaterThanOrEqual(16_000);
     expect(request.system).toBe(buildSystemPrompt(envelope));
     expect(request.messages).toEqual([{ role: 'user', content: buildPrompt(envelope) }]);
     expect(streamRequestOptions()).toEqual({ timeout: 25_000, signal: controller.signal });
@@ -504,6 +512,40 @@ describe('SDK streaming request, abort and streamed candidates (D-05, D-13)', ()
       { command: 'git log --oneline', explanation: 'Show history' },
     ]);
     expect(streamed).toEqual(result);
+  });
+
+  it('fails closed on a max_tokens cut with no complete candidate, never a fragment command (WR-07)', async () => {
+    scriptStream({ pieces: ['[{"command": "find . -name'], stopReason: 'max_tokens' });
+    const onCandidate = vi.fn();
+
+    const error = await claudeAdapter
+      .fetchCandidates(buildEnvelope(), { onCandidate })
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe(TRUNCATED_RESPONSE_MESSAGE);
+    expect(onCandidate).not.toHaveBeenCalled();
+    expect(providerDebugMessages()).toContain('response truncated');
+  });
+
+  it('fails closed on a max_tokens cut with no text at all instead of echo "" (WR-07)', async () => {
+    scriptStream({ pieces: [], stopReason: 'max_tokens' });
+
+    await expect(claudeAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
+      TRUNCATED_RESPONSE_MESSAGE,
+    );
+  });
+
+  it('keeps the rows that closed before a max_tokens cut when nothing streamed (WR-07)', async () => {
+    const truncated = `${TWO_CANDIDATES.slice(0, -1)},{"command":"git di`;
+    scriptStream({ pieces: [truncated], stopReason: 'max_tokens' });
+
+    const result = await claudeAdapter.fetchCandidates(buildEnvelope());
+
+    expect(result).toEqual([
+      { command: 'git status', explanation: 'Show repo status' },
+      { command: 'git log --oneline', explanation: 'Show history' },
+    ]);
   });
 
   it('keeps the parseCandidates prose fallback when nothing streamed', async () => {

@@ -5361,6 +5361,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:33:41.389129Z"
+    },
+    {
+      "id": "bug-328",
+      "timestamp": "2026-10-12T08:35:45.055909Z",
+      "error_message": "SDK path kept max_tokens 1024 while effort can be high/xhigh/max with adaptive thinking; a cut-off answer like `[{\"command\": \"find . -name` went through parseCandidates' prose fallback and became a selectable command (or `echo \"\"` with no text) (09.1 WR-07)",
+      "file": "src/providers/claude.ts",
+      "root_cause": "Thinking tokens count against max_tokens and stop_reason was never checked, so a truncated response with no streamed row fell to the 'not JSON' branch of parseCandidates.",
+      "fix": "max_tokens raised to SDK_MAX_TOKENS (16000, a ceiling on a streamed request); on stop_reason max_tokens with no strict list and no streamed rows, scan the text for closed candidate objects and fail closed with 'QueQue: Claude response was truncated' when there are none.",
+      "tags": [
+        "sdk",
+        "anthropic",
+        "max_tokens",
+        "stop_reason",
+        "parse",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:35:45.055909Z"
     }
   ]
 }

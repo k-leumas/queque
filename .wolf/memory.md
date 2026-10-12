@@ -2768,3 +2768,4 @@
 | 02:30 | Fixed 09.1 WR-04: first-arrival clear only for untouched lbuffer pre-filter; real-hooks test | src/ui/CandidateSelect.tsx, tests/candidate-select-layout.test.tsx | fixed | ~3k |
 | 02:32 | Fixed 09.1 WR-05: query reset moved from [query] effect into key handlers; mocked + real-hooks tests | src/ui/CandidateSelect.tsx, tests/candidate-select*.tsx | fixed | ~4k |
 | 02:33 | Fixed 09.1 WR-06: arrow keys no-op on empty visible list + clamp arrival index; real-hooks tests | src/ui/CandidateSelect.tsx, tests/candidate-select-layout.test.tsx | fixed | ~3k |
+| 02:35 | Fixed 09.1 WR-07: SDK max_tokens 16000 + fail closed on max_tokens truncation; 3 tests | src/providers/claude.ts, tests/claude-provider.test.ts | fixed | ~4k |
