@@ -5403,6 +5403,31 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-12T20:44:33.588Z"
+    },
+    {
+      "id": "bug-330",
+      "timestamp": "2026-10-12T21:50:41.000Z",
+      "error_message": "CR-01: Backspace is silently dropped when it arrives in the same stdin read as earlier keystrokes (regression from the WR-05 fix). Verifier reproduction: one chunk with `a` and DEL left `FILTER: a`; `ab` and two DELs left `FILTER: ab`.",
+      "file": "src/ui/CandidateSelect.tsx",
+      "root_cause": "The WR-05 fix made the Backspace branch guard on the render-closure query (`query.length > 0`). Ink 7 splits one stdin read into several key events and runs them back to back through useInput (useEffectEvent = handler of the last committed render) while React batches the updates, so a Backspace after typed keys in the same read saw the pre-read (empty) query and was dropped. Enter, Tab and the arrows read the same closure query/selectedIndex/installToggled, so Down+Enter in one read inserted row 0.",
+      "fix": "Plan 09.1-10: a `pendingInput` ref (PendingInput: query, selectedIndex, installToggled) tagged with a per-render `renderToken`; every key handler reads that live snapshot and writes it back through `applyInput` (value setters, each only on change). Real-Ink one-chunk tests (`ab`+2 DEL, `a`+DEL, mid-stream edits) and a one-key-per-read vs one-read invariance it.each for Enter/Tab/arrows, plus mocked same-closure cases. No test deleted.",
+      "tags": [
+        "candidate-select",
+        "ink",
+        "stdin",
+        "backspace",
+        "filter",
+        "review-fix",
+        "09.1",
+        "CR-01"
+      ],
+      "related_bugs": [
+        "bug-326",
+        "bug-327",
+        "bug-329"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T21:50:41.000Z"
     }
   ]
 }
