@@ -4,12 +4,14 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  type ClaudeChild,
   type ClaudeTurnFailure,
   type ClaudeTurnOptions,
   type ClaudeTurnStage,
   type ClaudeTurnStageDetail,
   runClaudeTurn,
   STDERR_CAP_BYTES,
+  spawnClaudeChild,
 } from '../src/providers/claude-process.js';
 import { isAbortError } from '../src/providers/provider.js';
 
@@ -329,5 +331,71 @@ describe('runClaudeTurn failure paths', () => {
     expect(error.stderr?.length ?? 0).toBeGreaterThan(0);
     expect(error.stderr?.length ?? 0).toBeLessThanOrEqual(STDERR_CAP_BYTES);
     expect(Buffer.byteLength(error.stderr ?? '', 'utf8')).toBeLessThanOrEqual(STDERR_CAP_BYTES);
+  });
+});
+
+// Prewarmed child (plan 05, D-11/D-13): the turn runs on a child spawned earlier and left
+// idle, the way claude-prewarm.ts hands it over. Real fixture children only.
+describe('runClaudeTurn on a prewarmed child', () => {
+  function idleChild(scenario: string, env: NodeJS.ProcessEnv = process.env): ClaudeChild {
+    const child = spawnClaudeChild(process.execPath, [FIXTURE, scenario], process.cwd(), env);
+    if (typeof child.pid === 'number') {
+      spawnedPids.add(child.pid);
+    }
+    return child;
+  }
+
+  it('answers on an idle child without spawning, with exactly one stdin user line', async () => {
+    const dir = scratchDir();
+    const stdinFile = join(dir, 'stdin.txt');
+    const child = idleChild('success', { ...process.env, FAKE_CLAUDE_STDIN_FILE: stdinFile });
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    const { promise, stages } = startTurn('success', { child });
+    const text = await promise;
+
+    expect(text).toBe(SUCCESS_ANSWER);
+    expect(stageNames(stages)).toEqual(['init', 'first-delta', 'result']);
+    const lines = readFileSync(stdinFile, 'utf8')
+      .split('\n')
+      .filter((line) => line !== '');
+    expect(lines).toHaveLength(1);
+    expect(JSON.parse(lines[0] ?? '')).toEqual({
+      type: 'user',
+      message: { role: 'user', content: PROMPT },
+    });
+  });
+
+  it('rejects at once with exit-without-result when the child has already exited', async () => {
+    const child = idleChild('success');
+    const exited = new Promise((resolve) => {
+      child.once('exit', resolve);
+    });
+    child.stdin.end();
+    await exited;
+
+    const { promise, stages } = startTurn('success', { child, budgetMs: 60_000 });
+    const error = (await promise.catch((caught: unknown) => caught)) as ClaudeTurnFailure;
+
+    expect(error.reason).toBe('exit-without-result');
+    expect(error.sawInit).toBe(false);
+    expect(stages).toEqual([]);
+  });
+
+  it('terminates the child and rejects with an AbortError when the signal is already aborted', async () => {
+    const child = idleChild('success');
+    const exited = new Promise((resolve) => {
+      child.once('exit', resolve);
+    });
+    const controller = new AbortController();
+    controller.abort();
+
+    const { promise } = startTurn('success', { child, signal: controller.signal });
+    const error = await promise.catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
+    await exited;
+    // Killed by the runner (SIGTERM), not a clean stdin-EOF exit.
+    expect(child.signalCode).toBe('SIGTERM');
   });
 });

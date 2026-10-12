@@ -11,7 +11,8 @@
 //   FAKE_CLAUDE_ARGV_FILE   write JSON of the argv received after the scenario name
 //
 // Scenarios: success, auth, sigterm-slow (plan 01); hang-after-result, exit-no-result,
-// die-before-init, stderr-flood, stdout-flood (plan 06, failure paths).
+// die-before-init, stderr-flood, stdout-flood (plan 06, failure paths); ignore-eof
+// (plan 05, prewarm retire backstop: ignores stdin EOF and SIGTERM, only SIGKILL ends it).
 // New scenarios slot into SCENARIOS without touching the existing ones.
 import { writeFileSync } from 'node:fs';
 
@@ -235,6 +236,12 @@ const SCENARIOS = {
     }
     waitForSignal();
   },
+
+  async 'ignore-eof'() {
+    // Idle part set up below; a turn written to it still answers, then hangs like
+    // hang-after-result.
+    await writeSuccessTurn();
+  },
 };
 
 function isUserLine(line) {
@@ -254,6 +261,13 @@ const scenario = SCENARIOS[scenarioName];
 if (!scenario) {
   process.stderr.write(`fake-claude-stream: unknown scenario ${scenarioName}\n`);
   process.exit(2);
+}
+
+if (scenarioName === 'ignore-eof') {
+  // A prewarm that never retires on its own: stdin EOF and SIGTERM are both ignored and the
+  // event loop is kept alive, so only the retire path's SIGKILL backstop ends it.
+  process.on('SIGTERM', () => {});
+  waitForSignal();
 }
 
 let received = '';
@@ -278,7 +292,7 @@ process.stdin.on('data', (chunk) => {
   void scenario();
 });
 process.stdin.on('end', () => {
-  if (!started) {
+  if (!started && scenarioName !== 'ignore-eof') {
     // Idle retire: EOF on stdin with no message is a clean exit (Probe 5).
     process.exit(0);
   }

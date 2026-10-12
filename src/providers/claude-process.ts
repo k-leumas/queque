@@ -84,6 +84,11 @@ export interface ClaudeTurnOptions {
   backstopMs?: number;
   /** SIGTERM → SIGKILL grace for every kill this turn makes. */
   killGraceMs?: number;
+  /**
+   * An idle prewarmed child (claude-prewarm.ts) to run the turn on instead of spawning
+   * one; `command`, `argv` and `cwd` are then only what it was spawned with (D-11).
+   */
+  child?: ClaudeChild;
 }
 
 export type ClaudeChild = ChildProcessByStdio<Writable, Readable, Readable>;
