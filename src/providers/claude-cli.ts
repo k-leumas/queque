@@ -4,7 +4,9 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import { resolveEffort } from '../shared/qq-config.js';
 import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
 import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
+import { type PrewarmSpec, schedulePrewarm, takePrewarmed } from './claude-prewarm.js';
 import {
+  type ClaudeChild,
   type ClaudeTurnStage,
   type ClaudeTurnStageDetail,
   runClaudeTurn,
@@ -54,6 +56,13 @@ export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
  * over as soon as its object closes (D-05), never after `options.signal` aborts. The final
  * list is the strict parse of the result text; if that fails after rows streamed, the
  * streamed (already validated) rows; only when nothing streamed, parseCandidates' fallback.
+ *
+ * Prewarm (D-11, D-12, D-13): the turn runs on the pool's idle child when its cwd and argv
+ * match this query, otherwise cold. A warm turn whose child ended without a `result` and
+ * streamed no row is retried once cold within the remaining budget (a stale prewarm after
+ * a long idle or laptop sleep, RESEARCH A3); is_error, timeout and abort never are. Once
+ * the last attempt settled, the slot is refilled for this query's cwd and argv, so the
+ * next boot does not compete with the turn. The pool is only enabled in the daemon.
  */
 export async function fetchClaudeCliCandidates(
   envelope: ContextEnvelope,
@@ -61,35 +70,88 @@ export async function fetchClaudeCliCandidates(
   options: FetchOptions = {},
 ): Promise<CandidateList> {
   const startedAt = Date.now();
+  const deadline = startedAt + remainingBudgetMs;
   const streamed: CommandCandidate[] = [];
   const { onCandidate, signal } = options;
-  const onTextDelta = onCandidate
-    ? createCandidateScanner((candidate) => {
-        streamed.push(candidate);
-        if (streamed.length === 1) {
-          void appendDebugLog('provider', 'cli first candidate', { ms: Date.now() - startedAt });
-        }
-        if (!signal?.aborted) {
-          onCandidate(candidate);
-        }
-      })
-    : undefined;
-  const text = await runClaudeTurn({
+  const spec: PrewarmSpec = {
     command: CLAUDE_COMMAND,
     argv: buildClaudeCliArgv(envelope),
     cwd: envelope.base.cwd,
-    env: process.env,
-    prompt: buildPrompt(envelope),
-    budgetMs: remainingBudgetMs,
-    signal,
-    onTextDelta,
-    onStage: (stage, detail) => {
-      logTurnStage(stage, detail, Date.now() - startedAt);
-    },
-  });
-  const finalList =
-    parseStrictCandidateList(text) ?? (streamed.length > 0 ? streamed : parseCandidates(text));
-  return ensureSelectableCandidates(finalList);
+  };
+  const prompt = buildPrompt(envelope);
+
+  // A fresh scanner per attempt: a failed attempt's half-scanned text must not leak into
+  // the retry. Rows already handed over are never re-sent (no retry once one streamed).
+  const createTextDeltaHandler = (): ((text: string) => void) | undefined =>
+    onCandidate
+      ? createCandidateScanner((candidate) => {
+          streamed.push(candidate);
+          if (streamed.length === 1) {
+            void appendDebugLog('provider', 'cli first candidate', { ms: Date.now() - startedAt });
+          }
+          if (!signal?.aborted) {
+            onCandidate(candidate);
+          }
+        })
+      : undefined;
+
+  const runTurn = (child: ClaudeChild | undefined, budgetMs: number): Promise<string> =>
+    runClaudeTurn({
+      command: spec.command,
+      argv: spec.argv,
+      cwd: spec.cwd,
+      env: process.env,
+      prompt,
+      budgetMs,
+      signal,
+      onTextDelta: createTextDeltaHandler(),
+      onStage: (stage, detail) => {
+        logTurnStage(stage, detail, Date.now() - startedAt, child !== undefined);
+      },
+      ...(child ? { child } : {}),
+    });
+
+  try {
+    const take = takePrewarmed(spec);
+    let text: string;
+    if ('child' in take) {
+      void appendDebugLog('provider', 'prewarm hit');
+      try {
+        text = await runTurn(take.child, remainingBudgetMs);
+      } catch (error) {
+        const leftMs = deadline - Date.now();
+        if (
+          !isStalePrewarmFailure(error) ||
+          streamed.length > 0 ||
+          signal?.aborted ||
+          leftMs <= 0
+        ) {
+          throw error;
+        }
+        void appendDebugLog('provider', 'prewarm retry cold', { ms: Date.now() - startedAt });
+        text = await runTurn(undefined, leftMs);
+      }
+    } else {
+      void appendDebugLog('provider', 'prewarm miss', { reason: take.miss });
+      text = await runTurn(undefined, remainingBudgetMs);
+    }
+    const finalList =
+      parseStrictCandidateList(text) ?? (streamed.length > 0 ? streamed : parseCandidates(text));
+    return ensureSelectableCandidates(finalList);
+  } finally {
+    // D-11/D-13: refill after every settle (success, error or abort), in this query's cwd
+    // with this query's argv. A no-op outside the daemon.
+    schedulePrewarm(spec);
+  }
+}
+
+/** A warm child that ended without a `result` (died before init, or no result line). */
+function isStalePrewarmFailure(error: unknown): boolean {
+  return (
+    error !== null &&
+    typeof error === 'object' &&
+    (error as { reason?: unknown }).reason === 'exit-without-result'
+  );
 }
 
 const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
@@ -103,16 +165,20 @@ const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
 };
 
 /**
- * One debug line per turn stage with the ms since the turn started (D-04). Only `ms`,
- * plus `code` and `signal` on exit: never the prompt, argv, env, stdout or stderr.
+ * One debug line per turn stage with the ms since the turn started (D-04). Only `ms` and
+ * `warm` (prewarmed child or not), plus `code` and `signal` on exit: never the prompt,
+ * argv, env, stdout or stderr.
  */
 function logTurnStage(
   stage: ClaudeTurnStage,
   detail: ClaudeTurnStageDetail | undefined,
   ms: number,
+  warm: boolean,
 ): void {
   const fields: Record<string, unknown> =
-    stage === 'exit' ? { ms, code: detail?.code ?? null, signal: detail?.signal ?? null } : { ms };
+    stage === 'exit'
+      ? { ms, warm, code: detail?.code ?? null, signal: detail?.signal ?? null }
+      : { ms, warm };
   void appendDebugLog('provider', STAGE_LOG_NAMES[stage], fields);
 }
 
