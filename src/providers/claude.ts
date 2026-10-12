@@ -8,7 +8,7 @@ import type { ContextEnvelope } from '../contracts/request.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { filterContextEnvelope } from '../shared/privacy-filter.js';
-import type { Effort } from '../shared/qq-config.js';
+import { type Effort, resolveEffort } from '../shared/qq-config.js';
 import { createCandidateScanner, parseStrictCandidateList } from './candidate-stream.js';
 import { abortError, type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
@@ -51,9 +51,24 @@ export function resetAnthropicClientCache(): void {
   cachedAnthropic = undefined;
 }
 
-/** TDD RED stub (09.1-04 Task 2): replaced by the effort guard in GREEN. */
-export function sdkOutputConfig(_model: string, _effort: Effort): { effort: Effort } | undefined {
-  throw new Error('sdkOutputConfig is not implemented yet');
+/**
+ * Model ids that reject the `output_config.effort` parameter (400): every Haiku, Sonnet 4.5,
+ * the Claude 3.x ids, and the 4.0/4.1 ids including the dated `sonnet-4-2025…` and
+ * `opus-4-2025…` forms. Newer ids (Sonnet 5, Opus 4.5 and later) accept effort.
+ */
+export const EFFORT_UNSUPPORTED_MODEL_RE =
+  /haiku|claude-3|sonnet-4-5(?!\d)|(?:sonnet|opus)-4-(?:0|1|2025\d*)(?!\d)/i;
+
+/**
+ * The SDK `output_config` for the configured effort (D-03), or undefined when `model`
+ * rejects effort (EFFORT_UNSUPPORTED_MODEL_RE), so a QQ_MODEL override never 400s on it.
+ * Thinking stays adaptive by omission; no sampling parameters are ever sent.
+ */
+export function sdkOutputConfig(model: string, effort: Effort): { effort: Effort } | undefined {
+  if (EFFORT_UNSUPPORTED_MODEL_RE.test(model)) {
+    return undefined;
+  }
+  return { effort };
 }
 
 function resolveModel(): string {
@@ -184,9 +199,11 @@ export async function fetchCandidates(
   const client = await getAnthropicClient(apiKey);
   const prompt = buildPrompt(envelope);
   const model = resolveModel();
+  const outputConfig = sdkOutputConfig(model, resolveEffort());
 
   void appendDebugLog('provider', 'request start', {
     model,
+    effort: outputConfig?.effort ?? 'none',
     cwd: envelope.base.cwd,
     rbufferLength: rbuffer.length,
     extras: envelope.extras.map((chunk) => chunk.kind),
@@ -202,6 +219,7 @@ export async function fetchCandidates(
         max_tokens: 1024,
         system: buildSystemPrompt(envelope),
         messages: [{ role: 'user', content: prompt }],
+        ...(outputConfig ? { output_config: outputConfig } : {}),
       },
       { timeout: timeoutMs, signal: options.signal },
     );
