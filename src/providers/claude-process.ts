@@ -1,5 +1,6 @@
 import { type ChildProcess, type ChildProcessByStdio, spawn } from 'node:child_process';
 import type { Readable, Writable } from 'node:stream';
+import { StringDecoder } from 'node:string_decoder';
 import { abortError } from './provider.js';
 import {
   buildStreamJsonUserLine,
@@ -17,6 +18,12 @@ import {
  * the zod-validated `result` event, not on process exit. Aborts and the budget timer
  * SIGTERM the child, then SIGKILL it after SIGKILL_GRACE_MS.
  *
+ * Bounds (D-04): stdout's unfinished line is capped at STREAM_JSON_CARRY_CAP_BYTES (an
+ * overflow kills the child and fails as `invalid-result`), collected stderr at
+ * STDERR_CAP_BYTES. After a `result` the child is left to exit on its own (an immediate
+ * SIGTERM could cut off Claude Code's credential writes); one still running
+ * POST_RESULT_BACKSTOP_MS later is terminated.
+ *
  * Claude Code catches SIGTERM and exits with code 143 and a null signal (Probe 8), so
  * timeout and abort are decided by QueQue's own flags, never by the exit code or signal.
  *
@@ -25,9 +32,9 @@ import {
 
 /** SIGTERM → SIGKILL grace: 2.6x the slowest measured SIGTERM exit (583 ms, Probe 8). */
 export const SIGKILL_GRACE_MS = 1500;
-/** Post-result backstop kill, armed in plan 06. */
+/** Post-result backstop: ~4x the slowest measured result → exit (540 ms, Probe 4). */
 export const POST_RESULT_BACKSTOP_MS = 2000;
-/** stderr cap, enforced in plan 06. */
+/** Most stderr kept for the failure's `stderr` field, in UTF-8 bytes; the rest is dropped. */
 export const STDERR_CAP_BYTES = 64 * 1024;
 
 export type ClaudeTurnStage =
@@ -149,11 +156,15 @@ export function terminateChild(child: ChildProcess, graceMs: number = SIGKILL_GR
  * Rejects with abortError() on abort, a `timeout` failure past `budgetMs` (at kill time,
  * not at exit), an `is-error` failure carrying the result text as `stdout` (the auth
  * message, so it never reaches parseCandidates), a `spawn-error` (ENOENT), an
- * `invalid-result`, or `exit-without-result`. Nothing the child writes after the turn
- * settles reaches `onTextDelta` or `onStage`, except the final `exit` stage.
+ * `invalid-result` (also a stdout line past the carry cap), or `exit-without-result`.
+ * The turn settles exactly once: nothing the child writes after it settles reaches
+ * `onTextDelta` or `onStage`, except the final `exit` stage, and a later kill, `exit` or
+ * `close` never re-settles it.
  */
 export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
   const { command, argv, cwd, env, prompt, budgetMs, signal, onTextDelta, onStage } = options;
+  const backstopMs = options.backstopMs ?? POST_RESULT_BACKSTOP_MS;
+  const killGraceMs = options.killGraceMs ?? SIGKILL_GRACE_MS;
 
   if (signal?.aborted) {
     return Promise.reject(abortError());
@@ -167,7 +178,9 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
     let sawInit = false;
     let sawDelta = false;
     let stderr = '';
+    let stderrBytes = 0;
     let budgetTimer: ReturnType<typeof setTimeout> | undefined;
+    let backstopArmed = false;
 
     const child = spawnClaudeChild(command, argv, cwd, env);
 
@@ -176,8 +189,61 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
         return;
       }
       onStage?.('aborted');
-      terminateChild(child);
+      terminateChild(child, killGraceMs);
       finish(() => reject(abortError()));
+    };
+
+    // Keeps at most STDERR_CAP_BYTES of stderr (running count, whole characters only).
+    const collectStderr = (chunk: string): void => {
+      if (stderrBytes >= STDERR_CAP_BYTES) {
+        return;
+      }
+      const bytes = Buffer.byteLength(chunk, 'utf8');
+      if (stderrBytes + bytes <= STDERR_CAP_BYTES) {
+        stderr += chunk;
+        stderrBytes += bytes;
+        return;
+      }
+      const room = STDERR_CAP_BYTES - stderrBytes;
+      stderr += new StringDecoder('utf8').write(Buffer.from(chunk, 'utf8').subarray(0, room));
+      stderrBytes = STDERR_CAP_BYTES;
+    };
+
+    // After a `result` the child is left to exit on its own first (an immediate SIGTERM
+    // could cut off Claude Code's credential writes); one still running `backstopMs`
+    // later is terminated. The turn has already settled, so this never re-settles it.
+    const armBackstop = (): void => {
+      if (backstopArmed) {
+        return;
+      }
+      backstopArmed = true;
+      const backstopTimer = setTimeout(() => {
+        terminateChild(child, killGraceMs);
+      }, backstopMs);
+      backstopTimer.unref();
+      child.once('exit', () => {
+        clearTimeout(backstopTimer);
+      });
+    };
+
+    // A stdout line past the carry cap: kill the child and fail with the shape
+    // claude-default maps to the D13 copy (`killed: false`, so never the timeout copy).
+    const onOverflow = (): void => {
+      if (settled) {
+        return;
+      }
+      terminateChild(child, killGraceMs);
+      finish(() =>
+        reject(
+          turnFailure('Command failed: claude', 'invalid-result', sawInit, {
+            code: null,
+            killed: false,
+            signal: null,
+            stdout: '',
+            stderr,
+          }),
+        ),
+      );
     };
 
     function finish(callback: () => void): void {
@@ -217,6 +283,8 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
       if (!isRecord(event) || event.type !== 'result') {
         return;
       }
+      // Every `result` ends the turn; a child that then never exits is reaped.
+      armBackstop();
       const parsed = streamJsonResultSchema.safeParse(event);
       if (!parsed.success) {
         finish(() =>
@@ -256,11 +324,9 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
     }
 
     child.stdout.setEncoding('utf8');
-    child.stdout.on('data', createLineParser(handleEvent));
+    child.stdout.on('data', createLineParser(handleEvent, { onOverflow }));
     child.stderr.setEncoding('utf8');
-    child.stderr.on('data', (chunk: string) => {
-      stderr += chunk;
-    });
+    child.stderr.on('data', collectStderr);
 
     child.on('error', (error: NodeJS.ErrnoException) => {
       finish(() => reject(Object.assign(error, { reason: 'spawn-error' as const, sawInit })));
@@ -287,7 +353,7 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
         return;
       }
       onStage?.('timed-out');
-      terminateChild(child);
+      terminateChild(child, killGraceMs);
       finish(() => reject(timeoutFailure(stderr, sawInit)));
     }, budgetMs);
     budgetTimer.unref();
