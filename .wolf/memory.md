@@ -2883,3 +2883,11 @@
 | 15:56 | 09.1-10 T3: CR-01 fixed in REVIEW-DISPOSITION (open 6→5); cerebrum Key Learning + Do-Not-Repeat + Decision Log; buglog bug-330; gate: typecheck/lint/build ok, full suite 48 child-process timing fails at load 25 (Docker), all 6 files green in isolation | 09.1-REVIEW-DISPOSITION.md, .wolf/* | done | ~3000 |
 | 15:58 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-10-SUMMARY.md | — | ~3254 |
 | 15:59 | 09.1-10 complete: SUMMARY written, STATE/ROADMAP advanced (D-ids not in REQUIREMENTS.md) | 09.1-10-SUMMARY.md, .planning/STATE.md, ROADMAP.md | done | ~3000 |
+| 16:01 | Session end: 76 writes across 26 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 52 reads | ~265064 tok |
+| 16:06 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-REVIEW.md | — | ~3562 |
+| 16:08 | Session end: 77 writes across 26 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 52 reads | ~268880 tok |
+| 16:15 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-VERIFICATION.md | — | ~7222 |
+| 16:15 | 09.1-10 executed (CR-01 fixed); re-review CR-02 (Enter/Tab inside typed run) → verification gaps_found 29/30 | .planning/phases/09.1-*/ | gaps_found | ~40k |
+| 16:16 | Session end: 78 writes across 26 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 52 reads | ~276618 tok |
+| 16:24 | Session end: 78 writes across 26 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 52 reads | ~276618 tok |
+| 16:33 | CR-02 override recorded (user decision), comment + ROADMAP corrected, disposition deferred, fingerprint recomputed → human_needed | 09.1-VERIFICATION.md, CandidateSelect.tsx | done | ~15k |

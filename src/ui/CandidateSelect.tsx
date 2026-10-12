@@ -142,9 +142,11 @@ export function CandidateSelect({
   // them back to back through useInput, whose useEffectEvent holds the handler of the last
   // committed render. State set by an earlier event of the same read is not in that handler's
   // closure yet, so the snapshot carries it for the rest of the read. Every key handler reads
-  // it (query, highlight, Tab toggles), so a key sequence gives the same result however stdin
-  // chunks it. A ref, not state: the mocked test indexes four useState calls by order and
-  // counts two effects. Eager initial value, like the hooks above.
+  // it (query, highlight, Tab toggles), so later keys of a read see the edits of earlier ones.
+  // Known limitation (CR-02, accepted): Ink splits a read only at escape sequences and DEL/BS,
+  // so text directly followed by Enter or Tab in one read arrives as one text input and the
+  // CR/Tab lands in the filter. A ref, not state: the mocked test indexes four useState calls
+  // by order and counts two effects. Eager initial value, like the hooks above.
   const pendingInput = useRef<PendingInput | null>(null);
   // A new identity on every render. The handlers of one committed render share it, so the
   // snapshot counts only for edits made since that render committed; after the next commit

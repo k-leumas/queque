@@ -111,6 +111,7 @@
 - [2026-10-12] The OpenWolf post-write hook rewrites a file's anatomy.md description to a bland first-comment line on Edit/Write (e.g. daemon-fetch.test.ts). After editing, restore the rich description in the right `## <dir>/` section; edits made through Bash scripts do not trigger it.
 
 ## Do-Not-Repeat
+- [2026-10-12] The Bash tool runs zsh: an unquoted `$LIST` is NOT word-split, so `gsd-tools query verification.fingerprint "$P" $FILES` passes all 56 paths as ONE argument and fails with 'a covered file is missing'. Use `${=LIST}` (or an array) when expanding a newline list into args.
 - [2026-10-12] Do not let an Ink `useInput` handler branch on, or index with, render-closure state (the query, the selection index, the Tab toggles). Keys that share one stdin read all see the state from before that read: that is how CR-01 dropped Backspace after typed keys (`ab`+2 DEL left `FILTER: ab`) and how Down+Enter in one read inserted row 0. Read and write a snapshot that holds this read's edits, and test with one chunk that holds several keys.
 - [2026-10-12] Do not seed an editable input with context text that a header already shows (G-09.1-5: CandidateSelect seeded FILTER with the lbuffer under 03.1 D-01). Keystrokes append to the seed (`show me how to use z3` + `smt`), and any "untouched" guard (query equals the seed) misfires, both when the user types text equal to the seed and once they type anything. Start the input empty and show the context separately.
 - [2026-10-12] When several review findings touch one file, apply and commit them one at a time (save the combined edit, `git checkout --` the file, re-apply per finding) instead of editing all at once; there is no non-interactive `git add -p` here.
@@ -145,6 +146,7 @@
 - [2026-10-10] commitlint subject-case also rejects subjects starting with a review ID (`fix(09): CR-01 …`). Put the ID at the end: `fix(09): skip heredoc bodies … (CR-01)`.
 
 ## Decision Log
+- [2026-10-12] Phase 09.1 CR-02 (text directly followed by Enter/Tab in ONE stdin read stays filter text, Ink 7 paste rule) accepted by the user as a known limitation: predates 09.1, needs keys typed before Ink attaches, Backspace recovers. Override in 09.1-VERIFICATION.md; disposition deferred; CandidateSelect pendingInput comment and ROADMAP 09.1-10 line state the exception.
 
 <!-- Significant technical decisions with rationale. Why X was chosen over Y. -->
 - [2026-07-31] Phase 8 docs-only expansion: document macOS Keychain detection gap in ROADMAP + 08-RESEARCH + 08-01-PLAN before code. Detection strategy for darwin: PATH-only presence; validate auth at 08-02 subprocess call time. Prefer false-positive (installed but logged out) over missing logged-in Keychain users.
