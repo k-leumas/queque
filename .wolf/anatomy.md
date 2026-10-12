@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T05:42:46.109Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T06:14:33.738Z
 > Files: 445 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -596,14 +596,14 @@
 
 ## .planning/phases/09.1-provider-latency-and-cancellation/
 
-- `09.1-01-PLAN.md` — Artifacts this phase produces (~10747 tok)
-- `09.1-02-PLAN.md` — Artifacts this phase produces (~6079 tok)
-- `09.1-03-PLAN.md` — Artifacts this phase produces (~6167 tok)
-- `09.1-04-PLAN.md` — Artifacts this phase produces (~6240 tok)
-- `09.1-05-PLAN.md` — Artifacts this phase produces (~7041 tok)
-- `09.1-06-PLAN.md` — Artifacts this phase produces (~5736 tok)
-- `09.1-07-PLAN.md` — Artifacts this phase produces (~6897 tok)
-- `09.1-08-PLAN.md` — Artifacts this phase produces (~5256 tok)
+- `09.1-01-PLAN.md` — Artifacts this phase produces (~12953 tok)
+- `09.1-02-PLAN.md` — Artifacts this phase produces (~6994 tok)
+- `09.1-03-PLAN.md` — Artifacts this phase produces (~6865 tok)
+- `09.1-04-PLAN.md` — Artifacts this phase produces (~7405 tok)
+- `09.1-05-PLAN.md` — Artifacts this phase produces (~8364 tok)
+- `09.1-06-PLAN.md` — Artifacts this phase produces (~6783 tok)
+- `09.1-07-PLAN.md` — Artifacts this phase produces (~8155 tok)
+- `09.1-08-PLAN.md` — Artifacts this phase produces (~6502 tok)
 - `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
 - `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
 - `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)

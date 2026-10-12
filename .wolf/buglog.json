@@ -3929,6 +3929,182 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T05:42:19.762Z"
+    },
+    {
+      "id": "bug-241",
+      "timestamp": "2026-10-12T06:09:12.136Z",
+      "error_message": "Wrong reference: behavior should be Type",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-01-PLAN.md",
+      "root_cause": "Used \"behavior\" instead of \"Type\"",
+      "fix": "Changed behavior → Type",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-10-12T06:09:53.457Z"
+    },
+    {
+      "id": "bug-242",
+      "timestamp": "2026-10-12T06:09:25.821Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-01-PLAN.md",
+      "root_cause": "Had `pnpm build`",
+      "fix": "Changed to `claude -p`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T06:09:28.173Z"
+    },
+    {
+      "id": "bug-243",
+      "timestamp": "2026-10-12T06:10:15.014Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-02-PLAN.md",
+      "root_cause": "Had ` never leaks into the tests; restore the variable",
+      "fix": "Changed to ` never leaks into the tests; restore the variable",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:10:15.014Z"
+    },
+    {
+      "id": "bug-244",
+      "timestamp": "2026-10-12T06:10:27.727Z",
+      "error_message": "Wrong reference: acceptance_criteria should be grep",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-02-PLAN.md",
+      "root_cause": "Used \"acceptance_criteria\" instead of \"grep\"",
+      "fix": "Changed acceptance_criteria → grep",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:10:27.727Z"
+    },
+    {
+      "id": "bug-245",
+      "timestamp": "2026-10-12T06:10:43.720Z",
+      "error_message": "Wrong reference: acceptance_criteria should be grep",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-03-PLAN.md",
+      "root_cause": "Used \"acceptance_criteria\" instead of \"grep\"",
+      "fix": "Changed acceptance_criteria → grep",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:10:43.720Z"
+    },
+    {
+      "id": "bug-246",
+      "timestamp": "2026-10-12T06:11:00.834Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-04-PLAN.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block | Also: Send no `thinking` key and no sampling parameters. Replace p; 2. `src/providers/claude-default.ts`: the SDK branch passes  | Also: ## Review Dispositions Ledger; ### Round 1 — 1620d8d",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-10-12T06:11:35.635Z"
+    },
+    {
+      "id": "bug-247",
+      "timestamp": "2026-10-12T06:12:36.876Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-06-PLAN.md",
+      "root_cause": "Had ` instead of exhausting daemon memory; collected s",
+      "fix": "Changed to ` (`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T06:12:45.683Z"
+    },
+    {
+      "id": "bug-248",
+      "timestamp": "2026-10-12T06:13:24.719Z",
+      "error_message": "Function not marked async",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-07-PLAN.md",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T06:13:54.591Z"
+    },
+    {
+      "id": "bug-249",
+      "timestamp": "2026-10-12T06:13:27.186Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-07-PLAN.md",
+      "root_cause": "Had `grep -c \"",
+      "fix": "Changed to 's highlight and its Tab install form survive the ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-12T06:13:40.399Z"
+    },
+    {
+      "id": "bug-250",
+      "timestamp": "2026-10-12T06:14:12.930Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-08-PLAN.md",
+      "root_cause": "Had `show me how to use z3??`",
+      "fix": "Changed to `claude -p`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:14:12.930Z"
+    },
+    {
+      "id": "bug-251",
+      "timestamp": "2026-10-12T06:14:33.762Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".planning/phases/09.1-provider-latency-and-cancellation/09.1-08-PLAN.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T06:14:33.762Z"
     }
   ]
 }
