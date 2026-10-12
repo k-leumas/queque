@@ -7,7 +7,7 @@ import { z } from 'zod';
  * Event shapes were recorded from Claude Code 2.1.285 (09.1-RESEARCH Probes 2 and 3).
  */
 
-/** Largest partial line the parser keeps between chunks. Enforced in plan 06. */
+/** Largest partial line (UTF-8 bytes) the parser keeps between chunks: createLineParser's default cap. */
 export const STREAM_JSON_CARRY_CAP_BYTES = 1024 * 1024;
 
 /**
@@ -30,6 +30,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object';
 }
 
+export interface LineParserOptions {
+  /** Largest unfinished line kept between chunks, in UTF-8 bytes. */
+  maxCarryBytes?: number;
+  /** Called once when the carry passes `maxCarryBytes`; all later input is ignored. */
+  onOverflow?: () => void;
+}
+
 /**
  * Returns a feed function for decoded stdout text (set the stream's encoding to utf8 so
  * Node's StringDecoder keeps split multi-byte characters intact).
@@ -37,36 +44,52 @@ function isRecord(value: unknown): value is Record<string, unknown> {
  * Splits on newline, keeps the unfinished tail, skips empty lines, and passes every line
  * that parses as JSON to `onEvent`. Lines that are not JSON are dropped silently, so they
  * never reach any candidate parser.
+ *
+ * The unfinished tail is bounded (D-04): once it holds more than `maxCarryBytes` UTF-8
+ * bytes (default STREAM_JSON_CARRY_CAP_BYTES) without a newline, `onOverflow` is called
+ * once, the tail is dropped, and every later chunk is ignored.
  */
-export interface LineParserOptions {
-  /** Largest unfinished line kept between chunks, in UTF-8 bytes. */
-  maxCarryBytes?: number;
-  /** Called once when the carry passes `maxCarryBytes`; later input is ignored. */
-  onOverflow?: () => void;
-}
-
 export function createLineParser(
   onEvent: (event: unknown) => void,
-  _options: LineParserOptions = {},
+  options: LineParserOptions = {},
 ): (chunk: string) => void {
+  const maxCarryBytes = options.maxCarryBytes ?? STREAM_JSON_CARRY_CAP_BYTES;
   let carry = '';
+  // UTF-8 bytes held in `carry`, kept as a running count: a newline-free stream adds only
+  // the new chunk's bytes and is never re-measured from the start.
+  let carryBytes = 0;
+  let overflowed = false;
   return (chunk: string): void => {
+    if (overflowed) {
+      return;
+    }
     carry += chunk;
     let nl = carry.indexOf('\n');
-    while (nl !== -1) {
-      const line = carry.slice(0, nl).trim();
-      carry = carry.slice(nl + 1);
-      nl = carry.indexOf('\n');
-      if (!line) {
-        continue;
+    if (nl === -1) {
+      carryBytes += Buffer.byteLength(chunk, 'utf8');
+    } else {
+      while (nl !== -1) {
+        const line = carry.slice(0, nl).trim();
+        carry = carry.slice(nl + 1);
+        nl = carry.indexOf('\n');
+        if (!line) {
+          continue;
+        }
+        let event: unknown;
+        try {
+          event = JSON.parse(line);
+        } catch {
+          continue;
+        }
+        onEvent(event);
       }
-      let event: unknown;
-      try {
-        event = JSON.parse(line);
-      } catch {
-        continue;
-      }
-      onEvent(event);
+      carryBytes = Buffer.byteLength(carry, 'utf8');
+    }
+    if (carryBytes > maxCarryBytes) {
+      overflowed = true;
+      carry = '';
+      carryBytes = 0;
+      options.onOverflow?.();
     }
   };
 }
