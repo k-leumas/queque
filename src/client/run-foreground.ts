@@ -13,6 +13,7 @@ import { shellRequestSchema } from '../contracts/shell.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { fetchCandidatesForUi } from '../daemon/fetch-client.js';
 import { classifyIntent } from '../intent/router.js';
+import { isAbortError } from '../providers/provider.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
@@ -270,6 +271,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         await new Promise<void>((resolve) => {
           let unmount: ((skipClear?: boolean) => void) | undefined;
           let resolved = false;
+          // D-07/D-13/D-15: Esc, Enter and signals abort the in-flight fetch. That destroys
+          // the daemon socket, and the daemon aborts the provider call on `close`.
+          const fetchAbort = new AbortController();
 
           // Build initial element with null candidates (D-06 loading state)
           const buildCandidateElement = (
@@ -283,6 +287,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               onSelect: async (command: string, explanation: string) => {
                 if (resolved) return;
                 resolved = true;
+                fetchAbort.abort();
                 const { lbuffer, rbuffer } = buildShellBuffers(command, explanation);
                 await writeShellResult(resultFile, {
                   kind: 'replace-buffer',
@@ -295,6 +300,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               onCancel: async () => {
                 if (resolved) return;
                 resolved = true;
+                fetchAbort.abort();
                 await writeShellResult(resultFile, { kind: 'cancel' });
                 unmount?.();
               },
@@ -325,6 +331,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           };
 
           const cleanupOnSignal = () => {
+            fetchAbort.abort();
             app.unmount();
             clearScrollReserve();
             process.exit(0);
@@ -341,8 +348,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           };
 
           // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
-          fetchCandidatesForUi(socketPath, envelope)
+          fetchCandidatesForUi(socketPath, envelope, { signal: fetchAbort.signal })
             .then((candidates) => {
+              // D-14: once a result is written, nothing the provider produced is shown.
+              if (resolved) return;
               const displayCandidates = annotateCandidates(candidates, toolInventory);
               void appendDebugLog('client', 'candidates received', {
                 count: candidates.length,
@@ -351,6 +360,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
               app.rerender(buildCandidateElement(displayCandidates));
             })
             .catch(async (err) => {
+              if (isAbortError(err)) {
+                void appendDebugLog('client', 'fetch aborted');
+                return;
+              }
               const message = err instanceof Error ? err.message : String(err);
               void appendDebugLog('client', 'llm request failed', { message });
               if (resolved) return;

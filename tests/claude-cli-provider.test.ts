@@ -23,7 +23,6 @@ const {
   anthropicCtorMock,
   AnthropicMock,
   runClaudeTurnMock,
-  execFileAsyncMock,
   readEnvValueFromDotEnvLocalMock,
   appendDebugLogMock,
 } = vi.hoisted(() => {
@@ -46,7 +45,6 @@ const {
     anthropicCtorMock,
     AnthropicMock,
     runClaudeTurnMock: vi.fn<(options: ClaudeTurnOptions) => Promise<string>>(),
-    execFileAsyncMock: vi.fn().mockRejectedValue(new Error('claude-exec must not run claude')),
     readEnvValueFromDotEnvLocalMock: vi.fn<(key: string, startDir?: string) => string | null>(),
     appendDebugLogMock: vi.fn().mockResolvedValue(undefined),
   };
@@ -54,11 +52,6 @@ const {
 
 vi.mock('@anthropic-ai/sdk', () => ({
   default: AnthropicMock,
-}));
-
-// Guard: the old argv runner must never spawn the real `claude` from this file.
-vi.mock('../src/providers/claude-exec.js', () => ({
-  execFileAsync: execFileAsyncMock,
 }));
 
 // Only runClaudeTurn is replaced; exports added by later plans stay real.
@@ -191,7 +184,6 @@ describe('claudeDefaultAdapter', () => {
     createMock.mockReset();
     anthropicCtorMock.mockClear();
     runClaudeTurnMock.mockReset();
-    execFileAsyncMock.mockClear();
     readEnvValueFromDotEnvLocalMock.mockReset();
     readEnvValueFromDotEnvLocalMock.mockReturnValue(null);
     appendDebugLogMock.mockClear();

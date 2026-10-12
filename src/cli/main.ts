@@ -88,6 +88,9 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
       const resultFile = requiredOption('--result-file', options.resultFile);
 
       await clientCommand({ requestFile, resultFile, resultMode: options.resultMode });
+      // D-15: the result is written; an open handle (an aborted fetch's socket or timer,
+      // the tty stream) must never keep the client alive. Client action only.
+      process.exit(process.exitCode ?? 0);
     });
 
   cli

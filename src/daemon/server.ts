@@ -16,6 +16,10 @@ import { appendDebugLog } from '../shared/debug-log.js';
  * The server is intentionally free of Ink, React, and /dev/tty assumptions —
  * it runs fully in the background without a TTY. LLM fetch lives here so the
  * Anthropic SDK client stays warm across `??` invocations.
+ *
+ * Each connection owns an AbortController. When the client closes its socket (Esc,
+ * Enter, or exit) the provider call is aborted through that signal, and the daemon
+ * writes nothing more for the aborted fetch.
  */
 export function startDaemonServer(socketPath: string): Promise<net.Server> {
   return new Promise((resolve, reject) => {
@@ -26,6 +30,7 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
     // /tmp/qq-<uid>/, and require clients to send it as the first IPC frame field.
     const server = net.createServer((socket) => {
       let buf = '';
+      const connectionAbort = new AbortController();
       void appendDebugLog('daemon', 'socket connected', { socketPath });
 
       const writeJson = (payload: unknown) => {
@@ -86,17 +91,29 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
             }
             case 'fetch-candidates': {
               writeJson({ kind: 'fetch-accepted' });
-              bootstrapBuiltins();
-              const adapter = resolveClaudeDefaultAdapter();
-              void adapter
-                .fetchCandidates(req.envelope)
+              const envelope = req.envelope;
+              // Resolution throws stay inside the chain so they become fetch-error.
+              void Promise.resolve()
+                .then(() => {
+                  bootstrapBuiltins();
+                  const adapter = resolveClaudeDefaultAdapter();
+                  return adapter.fetchCandidates(envelope, { signal: connectionAbort.signal });
+                })
                 .then((candidates) => {
+                  if (connectionAbort.signal.aborted) {
+                    void appendDebugLog('daemon', 'fetch aborted');
+                    return;
+                  }
                   writeJson({ kind: 'candidates', candidates });
                   void appendDebugLog('daemon', 'replied candidates', {
                     count: candidates.length,
                   });
                 })
                 .catch((error: unknown) => {
+                  if (connectionAbort.signal.aborted) {
+                    void appendDebugLog('daemon', 'fetch aborted');
+                    return;
+                  }
                   const message = error instanceof Error ? error.message : String(error);
                   writeJson({ kind: 'fetch-error', message });
                   void appendDebugLog('daemon', 'replied fetch-error', { message });
@@ -109,6 +126,11 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
 
       socket.on('error', () => {
         // Connection errors are per-socket, not fatal to the server
+      });
+
+      // D-13: the client closing its socket (Esc, Enter, exit) aborts the provider call.
+      socket.on('close', () => {
+        connectionAbort.abort();
       });
     });
 

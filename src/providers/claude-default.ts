@@ -4,7 +4,7 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { fetchCandidates as fetchSdkCandidates } from './claude.js';
 import { fetchClaudeCliCandidates } from './claude-cli.js';
-import type { LLMAdapter } from './provider.js';
+import { type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 
 const TOTAL_BUDGET_MS = 25_000;
 
@@ -84,7 +84,7 @@ function hardError(error: unknown): Error {
  * `claude -p` for `/login`-only users. Shared 25s budget under FIFO 30s.
  */
 export const claudeDefaultAdapter: LLMAdapter = {
-  async fetchCandidates(envelope: ContextEnvelope): Promise<CandidateList> {
+  async fetchCandidates(envelope: ContextEnvelope, options?: FetchOptions): Promise<CandidateList> {
     const deadline = Date.now() + TOTAL_BUDGET_MS;
     const apiKey = lookupApiKey();
 
@@ -96,8 +96,13 @@ export const claudeDefaultAdapter: LLMAdapter = {
     }
 
     try {
-      return await fetchClaudeCliCandidates(envelope, remainingMs(deadline));
+      return await fetchClaudeCliCandidates(envelope, remainingMs(deadline), options);
     } catch (error) {
+      if (isAbortError(error)) {
+        // D-13: an aborted turn is not a failure; the daemon writes nothing for it.
+        void appendDebugLog('provider', 'claude-cli aborted');
+        throw error;
+      }
       void appendDebugLog('provider', 'claude-cli path', {
         path: 'claude-cli',
         exitCode: exitCodeDetail(error),

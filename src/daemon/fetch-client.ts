@@ -2,7 +2,7 @@ import * as net from 'node:net';
 import type { CandidateList } from '../contracts/candidates.js';
 import { ipcResponseSchema } from '../contracts/ipc.js';
 import type { ContextEnvelope } from '../contracts/request.js';
-import type { FetchOptions } from '../providers/provider.js';
+import { abortError, type FetchOptions } from '../providers/provider.js';
 import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 
@@ -34,13 +34,23 @@ export function requestDaemonFetch(
   socketPath: string,
   envelope: ContextEnvelope,
   timeoutMs: number = FETCH_TIMEOUT_MS,
-  _options: FetchOptions = {},
+  options: FetchOptions = {},
 ): Promise<CandidateList> {
+  const { signal } = options;
+  if (signal?.aborted) {
+    return Promise.reject(abortError());
+  }
+
   return new Promise((resolve, reject) => {
     const client = net.createConnection(socketPath);
     let buf = '';
     let settled = false;
     let accepted = false;
+
+    // D-13: abort destroys the socket (via finish); the daemon sees `close` and aborts.
+    const onAbort = () => {
+      finish(abortError());
+    };
 
     const finish = (error?: unknown, candidates?: CandidateList) => {
       if (settled) {
@@ -49,6 +59,7 @@ export function requestDaemonFetch(
       settled = true;
       clearTimeout(ackTimer);
       clearTimeout(timer);
+      signal?.removeEventListener('abort', onAbort);
       client.destroy();
       if (error) {
         reject(error);
@@ -66,6 +77,8 @@ export function requestDaemonFetch(
     const timer = setTimeout(() => {
       finish(new IpcTransportError('daemon fetch timed out'));
     }, timeoutMs);
+
+    signal?.addEventListener('abort', onAbort, { once: true });
 
     const handleResponse = (parsed: unknown) => {
       const response = ipcResponseSchema.safeParse(parsed);
@@ -132,17 +145,21 @@ export function requestDaemonFetch(
 export async function fetchCandidatesForUi(
   socketPath: string,
   envelope: ContextEnvelope,
-  _options: FetchOptions = {},
+  options: FetchOptions = {},
 ): Promise<CandidateList> {
   try {
-    const candidates = await requestDaemonFetch(socketPath, envelope);
+    const candidates = await requestDaemonFetch(socketPath, envelope, undefined, options);
     void appendDebugLog('client', 'candidates from daemon', { count: candidates.length });
     return candidates;
   } catch (error) {
     if (!(error instanceof IpcTransportError)) {
       throw error;
     }
+    if (options.signal?.aborted) {
+      // Never start an in-process fallback for a fetch the user already left.
+      throw abortError();
+    }
     void appendDebugLog('client', 'daemon fetch fallback', { message: error.message });
-    return resolveClaudeDefaultAdapter().fetchCandidates(envelope);
+    return resolveClaudeDefaultAdapter().fetchCandidates(envelope, options);
   }
 }

@@ -1,54 +1,67 @@
 import type { CandidateList } from '../contracts/candidates.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { buildPrompt, ensureSelectableCandidates, parseCandidates } from './claude.js';
-import { type ExecFileAsyncOptions, execFileAsync } from './claude-exec.js';
-import type { LLMAdapter } from './provider.js';
+import { runClaudeTurn } from './claude-process.js';
+import type { FetchOptions, LLMAdapter } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
 
 const CLI_BUDGET_MS = 25_000;
 
+/** The Claude Code binary, resolved on PATH. */
+export const CLAUDE_COMMAND = 'claude';
+
 /**
- * Spawns `claude -p` print mode and parses stdout with the shared candidate contract.
- * Throws on spawn, non-zero, or timeout. Does not rescue via the SDK.
+ * `claude -p` argv for one QueQue turn (Phase 09.1, D-04).
+ *
+ * stream-json in and out (`--output-format stream-json` requires `--verbose` in print
+ * mode, Probe 1). No positional prompt: the prompt goes over stdin. No model flag (D-02)
+ * and never `--bare` (it skips Keychain/OAuth for `/login` users).
  */
-export async function fetchClaudeCliCandidates(
-  envelope: ContextEnvelope,
-  remainingBudgetMs: number,
-): Promise<CandidateList> {
-  const prompt = buildPrompt(envelope);
-  const args = [
+export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
+  return [
     '-p',
+    '--input-format',
+    'stream-json',
     '--output-format',
-    'text',
+    'stream-json',
+    '--verbose',
+    '--include-partial-messages',
     '--safe-mode',
     '--tools',
     '',
     '--no-session-persistence',
     '--system-prompt',
     buildSystemPrompt(envelope),
-    prompt,
   ];
-  const options: ExecFileAsyncOptions = {
-    encoding: 'utf8',
-    timeout: remainingBudgetMs,
-    killSignal: 'SIGTERM',
-    maxBuffer: 1024 * 1024,
+}
+
+/**
+ * Runs one `claude -p` stream-json turn and parses the `result` text with the shared
+ * candidate contract. Throws on spawn failure, an is_error result, exit without a result,
+ * timeout or abort. Does not rescue via the SDK.
+ */
+export async function fetchClaudeCliCandidates(
+  envelope: ContextEnvelope,
+  remainingBudgetMs: number,
+  options: FetchOptions = {},
+): Promise<CandidateList> {
+  const text = await runClaudeTurn({
+    command: CLAUDE_COMMAND,
+    argv: buildClaudeCliArgv(envelope),
     cwd: envelope.base.cwd,
     env: process.env,
-    windowsHide: true,
-    shell: false,
-    stdio: ['ignore', 'pipe', 'pipe'],
-  };
-
-  const { stdout } = await execFileAsync('claude', args, options);
-  return ensureSelectableCandidates(parseCandidates(stdout));
+    prompt: buildPrompt(envelope),
+    budgetMs: remainingBudgetMs,
+    signal: options.signal,
+  });
+  return ensureSelectableCandidates(parseCandidates(text));
 }
 
 /**
  * Raw CLI-only adapter. Unregistered — isolation and tests only.
  */
 export const claudeCliAdapter: LLMAdapter = {
-  async fetchCandidates(envelope: ContextEnvelope): Promise<CandidateList> {
-    return fetchClaudeCliCandidates(envelope, CLI_BUDGET_MS);
+  async fetchCandidates(envelope: ContextEnvelope, options?: FetchOptions): Promise<CandidateList> {
+    return fetchClaudeCliCandidates(envelope, CLI_BUDGET_MS, options);
   },
 };
