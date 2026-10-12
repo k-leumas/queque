@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T20:44:49.134Z
-> Files: 416 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-11T21:03:45.304Z
+> Files: 418 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -674,7 +674,9 @@
 ## .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/
 
 - `261011-jbh-PLAN.md` — Quick plan: instant first frame + faster Node start. Tracer TDD (Task 1, LD-1): zsh widget paints `queque › <lbuffer>` + `thinking…` before Node (inline: reserve + ESC 7 + CSI J + frame + ESC 8 via plain print; Zellij: session-dir `instant-frame.txt` cat by a `/bin/sh` pane wrapper, lbuffer never in argv); client `src/client/instant-frame.ts` `armInstantFrameTakeover` injects the surface clear into Ink's first visible write (inline ESC 8 + CSI J on the client's own fresh save, Zellij CSI H + CSI J); real-Ink `replayScreen` cases t1-t6 + zsh z1-z10; `QQ_INSTANT_FRAME=0` kill switch. Task 2 (LD-2): RED tests/bundle-startup.test.ts, tsup entry {main: src/cli/launcher.ts, app: src/cli/main.ts}, noExternal, react-devtools-core shim alias, createRequire banner, per-user 0700 compile cache (fail safe), lazy `import('@anthropic-ai/sdk')`. Task 3 live check inline + Zellij; then debug session → resolved/. (~12400 tok)
+- `261011-jbh-SUMMARY.md` — Phase quick-261011-jbh Plan 01: Instant first frame from the zsh widget + bundled, compile-cached cl (~3712 tok)
 - `COVERAGE.md` — api-coverage gate declaration: no external API integration (SDK import only made lazy). (~68 tok)
+- `deferred-items.md` — Deferred items: quick 261011-jbh (~332 tok)
 
 ## .planning/research/
 

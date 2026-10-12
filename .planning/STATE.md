@@ -7,7 +7,7 @@ status: planning
 stopped_at: Phase 9 complete, ready to plan Phase 7
 last_updated: "2026-10-11T18:40:41.988Z"
 last_activity: 2026-10-11
-last_activity_desc: Phase 9 complete, transitioned to Phase 7
+last_activity_desc: Completed quick task 261011-jbh
 state_head: 75655cc368d6f1053a51e10bcbca3a92fba2766e
 progress:
   total_phases: 11
@@ -33,7 +33,7 @@ Phase: 7 — Context-Aware Learning and Ambient Suggestions
 Plan: Not started
 Next: Plan Phase 7 (/gsd-discuss-phase 7 or /gsd-plan-phase 7)
 Status: Ready to plan
-Last activity: 2026-10-11 - Completed quick task 261011-f9o: keep the zellij modal at its full-list height while filtering
+Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
 
 Progress: [███████░░░] 73%
 
@@ -154,11 +154,12 @@ None yet.
 | 20260619-pnpm-builds | commit pnpm-workspace.yaml allowBuilds for esbuild/lefthook CI install | 2026-06-19 | — | [20260619-pnpm-allow-builds](./quick/20260619-pnpm-allow-builds/) |
 | 261011-e43 | fix top queque › line is clipped when modal is resized in zellij | 2026-10-11 | dbcbdd7 | [261011-e43-fix-top-queque-line-is-clipped-when-moda](./quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/) |
 | 261011-f9o | keep the zellij modal at its full-list height while filtering instead of shrinking | 2026-10-11 | 75655cc | [261011-f9o-keep-the-zellij-modal-at-its-full-list-h](./quick/261011-f9o-keep-the-zellij-modal-at-its-full-list-h/) |
+| 261011-jbh | instant first frame from the zsh widget + bundled, compile-cached client (modal no longer blank before loading) | 2026-10-11 | e8e3127 | [261011-jbh-instant-first-frame-from-the-zsh-widget-](./quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-11 - Completed quick task 261011-f9o: keep the zellij modal at its full-list height while filtering
+Last activity: 2026-10-11 - Completed quick task 261011-jbh: instant first frame from the zsh widget + bundled client
 
 Last session: 2026-10-11T15:59:11Z
-Stopped at: Phase 9 complete (UAT 31/31, verification passed), ready to plan Phase 7
+Stopped at: Quick 261011-jbh verified and closed; ready to plan Phase 7
 Resume file: None

@@ -1,0 +1,1 @@
+No external API integration: the plan changes only when the existing @anthropic-ai/sdk import is evaluated (static to lazy, same single call site, no new endpoints or capabilities), plus local build/startup (tsup bundle, Node compile cache) and zsh/terminal rendering.

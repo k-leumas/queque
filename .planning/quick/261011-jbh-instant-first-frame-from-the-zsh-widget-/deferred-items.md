@@ -1,0 +1,6 @@
+# Deferred items: quick 261011-jbh
+
+Both problems already exist on de3783c, the commit before this task. They showed up in the tmux live captures (scratchpad harness, plain terminal 100x30, real daemon). Neither was fixed here because they are out of scope.
+
+1. **Esc during `thinking…` leaves the client running.** In a plain terminal, pressing Esc before the candidates arrive writes the cancel result and unmounts Ink. The client process keeps running after the candidates arrive (seen alive at 66-75 s), so the widget never returns and the prompt is not redrawn. This reproduces on de3783c and on HEAD. Likely cause, not verified: `app.rerender()` in the fetchCandidatesForUi `.then` runs after unmount and keeps stdin or raw mode alive. Esc after the candidates arrive works (prompt back in about 0.2 s).
+2. **Ink frame rows left behind after accept when the frame is taller than the inline reserve.** On a full 30-row screen, a frame of 3 wrapped candidates + the legend + the dev footer is taller than MODAL_VIEWPORT_LINES (18) plus the cursor row. Ink scrolls the screen, so the reserve-top cursor save now points 1-2 rows into the frame. After Enter, the `queque ›` header and `FILTER:` rows stay above the summary lines. This reproduces on de3783c (same 2 rows). It is Ink-frame residue, not instant-frame residue.

@@ -2346,3 +2346,13 @@
 | 14:42 | Created src/shims/react-devtools-core.ts | — | ~163 |
 | 14:44 | Created src/shims/optional-native-module.ts | — | ~203 |
 | 14:46 | quick 261011-jbh Task 2 GREEN: launcher main.js (per-user 0700 compile cache, fail safe) + bundled app.js (noExternal, devtools + ws native add-on shims, createRequire banner), lazy SDK; b1 now reads esbuild metafile; full suite 580/580; debug session awaiting_human_verify | tsup.config.ts, src/cli/launcher.ts, src/shims/*, src/providers/claude.ts, tests/bundle-startup.test.ts | pass | ~12000 |
+| 15:02 | Created .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/deferred-items.md | — | ~354 |
+| 15:02 | quick 261011-jbh live evidence (tmux inline + tmux-hosted Zellij, real daemon): instant frame visible 0.03-0.06 s inline / 0.23 s Zellij vs first visible frame 0.77-1.56 s on de3783c; Ink takes over in place (one header, FILTER/controls join, no residue); QQ_INSTANT_FRAME=0 = 0.80 s (no paint); Esc after candidates + Enter return cleanly; two pre-existing issues logged to deferred-items.md (Esc during loading hangs the client; reserve-overflow residue after accept), same on de3783c | scratchpad harness, deferred-items.md | human check pending | ~15000 |
+| 15:03 | Created .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/261011-jbh-SUMMARY.md | — | ~3959 |
+| 15:04 | Session end: 43 writes across 25 files (candidate-select-layout.test.tsx, CandidateSelect.tsx, candidate-select.test.tsx, zellij-pane-resize.test.ts, deferred-items.md) | 27 reads | ~133802 tok |
+
+## Session: 2026-10-12 20:59
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 21:14 | Closed quick 261011-jbh after user live-verified instant frame; resolved debug session | .planning/STATE.md, jbh SUMMARY, debug/resolved | done | ~2k |

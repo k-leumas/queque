@@ -1,0 +1,10 @@
+{
+  "command": "pnpm exec vitest run tests/bundle-startup.test.ts -t \"statically imports only Node built-ins\" --reporter=tap-flat",
+  "exitCode": 1,
+  "output": "TAP version 13\n1..5\nnot ok 1 - tests/bundle-startup.test.ts > CLI bundle startup (blank modal before the loading frame) > statically imports only Node built-ins (no file-by-file node_modules loading) # time=15.41ms\n    ---\n    error:\n        name: \"AssertionError\"\n        message: \"expected 'cac, zod, @anthropic-ai/sdk, ink, rea…' to be '' // Object.is equality\"\n    at: \"/Users/samuel/dev/tui-llm/tests/bundle-startup.test.ts:153:33\"\n    actual: \"cac, zod, @anthropic-ai/sdk, ink, react, react/jsx-runtime\"\n    expected: \n    ...\nok 2 - tests/bundle-startup.test.ts > CLI bundle startup (blank modal before the loading frame) > b2/b3: main.js starts with no node_modules, adds no output, and fills a 0700 per-user cache # SKIP\nok 3 - tests/bundle-startup.test.ts > CLI bundle startup (blank modal before the loading frame) > b4: an unwritable cache home changes nothing visible and creates no cache dir # SKIP\nok 4 - tests/bundle-startup.test.ts > CLI bundle startup (blank modal before the loading frame) > b5: a world-writable cache dir is not used # SKIP\nok 5 - tests/bundle-startup.test.ts > CLI bundle startup (blank modal before the loading frame) > b6: app.js (what spawnDaemon re-execs) also starts on its own # SKIP\n",
+  "targetTest": "tests/bundle-startup.test.ts > CLI bundle startup (blank modal before the loading frame) > statically imports only Node built-ins (no file-by-file node_modules loading)",
+  "targetFile": "tests/bundle-startup.test.ts",
+  "expected": "no non-built-in specifiers in any emitted file",
+  "actual": "cac, zod, @anthropic-ai/sdk, ink, react, react/jsx-runtime (deps external in the current tsup config)",
+  "semanticAssessment": "Target built the real tsup config and failed on its planned single-line external-specifier assertion because dependencies are external today; no load or fixture fault."
+}
