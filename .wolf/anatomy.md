@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T08:38:35.659Z
-> Files: 520 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T20:39:43.223Z
+> Files: 524 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -603,7 +603,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~5961 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~6081 tok)
 - `STATE.md` — Project State (~2442 tok)
 
 ## .planning/debug/
@@ -611,6 +611,7 @@
 - `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~3416 tok)
 - `llm-response-latency-profile.md` — Symptoms (~6991 tok)
 - `modal-blank-before-loading.md` — Symptoms (~493 tok)
+- `modal-filter-prefilled-with-query.md` — Current Focus (~3427 tok)
 
 ## .planning/notes/
 
@@ -767,6 +768,7 @@
 - `09.1-07-PLAN.md` — Artifacts this phase produces (~8155 tok)
 - `09.1-08-PLAN.md` — Artifacts this phase produces (~6502 tok)
 - `09.1-08-SUMMARY.md` — Phase 09.1 Plan 08: Phase Gate, OpenWolf Records and Latency UAT Prep Summary (~5691 tok)
+- `09.1-09-PLAN.md` — Gap closure G-09.1-5 (UAT test 5): FILTER opens empty, lbuffer header-only, typed text is the whole filter; tracer real-Ink regression + CandidateSelect seed fix, pre-fill tests rewritten (none deleted), 03.1 D-01/D-02 superseded, OpenWolf/debug records (~9359 tok)
 - `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
 - `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
 - `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)

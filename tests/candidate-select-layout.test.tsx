@@ -1153,6 +1153,147 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
 });
 
 // ---------------------------------------------------------------------------
+// G-09.1-5 (UAT 09.1 test 5): FILTER opens empty and the lbuffer shows only in the dim
+// `queque ›` header. Text typed while `thinking…` shows is the whole filter and keeps
+// filtering every row that arrives later (D-09). Supersedes 03.1 D-01/D-02.
+// ---------------------------------------------------------------------------
+
+/** The FILTER row on an empty query (SearchInput.tsx placeholder). */
+const FILTER_PLACEHOLDER = 'FILTER: type to filter…';
+
+/**
+ * The FILTER row of Ink's last frame that has one, trimmed. Unlike `lastFrame` it needs no
+ * `queque ›` header, so it also works for an empty lbuffer.
+ */
+function filterLine(writes: readonly string[]): string {
+  for (let index = writes.length - 1; index >= 0; index -= 1) {
+    const line = stripVTControlCharacters(writes[index] ?? '')
+      .split('\n')
+      .find((text) => text.includes('FILTER:'));
+    if (line !== undefined) {
+      return line.trim();
+    }
+  }
+  throw new Error('Ink never wrote a frame containing the FILTER row');
+}
+
+describe('G-09.1-5: FILTER opens empty; the lbuffer is only the header (real hooks, supersedes 03.1 D-01/D-02)', () => {
+  const savedEnv: Partial<Record<(typeof ENV_KEYS)[number], string>> = {};
+  const [smtRow, stdinRow, pythonRow] = RAW_CANDIDATES as [
+    CommandCandidate,
+    CommandCandidate,
+    CommandCandidate,
+  ];
+
+  beforeEach(() => {
+    for (const key of ENV_KEYS) {
+      savedEnv[key] = process.env[key];
+      delete process.env[key];
+    }
+    spawnMock.mockReset();
+    spawnMock.mockImplementation(() => fakeChild());
+    resetZellijPaneHeightCache();
+  });
+
+  afterEach(() => {
+    for (const key of ENV_KEYS) {
+      const value = savedEnv[key];
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    resetZellijPaneHeightCache();
+  });
+
+  it('G-09.1-5 UAT case: `smt` typed while thinking is the whole filter, not the lbuffer plus `smt`', async () => {
+    const mounted = await mountStream(LBUFFER);
+    try {
+      // The lbuffer is the header; FILTER below it opens empty.
+      expect(lastFrame(mounted.stdout.writes)).toContain(`queque › ${LBUFFER}`);
+      expect(filterLine(mounted.stdout.writes)).toBe(FILTER_PLACEHOLDER);
+
+      for (const key of ['s', 'm', 't']) {
+        await mounted.press(key);
+      }
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      // A first row that does not match keeps the typed filter (WR-04 intent).
+      await mounted.arrive([stdinRow], 'arriving');
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      await mounted.arrive([stdinRow, smtRow], 'arriving');
+      expect(lastFrame(mounted.stdout.writes)).toContain(smtRow.command);
+
+      await mounted.arrive([stdinRow, smtRow, pythonRow], 'complete');
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+      const frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(smtRow.command);
+      expect(frame).not.toContain('python3');
+      expect(frame).not.toContain('declare-const');
+      expect(frame).not.toContain('no matches');
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([smtRow.command]);
+
+      // Backspacing the typed filter away brings back the placeholder and the full list.
+      for (let count = 0; count < 3; count += 1) {
+        await mounted.press('\u007F');
+      }
+      expect(filterLine(mounted.stdout.writes)).toBe(FILTER_PLACEHOLDER);
+      expect(lastFrame(mounted.stdout.writes)).toContain('python3');
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('G-09.1-5: an empty lbuffer opens on the placeholder and typed `smt` filters the streamed rows', async () => {
+    const mounted = await mountStream('');
+    try {
+      expect(filterLine(mounted.stdout.writes)).toBe(FILTER_PLACEHOLDER);
+
+      for (const key of ['s', 'm', 't']) {
+        await mounted.press(key);
+      }
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      await mounted.arrive([stdinRow], 'arriving');
+      await mounted.arrive([stdinRow, smtRow], 'arriving');
+      await mounted.arrive([stdinRow, smtRow, pythonRow], 'complete');
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([smtRow.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+
+  it('G-09.1-5: typed text equal to the lbuffer is the filter once, and survives a non-matching first row', async () => {
+    const mounted = await mountStream('smt');
+    try {
+      for (const key of ['s', 'm', 't']) {
+        await mounted.press(key);
+      }
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      // The old guard treated a query equal to the lbuffer as untouched and cleared it here.
+      await mounted.arrive([stdinRow], 'arriving');
+      expect(filterLine(mounted.stdout.writes)).toBe('FILTER: smt');
+
+      await mounted.arrive([stdinRow, smtRow, pythonRow], 'complete');
+      const frame = lastFrame(mounted.stdout.writes);
+      expect(frame).toContain(smtRow.command);
+      expect(frame).not.toContain('python3');
+
+      await mounted.press('\r');
+      expect(mounted.selections).toEqual([smtRow.command]);
+    } finally {
+      mounted.close();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Instant frame takeover (quick 261011-jbh, LD-1): the zsh widget paints the header and a
 // loading row before Node starts; Ink's first frame must replace them in place. The widget
 // bytes come from the real widget (spawnSync zsh), the frame from a real Ink render.

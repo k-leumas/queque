@@ -2771,3 +2771,29 @@
 | 02:35 | Fixed 09.1 WR-07: SDK max_tokens 16000 + fail closed on max_tokens truncation; 3 tests | src/providers/claude.ts, tests/claude-provider.test.ts | fixed | ~4k |
 | 02:37 | 09.1 review-fix pass: WR-01..WR-07 fixed (7 commits), WR-08 skipped (CR-005 socket auth out of scope); typecheck/lint/738 tests green | src/, tests/ | done | ~60k |
 | 02:38 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-REVIEW-FIX.md | — | ~2921 |
+| 02:39 | Session end: 254 writes across 57 files (09.1-01-PLAN.md, 09.1-02-PLAN.md, 09.1-03-PLAN.md, 09.1-04-PLAN.md, 09.1-05-PLAN.md) | 62 reads | ~350485 tok |
+
+## Session: 2026-10-12 13:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:03 | Created .planning/debug/modal-filter-prefilled-with-query.md | — | ~750 |
+| 14:04 | Edited .planning/debug/modal-filter-prefilled-with-query.md | 1→2 lines | ~95 |
+| 14:04 | Edited .planning/debug/modal-filter-prefilled-with-query.md | expanded (+10 lines) | ~530 |
+| 14:04 | Created tests/zz-scratch-g0915.test.tsx | — | ~1046 |
+| 14:06 | Diagnosed G-09.1-5: CandidateSelect seeds FILTER query from initialQuery (lbuffer, 03.1 D-01); typed keys append; WR-04 guard keeps the combined text (real-Ink repro: 'show me how to use z3 smt', 0 rows on complete). Scratch test deleted. | src/ui/CandidateSelect.tsx, .planning/debug/modal-filter-prefilled-with-query.md | root cause found (no fix) | ~9000 |
+| 14:06 | Edited .planning/debug/modal-filter-prefilled-with-query.md | expanded (+17 lines) | ~956 |
+| 14:06 | Edited .planning/debug/modal-filter-prefilled-with-query.md | expanded (+12 lines) | ~249 |
+| 14:07 | Edited .planning/debug/modal-filter-prefilled-with-query.md | added nullish coalescing | ~1535 |
+| 14:08 | Session end: 7 writes across 2 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx) | 1 reads | ~5456 tok |
+| 14:19 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-09-PLAN.md | — | ~9983 |
+| 14:19 | Edited .planning/ROADMAP.md | 5→5 lines | ~19 |
+| 14:19 | Edited .planning/ROADMAP.md | 2→5 lines | ~121 |
+| 14:20 | Planned gap closure 09.1-09 for G-09.1-5 (empty FILTER on open, lbuffer header-only); roadmap gap-closure entry added | .planning/phases/09.1-provider-latency-and-cancellation/09.1-09-PLAN.md, .planning/ROADMAP.md | plan valid (frontmatter + structure) | ~9000 |
+| 14:21 | Session end: 10 writes across 4 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md) | 5 reads | ~26391 tok |
+| 14:21 | Session end: 10 writes across 4 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md) | 6 reads | ~35750 tok |
+| 14:37 | Session end: 10 writes across 4 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md) | 11 reads | ~35750 tok |
+| 14:37 | Created ../../../../tmp/gsd-pin-0911-09.sh | — | ~458 |
+| 14:38 | Edited tests/candidate-select-layout.test.tsx | added nullish coalescing | ~1594 |
+| 14:39 | Created ../../../../tmp/wolf-clean-0911-09.py | — | ~496 |
+| 14:40 | 09.1-09 T1 RED: G-09.1-5 real-Ink describe (UAT case, empty lbuffer, typed=lbuffer); UAT + typed=lbuffer fail on the FILTER line (lbuffer seed), empty-lbuffer passes; RED_EVIDENCE_OK | tests/candidate-select-layout.test.tsx | RED confirmed | ~3000 |
