@@ -3,7 +3,13 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
-import { buildClaudeCliArgv, fetchClaudeCliCandidates } from '../src/providers/claude-cli.js';
+import {
+  buildClaudeCliArgv,
+  fetchClaudeCliCandidates,
+  PREWARM_BOOT_ALLOWANCE_MS,
+  WARM_INIT_DEADLINE_MS,
+  warmInitDeadlineMs,
+} from '../src/providers/claude-cli.js';
 import type { PrewarmSpec, PrewarmTake } from '../src/providers/claude-prewarm.js';
 import type { ClaudeChild, ClaudeTurnOptions } from '../src/providers/claude-process.js';
 import { abortError, isAbortError } from '../src/providers/provider.js';
@@ -84,6 +90,19 @@ function isErrorFailure(): Error {
   });
 }
 
+/** The runner's failure shape for a warm child that sent no `init` in time (WR-02). */
+function stalePrewarm(): Error {
+  return Object.assign(new Error('Command failed: claude'), {
+    code: null,
+    killed: false,
+    signal: null,
+    stdout: '',
+    stderr: '',
+    reason: 'stale-prewarm',
+    sawInit: false,
+  });
+}
+
 function timeoutFailure(): Error {
   return Object.assign(new Error('Command timed out: claude'), {
     killed: true,
@@ -126,7 +145,8 @@ beforeEach(() => {
   appendDebugLogMock.mockClear();
   takePrewarmedMock.mockImplementation(() => {
     order.push('take');
-    return { child: FAKE_CHILD };
+    // Spawned long ago: a fully booted idle child.
+    return { child: FAKE_CHILD, spawnedAt: 0 };
   });
   schedulePrewarmMock.mockImplementation(() => {
     order.push('schedule');
@@ -228,6 +248,46 @@ describe('claude -p prewarm selection (D-11, D-12, D-13)', () => {
     expect(runOptions(1).budgetMs).toBeGreaterThan(0);
     expect(runOptions(1).budgetMs).toBeLessThanOrEqual(25_000);
     expect(providerLog('prewarm retry cold')).not.toBeNull();
+  });
+
+  it('gives a warm turn an init deadline and a cold turn none (WR-02)', async () => {
+    runTurns(
+      async () => {
+        throw exitWithoutResult();
+      },
+      async () => CANDIDATE_JSON,
+    );
+
+    await fetchClaudeCliCandidates(buildEnvelope(), 25_000);
+
+    expect(runOptions(0).initDeadlineMs).toBe(WARM_INIT_DEADLINE_MS);
+    expect(runOptions(1).initDeadlineMs).toBeUndefined();
+  });
+
+  it('retries a warm stale-prewarm (no init in time) once cold within the remaining budget', async () => {
+    runTurns(
+      async () => {
+        throw stalePrewarm();
+      },
+      async () => CANDIDATE_JSON,
+    );
+
+    const result = await fetchClaudeCliCandidates(buildEnvelope(), 25_000);
+
+    expect(result).toEqual([{ command: 'git status', explanation: 'Show repo status' }]);
+    expect(order).toEqual(['take', 'run warm', 'run cold', 'schedule']);
+    expect(runOptions(1).child).toBeUndefined();
+    expect(runOptions(1).budgetMs).toBeGreaterThan(0);
+    expect(providerLog('prewarm retry cold')).not.toBeNull();
+  });
+
+  it('allows a child taken while it may still be booting the rest of the boot allowance', () => {
+    const now = 1_000_000;
+    expect(warmInitDeadlineMs(now, now)).toBe(WARM_INIT_DEADLINE_MS + PREWARM_BOOT_ALLOWANCE_MS);
+    expect(warmInitDeadlineMs(now - 1000, now)).toBe(
+      WARM_INIT_DEADLINE_MS + PREWARM_BOOT_ALLOWANCE_MS - 1000,
+    );
+    expect(warmInitDeadlineMs(now - 60_000, now)).toBe(WARM_INIT_DEADLINE_MS);
   });
 
   it('does not retry an exit-without-result after a candidate was streamed', async () => {

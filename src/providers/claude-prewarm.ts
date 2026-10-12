@@ -32,7 +32,8 @@ export interface PrewarmSpec {
 
 export type PrewarmMissReason = 'disabled' | 'empty' | 'dead' | 'cwd' | 'prompt';
 
-export type PrewarmTake = { child: ClaudeChild } | { miss: PrewarmMissReason };
+/** A hit carries the child's spawn time, so the caller can allow a still-booting child more time. */
+export type PrewarmTake = { child: ClaudeChild; spawnedAt: number } | { miss: PrewarmMissReason };
 
 export interface PrewarmSnapshot {
   enabled: boolean;
@@ -47,6 +48,7 @@ interface SlotEntry {
   cwd: string;
   key: string;
   state: EntryState;
+  spawnedAt: number;
 }
 
 let enabled = false;
@@ -137,7 +139,7 @@ export function schedulePrewarm(spec: PrewarmSpec): void {
     return;
   }
 
-  const entry: SlotEntry = { child, cwd: spec.cwd, key, state: 'idle' };
+  const entry: SlotEntry = { child, cwd: spec.cwd, key, state: 'idle', spawnedAt: Date.now() };
   slot = entry;
 
   // An unhandled `error` event would crash the daemon. Neither handler respawns.
@@ -204,7 +206,7 @@ export function takePrewarmed(spec: PrewarmSpec): PrewarmTake {
   }
   slot = undefined;
   entry.state = 'taken';
-  return { child: entry.child };
+  return { child: entry.child, spawnedAt: entry.spawnedAt };
 }
 
 /**

@@ -2763,3 +2763,4 @@
 | 02:18 | Edited tests/daemon-fetch.test.ts | added optional chaining | ~858 |
 | 02:19 | Created ../../../../tmp/rf091/wolf.py | — | ~529 |
 | 02:20 | Fixed 09.1 WR-01: daemon socket setEncoding utf8 + byte-measured 256 KB cap; 2 regression tests | src/daemon/server.ts, tests/daemon-fetch.test.ts | fixed | ~3k |
+| 02:25 | Fixed 09.1 WR-02: warm init deadline (stale-prewarm) + cold retry; fixture hang-before-init; tests | src/providers/claude-{process,cli,prewarm}.ts, tests | fixed | ~6k |

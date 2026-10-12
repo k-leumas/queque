@@ -16,6 +16,27 @@ import { buildSystemPrompt } from './steering.js';
 
 const CLI_BUDGET_MS = 25_000;
 
+/**
+ * How long a prewarmed child may take from the user-line write to `init` before it counts
+ * as stale and the turn is retried cold (WR-02). A healthy idle child answers in 29-52 ms
+ * (RESEARCH Probe 5); a stall after a long idle or laptop sleep otherwise uses the whole
+ * 25 s budget and ends as a timeout, which is never retried.
+ */
+export const WARM_INIT_DEADLINE_MS = 1500;
+
+/**
+ * Extra init time for a child taken while it may still be booting: cold boot to `init` is
+ * 954-1003 ms even at load 6 (RESEARCH). A child younger than this gets the rest of it on
+ * top of WARM_INIT_DEADLINE_MS, so a healthy fresh prewarm is never cut off.
+ */
+export const PREWARM_BOOT_ALLOWANCE_MS = 3000;
+
+/** The init deadline for a prewarmed child spawned at `spawnedAt`. */
+export function warmInitDeadlineMs(spawnedAt: number, now: number = Date.now()): number {
+  const ageMs = Math.max(0, now - spawnedAt);
+  return WARM_INIT_DEADLINE_MS + Math.max(0, PREWARM_BOOT_ALLOWANCE_MS - ageMs);
+}
+
 /** The Claude Code binary, resolved on PATH. */
 export const CLAUDE_COMMAND = 'claude';
 
@@ -58,9 +79,11 @@ export function buildClaudeCliArgv(envelope: ContextEnvelope): string[] {
  * streamed (already validated) rows; only when nothing streamed, parseCandidates' fallback.
  *
  * Prewarm (D-11, D-12, D-13): the turn runs on the pool's idle child when its cwd and argv
- * match this query, otherwise cold. A warm turn whose child ended without a `result` and
- * streamed no row is retried once cold within the remaining budget (a stale prewarm after
- * a long idle or laptop sleep, RESEARCH A3); is_error, timeout and abort never are. Once
+ * match this query, otherwise cold. A warm turn whose child ended without a `result`, or
+ * sent no `init` within warmInitDeadlineMs, and streamed no row is retried once cold within
+ * the remaining budget (a stale prewarm after a long idle or laptop sleep, RESEARCH A3);
+ * is_error, timeout and abort never are. A warm child that stalls after `init` (a request
+ * stuck on a dead connection) is not detected and still ends as a timeout. Once
  * the last attempt settled, the slot is refilled for this query's cwd and argv, so the
  * next boot does not compete with the turn. The pool is only enabled in the daemon.
  */
@@ -95,7 +118,11 @@ export async function fetchClaudeCliCandidates(
         })
       : undefined;
 
-  const runTurn = (child: ClaudeChild | undefined, budgetMs: number): Promise<string> =>
+  const runTurn = (
+    child: ClaudeChild | undefined,
+    budgetMs: number,
+    initDeadlineMs?: number,
+  ): Promise<string> =>
     runClaudeTurn({
       command: spec.command,
       argv: spec.argv,
@@ -109,6 +136,7 @@ export async function fetchClaudeCliCandidates(
         logTurnStage(stage, detail, Date.now() - startedAt, child !== undefined);
       },
       ...(child ? { child } : {}),
+      ...(initDeadlineMs === undefined ? {} : { initDeadlineMs }),
     });
 
   try {
@@ -117,7 +145,7 @@ export async function fetchClaudeCliCandidates(
     if ('child' in take) {
       void appendDebugLog('provider', 'prewarm hit');
       try {
-        text = await runTurn(take.child, remainingBudgetMs);
+        text = await runTurn(take.child, remainingBudgetMs, warmInitDeadlineMs(take.spawnedAt));
       } catch (error) {
         const leftMs = deadline - Date.now();
         if (
@@ -145,13 +173,16 @@ export async function fetchClaudeCliCandidates(
   }
 }
 
-/** A warm child that ended without a `result` (died before init, or no result line). */
+/**
+ * A warm child that ended without a `result` (died before init, or no result line), or one
+ * that sent no `init` within its deadline (`stale-prewarm`, WR-02).
+ */
 function isStalePrewarmFailure(error: unknown): boolean {
-  return (
-    error !== null &&
-    typeof error === 'object' &&
-    (error as { reason?: unknown }).reason === 'exit-without-result'
-  );
+  if (error === null || typeof error !== 'object') {
+    return false;
+  }
+  const reason = (error as { reason?: unknown }).reason;
+  return reason === 'exit-without-result' || reason === 'stale-prewarm';
 }
 
 const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
@@ -162,6 +193,7 @@ const STAGE_LOG_NAMES: Record<ClaudeTurnStage, string> = {
   exit: 'cli exit',
   aborted: 'cli aborted',
   'timed-out': 'cli timed out',
+  'init-timed-out': 'cli init timed out',
 };
 
 /**

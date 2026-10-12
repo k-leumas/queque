@@ -382,6 +382,56 @@ describe('runClaudeTurn on a prewarmed child', () => {
     expect(stages).toEqual([]);
   });
 
+  it('fails a child with no init within initDeadlineMs as stale-prewarm and terminates it', async () => {
+    const child = idleChild('hang-before-init');
+    const exited = new Promise((resolve) => {
+      child.once('exit', resolve);
+    });
+    await new Promise((resolve) => setTimeout(resolve, 300));
+
+    const { promise, stages } = startTurn('hang-before-init', {
+      child,
+      budgetMs: 60_000,
+      initDeadlineMs: 400,
+    });
+    const error = (await promise.catch((caught: unknown) => caught)) as ClaudeTurnFailure;
+
+    expect(error.reason).toBe('stale-prewarm');
+    expect(error.sawInit).toBe(false);
+    expect(error.killed).toBe(false);
+    expect(stageNames(stages)).toEqual(['init-timed-out']);
+    await exited;
+    expect(child.signalCode).toBe('SIGTERM');
+  });
+
+  it('never fires the init deadline once init has arrived, however long the turn runs', async () => {
+    // sigterm-slow streams deltas for 10 s after init; the turn outlives the deadline.
+    const child = idleChild('sigterm-slow');
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    const controller = new AbortController();
+    let sawInit: () => void = () => {};
+    const initSeen = new Promise<void>((resolve) => {
+      sawInit = resolve;
+    });
+
+    const { promise, stages } = startTurn(
+      'sigterm-slow',
+      { child, signal: controller.signal, initDeadlineMs: 2000 },
+      (stage) => {
+        if (stage === 'init') {
+          sawInit();
+        }
+      },
+    );
+    await initSeen;
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    controller.abort();
+    const error = await promise.catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
+    expect(stageNames(stages)).not.toContain('init-timed-out');
+  });
+
   it('terminates the child and rejects with an AbortError when the signal is already aborted', async () => {
     const child = idleChild('success');
     const exited = new Promise((resolve) => {

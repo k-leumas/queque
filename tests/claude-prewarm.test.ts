@@ -159,6 +159,7 @@ describe('prewarm pool enabled', () => {
 
     const take = takePrewarmed(spec());
     expect('child' in take && take.child.pid).toBe(pid);
+    expect('spawnedAt' in take && typeof take.spawnedAt).toBe('number');
     expect(prewarmSnapshot()).toEqual({ enabled: true, state: 'empty' });
   });
 

@@ -44,7 +44,8 @@ export type ClaudeTurnStage =
   | 'result'
   | 'exit'
   | 'aborted'
-  | 'timed-out';
+  | 'timed-out'
+  | 'init-timed-out';
 
 export interface ClaudeTurnStageDetail {
   pid?: number;
@@ -57,7 +58,8 @@ export type ClaudeTurnFailureReason =
   | 'exit-without-result'
   | 'timeout'
   | 'spawn-error'
-  | 'invalid-result';
+  | 'invalid-result'
+  | 'stale-prewarm';
 
 /** Same fields as the old claude-exec SpawnFailure, so claude-default maps it unchanged. */
 export interface ClaudeTurnFailure extends Error {
@@ -84,6 +86,13 @@ export interface ClaudeTurnOptions {
   backstopMs?: number;
   /** SIGTERM → SIGKILL grace for every kill this turn makes. */
   killGraceMs?: number;
+  /**
+   * When set, a child that has not sent `init` this long after the user line was written is
+   * terminated and the turn fails as `stale-prewarm`. Meant for a prewarmed child, whose
+   * write → init is 29-52 ms when healthy (RESEARCH Probe 5): one that stalls instead
+   * (after a long idle or laptop sleep) is then retried cold within the budget.
+   */
+  initDeadlineMs?: number;
   /**
    * An idle prewarmed child (claude-prewarm.ts) to run the turn on instead of spawning
    * one; `command`, `argv` and `cwd` are then only what it was spawned with (D-11).
@@ -166,7 +175,8 @@ export function terminateChild(child: ChildProcess, graceMs: number = SIGKILL_GR
  * Rejects with abortError() on abort, a `timeout` failure past `budgetMs` (at kill time,
  * not at exit), an `is-error` failure carrying the result text as `stdout` (the auth
  * message, so it never reaches parseCandidates), a `spawn-error` (ENOENT), an
- * `invalid-result` (also a stdout line past the carry cap), or `exit-without-result`.
+ * `invalid-result` (also a stdout line past the carry cap), `exit-without-result`, or
+ * `stale-prewarm` (no `init` within `initDeadlineMs` of the write).
  * The turn settles exactly once: nothing the child writes after it settles reaches
  * `onTextDelta` or `onStage`, except the final `exit` stage, and a later kill, `exit` or
  * `close` never re-settles it.
@@ -215,6 +225,7 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
     let stderr = '';
     let stderrBytes = 0;
     let budgetTimer: ReturnType<typeof setTimeout> | undefined;
+    let initTimer: ReturnType<typeof setTimeout> | undefined;
     let backstopArmed = false;
 
     const child = prewarmed ?? spawnClaudeChild(command, argv, cwd, env);
@@ -289,6 +300,9 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
       if (budgetTimer) {
         clearTimeout(budgetTimer);
       }
+      if (initTimer) {
+        clearTimeout(initTimer);
+      }
       signal?.removeEventListener('abort', onAbort);
       callback();
     }
@@ -300,6 +314,9 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
       if (isInitEvent(event)) {
         if (!sawInit) {
           sawInit = true;
+          if (initTimer) {
+            clearTimeout(initTimer);
+          }
           onStage?.('init');
         }
         return;
@@ -393,6 +410,30 @@ export function runClaudeTurn(options: ClaudeTurnOptions): Promise<string> {
       finish(() => reject(timeoutFailure(stderr, sawInit)));
     }, budgetMs);
     budgetTimer.unref();
+
+    if (options.initDeadlineMs !== undefined) {
+      const initDeadlineMs = options.initDeadlineMs;
+      initTimer = setTimeout(() => {
+        if (settled || sawInit) {
+          return;
+        }
+        onStage?.('init-timed-out');
+        terminateChild(child, killGraceMs);
+        // `killed: false`: this is not the budget timeout, and the caller retries it cold.
+        finish(() =>
+          reject(
+            turnFailure('Command failed: claude', 'stale-prewarm', false, {
+              code: null,
+              killed: false,
+              signal: null,
+              stdout: '',
+              stderr,
+            }),
+          ),
+        );
+      }, initDeadlineMs);
+      initTimer.unref();
+    }
 
     signal?.addEventListener('abort', onAbort, { once: true });
 

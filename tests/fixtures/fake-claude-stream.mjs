@@ -12,7 +12,8 @@
 //
 // Scenarios: success, auth, sigterm-slow (plan 01); hang-after-result, exit-no-result,
 // die-before-init, stderr-flood, stdout-flood (plan 06, failure paths); ignore-eof
-// (plan 05, prewarm retire backstop: ignores stdin EOF and SIGTERM, only SIGKILL ends it).
+// (plan 05, prewarm retire backstop: ignores stdin EOF and SIGTERM, only SIGKILL ends it);
+// hang-before-init (review WR-02: a stale prewarm that stalls before `init`).
 // New scenarios slot into SCENARIOS without touching the existing ones.
 import { writeFileSync } from 'node:fs';
 
@@ -218,6 +219,12 @@ const SCENARIOS = {
   async 'die-before-init'() {
     // Dies straight after reading the stdin line, before any stdout.
     process.exit(1);
+  },
+
+  async 'hang-before-init'() {
+    // A stale prewarm (WR-02): reads the stdin line, then never writes `init` or exits on
+    // its own. Default SIGTERM handling, so the runner's terminate ends it.
+    waitForSignal();
   },
 
   async 'stderr-flood'() {

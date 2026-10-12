@@ -5265,6 +5265,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-12T08:20:22.007741Z"
+    },
+    {
+      "id": "bug-323",
+      "timestamp": "2026-10-12T08:25:08.750674Z",
+      "error_message": "A prewarmed claude -p child that hangs before init (stale after laptop sleep/long idle) used the whole 25 s budget and ended as 'Claude timed out' with no cold retry (09.1 WR-02)",
+      "file": "src/providers/claude-cli.ts",
+      "root_cause": "The cold retry only ran for reason exit-without-result; nothing bounded the write -> init time of a warm child (29-52 ms when healthy), so a stall surfaced only as the never-retried budget timeout.",
+      "fix": "runClaudeTurn takes initDeadlineMs and fails as 'stale-prewarm' (terminates the child) when no init arrives in time; claude-cli passes 1500 ms (+ the rest of a 3000 ms boot allowance for a freshly spawned child, via spawnedAt from takePrewarmed) on warm turns and retries stale-prewarm cold. A stall after init is still not detected.",
+      "tags": [
+        "prewarm",
+        "claude-cli",
+        "timeout",
+        "retry",
+        "review-fix",
+        "09.1"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-12T08:25:08.750674Z"
     }
   ]
 }
