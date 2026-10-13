@@ -2895,3 +2895,17 @@
 | 17:14 | quick 261012-nlf T2: claude -p result stop_reason gate, 'truncated' runner failure + 4 fixture scenarios (WR-01-r2) | stream-json.ts, claude-process.ts, fake-claude-stream.mjs, claude-process.test.ts | 33/33 green | ~10k |
 | 17:17 | quick 261012-nlf T3: claude -p adapter keeps closed rows or throws truncation copy; claude-default pass-through; WR-01-r2 fixed (open 5), bug-331 | claude-cli.ts, claude-default.ts, claude-cli-*.test.ts, 09.1-REVIEW-DISPOSITION.md | 122/122 green | ~15k |
 | 16:56 | 09.1 UAT re-test passed; secure-phase: 31/32 closed, T-09.1-14 (SDK refusal fail-closed) open — user chose fix; ledger WR-01/02 IDs split | 09.1-SECURITY.md | blocked | ~25k |
+| 17:20 | Session end: 126 writes across 44 files (modal-filter-prefilled-with-query.md, zz-scratch-g0915.test.tsx, 09.1-09-PLAN.md, ROADMAP.md, gsd-pin-0911-09.sh) | 65 reads | ~338888 tok |
+
+## Session: 2026-10-13 23:42
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:47 | secure-phase 09.1 re-audit: T-09.1-14 closed, threats_open 0, status verified | .planning/phases/09.1-*/09.1-SECURITY.md | committed f1c3448 | ~25k |
+
+## Session: 2026-10-13 12:14
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 12:40 | Created .planning/phases/09.1-provider-latency-and-cancellation/09.1-VERIFICATION.md | — | ~6864 |
+| 12:42 | closed phase 09.1: re-verified (36/36), nyquist validated, UAT 8/11 deferred as todos, phase.complete | .planning/phases/09.1-*, ROADMAP, STATE | done | ~40k |

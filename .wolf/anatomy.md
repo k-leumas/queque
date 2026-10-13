@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-12T22:15:10.648Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-13T18:40:27.580Z
 > Files: 530 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -780,7 +780,7 @@
 - `09.1-REVIEW-FIX.md` — Phase 09.1: Code Review Fix Report (~2739 tok)
 - `09.1-REVIEW.md` — Phase 09.1: Code Review Report (~3339 tok)
 - `09.1-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2166 tok)
-- `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6771 tok)
+- `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6435 tok)
 - `COVERAGE.md` — API Coverage — Anthropic Messages API (TS SDK 0.92.0) and Claude Code print mode (2.1.285) (~681 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
