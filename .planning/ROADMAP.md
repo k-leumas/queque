@@ -313,7 +313,7 @@ Plans:
 **Out of scope:** Switching models (Haiku-class), the API-key SDK path's `.env.local` cwd bug, and prompt caching (~0 gain, measured).
 **Requirements**: TBD (no REQ IDs mapped; coverage target is 09.1-CONTEXT.md D-01..D-17)
 **Depends on:** Phase 9
-**Plans:** 10/10 plans executed
+**Plans:** 10/10 plans complete
 
 Plans:
 **Wave 1**
