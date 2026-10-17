@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-13T18:40:27.580Z
-> Files: 530 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T08:07:57.676Z
+> Files: 531 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -116,6 +116,7 @@
 - `feedback_no_autocommit.md` (~146 tok)
 - `feedback_no_coauthored.md` (~148 tok)
 - `feedback_no_stub_in_smoke_tests.md` (~267 tok)
+- `feedback_rebase_wolf_conflicts.md` (~225 tok)
 - `feedback_terminology.md` (~163 tok)
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
