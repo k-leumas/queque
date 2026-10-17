@@ -5,8 +5,10 @@ import { PassThrough, Writable } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   dispatchInit,
+  OLLAMA_DOWNLOAD_URL,
   type PickerDeps,
   PROVIDER_MENU,
+  providerInitCommand,
   runProviderPicker,
 } from '../src/cli/commands/init-provider.js';
 import { listOllamaModels } from '../src/providers/ollama.js';
@@ -16,12 +18,27 @@ import { clearContextProviders } from '../src/registry/context-providers.js';
 import { clearProviderBackends, getProviderAdapter } from '../src/registry/provider-backends.js';
 import { clearShellAdapters } from '../src/registry/shell-adapters.js';
 import { clearStorageHooks } from '../src/registry/storage-hooks.js';
+import { socketPath } from '../src/shared/socket-path.js';
 
 // Never import src/cli/main.ts here: it installs process-level handlers that call process.exit.
 
 const { readEnvValueMock } = vi.hoisted(() => ({
   readEnvValueMock: vi.fn((_key: string): string | null => null),
 }));
+
+// /dev/tty is never opened for real: under a developer's terminal the picker would block on it.
+vi.mock('node:fs', async (importOriginal) => {
+  const original = await importOriginal<typeof import('node:fs')>();
+  return {
+    ...original,
+    openSync: vi.fn((path: fs.PathLike, ...rest: unknown[]) => {
+      if (path === '/dev/tty') {
+        throw Object.assign(new Error('ENXIO: no such device or address'), { code: 'ENXIO' });
+      }
+      return (original.openSync as (...args: unknown[]) => number)(path, ...rest);
+    }),
+  };
+});
 
 vi.mock('../src/shared/debug-log.js', () => ({
   appendDebugLog: vi.fn().mockResolvedValue(undefined),
@@ -59,13 +76,26 @@ function stubTags(names: string[]): ReturnType<typeof vi.fn> {
   return fetchMock;
 }
 
+type RestartMock = ReturnType<typeof vi.fn<(socketPath: string) => Promise<void>>>;
+type OpenUrlMock = ReturnType<typeof vi.fn<(url: string) => void>>;
+
 interface PickerRun {
   code: number;
   output: string;
+  restartDaemon: RestartMock;
+  openUrl: OpenUrlMock;
 }
 
-/** Drives the picker with one line per answer, then ends the input. */
-async function runPicker(answers: string[], deps: Partial<PickerDeps> = {}): Promise<PickerRun> {
+/**
+ * Drives the picker with one line per answer, then ends the input. restartDaemon and openUrl
+ * are always mocked so no test can signal the developer's real daemon or open a browser.
+ */
+async function runPicker(
+  answers: string[],
+  deps: Partial<PickerDeps> & { restartDaemon?: RestartMock } = {},
+): Promise<PickerRun> {
+  const restartDaemon: RestartMock = deps.restartDaemon ?? vi.fn(async () => undefined);
+  const openUrl: OpenUrlMock = vi.fn(() => undefined);
   const input = new PassThrough();
   const chunks: string[] = [];
   const output = new Writable({
@@ -78,8 +108,8 @@ async function runPicker(answers: string[], deps: Partial<PickerDeps> = {}): Pro
     input.write(`${answer}\n`);
   }
   input.end();
-  const code = await runProviderPicker({ input, output }, deps);
-  return { code, output: chunks.join('') };
+  const code = await runProviderPicker({ input, output }, { openUrl, ...deps, restartDaemon });
+  return { code, output: chunks.join(''), restartDaemon, openUrl };
 }
 
 function readPin(): unknown {
@@ -273,5 +303,217 @@ describe('dispatchInit()', () => {
     await dispatchInit('zsh', { provider, shell });
     expect(shell).toHaveBeenCalledWith('zsh');
     expect(provider).not.toHaveBeenCalled();
+  });
+});
+
+describe('picker failure paths (nothing written)', () => {
+  it('OpenAI without a usable key exits 1 with export guidance', async () => {
+    const { code, output, restartDaemon } = await runPicker(['2']);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output).toContain('OPENAI_API_KEY');
+    expect(output).toContain('export');
+    expect(restartDaemon).not.toHaveBeenCalled();
+  });
+
+  it('Ollama unreachable prints the download URL and ollama serve; Enter does not open it', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('fetch failed');
+      }),
+    );
+
+    const { code, output, openUrl } = await runPicker(['3', '']);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output).toContain('https://ollama.com/download');
+    expect(output).toContain('ollama serve');
+    expect(output).toContain('[y/N]');
+    expect(openUrl).not.toHaveBeenCalled();
+  });
+
+  it.each(['y', 'YES'])('Ollama unreachable with %s opens only the download URL', async (yes) => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('fetch failed');
+      }),
+    );
+
+    const { code, openUrl } = await runPicker(['3', yes]);
+
+    expect(code).toBe(1);
+    expect(openUrl).toHaveBeenCalledTimes(1);
+    expect(openUrl).toHaveBeenCalledWith(OLLAMA_DOWNLOAD_URL);
+    expect(OLLAMA_DOWNLOAD_URL).toBe('https://ollama.com/download');
+    expect(fs.existsSync(pinFile)).toBe(false);
+  });
+
+  it('Ollama answering HTTP 500 is treated as not answering', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => new Response('boom', { status: 500 })),
+    );
+
+    const { code, output, openUrl } = await runPicker(['3', 'n']);
+
+    expect(code).toBe(1);
+    expect(output).toContain('ollama serve');
+    expect(openUrl).not.toHaveBeenCalled();
+    expect(fs.existsSync(pinFile)).toBe(false);
+  });
+
+  it('Ollama with zero models prints ollama pull guidance', async () => {
+    stubTags([]);
+
+    const { code, output, restartDaemon } = await runPicker(['3']);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output).toContain('ollama pull');
+    expect(restartDaemon).not.toHaveBeenCalled();
+  });
+
+  it('three invalid menu answers exit 1 without writing', async () => {
+    const { code, output } = await runPicker(['x', '9', 'abc']);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output.includes('Choose 1, 2, or 3.')).toBe(true);
+    expect(output).toContain('No changes made');
+  });
+
+  it('an invalid menu answer re-asks and a valid retry still saves', async () => {
+    const { code, output } = await runPicker(['x', '1']);
+
+    expect(code).toBe(0);
+    expect(output.includes('Choose 1, 2, or 3.')).toBe(true);
+    expect(readPin()).toEqual({ version: 1, provider: 'claude' });
+  });
+
+  it('three invalid model answers exit 1 without writing', async () => {
+    stubTags(['gemma4', 'qwen3']);
+
+    const { code, output } = await runPicker(['3', '0', '7', 'qwen3']);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output).toContain('No changes made');
+  });
+
+  it('input ending before an answer exits 1 without writing', async () => {
+    const { code, output } = await runPicker([]);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output).toContain('No changes made');
+  });
+
+  it('input ending at the model prompt exits 1 without writing', async () => {
+    stubTags(['gemma4']);
+
+    const { code, output } = await runPicker(['3']);
+
+    expect(code).toBe(1);
+    expect(fs.existsSync(pinFile)).toBe(false);
+    expect(output).toContain('No changes made');
+  });
+
+  it('an unwritable pin path exits 1 with the reason and does not restart', async () => {
+    fs.mkdirSync(pinFile, { recursive: true });
+
+    const { code, output, restartDaemon } = await runPicker(['']);
+
+    expect(code).toBe(1);
+    expect(output).toContain('Could not save');
+    expect(output).toContain('No changes made');
+    expect(restartDaemon).not.toHaveBeenCalled();
+  });
+});
+
+describe('daemon restart after a saved pin', () => {
+  it('restartDaemon is called once with socketPath() after a successful write', async () => {
+    const { code, output, restartDaemon } = await runPicker(['']);
+
+    expect(code).toBe(0);
+    expect(restartDaemon).toHaveBeenCalledTimes(1);
+    expect(restartDaemon).toHaveBeenCalledWith(socketPath());
+    expect(output).toContain('Restarted the QueQue daemon');
+  });
+
+  it('a failed restart keeps the pin, warns, and still exits 0', async () => {
+    const restartDaemon: RestartMock = vi.fn(async () => {
+      throw new Error('qq daemon did not restart within the expected window');
+    });
+
+    const { code, output } = await runPicker(['3', ''], {
+      restartDaemon,
+      listOllamaModels: async () => ({ ok: true, models: ['gemma4'] }),
+    });
+
+    expect(code).toBe(0);
+    expect(restartDaemon).toHaveBeenCalledTimes(1);
+    expect(readPin()).toEqual({ version: 1, provider: 'ollama', model: 'gemma4' });
+    expect(output).toContain('could not restart');
+    expect(output).toContain('did not restart within the expected window');
+  });
+});
+
+describe('re-running the picker (D-15)', () => {
+  it('shows the current ollama pin', async () => {
+    writeProviderPin({ version: 1, provider: 'ollama', model: 'gemma4' });
+
+    const { output } = await runPicker(['']);
+
+    expect(output).toContain('Current: ollama (gemma4)');
+    expect(readPin()).toEqual({ version: 1, provider: 'claude' });
+  });
+
+  it('says an invalid file is invalid and replaces it', async () => {
+    fs.mkdirSync(join(pinDir, 'qq'), { recursive: true });
+    fs.writeFileSync(pinFile, '{"version":1,"provider":"openai","apiKey":"sk-x"}');
+
+    const { code, output } = await runPicker(['']);
+
+    expect(code).toBe(0);
+    expect(output).toContain('invalid');
+    expect(output).not.toContain('sk-x');
+    expect(readPin()).toEqual({ version: 1, provider: 'claude' });
+  });
+});
+
+describe('providerInitCommand()', () => {
+  it('without /dev/tty exits 1 with a one-line stderr error and writes nothing', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const stdoutWrite = vi.spyOn(process.stdout, 'write');
+    const previous = process.exitCode;
+    let exitCode: typeof process.exitCode;
+    try {
+      await providerInitCommand();
+      exitCode = process.exitCode;
+    } finally {
+      process.exitCode = previous;
+    }
+
+    expect(exitCode).toBe(1);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(String(errorSpy.mock.calls[0]?.[0])).toContain('interactive terminal');
+    expect(stdoutWrite).not.toHaveBeenCalled();
+    expect(fs.existsSync(pinFile)).toBe(false);
+  });
+});
+
+describe('D-03 / D-05 source guards', () => {
+  it.each([
+    'src/client/run-foreground.ts',
+    'src/daemon/server.ts',
+    'src/daemon/fetch-client.ts',
+    'src/cli/commands/init.ts',
+  ])('%s never references init-provider', (file) => {
+    const source = fs.readFileSync(join(process.cwd(), file), 'utf8');
+    expect(/init-provider/.test(source)).toBe(false);
   });
 });

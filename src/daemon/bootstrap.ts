@@ -201,6 +201,11 @@ function spawnDaemon(socketPath: string): void {
   child.unref();
 }
 
+/** RED stub (08-05 Task 2): replaced by the real restart in GREEN. */
+export async function restartDaemon(_socketPath: string): Promise<void> {
+  throw new Error('restartDaemon: not implemented');
+}
+
 /**
  * Ensures a qq daemon is running at `socketPath`.
  *

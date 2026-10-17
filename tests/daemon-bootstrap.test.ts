@@ -234,6 +234,72 @@ describe('daemon bootstrap', () => {
     // spawn must have been called (stale socket → unlink → spawn)
     expect(spawnFn).toHaveBeenCalledTimes(1);
   });
+
+  it('restartDaemon replaces a current daemon and spawns once', async () => {
+    // A fully current daemon (ensureDaemon would keep it) is still replaced, so the new
+    // daemon inherits the caller's environment (`qq init provider` after an export).
+    const currentServer = net.createServer((socket) => {
+      socket.on('data', (chunk) => {
+        if (chunk.toString().includes('"ping"')) {
+          socket.write(
+            `${JSON.stringify({
+              kind: 'pong',
+              fetchCandidates: true,
+              installedTools: true,
+              streamCandidates: true,
+            })}\n`,
+          );
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      currentServer.listen(socketPath, () => resolve());
+      currentServer.once('error', reject);
+    });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { restartDaemon } = await import('../src/daemon/bootstrap.js');
+
+    try {
+      await expect(restartDaemon(socketPath)).resolves.toBeUndefined();
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+    } finally {
+      currentServer.close();
+      currentServer.unref();
+    }
+  });
+
+  it('restartDaemon starts a daemon when none is running', async () => {
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { restartDaemon } = await import('../src/daemon/bootstrap.js');
+
+    await expect(restartDaemon(socketPath)).resolves.toBeUndefined();
+    expect(spawnFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('restartDaemon rejects when the new daemon never listens', async () => {
+    const { restartDaemon } = await import('../src/daemon/bootstrap.js');
+
+    await expect(restartDaemon(socketPath)).rejects.toThrow(/did not restart/);
+    expect(spawnFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('restartDaemon rejects an unsafe socket path', async () => {
+    const { restartDaemon } = await import('../src/daemon/bootstrap.js');
+
+    await expect(restartDaemon('/etc/qq.sock')).rejects.toThrow(/unsafe socket path/);
+    expect(spawnFn).not.toHaveBeenCalled();
+  });
 });
 
 describe('daemon server', () => {

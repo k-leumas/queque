@@ -3,6 +3,7 @@ import { createInterface } from 'node:readline';
 import type { Readable, Writable } from 'node:stream';
 import * as tty from 'node:tty';
 
+import { restartDaemon } from '../../daemon/bootstrap.js';
 import { listOllamaModels, type OllamaModelList } from '../../providers/ollama.js';
 import {
   loadProviderPin,
@@ -39,6 +40,10 @@ export interface PickerIo {
 }
 
 export interface PickerDeps {
+  /** Opens a URL in the browser; only ever called with OLLAMA_DOWNLOAD_URL after a y. */
+  openUrl: (url: string) => void;
+  /** Restarts the qq daemon so it inherits this process's environment. */
+  restartDaemon: (socketPath: string) => Promise<void>;
   /** Lists local Ollama models (one GET /api/tags, 2s budget). */
   listOllamaModels: () => Promise<OllamaModelList>;
 }
@@ -49,7 +54,13 @@ const CLAUDE_AUTH_HINT =
 const OPENAI_KEY_MISSING =
   'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to ~/.zshrc (before the queque source line) or put it in .env.local, open a new terminal, and run `qq init provider` again.';
 
+export const OLLAMA_DOWNLOAD_URL = 'https://ollama.com/download';
+
 const defaultDeps: PickerDeps = {
+  openUrl: () => {
+    throw new Error('openUrl: not implemented');
+  },
+  restartDaemon,
   listOllamaModels: () => listOllamaModels(),
 };
 
