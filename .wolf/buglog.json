@@ -5587,6 +5587,215 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-17T17:59:08.156Z"
+    },
+    {
+      "id": "bug-340",
+      "timestamp": "2026-10-17T18:16:20.960Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a9b01c9dbe2615f0c/tests/daemon-fetch.test.ts",
+      "root_cause": "Had '../src/providers/provider.js'",
+      "fix": "Changed to '../src/providers/openai.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:16:20.960Z"
+    },
+    {
+      "id": "bug-341",
+      "timestamp": "2026-10-17T18:16:26.639Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a9b01c9dbe2615f0c/tests/daemon-fetch.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:16:26.639Z"
+    },
+    {
+      "id": "bug-342",
+      "timestamp": "2026-10-17T18:16:32.696Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a9b01c9dbe2615f0c/tests/daemon-fetch.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:16:32.696Z"
+    },
+    {
+      "id": "bug-343",
+      "timestamp": "2026-10-17T18:16:37.639Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a9b01c9dbe2615f0c/tests/registry-bootstrap.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:16:37.639Z"
+    },
+    {
+      "id": "bug-344",
+      "timestamp": "2026-10-17T18:19:29.776Z",
+      "error_message": "Missing error handling in listableModelName",
+      "file": ".claude/worktrees/agent-aaec1b0e4d2a327d4/src/providers/ollama.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:19:29.776Z"
+    },
+    {
+      "id": "bug-345",
+      "timestamp": "2026-10-17T18:22:35.393Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-aaec1b0e4d2a327d4/src/cli/main.ts",
+      "root_cause": "Had 'Print a source line for shell integration (`",
+      "fix": "Changed to 'Add shell integration to ~/.zshrc (`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:22:35.393Z"
+    },
+    {
+      "id": "bug-346",
+      "timestamp": "2026-10-17T18:36:45.829Z",
+      "error_message": "Missing error handling in errorName",
+      "file": ".claude/worktrees/agent-a9b01c9dbe2615f0c/src/providers/openai.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:36:45.829Z"
+    },
+    {
+      "id": "bug-347",
+      "timestamp": "2026-10-17T18:40:57.380Z",
+      "error_message": "Function not marked async",
+      "file": ".claude/worktrees/agent-aaec1b0e4d2a327d4/src/daemon/bootstrap.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:40:57.380Z"
+    },
+    {
+      "id": "bug-348",
+      "timestamp": "2026-10-17T18:43:34.575Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-aaec1b0e4d2a327d4/tests/daemon-bootstrap.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:43:34.575Z"
+    },
+    {
+      "id": "bug-349",
+      "timestamp": "2026-10-17T18:45:51.320Z",
+      "error_message": "Incorrect value in code",
+      "file": "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/red.sh",
+      "root_cause": "Had 'restartDaemon is called once with socketPath() af",
+      "fix": "Changed to 'restartDaemon is called once with socketPath\\(\\) ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:45:51.320Z"
+    },
+    {
+      "id": "bug-350",
+      "timestamp": "2026-10-17T18:47:22.268Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-aaec1b0e4d2a327d4/src/daemon/bootstrap.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T18:47:22.268Z"
+    },
+    {
+      "error_message": "[vitest] No \"restartDaemon\" export is defined on the \"../src/daemon/bootstrap.js\" mock",
+      "file": "src/cli/commands/init-provider.ts",
+      "root_cause": "main.ts imports init-provider whose defaultDeps read the restartDaemon import at module load; client-result.test.ts strict mock lacks that export",
+      "fix": "lazy wrapper restartDaemon: (path) => restartDaemon(path)",
+      "tags": [
+        "vitest",
+        "vi.mock",
+        "module-load",
+        "main.ts"
+      ],
+      "id": "bug-351",
+      "timestamp": "2026-10-17T20:30:00Z",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T20:30:00Z"
+    },
+    {
+      "error_message": "tdd-red-evidence invalid_record (0 failed, all # SKIP)",
+      "file": "tests/daemon-bootstrap.test.ts",
+      "root_cause": "vitest -t is a regex; '()' in the test name matched an empty group",
+      "fix": "escape parentheses in -t pattern",
+      "tags": [
+        "vitest",
+        "tdd",
+        "tap"
+      ],
+      "id": "bug-352",
+      "timestamp": "2026-10-17T20:30:00Z",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T20:30:00Z"
     }
   ]
 }

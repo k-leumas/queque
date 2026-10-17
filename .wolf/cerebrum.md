@@ -123,6 +123,15 @@
 - [2026-10-17] Since 09.1 the claude-cli path runs `runClaudeTurn` (claude-process.ts), not `execFileAsync`; "no Claude fallback" tests assert on the SDK mock and `runClaudeTurn`.
 - [2026-10-17] A fresh GSD worktree has no node_modules: run `pnpm install --frozen-lockfile --prefer-offline` before verifying.
 - [2026-10-17] Timing-budget suites (command-words-fuzz, zsh-widget handoff/prewarm, claude-prewarm, claude-process timeout) flake under high machine load (load avg 70+); rerun the file alone before treating a post-merge failure as real.
+- [2026-10-17] 08-04: OpenAI Chat Completions: send `developer` + `user` roles, never temperature/top_p/max_tokens (reasoning models reject them). Success is `choices[0].message.content` (null + `refusal` on refusal). 401 `error.message` echoes a masked key fragment: never surface upstream error text; keep only `error.code` matching `/^[a-z0-9_]{1,64}$/`.
+- [2026-10-17] Under heavy load, multi-file vitest runs fail with `[vitest-pool]: Timeout starting forks runner` before any test runs; rerun with `--maxWorkers=1`.
+- [2026-10-17] The worktree Bash guard refuses compound commands mixing `git` with heredocs or `cd`; run git commands alone.
+- [2026-10-17] 08-05: `readline/promises` `question()` drops lines that arrive before the prompt; use `createInterface({terminal:false})[Symbol.asyncIterator]()` for scripted/pasted answers.
+- [2026-10-17] Anything main.ts imports must not read cross-module bindings at module load (client-result.test.ts strictly mocks daemon/bootstrap.js); wrap defaults lazily `(p) => fn(p)`.
+- [2026-10-17] Picker/daemon tests must inject `restartDaemon`; the real one signals lsof listeners of `/tmp/qq-$UID.sock` and would kill the developer's running daemon.
+- [2026-10-17] Real-pty smoke for /dev/tty CLIs: `(sleep 1.5; printf '\n') | script -q /dev/null node dist/cli/main.js init provider` with QQ_PROVIDER_FILE in scratch.
+- [2026-10-17] Vitest `-t` is a regex: escape `()` in test names or every test is skipped (exit 0).
+- [2026-10-17] GSD `worktree.cleanup-wave` can report branch_mismatch/deletion_check_failed when worktree working dirs show stray unstaged deletions (.releaserc.json, CHANGELOG.md, pnpm-lock.yaml...); a re-run merged cleanly. Verify `git diff --diff-filter=D base..HEAD` is empty on main, then remove worktrees manually.
 
 ## Do-Not-Repeat
 - [2026-10-12] Do not fail closed on one bad enum value (the WR-07 check for `stop_reason === 'max_tokens'` only): a `refusal` or `pause_turn` fragment still reached the prose fallback (WR-01-r2, T-09.1-14). Use an allow list of the known-good values (end_turn, stop_sequence) so refusal, pause_turn, null and future values fail closed.
@@ -159,6 +168,7 @@
 - [2026-10-08] Vitest `--reporter=tap-flat` emits multi-line `toEqual` diffs unindented (malformed TAP), so gsd `tdd-red-evidence` returns `invalid_record` / "Non-TAP data". Pick a RED target whose assertion message is a single line (`toBe` on a scalar) and run it with `-t`.
 - [2026-10-10] Don't put per-selection status text (e.g. `not installed: fd`, `will install: fd`) in a conditional footer of CandidateSelect — it changes modal height on arrow keys (user-reported jump). The pre-existing destructive ⚠ footer is the only exception so far.
 - [2026-10-10] commitlint subject-case also rejects subjects starting with a review ID (`fix(09): CR-01 …`). Put the ID at the end: `fix(09): skip heredoc bodies … (CR-01)`.
+- [2026-10-17] Do not write `qq init zsh >> ~/.zshrc` in help or docs: initCommand appends to ~/.zshrc itself and prints a status line on stdout. Use `qq init zsh && source ~/.zshrc`.
 
 ## Decision Log
 

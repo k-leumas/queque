@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T18:03:35.920Z
-> Files: 551 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T19:08:24.250Z
+> Files: 571 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -23,7 +23,11 @@
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/
 
+- `accept.sh` — Declares runProviderPicker (~515 tok)
 - `mkred.py` (~218 tok)
+- `patch_tests.py` — Drives the picker with one line per answer, then ends the input. (~2895 tok)
+- `red.sh` — Captures RED evidence for 08-05 Task 2 and classifies it with gsd tdd-red-evidence. (~408 tok)
+- `rl.mjs` — Declares input (~182 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/
 
@@ -379,6 +383,20 @@
 
 - `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~2305 tok)
 
+## .claude/worktrees/agent-a9b01c9dbe2615f0c/.planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-04-SUMMARY.md` — Phase 8 Plan 04: OpenAI Adapter Summary (~4352 tok)
+
+## .claude/worktrees/agent-a9b01c9dbe2615f0c/src/providers/
+
+- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~2254 tok)
+
+## .claude/worktrees/agent-a9b01c9dbe2615f0c/tests/
+
+- `daemon-fetch.test.ts` — Sends one raw request and collects every reply until `candidates` or `fetch-error`. (~9545 tok)
+- `openai-provider.test.ts` — No Claude entry point and no other host (Ollama's localhost:11434) was touched. (~5201 tok)
+- `registry-bootstrap.test.ts` — Declares hookIds (~812 tok)
+
 ## .claude/worktrees/agent-aa6153ab/.planning/phases/01-shell-bridge-and-result-contract/
 
 - `01-03-SUMMARY.md` — Phase 01 Plan 03: Daemon Bootstrap and Client Seam Summary (~1393 tok)
@@ -437,6 +455,31 @@
 
 - `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3380 tok)
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~6022 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/.planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-05-SUMMARY.md` — Phase 8 Plan 05: `qq init provider` Picker Summary (~6349 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/cli/
+
+- `main.ts` — Exports main (~1336 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/cli/commands/
+
+- `init-provider.ts` — The ask-once menu, in D-04 order. The order is the prompt, not a probe chain. (~3726 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/daemon/
+
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~2594 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/providers/
+
+- `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~2582 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/tests/
+
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~3319 tok)
+- `init-provider.test.ts` — Drives the picker with one line per answer, then ends the input. (~2725 tok)
 
 ## .claude/worktrees/agent-ab8a809b1692afb63/.planning/phases/09.1-provider-latency-and-cancellation/
 
@@ -1012,6 +1055,7 @@
 
 ## src/cli/commands/
 
+- `init-provider.ts` — `qq init provider` picker on /dev/tty (Claude, OpenAI, Ollama; Enter = 1). writeProviderPin then restartDaemon; dead ends print next step and exit 1. Exports PROVIDER_MENU, OLLAMA_DOWNLOAD_URL, runProviderPicker(io, deps), providerInitCommand, dispatchInit. (~2900 tok)
 - `client.ts` — Real client command handler. (~394 tok)
 - `daemon.ts` — Daemon command handler: `--ensure` path or `startDaemonServer`; `enablePrewarm()` after the server starts (daemon-only, never at module top level or in `--ensure`); exported `trackConnections(server)` (Set of open sockets via `connection`) and `shutdownDaemon(server, connections, {exit, graceMs})` (WR-03: `disablePrewarm()` so an in-flight refill spawns nothing, destroys open sockets so their turns abort, then exits after `SIGKILL_GRACE_MS`+100 when any were in flight); SIGTERM/SIGINT call it (09.1-05). (~510 tok)
 - `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~732 tok)
@@ -1042,9 +1086,8 @@
 - `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates, installedTools, streamCandidates: true}`; socket `setEncoding('utf8')` so split multi-byte chars survive, 256 KB request cap measured in bytes (WR-01); drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter inside a Promise chain with a per-connection AbortController (socket `close` aborts it; aborted fetches log `fetch aborted` and write nothing); streams `candidate` rows only for `stream: true` (`replied candidate`; rows after the client left are `candidate dropped`); final `candidates` is the done signal (09.1-01/03). (~1820 tok)
 
 ## src/providers/
-- `ollama.ts` — Ollama POST /api/chat adapter (stream false, buildSystemPrompt + buildPrompt, no auth). 25s timeout + abort signal; failures map to one QueQue line (ollama serve / ollama pull / HTTP / cut-off); finalCandidateList with done_reason 'stop'. Backend `ollama`. (~1800 tok)
-- `provider-pin.ts` — provider.json pin: versioned strict union (claude, openai{model?}, ollama{model, baseUrl?}); extra keys like apiKey invalid. providerPinPath (QQ_PROVIDER_FILE), loadProviderPin re-reads every call, resolveProviderAdapter is the D-02 runtime selector (no pin → Claude; invalid → throws). (~1300 tok)
 
+- `openai.ts` — OpenAI POST api.openai.com/v1/chat/completions adapter (constant URL; Bearer OPENAI_API_KEY from env then .env.local; body = model + developer buildSystemPrompt + user buildPrompt). 25s timeout + abort signal; static per-status QueQue copy, never echoes upstream error text; finalCandidateList with finish_reason 'stop'. OPENAI_DEFAULT_MODEL gpt-5.5. Backend `openai`. (~2300 tok)
 - `candidate-stream.ts` — Incremental JSON-array candidate scanner for streamed text deltas (09.1-02): `createCandidateScanner(onCandidate)` changes no state before the first `[`, tracks depth, strings and escapes, emits only commandCandidateSchema-valid objects that close at depth 2, stops at the array close or after `MAX_STREAMED_CANDIDATES` (5); `parseStrictCandidateList(text)` accepts a fenced or bare array of 1-5 candidates, else undefined. Used by the CLI and SDK paths. (~900 tok)
 - `claude-cli.ts` — `CLAUDE_COMMAND`, `buildClaudeCliArgv(envelope)` (`-p --input-format stream-json --output-format stream-json --verbose --include-partial-messages --effort <resolveEffort()> --safe-mode --tools '' --no-session-persistence --system-prompt buildSystemPrompt(envelope)`; no prompt, no `--model`, never bare); `fetchClaudeCliCandidates(envelope, budget, options)` builds a per-query `PrewarmSpec`, `takePrewarmed` before the turn (`prewarm hit` / `prewarm miss {reason}`) and `schedulePrewarm` in `finally`; one cold retry (`prewarm retry cold`) only for a warm `exit-without-result` with no streamed rows; runs `runClaudeTurn` with the prompt on stdin and `signal`; with `onCandidate`, text deltas feed `createCandidateScanner` and rows pass on only while the signal is live (`cli first candidate` once); final list = strict parse, then streamed rows, then `parseCandidates`; logs `cli spawned|init|first delta|first candidate|result|exit|aborted|timed out` with `ms` and `warm` (09.1-01/02/05). WR-02: warm turns get `warmInitDeadlineMs(spawnedAt)` (`WARM_INIT_DEADLINE_MS` 1500 + rest of `PREWARM_BOOT_ALLOWANCE_MS` 3000 for a young child) and `stale-prewarm` is retried cold too; a stall after `init` is still a timeout. WR-01-r2: the final list is `finalCandidateList(text, streamed, finishedNormally, { stopReason })`; a `truncated` runner failure (`isTruncatedFailure`, caught around both attempts, never retried cold) feeds its stdout with finishedNormally false, so only strict/streamed/closed rows or TRUNCATED_RESPONSE_MESSAGE, never the prose fallback (~2050 tok)
 - `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`; forwards FetchOptions to the CLI path; an AbortError is logged `claude-cli aborted` and re-thrown unmapped (09.1-01); the SDK branch passes `options` (`remainingMs(deadline), options`) as a direct return outside the CLI try/catch, so an SDK AbortError is never mapped by hardError (09.1-04); WR-01-r2: hardError returns a TRUNCATED_RESPONSE_MESSAGE error unchanged before the ENOENT/timeout/D13 mapping, so `/login` users see the same truncation copy as the SDK path (~1100 tok)
@@ -1054,6 +1097,8 @@
 - `claude.ts` — Anthropic SDK adapter: reused client (async `getAnthropicClient`, lazy `import('@anthropic-ai/sdk')`, type-only static import); re-exports `QUEQUE_SYSTEM`; `system` from `buildSystemPrompt(envelope)`. `fetchCandidates(envelope, rbuffer = '', timeoutMs = 25_000, options = {})` calls `client.messages.stream(params, { timeout, signal })` + `finalMessage()`; with `onCandidate`, `text` deltas feed `createCandidateScanner` (rows only while the signal is live); final list = strict parse, then streamed rows, then `parseCandidates`; abort logs `request aborted` and throws `abortError()`. `sdkOutputConfig(model, effort)` / `EFFORT_UNSUPPORTED_MODEL_RE`: `output_config.effort` from `resolveEffort()`, omitted for Haiku, Sonnet 4.5, Claude 3.x, 4.0/4.1; never `thinking` or sampling params. `claudeAdapter` forwards options in the 4th slot (09.1-04). review WR-07: `SDK_MAX_TOKENS` 16000 (thinking counts against it; was 1024). Review WR-01-r2 (T-09.1-14): exported `finalCandidateList(text, streamed, finishedNormally, logFields)` is the one final-list rule for the SDK and `claude -p` paths (strict, then streamed, then, only when finishedNormally, `parseCandidates`; otherwise closed rows or `TRUNCATED_RESPONSE_MESSAGE` with a `response truncated` log of `logFields`); fetchCandidates passes `isNormalStopReason(message.stop_reason)` (allow list: end_turn, stop_sequence), so refusal, pause_turn, null, max_tokens and future stops never reach the prose fallback (~2650 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
+- `ollama.ts` — Ollama POST /api/chat adapter (stream false, buildSystemPrompt + buildPrompt, no auth). 25s timeout + abort signal; failures map to one QueQue line (ollama serve / ollama pull / HTTP / cut-off); finalCandidateList with done_reason 'stop'. Backend `ollama`. (~1800 tok)
+- `provider-pin.ts` — provider.json pin: versioned strict union (claude, openai{model?}, ollama{model, baseUrl?}); extra keys like apiKey invalid. providerPinPath (QQ_PROVIDER_FILE), loadProviderPin re-reads every call, resolveProviderAdapter is the D-02 runtime selector (no pin → Claude; invalid → throws). (~1300 tok)
 - `provider.ts` — `LLMAdapter.fetchCandidates(envelope, options?)`, `FetchOptions { signal?, onCandidate? }`, `abortError()` (name AbortError, 'QueQue: request aborted'), `isAbortError` (AbortError or the SDK's APIUserAbortError) (09.1-01). `isNormalStopReason(stopReason)`: allow list, true only for `end_turn` and `stop_sequence`, shared by the SDK and `claude -p` paths (WR-01-r2, T-09.1-14) (~470 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
 - `steering.ts` — `QUEQUE_SYSTEM` (moved from claude.ts), `buildSteeringText(tools)` (catalog re-filter, dedupe, sort, 4 lines D-15/16/17), `buildSystemPrompt(envelope)` (filterContextEnvelope first; byte-identical without the chunk). (~700 tok)
@@ -1090,9 +1135,9 @@
 - `SearchInput.tsx` — Live filter input for narrowing the candidate list. (~108 tok)
 
 ## tests/
-- `ollama-provider.test.ts` — Ollama request shape, privacy, failure mapping, no Claude fallback, daemon-down fallback; stubs global fetch. (~4300 tok)
-- `provider-pin.test.ts` — pin schema/loader/resolver incl. apiKey-extra invalid, EISDIR, fail-closed invalid pin, per-call re-read. (~2000 tok)
 
+- `openai-provider.test.ts` — OpenAI key handling, request shape/privacy, failure mapping with no Claude/Ollama fallback, masked-key non-echo, debug-log hygiene. Stubs global fetch. (~4700 tok)
+- `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (a) the lbuffer never filters (G-09.1-5: `noMatch` is the regression oracle); (d) a matching lbuffer `smt2` draws and reports the full list (G-09.1-5); (e) "header row" (plain, flagged, matching lbuffer; all draw query ''): pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases; `mountStream` helper and the 09.1-07 streamed-rows describe (D-06 to D-10, D-16, D-17); G-09.1-5 Pitfall 9 rewrite (the lbuffer never filters streamed rows, FILTER shows the placeholder); WR-04 (lbuffer `gr`, typed `grep` survives a non-matching first row, never `grgrep`); WR-05 (a later list without the highlighted row keeps the highlight position; typing/Backspace move it to row 0); WR-06 (typed `grep`, up/down on an empty filtered list, then a matching row arrives highlighted); `filterLine` helper + the `G-09.1-5: FILTER opens empty` describe (UAT case `show me how to use z3` + typed `smt`, empty lbuffer, typed text equal to the lbuffer); CR-01 one-chunk Backspace describe (`ab`+2 DEL, `a`+DEL, mid-stream `smtx`+DEL / `q`+DEL, each ONE stdin push); CR-01 invariance `it.each` (Down+Enter, corrected filter+Enter, moved highlight+typed key, filtered Down+Enter, empty-filter Backspace, Down+Tab+DEL+Enter on a flagged row: one key per read vs one read insert the same row) (~13900 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search (initialQuery never filters, a typed query does), `G-09.1-5 FILTER opens empty` describe (query state '' whatever initialQuery is; supersedes 03.1 D-01/D-02), zero-match Enter guard via typed `zzz`, Tab install toggle, Enter/Esc, effect count (2; WR-05 moved the query reset into the key handlers). Cannot see effect ordering — use candidate-select-layout.test.tsx for that.; CR-01 same-closure case (typed text + Backspace on one handler closure); CR-01 same-closure Down+Enter (wrapping navigation) and Tab+Enter (Tab install form) cases (~6650 tok)
@@ -1117,8 +1162,10 @@
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
+- `ollama-provider.test.ts` — Ollama request shape, privacy, failure mapping, no Claude fallback, daemon-down fallback; stubs global fetch. (~4300 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
+- `provider-pin.test.ts` — pin schema/loader/resolver incl. apiKey-extra invalid, EISDIR, fail-closed invalid pin, per-call re-read. (~2000 tok)
 - `provider-resolver.test.ts` — Declares resetRegistries (~774 tok)
 - `qq-config.test.ts` — qq-config schema and loader tests incl. `effort` (lenient enum, trim/lowercase, invalid → low) through a temp QQ_CONFIG_FILE (09.1-02). (~940 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
