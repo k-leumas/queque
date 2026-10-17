@@ -5796,6 +5796,102 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-17T20:30:00Z"
+    },
+    {
+      "id": "bug-353",
+      "timestamp": "2026-10-17T19:22:43.488Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ad2dd264e20a6044c/src/providers/claude-default.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→7 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T19:22:43.488Z"
+    },
+    {
+      "id": "bug-354",
+      "timestamp": "2026-10-17T19:22:52.093Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-ad2dd264e20a6044c/tests/claude-cli-provider.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T19:22:52.093Z"
+    },
+    {
+      "id": "bug-355",
+      "timestamp": "2026-10-17T19:25:45.727Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ad2dd264e20a6044c/src/providers/resolver.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 7→8 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T19:25:45.727Z"
+    },
+    {
+      "id": "bug-356",
+      "timestamp": "2026-10-17T19:26:48.476Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ad2dd264e20a6044c/docs/EXTENSIONS.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→27 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T19:26:48.476Z"
+    },
+    {
+      "id": "bug-357",
+      "timestamp": "2026-10-17T19:27:05.843Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ad2dd264e20a6044c/README.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 15→21 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T19:27:05.843Z"
+    },
+    {
+      "id": "bug-358",
+      "timestamp": "2026-10-17T20:35:00Z",
+      "error_message": "commitlint body-max-line-length rejected 08-06 Task 1 commit",
+      "file": "(commit message)",
+      "root_cause": "body bullet over 100 chars",
+      "fix": "re-wrap body lines",
+      "tags": [
+        "commitlint",
+        "git",
+        "commit-msg"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T20:35:00Z"
     }
   ]
 }

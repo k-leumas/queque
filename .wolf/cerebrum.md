@@ -132,6 +132,9 @@
 - [2026-10-17] Real-pty smoke for /dev/tty CLIs: `(sleep 1.5; printf '\n') | script -q /dev/null node dist/cli/main.js init provider` with QQ_PROVIDER_FILE in scratch.
 - [2026-10-17] Vitest `-t` is a regex: escape `()` in test names or every test is skipped (exit 0).
 - [2026-10-17] GSD `worktree.cleanup-wave` can report branch_mismatch/deletion_check_failed when worktree working dirs show stray unstaged deletions (.releaserc.json, CHANGELOG.md, pnpm-lock.yaml...); a re-run merged cleanly. Verify `git diff --diff-filter=D base..HEAD` is empty on main, then remove worktrees manually.
+- [2026-10-17] commitlint `body-max-line-length` is 100 chars per body line, not only the subject; wrap bullets before committing.
+- [2026-10-17] README provider section is "Choose a provider" (anchor `#choose-a-provider`, linked from Requirements).
+- [2026-10-17] Only the Claude adapters stream rows (`onCandidate`); OpenAI and Ollama return the full list at once, so docs saying rows "stream in" must say Claude.
 
 ## Do-Not-Repeat
 - [2026-10-12] Do not fail closed on one bad enum value (the WR-07 check for `stop_reason === 'max_tokens'` only): a `refusal` or `pause_turn` fragment still reached the prose fallback (WR-01-r2, T-09.1-14). Use an allow list of the known-good values (end_turn, stop_sequence) so refusal, pause_turn, null and future values fail closed.
