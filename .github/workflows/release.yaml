@@ -197,7 +197,7 @@ jobs:
                 ==> Get started with queque
 
                   Step 1 — activate the ?? trigger:
-                    qq init zsh >> ~/.zshrc && source ~/.zshrc
+                    qq init zsh && source ~/.zshrc
 
                   Step 2 — add your Anthropic API key to ~/.zshrc:
                     export ANTHROPIC_API_KEY="sk-ant-..."

@@ -96,7 +96,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   cli
     .command(
       'init <shell>',
-      'Print a source line for shell integration (append to ~/.zshrc with `qq init zsh >> ~/.zshrc`)',
+      'Add shell integration to ~/.zshrc (run `qq init zsh && source ~/.zshrc`)',
     )
     .action((shell: string) => {
       initCommand(shell);

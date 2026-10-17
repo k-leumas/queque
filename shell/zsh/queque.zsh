@@ -351,7 +351,7 @@ qq-question-widget() {
     local _qq_bin
     _qq_bin=$(whence -p qq 2>/dev/null)
     if [[ -z "$_qq_bin" ]]; then
-      zle -M "queque: qq not found — run: qq init zsh >> ~/.zshrc && source ~/.zshrc"
+      zle -M "queque: qq not found — run: qq init zsh && source ~/.zshrc"
       return 0
     fi
     qq_cmd=("$_qq_bin")
