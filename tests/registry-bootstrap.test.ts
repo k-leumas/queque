@@ -57,6 +57,15 @@ describe('bootstrapBuiltins()', () => {
     expect(getProviderAdapter('claude-cli')?.fetchCandidates).toBeTypeOf('function');
   });
 
+  it('registers the ollama and openai provider backends with adapter instances', () => {
+    bootstrapBuiltins();
+    const ids = listProviderBackends().map((backend) => backend.id);
+    expect(ids).toContain('ollama');
+    expect(ids).toContain('openai');
+    expect(getProviderAdapter('ollama')?.fetchCandidates).toBeTypeOf('function');
+    expect(getProviderAdapter('openai')?.fetchCandidates).toBeTypeOf('function');
+  });
+
   it('is idempotent', () => {
     expect(() => {
       bootstrapBuiltins();

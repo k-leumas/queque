@@ -3,6 +3,7 @@ import { gitContextProvider } from '../context/providers/git-context.js';
 import { claudeAdapter } from '../providers/claude.js';
 import { claudeDefaultAdapter } from '../providers/claude-default.js';
 import { ollamaAdapter } from '../providers/ollama.js';
+import { openaiAdapter } from '../providers/openai.js';
 import { registerContextProvider } from './context-providers.js';
 import { registerProviderBackend } from './provider-backends.js';
 import { registerShellAdapter } from './shell-adapters.js';
@@ -60,6 +61,12 @@ export function bootstrapBuiltins(): void {
     name: 'Ollama (local)',
     description: 'Local Ollama /api/chat adapter — selected only by a provider.json pin',
     adapter: ollamaAdapter,
+  });
+  registerProviderBackend({
+    id: 'openai',
+    name: 'OpenAI',
+    description: 'OpenAI Chat Completions adapter — selected only by a provider.json pin',
+    adapter: openaiAdapter,
   });
 }
 

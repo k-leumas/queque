@@ -19,6 +19,7 @@ import {
   prewarmSnapshot,
   schedulePrewarm,
 } from '../src/providers/claude-prewarm.js';
+import { OPENAI_DEFAULT_MODEL } from '../src/providers/openai.js';
 import { abortError, type FetchOptions, isAbortError } from '../src/providers/provider.js';
 
 const FIXTURE = fileURLToPath(new URL('./fixtures/fake-claude-stream.mjs', import.meta.url));
@@ -144,6 +145,15 @@ function ollamaChatResponse(content: string): Response {
       model: 'gemma4',
       message: { role: 'assistant', content },
       done: true,
+    }),
+    { status: 200 },
+  );
+}
+
+function openAiChatResponse(content: string): Response {
+  return new Response(
+    JSON.stringify({
+      choices: [{ index: 0, message: { role: 'assistant', content }, finish_reason: 'stop' }],
     }),
     { status: 200 },
   );
@@ -696,6 +706,61 @@ describe('daemon fetch-candidates IPC', () => {
       expect(candidates).toEqual([ROW_A]);
       expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(ollamaFetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('provider pin: openai (08-04)', () => {
+    type OpenAiBody = {
+      model: string;
+      messages: Array<{ role: string; content: string }>;
+      [key: string]: unknown;
+    };
+
+    function stubOpenAi() {
+      const openAiFetch = vi.fn(async (_url: URL | string, _init?: RequestInit) =>
+        openAiChatResponse('[{"command":"git status","explanation":"Show status"}]'),
+      );
+      vi.stubGlobal('fetch', openAiFetch);
+      vi.stubEnv('OPENAI_API_KEY', 'sk-test-openai-key');
+      return openAiFetch;
+    }
+
+    it('pinned openai answers fetch-candidates through the daemon', async () => {
+      fs.writeFileSync(pinFile, '{"version":1,"provider":"openai"}');
+      const openAiFetch = stubOpenAi();
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const candidates = await requestDaemonFetch(socketPath, buildEnvelope());
+
+      expect(candidates).toEqual([{ command: 'git status', explanation: 'Show status' }]);
+      expect(openAiFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = openAiFetch.mock.calls[0] ?? [];
+      expect(String(url)).toBe('https://api.openai.com/v1/chat/completions');
+      expect(init?.method).toBe('POST');
+      const headers = new Headers(init?.headers);
+      expect(headers.get('authorization')).toBe('Bearer sk-test-openai-key');
+      const body = JSON.parse(String(init?.body)) as OpenAiBody;
+      expect(body.model).toBe(OPENAI_DEFAULT_MODEL);
+      expect(body.messages[0]?.role).toBe('developer');
+      expect(body.messages[1]?.role).toBe('user');
+      expect(body).not.toHaveProperty('temperature');
+      expect(fetchMock).not.toHaveBeenCalled();
+      const selected = loggedStages('provider').find((s) => s.message === 'provider selected');
+      expect(selected?.details).toEqual({ provider: 'openai', source: 'pin' });
+    });
+
+    it('pinned openai model overrides the default', async () => {
+      fs.writeFileSync(pinFile, '{"version":1,"provider":"openai","model":"gpt-test-model"}');
+      const openAiFetch = stubOpenAi();
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      await requestDaemonFetch(socketPath, buildEnvelope());
+
+      const body = JSON.parse(String(openAiFetch.mock.calls[0]?.[1]?.body)) as OpenAiBody;
+      expect(body.model).toBe('gpt-test-model');
+      expect(fetchMock).not.toHaveBeenCalled();
     });
   });
 
