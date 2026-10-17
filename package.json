@@ -50,12 +50,12 @@
     "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/node": "24.10.1",
     "@types/react": "^19.2.2",
-    "@vitest/coverage-v8": "4.0.4",
+    "@vitest/coverage-v8": "4.1.12",
     "lefthook": "^1.13.6",
     "semantic-release": "^25.0.2",
     "tsup": "8.5.1",
     "typescript": "6.0.3",
-    "vitest": "4.0.4"
+    "vitest": "4.1.12"
   },
   "packageManager": "pnpm@12.6.0+sha512.3ef68f951cb111ac204b4a5a16f0b2ddf0da56a96e0413e81d855d9f0b55ef926714709028e1cd00c405c2c5fb7b9e8ec4dc46777c805d0373c2f2ff00fd20ec"
 }
