@@ -83,9 +83,11 @@ function openDownloadUrl(url: string): void {
   }
 }
 
+// Bound lazily: main.ts imports this module on every `qq` run (including `qq client`), so
+// loading it must not touch the daemon or provider imports until the picker uses them.
 const defaultDeps: PickerDeps = {
   openUrl: openDownloadUrl,
-  restartDaemon,
+  restartDaemon: (path) => restartDaemon(path),
   listOllamaModels: () => listOllamaModels(),
 };
 
