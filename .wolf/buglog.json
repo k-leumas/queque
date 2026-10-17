@@ -5451,6 +5451,27 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-12T22:45:00.000Z"
+    },
+    {
+      "id": "bug-332",
+      "timestamp": "2026-10-17T00:00:00.000Z",
+      "error_message": "README install snippet `qq init zsh >> ~/.zshrc && source ~/.zshrc` writes the status line 'queque: added shell integration to ~/.zshrc — run: source ~/.zshrc' into ~/.zshrc, which then fails as a command on every shell start",
+      "file": "README.md",
+      "root_cause": "initCommand (src/cli/commands/init.ts) appends the source line to ~/.zshrc itself and prints a status line on stdout; the README redirected that stdout into ~/.zshrc as well (NOTE box and npm details block)",
+      "fix": "Both README snippets now read `qq init zsh && source ~/.zshrc`, with a note not to redirect its output. Same stale form remains in .github/workflows/homebrew.yml caveats and the src/cli/main.ts `init <shell>` help (follow-ups)",
+      "tags": [
+        "readme",
+        "docs",
+        "init",
+        "zshrc",
+        "install",
+        "quick-261017-4kt"
+      ],
+      "related_bugs": [
+        "bug-182"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T00:00:00.000Z"
     }
   ]
 }

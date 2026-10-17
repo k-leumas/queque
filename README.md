@@ -86,9 +86,17 @@ find docker containers using port 3000??
 git undo last commit but keep changes??
 ```
 
-A selection UI opens in-terminal. Pick a command with arrow keys or fuzzy search, press `Enter`, and the command lands in your buffer — ready to run or edit before you commit.
+A selection UI opens in-terminal. Rows stream in as Claude answers, and you can pick one before the rest have arrived. What you typed stays in the dim `queque ›` header, and the FILTER box opens empty: type to narrow the list, even while `thinking…` is still showing. Move with the arrow keys and press `Enter`. The command lands in your buffer exactly as shown, ready to run or edit. QueQue never runs it for you.
 
-Press `Esc` to cancel and return to what you were typing, you can even tweak your intent and hit `??` again.
+Press `Esc` to cancel. It stops the request to Claude and restores what you were typing, so you can tweak your intent and hit `??` again.
+
+A command that matches a destructive pattern (`rm`, `sudo` and similar) is marked `⚠ review carefully — this command may be destructive`. The mark is a warning only; the row stays selectable.
+
+### Installed-tool awareness
+
+QueQue checks each suggestion against the commands zsh can find on your machine. A row that needs a tool zsh cannot find gets `ⓘ` before its explanation, and the legend reads `ⓘ not installed`. The row stays selectable. When QueQue knows how to install that tool with brew, apt, dnf or pacman, the legend adds `tab prepends the install command`: press `Tab` (or `Shift+Tab`) on the row to switch it to the install form, and again to switch back. The install form is inserted like any other command, never run.
+
+Set `QQ_TOOL_AWARENESS=0` in your shell to turn this off.
 
 ### Inside Zellij
 
@@ -102,18 +110,20 @@ Without Zellij, QueQue falls back to an inline TUI in your current terminal sess
 
 QueQue is **insertion-only**: it writes commands into your shell buffer — you press Enter to run them. QueQue never auto-executes suggestions.
 
-**What leaves your machine (when using Claude):**
+**What leaves your machine.** Both routes (`claude -p` and the API key) send the same prompt to Claude:
 
 - Your query text and current working directory
+- Your OS platform name (for example `darwin` or `linux`) and shell name (`zsh`)
 - Git metadata (branch, dirty flag, changed file *names* — not file contents)
 - Parsed filename hints from your query (no disk reads)
+- The names of installed tools that appear in QueQue's public tool catalog. Your full `PATH` inventory, functions and aliases stay on your machine. `QQ_TOOL_AWARENESS=0` stops even the catalog names.
 
 **What QueQue never sends:**
 
 - File contents (unless you explicitly opt in later with `QQ_ALLOW_FILE_READ=1`)
 - Paths matching sensitive patterns (`.env`, credentials, `.pem`, `id_rsa`, etc.) are stripped from git context
 
-**Debug logging:** Off by default. When enabled, logs redact shell buffer text unless `QQ_DEBUG_VERBOSE=1`.
+**Debug logging:** The client and daemon append short diagnostics to `/tmp/qq-<uid>-debug.log`, or to the file named by `QQ_DEBUG_LOG_FILE`. Shell buffer and query text are redacted unless `QQ_DEBUG_VERBOSE=1`. The zsh widget adds its own lines only when `QQ_DEBUG_LOG_FILE` is set. The log stays on your machine.
 
 **User config:** Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` to add extra sensitive path patterns, log redaction keys, or destructive-command warnings. Built-in defaults always apply — your patterns are merged on top. Override the file path with `QQ_CONFIG_FILE`. Malformed `config.json` is ignored with a warning; QueQue falls back to built-in defaults (fail-closed).
 
@@ -132,6 +142,6 @@ Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/confi
 | `privacy.useGitignore` | `boolean` | Reserved for future gitignore-based filtering. Ignored today. |
 | `safety.destructiveCommandPatterns` | `string[]` | Extra warn-only UI patterns merged onto built-in defaults (`rm`, `sudo`, etc.). |
 
-See [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) for architecture and [docs/EXTENSIONS.md](docs/EXTENSIONS.md) for Phase 7/8 expansion.
+See [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) for architecture.
 
 

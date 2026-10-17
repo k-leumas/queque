@@ -161,7 +161,7 @@
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~499 tok)
-- `README.md` — Project documentation; config.json table incl. `effort` (claude -p `--effort`, SDK `output_config.effort`) (09.1-02/04) (~1235 tok)
+- `README.md` — Project documentation: install (`qq init zsh && source ~/.zshrc`, Node 24), Authentication (claude -p on Claude Code `/login` when no key; non-empty ANTHROPIC_API_KEY wins, no cross-fallback; QQ_MODEL SDK-only, default claude-sonnet-5; daemon restart via `pkill -f 'daemon --socket /tmp/qq-'` + `qq daemon --ensure`), Usage (streaming rows, empty FILTER, Esc cancels, ⚠ warn-only, installed-tool awareness ⓘ + Tab install form, QQ_TOOL_AWARENESS=0), Zellij, Privacy (what leaves incl. platform/shell/catalog tool names; debug log path), config.json table incl. `effort` (quick-261017-4kt) (~2200 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. (~600 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
