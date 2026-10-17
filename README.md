@@ -16,7 +16,7 @@ Welcome to the **future** –
 ![QueQue demo](assets/demo.gif)
 
 > [!NOTE]
-> After install, run `qq init zsh >> ~/.zshrc && source ~/.zshrc` to wire up the `??` keybinding.
+> After install, run `qq init zsh && source ~/.zshrc` to wire up the `??` keybinding. `qq init zsh` adds the QueQue source line to the end of `~/.zshrc` itself, so do not redirect its output into the file.
 
 
 <details>
@@ -25,28 +25,56 @@ Welcome to the **future** –
 ## Requirements
 
 - zsh
-- Node.js ≥ 20
+- Node.js 24 or newer
 - [jq](https://jqlang.github.io/jq/)
+- Claude Code signed in, or an Anthropic API key (see [Authentication](#authentication))
 
 
 ```shell
 npm install -g @k-leumas/queque-cli
-qq init zsh >> ~/.zshrc && source ~/.zshrc
+qq init zsh && source ~/.zshrc
 ```
 
 </details>
 
-## Expose API Key
+## Authentication
 
-QueQue resolves `ANTHROPIC_API_KEY` in order:
+QueQue talks to Claude in one of two ways. You only need one.
 
-1. **Environment variable** — `export ANTHROPIC_API_KEY="sk-ant-..."` in your shell or `.zshrc`
-2. **`.env.local` file** — place a `.env.local` in your project directory (or any parent). QueQue searches upward from the current working directory:
-   ```shell
-   ANTHROPIC_API_KEY=sk-ant-...
-   ```
+**Claude Code login (no API key needed).** If you already use Claude Code, QueQue runs `claude -p` on your existing login whenever no API key is set. Sign in once through Claude Code's `/login`:
 
-The `.env.local` option is useful for project-specific keys or keeping the key out of your shell profile.
+```shell
+claude /login
+```
+
+On this route QueQue uses whatever account and default model Claude Code is set to; it passes no model flag. `claude -p` runs with its tools disabled and session persistence off, so it only answers the query. If `claude` is not on your `PATH` or is not signed in, `??` shows a message like this one:
+
+```text
+QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.
+```
+
+**Anthropic API key.** QueQue looks for `ANTHROPIC_API_KEY` in this order:
+
+1. **Environment variable**: `export ANTHROPIC_API_KEY="sk-ant-..."` in `~/.zshrc`, above the QueQue source line.
+2. **`.env.local` file**: a line `ANTHROPIC_API_KEY=sk-ant-...`. The background daemon searches upward from the directory it was started in, usually the directory your first terminal opened in, and reads the file once. A `~/.env.local` is found from any start directory inside your home directory.
+
+An empty or whitespace-only value counts as unset.
+
+**Which route wins.** A non-empty `ANTHROPIC_API_KEY` always wins: QueQue calls Claude through the Anthropic SDK and never runs `claude -p`. There is no automatic fallback in either direction. If the API-key request fails, QueQue shows that error instead of trying your Claude Code login, and a failed `claude -p` run never falls back to a key. To switch to your Claude Code login, remove the key from your environment and `.env.local`, then restart the daemon.
+
+`QQ_MODEL` picks the model on the API-key route only. The default is `claude-sonnet-5`.
+
+### After changing your key or settings
+
+A background daemon answers `??` for every terminal. It starts with your first interactive shell (and again on the next `??` if it is not running) and inherits that shell's environment. It reads `ANTHROPIC_API_KEY`, `QQ_MODEL`, `.env.local` and `~/.config/qq/config.json` once, when it starts.
+
+- Put your `export` lines in `~/.zshrc` above the `# queque shell integration` block that `qq init zsh` appended, so the daemon started during shell startup sees them.
+- After changing any of them, restart the daemon from a shell that has the new values:
+
+```shell
+pkill -f 'daemon --socket /tmp/qq-'
+qq daemon --ensure
+```
 
 ## Usage
 
@@ -97,7 +125,7 @@ Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/confi
 
 | Field | Type | Purpose |
 |-------|------|---------|
-| `effort` | `"low" \| "medium" \| "high" \| "xhigh" \| "max"` | Claude effort for `claude -p` (`--effort`) and for the API-key SDK path, which sends it as `output_config.effort`. The SDK path omits it when `QQ_MODEL` names a model without effort support (Haiku 4.5, Sonnet 4.5 or older); a level that a `QQ_MODEL` model does not support (for example `xhigh` on Opus 4.5) is your responsibility. Default `low`. Trimmed and case-insensitive; invalid values fall back to `low` without affecting the rest of the file. Takes effect after the daemon restarts, because the daemon reads config.json once. |
+| `effort` | `"low" \| "medium" \| "high" \| "xhigh" \| "max"` | Claude effort for `claude -p` (`--effort`) and for the API-key SDK path, which sends it as `output_config.effort`. The SDK path omits it when `QQ_MODEL` names a model without effort support (Haiku 4.5, Sonnet 4.5 or older); a level that a `QQ_MODEL` model does not support (for example `xhigh` on Opus 4.5) is your responsibility. Default `low`. Trimmed and case-insensitive; invalid values fall back to `low` without affecting the rest of the file. Takes effect after a [daemon restart](#after-changing-your-key-or-settings), because the daemon reads config.json once. |
 | `privacy.sensitivePathPatterns` | `string[]` | Extra regex patterns merged onto built-in defaults (`.env`, credentials, keys, etc.). Built-in patterns are never removed. |
 | `privacy.redactLogKeys` | `string[]` | Extra JSON keys to redact in debug logs (merged with defaults: `lbuffer`, `rbuffer`, `queryText`, `request`). |
 | `privacy.allowFileRead` | `boolean` | Opt-in gate for future file-content context. Env `QQ_ALLOW_FILE_READ=1` overrides this. No file reads in v1. |
