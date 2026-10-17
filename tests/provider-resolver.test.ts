@@ -1,4 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { resolveAdapter, resolveClaudeDefaultAdapter } from '../src/providers/resolver.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import { clearContextProviders } from '../src/registry/context-providers.js';
@@ -32,25 +35,51 @@ describe('resolveClaudeDefaultAdapter() and resolveAdapter()', () => {
     expect(adapter).toBe(resolveClaudeDefaultAdapter());
   });
 
-  it('maps ollama to the Claude default as an 08-02 bridge until 08-03 pinning', () => {
+  it('maps ollama detection to the Claude default — detection never selects (D-01)', () => {
     const adapter = resolveAdapter({ kind: 'ollama', baseUrl: 'http://localhost:11434' });
     expect(adapter.fetchCandidates).toBeTypeOf('function');
     expect(adapter).toBe(resolveClaudeDefaultAdapter());
   });
 
-  it('maps openai-key to the Claude default as an 08-02 bridge until 08-03 pinning', () => {
+  it('maps openai-key detection to the Claude default — detection never selects (D-01)', () => {
     const adapter = resolveAdapter({ kind: 'openai-key' });
     expect(adapter.fetchCandidates).toBeTypeOf('function');
     expect(adapter).toBe(resolveClaudeDefaultAdapter());
   });
 
-  it('maps none to the Claude default as an 08-02 bridge until 08-03 pinning', () => {
+  it('maps none detection to the Claude default — detection never selects (D-01)', () => {
     const adapter = resolveAdapter({
       kind: 'none',
       message: 'Set ANTHROPIC_API_KEY or add .env.local',
     });
     expect(adapter.fetchCandidates).toBeTypeOf('function');
     expect(adapter).toBe(resolveClaudeDefaultAdapter());
+  });
+});
+
+describe('resolveAdapter() and provider.json (D-01, D-11)', () => {
+  let pinDir: string;
+
+  beforeEach(() => {
+    resetRegistries();
+    bootstrapBuiltins();
+    pinDir = mkdtempSync(join(tmpdir(), 'qq-resolver-pin-'));
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    rmSync(pinDir, { recursive: true, force: true });
+  });
+
+  it('resolveAdapter ignores a provider.json pin', () => {
+    const pinFile = join(pinDir, 'provider.json');
+    writeFileSync(pinFile, JSON.stringify({ version: 1, provider: 'ollama', model: 'gemma4' }));
+    vi.stubEnv('QQ_PROVIDER_FILE', pinFile);
+
+    const adapter = resolveAdapter({ kind: 'ollama', baseUrl: 'http://localhost:11434' });
+
+    expect(adapter).toBe(getProviderAdapter('claude-cli'));
+    expect(adapter).not.toBe(getProviderAdapter('ollama'));
   });
 });
 

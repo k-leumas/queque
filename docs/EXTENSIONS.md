@@ -7,7 +7,7 @@ QueQue is built around registries so new shells, providers, context sources, and
 | Registry | Register | Resolve | Default built-in |
 |----------|----------|---------|------------------|
 | Context providers | `registerContextProvider()` | `listContextProviders()` | `git-context`, `filesystem-context` |
-| Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (SDK), `claude-cli` (CLI + SDK rescue) |
+| Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (SDK), `claude-cli` (Claude default composite), `ollama`, `openai` |
 | Shell adapters | `registerShellAdapter()` | `listShellAdapters()` | `zsh` |
 | Storage hooks | `registerStorageHook()` | `listStorageHooks()` | `noop` (no persistence) |
 
@@ -15,11 +15,33 @@ Built-ins wire up in `src/registry/bootstrap.ts`. Production code should resolve
 
 ## Provider resolution
 
-Claude is the silent default: spawn `claude -p` first, then rescue with the Anthropic SDK when `ANTHROPIC_API_KEY` is in the environment or `.env.local`. Runtime resolves `getProviderAdapter('claude-cli')` (the CLI+SDK composite) — it does not select a backend from `detectProvider()`.
+The rule is: the pin, otherwise the Claude default. Both the daemon's `fetch-candidates` handler and the in-process fallback (used when the daemon is down) call `resolveProviderAdapter()` from `src/providers/provider-pin.ts`:
 
-`detectProvider()` remains as leftover preflight for debug callers. It is not the hot-path adapter selector.
+- **No `provider.json`, or a `claude` pin**: the Claude default, registered as `claude-cli`. It uses the Anthropic SDK first when `ANTHROPIC_API_KEY` is usable (environment, then `.env.local`). Otherwise it runs `claude -p` on the user's Claude Code `/login`.
+- **An `openai` or `ollama` pin**: only that backend (`openai` or `ollama`) runs.
+- **An invalid or unreadable `provider.json`**: a hard error naming the file and `qq init provider`. It never falls back to Claude, so a prompt meant for a local model is never sent to a hosted provider.
+- **No fallthrough.** When the selected backend fails, `??` shows that backend's one-line error. QueQue never retries with another vendor.
+- **Re-read on every `??`.** The pin is read again for each request, so an edit applies on the next `??` without a daemon restart.
 
-OpenAI, Ollama, and a `~/.config/qq/provider.json` pin are upcoming in 08-03. They are not shipped in 08-02. Changing provider later means re-running the 08-03 picker or editing the pin — not re-detecting the machine on every `??`.
+The pin lives at `~/.config/qq/provider.json` (override with `QQ_PROVIDER_FILE`). It is a versioned, strict JSON object with no secret fields. Any extra key, such as `apiKey`, makes the file invalid:
+
+```json
+{"version":1,"provider":"claude"}
+```
+
+```json
+{"version":1,"provider":"openai","model":"gpt-5.5"}
+```
+
+```json
+{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"http://localhost:11434"}
+```
+
+For OpenAI, `model` is optional (default `gpt-5.5`), and there is no `baseUrl` field, so a pin cannot send the key to another host. For Ollama, `model` is required and `baseUrl` is optional (default `http://localhost:11434`, http or https only).
+
+`qq init provider` is the only way to write the pin interactively. It asks once on `/dev/tty` (Claude, OpenAI, Ollama), writes the file atomically with mode 0600, and restarts the daemon so it picks up a newly exported key. It pins OpenAI only when `OPENAI_API_KEY` is already usable. For Ollama, it lists your installed models. The `??` path never opens the picker. When the Claude default cannot answer (no `claude`, logged out, no key), the error text points at `qq init provider`.
+
+`detectProvider()` is leftover preflight for debug callers, not the selector. `resolveAdapter(detected)` in `src/providers/resolver.ts` maps every detected kind to the Claude default and never reads `provider.json`.
 
 ## Prompt steering (Phase 9)
 
@@ -46,7 +68,10 @@ Suggestions favour tools that are installed, whichever provider answers.
 
 - 08-01: Platform-aware Claude CLI detection (macOS Keychain `/login` gap; OAuth env tokens)
 - 08-02: Claude silent default (`claude -p` then env-key SDK rescue); `detectProvider()` leftover, not selector
-- 08-03 (upcoming): persist an explicit provider pin and optional OpenAI/Ollama adapters — not live yet
+- 08-03 (shipped): `~/.config/qq/provider.json` pin (`resolveProviderAdapter()`) and the Ollama adapter
+- 08-04 (shipped): OpenAI Chat Completions adapter (`OPENAI_API_KEY`, default model `gpt-5.5`)
+- 08-05 (shipped): `qq init provider` picker
+- 08-06 (shipped): Claude setup failures point at `qq init provider`; docs describe the pin, otherwise the Claude default
 
 ### Phase 5 (deferred) — Clarification chat
 
@@ -77,7 +102,7 @@ QueQue loads `~/.config/qq/config.json` (override with `QQ_CONFIG_FILE`). See [c
 
 Built-in sensitive patterns are never removed by user config.
 
-## Privacy env vars
+## Privacy and provider env vars
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
@@ -85,3 +110,5 @@ Built-in sensitive patterns are never removed by user config.
 | `QQ_DEBUG_VERBOSE` | off | Log full buffer text in debug logs |
 | `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Debug log path |
 | `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path |
+| `QQ_PROVIDER_FILE` | `~/.config/qq/provider.json` | Provider pin path (read on every `??`) |
+| `OPENAI_API_KEY` | unset | OpenAI key for an `openai` pin, from the environment or `.env.local`. The daemon reads it, so re-run `qq init provider` after exporting it |

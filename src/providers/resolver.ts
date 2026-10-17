@@ -21,11 +21,12 @@ export function resolveClaudeDefaultAdapter(): LLMAdapter {
 }
 
 /**
- * Maps a detected provider kind to a registered LLMAdapter instance.
+ * Maps a leftover `DetectedProvider` (preflight output) to the Claude default.
  *
- * 08-02 bridge: `none` / `ollama` / `openai-key` also return the Claude default
- * until 08-03 reads `~/.config/qq/provider.json`. This is not a shipped pin
- * and does not run a provider wizard.
+ * Detection never selects a backend (D-01, D-11): every kind, including `ollama`
+ * and `openai-key`, returns the Claude default, and this function never reads
+ * provider.json. The runtime selector is `resolveProviderAdapter()` in
+ * src/providers/provider-pin.ts, which honors ~/.config/qq/provider.json.
  */
 export function resolveAdapter(detected: DetectedProvider): LLMAdapter {
   switch (detected.kind) {
