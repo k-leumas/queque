@@ -1,0 +1,215 @@
+import * as fs from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  loadProviderPin,
+  OLLAMA_DEFAULT_BASE_URL,
+  PIN_BACKEND_IDS,
+  providerPinPath,
+  resolveProviderAdapter,
+} from '../src/providers/provider-pin.js';
+import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
+import { clearContextProviders } from '../src/registry/context-providers.js';
+import { clearProviderBackends, getProviderAdapter } from '../src/registry/provider-backends.js';
+import { clearShellAdapters } from '../src/registry/shell-adapters.js';
+import { clearStorageHooks } from '../src/registry/storage-hooks.js';
+
+const { appendDebugLogMock } = vi.hoisted(() => ({
+  appendDebugLogMock: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.mock('../src/shared/debug-log.js', () => ({
+  appendDebugLog: appendDebugLogMock,
+}));
+
+function resetRegistries(): void {
+  clearContextProviders();
+  clearProviderBackends();
+  clearShellAdapters();
+  clearStorageHooks();
+  resetBootstrap();
+}
+
+let pinDir: string;
+let pinFile: string;
+
+function writePin(content: string): void {
+  fs.writeFileSync(pinFile, content);
+}
+
+beforeEach(() => {
+  resetRegistries();
+  bootstrapBuiltins();
+  appendDebugLogMock.mockClear();
+  pinDir = fs.mkdtempSync(join(tmpdir(), 'qq-pin-'));
+  pinFile = join(pinDir, 'provider.json');
+  vi.stubEnv('QQ_PROVIDER_FILE', pinFile);
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+  fs.rmSync(pinDir, { recursive: true, force: true });
+});
+
+describe('providerPinPath()', () => {
+  it('honors QQ_PROVIDER_FILE', () => {
+    expect(providerPinPath()).toBe(pinFile);
+  });
+
+  it('defaults to ~/.config/qq/provider.json, a sibling of config.json', () => {
+    vi.stubEnv('QQ_PROVIDER_FILE', undefined);
+    expect(providerPinPath()).toMatch(/\.config\/qq\/provider\.json$/);
+  });
+});
+
+describe('loadProviderPin()', () => {
+  it('returns absent when the file does not exist (ENOENT)', () => {
+    expect(loadProviderPin()).toEqual({ kind: 'absent' });
+  });
+
+  it.each([
+    ['claude', '{"version":1,"provider":"claude"}', { version: 1, provider: 'claude' }],
+    ['openai', '{"version":1,"provider":"openai"}', { version: 1, provider: 'openai' }],
+    [
+      'openai with model',
+      '{"version":1,"provider":"openai","model":"gpt-5.5"}',
+      { version: 1, provider: 'openai', model: 'gpt-5.5' },
+    ],
+    [
+      'ollama',
+      '{"version":1,"provider":"ollama","model":"gemma4"}',
+      { version: 1, provider: 'ollama', model: 'gemma4' },
+    ],
+    [
+      'ollama with baseUrl',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"https://gpu.lan:11434"}',
+      { version: 1, provider: 'ollama', model: 'gemma4', baseUrl: 'https://gpu.lan:11434' },
+    ],
+  ])('pins a valid %s file', (_name, content, pin) => {
+    writePin(content);
+    expect(loadProviderPin()).toEqual({ kind: 'pinned', pin });
+  });
+
+  it.each([
+    ['an empty object', '{}'],
+    ['invalid JSON', '{"version":1,'],
+    ['an empty file', ''],
+    ['an unknown provider', '{"version":1,"provider":"gemini"}'],
+    ['ollama without a model', '{"version":1,"provider":"ollama"}'],
+    ['ollama with a blank model', '{"version":1,"provider":"ollama","model":"   "}'],
+    ['a missing version', '{"provider":"claude"}'],
+    ['an unsupported version', '{"version":2,"provider":"claude"}'],
+    ['an extra apiKey key', '{"version":1,"provider":"openai","apiKey":"sk-not-a-real-key"}'],
+    ['a baseUrl on openai', '{"version":1,"provider":"openai","baseUrl":"https://evil.example"}'],
+    [
+      'a file: baseUrl',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"file:///etc/passwd"}',
+    ],
+    [
+      'an ftp: baseUrl',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"ftp://localhost:11434"}',
+    ],
+    ['a JSON array', '[]'],
+  ])('reports %s as invalid', (_name, content) => {
+    writePin(content);
+    const state = loadProviderPin();
+    expect(state.kind).toBe('invalid');
+    if (state.kind === 'invalid') {
+      expect(state.path).toBe(pinFile);
+      expect(state.message.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('never puts file values in the invalid message (apiKey value stays out)', () => {
+    writePin('{"version":1,"provider":"openai","apiKey":"sk-not-a-real-key"}');
+    const state = loadProviderPin();
+    expect(state).toMatchObject({ kind: 'invalid' });
+    expect(JSON.stringify(state)).not.toContain('sk-not-a-real-key');
+    expect(JSON.stringify(state)).toContain('apiKey');
+  });
+
+  it('reports an unreadable path (a directory) as invalid, not absent', () => {
+    vi.stubEnv('QQ_PROVIDER_FILE', pinDir);
+    const state = loadProviderPin();
+    expect(state).toEqual({ kind: 'invalid', path: pinDir, message: 'EISDIR' });
+  });
+});
+
+describe('resolveProviderAdapter()', () => {
+  it('maps every pinnable provider to its registry backend id', () => {
+    expect(PIN_BACKEND_IDS).toEqual({ claude: 'claude-cli', openai: 'openai', ollama: 'ollama' });
+    expect(OLLAMA_DEFAULT_BASE_URL).toBe('http://localhost:11434');
+  });
+
+  it('resolves the claude-cli composite when no pin exists (D-03)', () => {
+    expect(resolveProviderAdapter()).toBe(getProviderAdapter('claude-cli'));
+    expect(appendDebugLogMock).toHaveBeenCalledWith('provider', 'provider selected', {
+      provider: 'claude',
+      source: 'default',
+    });
+  });
+
+  it('resolves claude-cli for a claude pin', () => {
+    writePin('{"version":1,"provider":"claude"}');
+    expect(resolveProviderAdapter()).toBe(getProviderAdapter('claude-cli'));
+    expect(appendDebugLogMock).toHaveBeenCalledWith('provider', 'provider selected', {
+      provider: 'claude',
+      source: 'pin',
+    });
+  });
+
+  it('resolves only the ollama backend for an ollama pin', () => {
+    writePin('{"version":1,"provider":"ollama","model":"gemma4"}');
+    const adapter = resolveProviderAdapter();
+    expect(adapter).toBe(getProviderAdapter('ollama'));
+    expect(adapter).not.toBe(getProviderAdapter('claude-cli'));
+    expect(appendDebugLogMock).toHaveBeenCalledWith('provider', 'provider selected', {
+      provider: 'ollama',
+      source: 'pin',
+    });
+  });
+
+  it('throws for an invalid pin and never touches the Claude default (fail closed)', () => {
+    const claude = getProviderAdapter('claude-cli');
+    if (!claude) throw new Error('claude-cli missing');
+    const claudeFetch = vi.spyOn(claude, 'fetchCandidates');
+    writePin('{}');
+
+    expect(() => resolveProviderAdapter()).toThrow(/qq init provider/);
+    expect(() => resolveProviderAdapter()).toThrow(pinFile);
+    expect(claudeFetch).not.toHaveBeenCalled();
+    expect(appendDebugLogMock).toHaveBeenCalledWith('provider', 'provider selected', {
+      source: 'invalid',
+    });
+  });
+
+  it('throws for an unreadable pin instead of defaulting to Claude', () => {
+    vi.stubEnv('QQ_PROVIDER_FILE', pinDir);
+    expect(() => resolveProviderAdapter()).toThrow(/not a valid provider pin \(EISDIR\)/);
+  });
+
+  it('throws when the pinned backend is not registered', () => {
+    writePin('{"version":1,"provider":"ollama","model":"gemma4"}');
+    clearProviderBackends();
+    expect(() => resolveProviderAdapter()).toThrow(/provider 'ollama' is not registered/);
+  });
+
+  it('re-reads the file on every call, so a pin edit applies at once (D-15)', () => {
+    writePin('{"version":1,"provider":"ollama","model":"gemma4"}');
+    const first = resolveProviderAdapter();
+    writePin('{"version":1,"provider":"claude"}');
+    const second = resolveProviderAdapter();
+
+    expect(first).toBe(getProviderAdapter('ollama'));
+    expect(second).toBe(getProviderAdapter('claude-cli'));
+    expect(first).not.toBe(second);
+  });
+
+  it('logs provider and source only — never the pin file contents', () => {
+    writePin('{"version":1,"provider":"ollama","model":"secret-model-name"}');
+    resolveProviderAdapter();
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('secret-model-name');
+  });
+});

@@ -39,6 +39,16 @@ vi.mock('../src/providers/resolver.js', () => ({
   })),
 }));
 
+// The daemon-down fallback resolves through the provider pin (08-03). The node:fs mock
+// below has no readFileSync, so the real pin loader must not run in this file.
+vi.mock('../src/providers/provider-pin.js', () => ({
+  resolveProviderAdapter: vi.fn(() => ({
+    fetchCandidates: fetchCandidatesMock,
+  })),
+  loadProviderPin: vi.fn(() => ({ kind: 'absent' })),
+  OLLAMA_DEFAULT_BASE_URL: 'http://localhost:11434',
+}));
+
 // ---------------------------------------------------------------------------
 // References to the real (un-mocked) fs/promises functions, captured before
 // the vi.mock factory runs. These are used inside the FIFO-path describe block
@@ -344,6 +354,10 @@ describe('runForegroundClient', () => {
     vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => ({
       fetchCandidates: fetchCandidatesMock,
     }));
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
     fetchCandidatesMock.mockReset();
   });
 
@@ -467,13 +481,16 @@ describe('runForegroundClient', () => {
     expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
   });
 
-  it('writes error ShellResult when resolveClaudeDefaultAdapter throws', async () => {
+  it('writes error ShellResult when the provider adapter cannot be resolved', async () => {
     const { resolveClaudeDefaultAdapter } = await import('../src/providers/resolver.js');
-    vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => {
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    const notRegistered = () => {
       throw new Error(
         'QueQue: Claude provider is not registered — was bootstrapBuiltins() called?',
       );
-    });
+    };
+    vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(notRegistered);
+    vi.mocked(resolveProviderAdapter).mockImplementation(notRegistered);
 
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
     await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
@@ -482,6 +499,24 @@ describe('runForegroundClient', () => {
     expect(parsed.kind).toBe('error');
     expect(parsed.message).toContain('bootstrapBuiltins');
     expect(parsed.message).toContain('QueQue:');
+    expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
+    expect(fetchCandidatesMock).not.toHaveBeenCalled();
+  });
+
+  it('writes error ShellResult for an invalid provider pin and never calls a provider', async () => {
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => {
+      throw new Error(
+        'QueQue: /home/u/.config/qq/provider.json is not a valid provider pin (provider). Fix the file or run `qq init provider`.',
+      );
+    });
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    const parsed = JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim());
+    expect(parsed.kind).toBe('error');
+    expect(parsed.message).toContain('qq init provider');
     expect(parsed.message).not.toMatch(/QueQue: QueQue:/);
     expect(fetchCandidatesMock).not.toHaveBeenCalled();
   });
@@ -766,6 +801,10 @@ describe('runForegroundClient: resolved guard prevents double write', () => {
     vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => ({
       fetchCandidates: fetchCandidatesMock,
     }));
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
     fetchCandidatesMock.mockReset();
   });
 
@@ -954,6 +993,10 @@ describe('runForegroundClient: installed-tool awareness', () => {
 
     const { resolveClaudeDefaultAdapter } = await import('../src/providers/resolver.js');
     vi.mocked(resolveClaudeDefaultAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
       fetchCandidates: fetchCandidatesMock,
     }));
     fetchCandidatesMock.mockReset();
