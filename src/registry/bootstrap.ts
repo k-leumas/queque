@@ -2,6 +2,7 @@ import { filesystemContextProvider } from '../context/providers/filesystem-conte
 import { gitContextProvider } from '../context/providers/git-context.js';
 import { claudeAdapter } from '../providers/claude.js';
 import { claudeDefaultAdapter } from '../providers/claude-default.js';
+import { ollamaAdapter } from '../providers/ollama.js';
 import { registerContextProvider } from './context-providers.js';
 import { registerProviderBackend } from './provider-backends.js';
 import { registerShellAdapter } from './shell-adapters.js';
@@ -53,6 +54,12 @@ export function bootstrapBuiltins(): void {
     name: 'Claude (CLI)',
     description: 'Claude Code print-mode adapter with SDK rescue',
     adapter: claudeDefaultAdapter,
+  });
+  registerProviderBackend({
+    id: 'ollama',
+    name: 'Ollama (local)',
+    description: 'Local Ollama /api/chat adapter — selected only by a provider.json pin',
+    adapter: ollamaAdapter,
   });
 }
 

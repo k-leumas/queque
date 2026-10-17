@@ -1,5 +1,7 @@
 import * as fs from 'node:fs';
 import * as net from 'node:net';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { shutdownDaemon, trackConnections } from '../src/cli/commands/daemon.js';
@@ -116,18 +118,60 @@ function buildEnvelope(): ContextEnvelope {
   };
 }
 
+/** Sends one ping on a fresh connection and resolves with the first reply. */
+function ping(socketPath: string): Promise<RawMessage> {
+  return new Promise((resolve, reject) => {
+    let buf = '';
+    const client = net.createConnection(socketPath, () => {
+      client.write(`${JSON.stringify({ kind: 'ping' })}\n`);
+    });
+    client.setEncoding('utf8');
+    client.on('data', (chunk) => {
+      buf += String(chunk);
+      const nl = buf.indexOf('\n');
+      if (nl !== -1) {
+        client.destroy();
+        resolve(JSON.parse(buf.slice(0, nl)) as RawMessage);
+      }
+    });
+    client.on('error', reject);
+  });
+}
+
+function ollamaChatResponse(content: string): Response {
+  return new Response(
+    JSON.stringify({
+      model: 'gemma4',
+      message: { role: 'assistant', content },
+      done: true,
+    }),
+    { status: 200 },
+  );
+}
+
 describe('daemon fetch-candidates IPC', () => {
   let socketPath: string;
   let testServer: net.Server | null = null;
+  let pinDir: string;
+  let pinFile: string;
 
   beforeEach(() => {
     const suffix = Math.random().toString(36).slice(2);
     socketPath = `/tmp/qq-fetch-${suffix}.sock`;
     fetchMock.mockReset();
     appendDebugLogMock.mockClear();
+    // No provider.json in a fresh dir: absent pin → the mocked Claude default.
+    pinDir = fs.mkdtempSync(join(tmpdir(), 'qq-pin-'));
+    pinFile = join(pinDir, 'provider.json');
+    vi.stubEnv('QQ_PROVIDER_FILE', pinFile);
+    vi.stubEnv('QQ_CONFIG_FILE', join(pinDir, 'config.json'));
+    vi.stubEnv('QQ_FORCE_SELECTOR', '0');
   });
 
   afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.unstubAllGlobals();
+    fs.rmSync(pinDir, { recursive: true, force: true });
     if (testServer) {
       testServer.close();
       testServer.unref();
@@ -577,6 +621,81 @@ describe('daemon fetch-candidates IPC', () => {
 
       expect(isAbortError(await pending)).toBe(true);
       expect(fetchMock).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('provider pin (08-03)', () => {
+    it('pinned ollama answers fetch-candidates through the daemon', async () => {
+      fs.writeFileSync(pinFile, '{"version":1,"provider":"ollama","model":"gemma4"}');
+      const ollamaFetch = vi.fn(async (_url: URL | string, _init?: RequestInit) =>
+        ollamaChatResponse('[{"command":"ls -la","explanation":"List files"}]'),
+      );
+      vi.stubGlobal('fetch', ollamaFetch);
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const candidates = await requestDaemonFetch(socketPath, buildEnvelope());
+
+      expect(candidates).toEqual([{ command: 'ls -la', explanation: 'List files' }]);
+      expect(ollamaFetch).toHaveBeenCalledTimes(1);
+      const [url, init] = ollamaFetch.mock.calls[0] ?? [];
+      expect(String(url)).toBe('http://localhost:11434/api/chat');
+      const body = JSON.parse(String(init?.body)) as {
+        model: string;
+        stream: boolean;
+        messages: Array<{ role: string; content: string }>;
+      };
+      expect(body.model).toBe('gemma4');
+      expect(body.stream).toBe(false);
+      expect(body.messages[0]?.role).toBe('system');
+      expect(body.messages[1]?.role).toBe('user');
+      const headers = new Headers(init?.headers);
+      expect(headers.has('authorization')).toBe(false);
+      expect(fetchMock).not.toHaveBeenCalled();
+      const selected = loggedStages('provider').find((s) => s.message === 'provider selected');
+      expect(selected?.details).toEqual({ provider: 'ollama', source: 'pin' });
+    });
+
+    it('invalid pin is a fetch-error and the daemon stays up', async () => {
+      fs.writeFileSync(pinFile, '{}');
+      const ollamaFetch = vi.fn();
+      vi.stubGlobal('fetch', ollamaFetch);
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const error = await requestDaemonFetch(socketPath, buildEnvelope()).catch(
+        (caught: unknown) => caught,
+      );
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error).not.toBeInstanceOf(IpcTransportError);
+      expect((error as Error).message).toMatch(/provider pin/);
+      expect((error as Error).message).toMatch(/qq init provider/);
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(ollamaFetch).not.toHaveBeenCalled();
+      expect((await ping(socketPath)).kind).toBe('pong');
+    });
+
+    it('pin change applies on the next fetch without restart', async () => {
+      fs.writeFileSync(pinFile, '{"version":1,"provider":"ollama","model":"gemma4"}');
+      const ollamaFetch = vi.fn(async () =>
+        ollamaChatResponse('[{"command":"ls -la","explanation":"List files"}]'),
+      );
+      vi.stubGlobal('fetch', ollamaFetch);
+      fetchMock.mockResolvedValue([ROW_A]);
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      await requestDaemonFetch(socketPath, buildEnvelope());
+      expect(ollamaFetch).toHaveBeenCalledTimes(1);
+      expect(fetchMock).not.toHaveBeenCalled();
+
+      fs.writeFileSync(pinFile, '{"version":1,"provider":"claude"}');
+      const candidates = await requestDaemonFetch(socketPath, buildEnvelope());
+
+      expect(candidates).toEqual([ROW_A]);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(ollamaFetch).toHaveBeenCalledTimes(1);
     });
   });
 

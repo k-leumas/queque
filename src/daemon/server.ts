@@ -1,7 +1,7 @@
 import * as net from 'node:net';
 import { commandCandidateSchema } from '../contracts/candidates.js';
 import { ipcRequestSchema } from '../contracts/ipc.js';
-import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
+import { resolveProviderAdapter } from '../providers/provider-pin.js';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 
@@ -126,11 +126,12 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
                       void appendDebugLog('daemon', 'replied candidate', { index });
                     }
                   : undefined;
-              // Resolution throws stay inside the chain so they become fetch-error.
+              // Resolution throws (an invalid provider pin) stay inside the chain so they
+              // become fetch-error. The pin is re-read on every fetch (D-15).
               void Promise.resolve()
                 .then(() => {
                   bootstrapBuiltins();
-                  const adapter = resolveClaudeDefaultAdapter();
+                  const adapter = resolveProviderAdapter();
                   return adapter.fetchCandidates(envelope, {
                     signal: connectionAbort.signal,
                     onCandidate,
