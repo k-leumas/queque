@@ -196,14 +196,19 @@ jobs:
               <<~EOS
                 ==> Get started with queque
 
-                  Step 1 — activate the ?? trigger:
+                  Step 1 — connect QueQue to Claude (pick one):
+                    Already use Claude Code? Sign in once, no API key needed:
+                      claude /login
+                    Or add an Anthropic API key to ~/.zshrc:
+                      export ANTHROPIC_API_KEY="sk-ant-..."
+
+                  Step 2 — activate the ?? trigger:
                     qq init zsh && source ~/.zshrc
 
-                  Step 2 — add your Anthropic API key to ~/.zshrc:
-                    export ANTHROPIC_API_KEY="sk-ant-..."
-
-                  Then open a new terminal and try:
+                  Then try:
                     git log??
+
+                  Details: https://github.com/k-leumas/queque#authentication
               EOS
             end
           formula_folder: Formula
