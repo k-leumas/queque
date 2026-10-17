@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 09.1 complete, ready to plan Phase 7
-last_updated: "2026-10-17T09:34:50.405Z"
+last_updated: "2026-10-17T10:24:31.297Z"
 last_activity: 2026-10-13
 last_activity_desc: Phase 09.1 complete, transitioned to Phase 7
-state_head: 3d0cb0abbeba1cb46e2c3e9ffa714c8a5e14159d
+state_head: c4583bfd1370b90f94e3d4a67ce10aa7720529c6
 progress:
   total_phases: 12
   completed_phases: 8
@@ -168,10 +168,11 @@ None yet.
 | 261012-kp1 | rewrite CHANGELOG as user-facing highlights with detailed commits under details; LLM notes from the changeset at release | 2026-10-12 | 47faf6b | [261012-kp1-rewrite-changelog-md-to-user-facing-feat](./quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/) |
 | 261012-nlf | fix T-09.1-14 / WR-01-r2: fail closed on any non-normal SDK or claude -p stop_reason (no prose fallback on truncated text) | 2026-10-12 | fd05184 | [261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-](./quick/261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-/) |
 | 261017-4kt | Update README to match current functionality (Claude Code /login auth, key precedence, init fix, tool awareness, privacy) | 2026-10-17 | 3d0cb0a | [261017-4kt-update-the-readme-to-match-the-current-f](./quick/261017-4kt-update-the-readme-to-match-the-current-f/) |
+| 261017-5q6 | Fix stale qq init command and auth guidance in help, zsh widget, Homebrew caveats, CONTRIBUTING.md | 2026-10-17 | c4583bf | [261017-5q6-fix-the-stale-init-command-in-homebrew-y](./quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-17 - Completed quick task 261017-4kt: Update README to match current functionality (Claude Code /login auth)
+Last activity: 2026-10-17 - Completed quick task 261017-5q6: Fix stale qq init command and auth guidance
 
 Last session: 2026-10-12T21:58:47.187Z
 Stopped at: Phase 09.1 complete, ready to plan Phase 7

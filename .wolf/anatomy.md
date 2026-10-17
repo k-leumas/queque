@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T10:16:59.614Z
-> Files: 541 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T10:23:46.642Z
+> Files: 545 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -29,6 +29,9 @@
 
 - `buglog.py` (~388 tok)
 - `gate.sh` — README invention gate (pre-commit portion of the Task 2 verify). (~318 tok)
+- `verify2.sh` — Task 2 verify from the plan, run from the worktree root. (~346 tok)
+- `verify3.sh` — Task 3 verify from the plan (content checks), run from the worktree root. (~360 tok)
+- `wolf.py` — anatomy (~871 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
 
@@ -314,6 +317,10 @@
 ## .claude/worktrees/agent-a6493f5431239884a/tests/fixtures/
 
 - `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~2333 tok)
+
+## .claude/worktrees/agent-a6710c066c0a39737/.planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/
+
+- `261017-5q6-SUMMARY.md` — Phase quick-261017-5q6 Plan 01: Fix the stale init command Summary (~1373 tok)
 
 ## .claude/worktrees/agent-a78bb2a4d3d56c042/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
