@@ -5472,6 +5472,70 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-17T00:00:00.000Z"
+    },
+    {
+      "id": "bug-333",
+      "timestamp": "2026-10-17T09:26:11.123Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/261017-4kt-PLAN.md",
+      "root_cause": "Had '^\\.pnpm-store/'",
+      "fix": "Changed to '^\\.pnpm-store/|\\.mov$'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-17T09:26:20.436Z"
+    },
+    {
+      "id": "bug-334",
+      "timestamp": "2026-10-17T09:29:46.524Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ae9670272fd631ddb/README.md",
+      "root_cause": "9 lines replaced/restructured",
+      "fix": "Rewrote 31→59 lines (9 removed) | Also: A selection UI opens in-terminal. Pick a command w; Press `Esc` to cancel and return to what you were ",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-17T09:30:50.421Z"
+    },
+    {
+      "id": "bug-335",
+      "timestamp": "2026-10-17T09:31:11.225Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-ae9670272fd631ddb/README.md",
+      "root_cause": "Had `QQ_DEBUG_VERBOSE=1`",
+      "fix": "Changed to `/tmp/qq-<uid>-debug.log`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T09:31:11.225Z"
+    },
+    {
+      "id": "bug-336",
+      "timestamp": "2026-10-17T09:32:04.400Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-ae9670272fd631ddb/.wolf/anatomy.md",
+      "root_cause": "Had `effort`",
+      "fix": "Changed to `qq init zsh && source ~/.zshrc`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T09:32:04.400Z"
     }
   ]
 }

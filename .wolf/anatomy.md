@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T08:07:57.676Z
-> Files: 531 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T09:33:26.396Z
+> Files: 539 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -24,6 +24,11 @@
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/6df9b051-6b36-4cc3-b54a-ab10fd3c4c5d/scratchpad/
 
 - `gap-section.md` — Gap-Closure Review: Plan 09-06 (~2914 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/840156fe-42dd-4e7c-b9ce-99f2f1dfabc9/scratchpad/
+
+- `buglog.py` (~388 tok)
+- `gate.sh` — README invention gate (pre-commit portion of the Task 2 verify). (~318 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
 
@@ -547,6 +552,19 @@
 
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~6651 tok)
 
+## .claude/worktrees/agent-ae9670272fd631ddb/
+
+- `README.md` — Project documentation (~2192 tok)
+
+## .claude/worktrees/agent-ae9670272fd631ddb/.planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/
+
+- `261017-4kt-SUMMARY.md` — Phase quick-261017-4kt Plan 01: README refresh Summary (~1956 tok)
+
+## .claude/worktrees/agent-ae9670272fd631ddb/.wolf/
+
+- `anatomy.md` — anatomy.md (~21191 tok)
+- `cerebrum.md` — Cerebrum (~14148 tok)
+
 ## .claude/worktrees/agent-aee12978fe710dd1a/
 
 - `README.md` — Project documentation (~1229 tok)
@@ -891,6 +909,11 @@
 
 - `261012-kp1-PLAN.md` (~912 tok)
 - `261012-kp1-SUMMARY.md` — Summary: User-facing changelog (~182 tok)
+
+## .planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/
+
+- `261017-4kt-PLAN.md` — Code-grounded facts (observed by the planner on 2026-10-17; re-check each one against the cited code (~5812 tok)
+- `COVERAGE.md` (~46 tok)
 
 ## .planning/research/
 

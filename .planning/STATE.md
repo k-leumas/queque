@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 09.1 complete, ready to plan Phase 7
-last_updated: "2026-10-13T18:41:45.736Z"
+last_updated: "2026-10-17T09:34:50.405Z"
 last_activity: 2026-10-13
 last_activity_desc: Phase 09.1 complete, transitioned to Phase 7
-state_head: bb6a7fc8d1921961337e534c7fe4e86c1292ec15
+state_head: 3d0cb0abbeba1cb46e2c3e9ffa714c8a5e14159d
 progress:
   total_phases: 12
   completed_phases: 8
@@ -167,10 +167,11 @@ None yet.
 | 261011-jbh | instant first frame from the zsh widget + bundled, compile-cached client (modal no longer blank before loading) | 2026-10-11 | e8e3127 | [261011-jbh-instant-first-frame-from-the-zsh-widget-](./quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/) |
 | 261012-kp1 | rewrite CHANGELOG as user-facing highlights with detailed commits under details; LLM notes from the changeset at release | 2026-10-12 | 47faf6b | [261012-kp1-rewrite-changelog-md-to-user-facing-feat](./quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/) |
 | 261012-nlf | fix T-09.1-14 / WR-01-r2: fail closed on any non-normal SDK or claude -p stop_reason (no prose fallback on truncated text) | 2026-10-12 | fd05184 | [261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-](./quick/261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-/) |
+| 261017-4kt | Update README to match current functionality (Claude Code /login auth, key precedence, init fix, tool awareness, privacy) | 2026-10-17 | 3d0cb0a | [261017-4kt-update-the-readme-to-match-the-current-f](./quick/261017-4kt-update-the-readme-to-match-the-current-f/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-12 - Completed quick task 261012-nlf: fail closed on any non-normal SDK or claude -p stop_reason (T-09.1-14)
+Last activity: 2026-10-17 - Completed quick task 261017-4kt: Update README to match current functionality (Claude Code /login auth)
 
 Last session: 2026-10-12T21:58:47.187Z
 Stopped at: Phase 09.1 complete, ready to plan Phase 7

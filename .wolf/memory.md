@@ -2915,3 +2915,24 @@
 | 02:07 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_rebase_wolf_conflicts.md | — | ~209 |
 | 02:08 | Session end: 2 writes across 2 files (09.1-VERIFICATION.md, feedback_rebase_wolf_conflicts.md) | 0 reads | ~7578 tok |
 | 03:32 | quick-261017-4kt: README rewritten for Claude Code /login route, key precedence, daemon restart, fixed init command, Node 24, streaming picker, tool awareness, privacy fields | README.md, .wolf/* | gate OK | ~5000 |
+
+## Session: 2026-10-17 03:16
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 03:26 | Created .planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/261017-4kt-PLAN.md | — | ~6169 |
+| 03:26 | Edited .planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/261017-4kt-PLAN.md | inline fix | ~66 |
+| 03:26 | Edited .planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/261017-4kt-PLAN.md | "^\.pnpm-store/|\.mov$" → "%s\n" | ~66 |
+| 03:26 | Created .planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/COVERAGE.md | — | ~49 |
+| 03:26 | planned quick-261017-4kt README refresh (/login auth, init fix, tool-awareness, privacy) | .planning/quick/261017-4kt-*/261017-4kt-PLAN.md | 2-task plan, validated | ~25k |
+| 03:28 | Session end: 4 writes across 2 files (261017-4kt-PLAN.md, COVERAGE.md) | 1 reads | ~6803 tok |
+| 03:29 | Edited .claude/worktrees/agent-ae9670272fd631ddb/README.md | expanded (+28 lines) | ~798 |
+| 03:29 | Edited .claude/worktrees/agent-ae9670272fd631ddb/README.md | inline fix | ~33 |
+| 03:30 | Edited .claude/worktrees/agent-ae9670272fd631ddb/README.md | expanded (+8 lines) | ~359 |
+| 03:30 | Edited .claude/worktrees/agent-ae9670272fd631ddb/README.md | 5→7 lines | ~152 |
+| 03:31 | Edited .claude/worktrees/agent-ae9670272fd631ddb/README.md | "QQ_DEBUG_VERBOSE=1" → "/tmp/qq-<uid>-debug.log" | ~84 |
+| 03:31 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/840156fe-42dd-4e7c-b9ce-99f2f1dfabc9/scratchpad/gate.sh | — | ~318 |
+| 03:32 | Edited .claude/worktrees/agent-ae9670272fd631ddb/.wolf/anatomy.md | inline fix | ~165 |
+| 03:32 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/840156fe-42dd-4e7c-b9ce-99f2f1dfabc9/scratchpad/buglog.py | — | ~388 |
+| 03:32 | Edited .claude/worktrees/agent-ae9670272fd631ddb/.wolf/cerebrum.md | modified order() | ~418 |
+| 03:33 | Created .claude/worktrees/agent-ae9670272fd631ddb/.planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/261017-4kt-SUMMARY.md | — | ~2086 |
