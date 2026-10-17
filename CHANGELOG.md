@@ -1,3 +1,18 @@
+## [0.6.1](https://x-access-token:[secure]@github.com/k-leumas/queque/compare/v0.6.0...v0.6.1) (2026-10-17)
+
+### Bug Fixes
+
+- The Homebrew install instructions now mention logging into Claude Code, so you know that extra step is needed to get QueQue working.
+- The CLI now shows the correct `qq init` command for setup, so following the on-screen instructions won't accidentally overwrite your existing ~/.zshrc.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **homebrew:** offer the claude code login in the install caveats ([e80fa9b](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/e80fa9bd0077169e2c85425c867b6b1fb149fa07))
+* **cli:** show the qq init command that keeps ~/.zshrc intact ([02f6f7c](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/02f6f7cb9171b8862ba5bf35e6230323f95302b3))
+
+</details>
+
 # [0.6.0](https://x-access-token:[secure]@github.com/k-leumas/queque/compare/v0.5.2...v0.6.0) (2026-10-17)
 
 ### Features
