@@ -2942,3 +2942,6 @@
 | 04:16 | Created .planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/COVERAGE.md | — | ~68 |
 | 04:16 | Edited .planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/261017-5q6-PLAN.md | "^(\.pnpm-store/|dist/)|\." → "%s\n" | ~60 |
 | 04:16 | Edited .planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/261017-5q6-PLAN.md | 2→2 lines | ~84 |
+| 04:20 | 261017-5q6 T1: init help, zsh qq-not-found message and both caveats now say `qq init zsh && source ~/.zshrc` | src/cli/main.ts, shell/zsh/queque.zsh, .github/workflows/release.yaml, .github/workflows/homebrew.yml | build/typecheck/biome/56 zsh tests/actionlint green, commit 9452354 | ~2000 |
+| 04:24 | 261017-5q6 T2: caveats auth-first with `claude /login` + key export, Details link; both workflows render identically | .github/workflows/release.yaml, .github/workflows/homebrew.yml | ruby-rendered diff + actionlint green, commit 135f168 | ~1500 |
+| 04:28 | 261017-5q6 T3: CONTRIBUTING key optional, QQ_MODEL claude-sonnet-5 (SDK only), .env.local upward lookup, debug log default; cerebrum + buglog bug-338 | CONTRIBUTING.md, .wolf/cerebrum.md, .wolf/buglog.json, .wolf/anatomy.md | verify green | ~2500 |

@@ -116,6 +116,8 @@
 - [2026-10-17] Provider order (claude-default.ts): a non-empty ANTHROPIC_API_KEY (env, then `.env.local`) always takes the SDK path; no key means `claude -p` on the Claude Code login. No cross-fallback in either direction. QQ_MODEL affects the SDK path only (`claude -p` gets no model flag).
 - [2026-10-17] Node-side `appendDebugLog` always writes (redacted) to `QQ_DEBUG_LOG_FILE` or `/tmp/qq-<uid>-debug.log`; only the zsh `_qq_log` is gated on QQ_DEBUG_LOG_FILE. Do not document debug logging as "off by default".
 - [2026-10-17] The README stays trim and user-facing: developer-only variables (dev root, force selector, instant frame, modal, result file) live in CONTRIBUTING.md (commit 0f3644f). Do not add a full env-var table to the README.
+- [2026-10-17] The Homebrew formula caveats live in two places: release.yaml `publish-homebrew` (normal path) and homebrew.yml (workflow_dispatch fallback). Edit both identically and check them by rendering `formula_includes` through python3 yaml + ruby (`eval`, then `puts caveats`).
+- [2026-10-17] `initCommand` writes ~/.zshrc itself and prints a status line on stdout, so every doc and help string must use `qq init zsh && source ~/.zshrc`, never a `>> ~/.zshrc` redirect (that writes the status line into ~/.zshrc as a command).
 
 ## Do-Not-Repeat
 - [2026-10-12] Do not fail closed on one bad enum value (the WR-07 check for `stop_reason === 'max_tokens'` only): a `refusal` or `pause_turn` fragment still reached the prose fallback (WR-01-r2, T-09.1-14). Use an allow list of the known-good values (end_turn, stop_sequence) so refusal, pause_turn, null and future values fail closed.

@@ -162,7 +162,7 @@
 - `biome.json` (~213 tok)
 - `CHANGELOG.md` — User-facing release notes: Features / Bug Fixes / Deprecations highlights with conventional-commit lists under `<details>` (LLM-written from the changeset at release). Unreleased = v0.5.0..HEAD. (~2200 tok)
 - `CLAUDE.md` — OpenWolf (~1668 tok)
-- `CONTRIBUTING.md` — Contributing (~1150 tok)
+- `CONTRIBUTING.md` — Contributing: dev setup, live debug log (always-on `/tmp/qq-<uid>-debug.log`), Claude Provider env table (key optional, `claude -p` login route, QQ_MODEL `claude-sonnet-5` SDK route only) (~1450 tok)
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~499 tok)
@@ -983,7 +983,7 @@
 ## src/cli/
 
 - `launcher.ts` — CLI launcher built as dist/cli/main.js (quick 261011-jbh, LD-2): Node built-ins only; enables the module compile cache in `${XDG_CACHE_HOME:-~/.cache}/queque/node-compile-cache` (0700; queque parent + leaf lstat-checked: real dir, owned by getuid, no group/world write; skipped when NODE_COMPILE_CACHE / NODE_DISABLE_COMPILE_CACHE is set; silent on failure), then imports `new URL('./app.js', import.meta.url)` and awaits `main()`. (~955 tok)
-- `main.ts` — Exports main; the `client` action calls `process.exit(process.exitCode ?? 0)` after clientCommand (D-15, 09.1-01). (~1300 tok)
+- `main.ts` — Exports main; the `client` action calls `process.exit(process.exitCode ?? 0)` after clientCommand (D-15, 09.1-01). The `init <shell>` help names `qq init zsh && source ~/.zshrc` (261017-5q6). (~1300 tok)
 
 ## src/cli/commands/
 

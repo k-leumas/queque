@@ -95,13 +95,13 @@ With `pnpm dev` running, every rebuild updates the code behind `??` immediately.
 
 ## Live Debug Log
 
-For shell/widget debugging, you can opt into a plain-text log by setting:
+The client and daemon always append redacted diagnostics to `/tmp/qq-<uid>-debug.log`. Setting `QQ_DEBUG_LOG_FILE` moves that log and also turns on the zsh widget's own lines:
 
 ```bash
 export QQ_DEBUG_LOG_FILE=/tmp/qq-debug.log
 ```
 
-When enabled, the repo writes to `/tmp/qq-debug.log`. Watch it live with:
+With that set, everything writes to `/tmp/qq-debug.log`. Watch it live with:
 
 ```bash
 tail -f /tmp/qq-debug.log
@@ -115,13 +115,13 @@ The interactive shell hook also prewarms the daemon once per shell session, so t
 
 The foreground client asks Claude for a strict JSON command suggestion.
 
-Set these environment variables before running the client (or place them in `.env.local` in the repo root):
+QueQue reaches Claude through the Anthropic SDK when `ANTHROPIC_API_KEY` is set, and through `claude -p` on your Claude Code `/login` when it is not (see [Authentication](README.md#authentication)). Set these variables in the environment, or in a `.env.local` that the daemon finds by searching upward from the directory it was started in. The daemon reads them once at start, so restart it after a change ([restart steps](README.md#after-changing-your-key-or-settings)).
 
 | Variable | Default | Description |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | — | Required. Your Anthropic API key. |
-| `QQ_MODEL` | `claude-haiku-4-5-20251001` | Override the Claude model used for suggestions. If omitted, the provider uses the default model. |
-| `QQ_DEBUG_LOG_FILE` | — | Path to write a plain-text debug log (e.g. `/tmp/qq.log`). |
+| `ANTHROPIC_API_KEY` | — | Optional. A non-empty key always selects the Anthropic SDK. Without one, QueQue runs `claude -p` on your Claude Code login. Neither route falls back to the other. |
+| `QQ_MODEL` | `claude-sonnet-5` | Overrides the model on the API-key route only. `claude -p` gets no model flag and uses Claude Code's default model. |
+| `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Where the client and daemon append redacted diagnostics. The zsh widget adds its own lines only when this is set. |
 
 When the current directory is inside a git repository, the prompt includes the repo root, branch, and dirty state as extra context.
 
