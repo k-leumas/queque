@@ -1,67 +1,77 @@
+# [0.6.0](https://x-access-token:[secure]@github.com/k-leumas/queque/compare/v0.5.2...v0.6.0) (2026-10-17)
+
+### Features
+
+- Command suggestions now stream in as they're generated, so the picker fills up progressively instead of waiting for every candidate at once.
+- Suggestions that have already arrived stay selectable even if a later one fails to generate.
+- QueQue now keeps a command process warmed up in the background so suggestions can start generating noticeably faster.
+- You can press Esc to cancel a suggestion request that's in progress.
+- The effort level used to generate suggestions can now be tuned in config.json.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **09.1-04:** send the effort setting as output_config on the SDK path ([6658c07](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/6658c0754da4568318717a6b3f979790dcc08f90))
+* **09.1-04:** stream the SDK request with abort and incremental candidates ([7955ca2](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/7955ca29b8bbdd583a87af6176b46636a9929299))
+* **09.1-07:** keep arrived rows selectable after a late provider failure ([9a73fcd](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/9a73fcdd09b46343c5301f30343fe15c46e9f6e8))
+* **09.1-07:** render streamed rows as a growing list in the modal ([c947e5f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/c947e5ff5c53473f0406f53c4a71402ad861e753))
+* **09.1-05:** use the prewarmed claude -p process in the daemon and refill it ([8e4bbdc](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/8e4bbdc2ba6f4484ff19388e16d4fe35558f588b))
+* **09.1-05:** run a turn on a prewarmed child and keep a one-slot prewarm pool ([03e0ac7](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/03e0ac7e5f1a9ac27ce143bf4e863c4977078815))
+* **09.1-06:** bound the claude -p runner and arm the post-result backstop ([04b1432](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/04b1432fcfddd0e41ae522547760136a31d3214e))
+* **09.1-06:** cap the stream-json parser carry at 1 MiB ([417dc42](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/417dc42be236b258e44567729e56fe2ae274da2c))
+* **09.1-03:** never re-query in-process after streamed rows arrived ([f066802](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/f0668020598ad6c2ddc0438edd110885e83fb3cb))
+* **09.1-03:** stream each candidate to a stream:true client over IPC ([ef5a734](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/ef5a73443699407092094cba8853655a3520a51c))
+* **09.1-02:** stream validated claude -p candidates as they arrive ([df13f42](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/df13f42d162e228a6144cec72e8f7622b86f28be))
+* **09.1-02:** run claude -p at low effort, overridable in config.json ([9d48de1](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/9d48de1ed88201b418691ceb436a35c39adb54b0))
+* **09.1-01:** log each claude -p turn stage with elapsed ms ([0cc34e0](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/0cc34e0d06e789739a65b6ba0b9c16bd35a1057d))
+* **09.1-01:** cancel the claude -p turn on Esc and resolve it on the stream-json result ([07fa14b](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/07fa14b9e31e274ee8ecbd2f820b9d4775270c2f))
+
+</details>
+
+### Bug Fixes
+
+- Fixed an issue where pressing Enter, Tab, arrow keys, or Backspace right after typing could be missed if they arrived in the same burst of input.
+- The filter field now opens empty and shows your original command line only in the header, instead of pre-filling the filter.
+- Fixed cases where a cut-off or failed response from the assistant could silently show a bad suggestion; these now fail clearly instead, and longer answers are less likely to get cut off.
+- Fixed the selection highlight breaking when a filter narrowed the list down to zero results.
+- Fixed the selected item sometimes getting reset unexpectedly while you were still typing.
+- Text you've typed into the filter is no longer lost while the first suggestions are still loading.
+- Fixed a rare freeze by making the background warm-up process restart automatically if it stalls.
+- Shutting down the background daemon now properly stops any in-progress suggestion requests instead of leaving them hanging.
+- Fixed garbled text that could appear when input containing multi-byte characters arrived in split chunks.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **09.1:** keep closed rows or throw the truncation copy on claude -p (WR-01-r2) ([8409b07](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/8409b0764efc7a8f5235480dc1be3d2b9207ed9c))
+* **09.1:** reject a claude -p result with a non-normal stop reason (WR-01-r2) ([646aed3](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/646aed3d79b0fa87e45cadcade60a1a0552ff734))
+* **09.1:** fail closed on every non-normal sdk stop reason (WR-01-r2) ([ced3d8f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/ced3d8fb2a2d65ddbbc926e714ee8dd402147e6a))
+* **09.1-10:** let enter, tab and arrows see earlier keys of the same stdin read (CR-01) ([6392dec](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/6392dec03d86179687566ea5791e468ceee9fcdb))
+* **09.1-10:** keep a backspace that shares a stdin read with typed keys (CR-01) ([f27f82f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/f27f82f0ee967cf8e3b6872e1ba543eaf074339e))
+* **09.1-09:** open the filter empty and show the lbuffer only in the header (G-09.1-5) ([80def35](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/80def35cf956d8b9f10b3831717ba019c34869e4))
+* **09.1:** fail closed on a truncated sdk answer and raise max_tokens (WR-07) ([cbb1b6d](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/cbb1b6dccda3f7e76da169042016b18c6bcfbeda))
+* **09.1:** keep the selection index valid on an empty filtered list (WR-06) ([f9b302d](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/f9b302dde277e7f854371dd2ecf65316982cc63d))
+* **09.1:** reset the selection in the key handlers, not a query effect (WR-05) ([580208a](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/580208a1d8cb7f2a4ad0706ebf5d81c878715c30))
+* **09.1:** keep a filter typed during loading on the first streamed row (WR-04) ([87653c9](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/87653c91b2bc03d933a0ef0a2a1568fc5b2d70eb))
+* **09.1:** disable prewarm and abort in-flight turns on daemon shutdown (WR-03) ([bc5d450](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/bc5d45029a8fc9682a8b9c661702a04122d42f16))
+* **09.1:** retry a prewarmed child that stalls before init cold (WR-02) ([9579b93](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/9579b93f3db74626634f11c5060552f33979da84))
+* **09.1:** decode daemon ipc input as utf-8 across chunks (WR-01) ([c9d1374](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/c9d1374921d4cca98b646c5617ad99ee5d9cea6e))
+
+</details>
+
 # Changelog
 
 All notable changes to this project are documented in this file.
 
 Highlights describe how QueQue got better. Expand **Detailed changes** for the commit list.
 
-## [Unreleased]
-
-### Features
-
-- **Suggestions appear as they arrive.** You no longer wait for the full model response to see the first command. Rows show up in the list as soon as they are ready, and you can pick one even if the rest are still coming.
-- **Esc actually stops the wait.** Cancelling during `thinking…` stops the provider request instead of leaving it running in the background.
-- **Claude Code answers get out of the way faster.** A warm `claude` process stays ready in the daemon, and queries run at a low-effort default you can raise in `config.json` — so ordinary `??` lookups spend less time thinking.
-- **A late failure still leaves you a list.** If the request dies after some rows arrived, those rows stay selectable instead of the modal going empty.
-
-<details>
-<summary>Detailed changes</summary>
-
-* **09.1-04:** send the effort setting as output_config on the SDK path ([6fbce51](https://github.com/k-leumas/queque/commit/6fbce51a7188faeb7888faaa7d9fc8f9d3fb2b18))
-* **09.1-07:** keep arrived rows selectable after a late provider failure ([3ece3aa](https://github.com/k-leumas/queque/commit/3ece3aaa21afedff7347ff95025503a004b7c037))
-* **09.1-05:** use the prewarmed claude -p process in the daemon and refill it ([5534823](https://github.com/k-leumas/queque/commit/5534823dc5e59f24c2e4aa821dfcf45f5f50d49b))
-* **09.1-07:** render streamed rows as a growing list in the modal ([4254ffd](https://github.com/k-leumas/queque/commit/4254ffdb2fbdbefbd6a3ab94afdea172fa1eb536))
-* **09.1-04:** stream the SDK request with abort and incremental candidates ([f73f5d4](https://github.com/k-leumas/queque/commit/f73f5d49c1896d1df823b9300545c65a63a1f0c7))
-* **09.1-05:** run a turn on a prewarmed child and keep a one-slot prewarm pool ([f4cf882](https://github.com/k-leumas/queque/commit/f4cf882ed4aca002411f4b5bd381a879576d1997))
-* **09.1-06:** bound the claude -p runner and arm the post-result backstop ([8d3b81d](https://github.com/k-leumas/queque/commit/8d3b81d2d2331423b6f517b3dc5706cb0d73025a))
-* **09.1-03:** never re-query in-process after streamed rows arrived ([7f89384](https://github.com/k-leumas/queque/commit/7f893846b6226c4cc600d40bebb1954d25ac9f3a))
-* **09.1-02:** stream validated claude -p candidates as they arrive ([388c6bc](https://github.com/k-leumas/queque/commit/388c6bc53995ceba08e758710226430c0a6edfd7))
-* **09.1-03:** stream each candidate to a stream:true client over IPC ([b421548](https://github.com/k-leumas/queque/commit/b4215488944e236efa6b9108675c2b628cbac210))
-* **09.1-06:** cap the stream-json parser carry at 1 MiB ([fa9d062](https://github.com/k-leumas/queque/commit/fa9d06276159c5aefc069fa2216931f843bcf078))
-* **09.1-02:** run claude -p at low effort, overridable in config.json ([97b60cb](https://github.com/k-leumas/queque/commit/97b60cb8a2725d94f4f5fb8aeb3c32f5d0499d41))
-* **09.1-01:** log each claude -p turn stage with elapsed ms ([6fc2b3c](https://github.com/k-leumas/queque/commit/6fc2b3c4269a881b7aec09f4fb1810feff9592b3))
-* **09.1-01:** cancel the claude -p turn on Esc and resolve it on the stream-json result ([0b358bb](https://github.com/k-leumas/queque/commit/0b358bb747dbc1e06b4b0278ea74c7c72b7ea8e2))
-
-</details>
-
-### Bug Fixes
-
-- **FILTER starts empty.** The text you already typed stays in the header; the filter box opens blank so you can narrow the list without fighting a pre-filled query.
-- **Typing during `thinking…` still filters.** Text you enter while rows are arriving is the whole filter, not an append onto the original query.
-- **The list does not lose your place.** Arrowing through an empty filter, streamed updates, and Tab toggles keep a valid selection instead of jumping or highlighting nothing.
-
-<details>
-<summary>Detailed changes</summary>
-
-* **09.1-09:** open the filter empty and show the lbuffer only in the header (G-09.1-5) ([6888d4d](https://github.com/k-leumas/queque/commit/6888d4d6e3b476855d05111f5f06f0db6b043abe))
-* **09.1:** fail closed on a truncated sdk answer and raise max_tokens (WR-07) ([b9bc1b3](https://github.com/k-leumas/queque/commit/b9bc1b3f4470b5d6ab880f00ea26a3a0f47e42a7))
-* **09.1:** keep the selection index valid on an empty filtered list (WR-06) ([2776f9a](https://github.com/k-leumas/queque/commit/2776f9ac490c799450fa6a938534273a3a99cac5))
-* **09.1:** reset the selection in the key handlers, not a query effect (WR-05) ([a1eef40](https://github.com/k-leumas/queque/commit/a1eef40fc7f8d418f9d6ab56721115246decef96))
-* **09.1:** keep a filter typed during loading on the first streamed row (WR-04) ([17bf7d3](https://github.com/k-leumas/queque/commit/17bf7d3e55248394749b1cafdf8f2c2f5ee5222f))
-* **09.1:** disable prewarm and abort in-flight turns on daemon shutdown (WR-03) ([c66ce51](https://github.com/k-leumas/queque/commit/c66ce5164760b9162196e861c6775878420c88db))
-* **09.1:** retry a prewarmed child that stalls before init cold (WR-02) ([5ed66aa](https://github.com/k-leumas/queque/commit/5ed66aa84d5b6e7c820ad48e67cbda87f97476a5))
-* **09.1:** decode daemon ipc input as utf-8 across chunks (WR-01) ([0175c3e](https://github.com/k-leumas/queque/commit/0175c3e2061d0726ed28c9afeb0a9b10682e4661))
-
-</details>
-
 ## [0.5.2](https://github.com/k-leumas/queque/compare/v0.5.1...v0.5.2) (2026-10-17)
-
 
 ### Bug Fixes
 
 * **deps:** update dependency ink to v7.1.1 ([08c68dd](https://github.com/k-leumas/queque/commit/08c68dd7bd2dec9031091d87bae1af9ea8943c22))
 
 ## [0.5.1](https://github.com/k-leumas/queque/compare/v0.5.0...v0.5.1) (2026-10-12)
-
 
 ### Bug Fixes
 
