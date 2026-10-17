@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T09:33:26.396Z
-> Files: 539 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T10:16:59.614Z
+> Files: 541 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -914,6 +914,11 @@
 
 - `261017-4kt-PLAN.md` — Code-grounded facts (observed by the planner on 2026-10-17; re-check each one against the cited code (~5812 tok)
 - `COVERAGE.md` (~46 tok)
+
+## .planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/
+
+- `261017-5q6-PLAN.md` — Quick plan: replace the stale `>>` init redirect with `qq init zsh && source ~/.zshrc` in src/cli/main.ts help, shell/zsh/queque.zsh qq-not-found zle message, release.yaml + homebrew.yml caveats (tracer); caveats auth-first with `claude /login`; CONTRIBUTING.md key optional / QQ_MODEL `claude-sonnet-5` / debug log default; python yaml + ruby caveats render gate (~6700 tok)
+- `COVERAGE.md` — api-coverage gate declaration: no external API integration (docs/help wording only) (~64 tok)
 
 ## .planning/research/
 

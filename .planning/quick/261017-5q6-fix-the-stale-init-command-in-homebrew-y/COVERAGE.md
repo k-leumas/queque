@@ -1,0 +1,1 @@
+No external API integration: corrects install/auth wording only (qq init help string, zsh widget message, Homebrew caveats, CONTRIBUTING.md) to describe the Anthropic SDK and `claude -p` routes already shipped in src/providers/; no provider code changes.

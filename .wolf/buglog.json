@@ -5536,6 +5536,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-17T09:32:04.400Z"
+    },
+    {
+      "id": "bug-337",
+      "timestamp": "2026-10-17T10:16:57.075Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/261017-5q6-PLAN.md",
+      "root_cause": "Had '^(\\.pnpm-store/|dist/)|\\.mov$|_session\\.json$'",
+      "fix": "Changed to '%s\\n'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-17T10:16:59.638Z"
     }
   ]
 }
