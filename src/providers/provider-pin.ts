@@ -1,6 +1,7 @@
-import { readFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { chmodSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { z } from 'zod';
 import { getProviderAdapter } from '../registry/provider-backends.js';
 import { appendDebugLog } from '../shared/debug-log.js';
@@ -116,6 +117,35 @@ export function loadProviderPin(): ProviderPinState {
     return { kind: 'invalid', path, message: describeIssues(result.error) };
   }
   return { kind: 'pinned', pin: result.data };
+}
+
+/**
+ * Writes the pin atomically and returns its path (D-14, D-15).
+ *
+ * The pin is validated first, so the writer can never store anything the loader would
+ * reject (and the strict schema keeps secrets out). The JSON goes to a sibling temp file
+ * created exclusively (`wx`, mode 0600: a pre-planted file or symlink at that name fails
+ * instead of being followed), then is renamed over the target, so a reader sees the old
+ * pin or the new one and never a partial file. A new directory is created 0700.
+ */
+export function writeProviderPin(pin: ProviderPin): string {
+  const parsed = providerPinSchema.parse(pin);
+  const target = providerPinPath();
+  mkdirSync(dirname(target), { recursive: true, mode: 0o700 });
+  const temp = `${target}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
+  try {
+    writeFileSync(temp, `${JSON.stringify(parsed, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
+    renameSync(temp, target);
+    chmodSync(target, 0o600);
+  } catch (error) {
+    try {
+      unlinkSync(temp);
+    } catch {
+      // already renamed, or never created
+    }
+    throw error;
+  }
+  return target;
 }
 
 /**

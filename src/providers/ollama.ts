@@ -208,3 +208,64 @@ export const ollamaAdapter: LLMAdapter = {
     );
   },
 };
+
+/** Budget for the picker's one GET /api/tags (it must not eat the 60s setup budget). */
+export const OLLAMA_LIST_TIMEOUT_MS = 2000;
+
+export type OllamaModelList =
+  | { ok: true; models: string[] }
+  | { ok: false; reason: 'unreachable' | 'http'; status?: number };
+
+/** Terminal control bytes (C0, DEL, C1): a listed name is printed on the user's tty. */
+const CONTROL_BYTES = /[\p{Cc}]/u;
+
+/** A model name the pin schema accepts and that is safe to print on a terminal. */
+function listableModelName(value: unknown): value is string {
+  return (
+    typeof value === 'string' &&
+    value.trim().length > 0 &&
+    value.length <= 200 &&
+    !CONTROL_BYTES.test(value)
+  );
+}
+
+/**
+ * Lists the locally installed models for `qq init provider` via GET {baseUrl}/api/tags,
+ * in the server's order. Never throws: a refused connection or a timeout is
+ * `unreachable`; a non-2xx status or a body that is not an Ollama tag list is `http`.
+ */
+export async function listOllamaModels(
+  baseUrl: string = OLLAMA_DEFAULT_BASE_URL,
+  timeoutMs: number = OLLAMA_LIST_TIMEOUT_MS,
+): Promise<OllamaModelList> {
+  const signal = AbortSignal.timeout(timeoutMs);
+  let response: Response;
+  try {
+    response = await fetch(new URL('/api/tags', baseUrl), { signal });
+  } catch {
+    return { ok: false, reason: 'unreachable' };
+  }
+
+  if (!response.ok) {
+    await response.body?.cancel().catch(() => undefined);
+    return { ok: false, reason: 'http', status: response.status };
+  }
+
+  let body: unknown;
+  try {
+    body = await response.json();
+  } catch {
+    return signal.aborted
+      ? { ok: false, reason: 'unreachable' }
+      : { ok: false, reason: 'http', status: response.status };
+  }
+
+  const models = (body as { models?: unknown } | null)?.models;
+  if (!Array.isArray(models)) {
+    return { ok: false, reason: 'http', status: response.status };
+  }
+  const names = models
+    .map((entry) => (entry as { name?: unknown } | null)?.name)
+    .filter(listableModelName);
+  return { ok: true, models: names };
+}

@@ -3,7 +3,7 @@ import { cac } from 'cac';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { clientCommand } from './commands/client.js';
 import { daemonCommand } from './commands/daemon.js';
-import { initCommand } from './commands/init.js';
+import { dispatchInit } from './commands/init-provider.js';
 
 type ClientOptions = {
   requestFile?: string;
@@ -96,10 +96,10 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   cli
     .command(
       'init <shell>',
-      'Add shell integration to ~/.zshrc (run `qq init zsh && source ~/.zshrc`)',
+      'Add shell integration to ~/.zshrc (`qq init zsh && source ~/.zshrc`), or run `qq init provider` to pick OpenAI or Ollama',
     )
-    .action((shell: string) => {
-      initCommand(shell);
+    .action(async (shell: string) => {
+      await dispatchInit(shell);
     });
 
   cli
