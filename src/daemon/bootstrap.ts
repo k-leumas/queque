@@ -201,9 +201,28 @@ function spawnDaemon(socketPath: string): void {
   child.unref();
 }
 
-/** RED stub (08-05 Task 2): replaced by the real restart in GREEN. */
-export async function restartDaemon(_socketPath: string): Promise<void> {
-  throw new Error('restartDaemon: not implemented');
+/**
+ * Replaces whatever daemon holds `socketPath` (even a fully current one) with a fresh
+ * daemon spawned from this process, so it inherits this process's environment. `qq init
+ * provider` calls it after saving a pin, so a key exported a moment ago is visible to the
+ * warm daemon on the next ??.
+ *
+ * Only listeners of the safe qq socket are signalled, never the current pid
+ * (replaceStaleListener). Throws for an unsafe path or when the new daemon does not
+ * listen within the poll window.
+ */
+export async function restartDaemon(socketPath: string): Promise<void> {
+  assertSafeSocketPath(socketPath);
+  void appendDebugLog('daemon', 'restart requested', { socketPath });
+
+  await replaceStaleListener(socketPath);
+  spawnDaemon(socketPath);
+
+  if (!(await waitForSocket(socketPath))) {
+    void appendDebugLog('daemon', 'restart timeout', { socketPath });
+    throw new Error('qq daemon did not restart within the expected window');
+  }
+  void appendDebugLog('daemon', 'daemon ready', { socketPath, restarted: true });
 }
 
 /**
