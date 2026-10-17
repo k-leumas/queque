@@ -11,11 +11,13 @@ const TOTAL_BUDGET_MS = 25_000;
 const AUTH_FAILURE_RE =
   /not logged in|login expired|please run \/login|failed to authenticate|oauth (token|session)/i;
 
+// D-02 step 3 / D-13: `claude /login` first, the key second, then the path into the
+// provider picker. The hint is static copy only; nothing here prompts or probes (D-03).
 const D13_MESSAGE =
-  'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.';
+  'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
 
 const ENOENT_MESSAGE =
-  'QueQue: Claude is not authenticated. Install Claude Code, run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.';
+  'QueQue: No AI provider is ready. Install Claude Code and run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
 
 const TIMEOUT_MESSAGE =
   'QueQue: Claude timed out. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.';

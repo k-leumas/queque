@@ -22,6 +22,7 @@ import { resetQqConfigCache } from '../src/shared/qq-config.js';
 const CANDIDATE_JSON = '[{"command":"git status","explanation":"Show repo status"}]';
 const D13_LOGIN = /claude \/login/;
 const D13_KEY = /ANTHROPIC_API_KEY/;
+const PICKER_HINT = /qq init provider/;
 const FORBIDDEN_DEBUG = /"args"|"env"|"argv"|"stdout"|"stderr"|apiKey|sk-ant-|sk-|token/i;
 
 const {
@@ -451,6 +452,12 @@ describe('claudeDefaultAdapter', () => {
     await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
       /Claude Code|install/i,
     );
+    await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
+      PICKER_HINT,
+    );
+    await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
+      /No AI provider is ready/,
+    );
     await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.not.toThrow(
       /not wired yet/i,
     );
@@ -522,6 +529,10 @@ describe('claudeDefaultAdapter', () => {
     expect(error).toBeInstanceOf(Error);
     expect((error as Error).message).toMatch(D13_LOGIN);
     expect((error as Error).message).toMatch(D13_KEY);
+    expect((error as Error).message).toMatch(PICKER_HINT);
+    expect((error as Error).message.indexOf('claude /login')).toBeLessThan(
+      (error as Error).message.indexOf('qq init provider'),
+    );
     expect((error as Error).message).not.toMatch(/not wired yet/i);
     expect(createMock).not.toHaveBeenCalled();
   });
@@ -534,6 +545,25 @@ describe('claudeDefaultAdapter', () => {
       /timeout|timed out|SIGTERM/i,
     );
     expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it('timeout copy stays a retry message', async () => {
+    runClaudeTurnMock.mockRejectedValue(killedError());
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const error = await claudeDefaultAdapter
+      .fetchCandidates(buildEnvelope())
+      .catch((caught: unknown) => caught);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toMatch(/Claude timed out/);
+    expect((error as Error).message).not.toMatch(PICKER_HINT);
+  });
+
+  it('Claude default source never references the picker', () => {
+    const defaultSrc = readFileSync(sourcePath('../src/providers/claude-default.ts'), 'utf8');
+
+    expect(defaultSrc).not.toMatch(/init-provider|runProviderPicker/);
   });
 
   it('logs path sdk without argv, env, streams, or tokens when a key exists', async () => {
@@ -687,7 +717,7 @@ describe('claude -p turn stage logs and error copy (D-04)', () => {
     const cases: Array<[Error, RegExp, RegExp | null]> = [
       [killedError(), /Claude timed out/, null],
       [loggedOutError(), /Claude is not authenticated\. Run `claude \/login`/, /Install/],
-      [enoentError(), /Install Claude Code, run `claude \/login`/, null],
+      [enoentError(), /Install Claude Code and run `claude \/login`/, null],
     ];
 
     for (const [failure, copy, notCopy] of cases) {
