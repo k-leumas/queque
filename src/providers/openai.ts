@@ -36,7 +36,87 @@ function lookupOpenAiKey(): string | undefined {
   );
 }
 
-function requestFailed(): Error {
+/**
+ * Only codes shaped like OpenAI's own (`server_error`, `insufficient_quota`) reach the
+ * user. `error.message` is never read: a 401 message can carry a masked key fragment.
+ */
+const SAFE_ERROR_CODE = /^[a-z0-9_]{1,64}$/;
+
+const SWITCH_HINT = 'run `qq init provider` to switch providers';
+
+function errorName(error: unknown): string | undefined {
+  const name = (error as { name?: unknown } | null)?.name;
+  return typeof name === 'string' ? name : undefined;
+}
+
+function unexpectedResponse(): Error {
+  return new Error('QueQue: OpenAI returned an unexpected response.');
+}
+
+/** The pin's model name on one line: the FIFO error is a single shell line. */
+function oneLine(text: string): string {
+  return text.replace(/\s+/g, ' ').trim();
+}
+
+/** Reads `error.code` from an error body, keeping it only when it matches SAFE_ERROR_CODE. */
+async function readSafeErrorCode(response: Response): Promise<string | undefined> {
+  try {
+    const body = (await response.json()) as { error?: { code?: unknown } } | null;
+    const code = body?.error?.code;
+    return typeof code === 'string' && SAFE_ERROR_CODE.test(code) ? code : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Maps a non-2xx status to one static QueQue line naming the fix. */
+function statusFailure(status: number, model: string, code: string | undefined): Error {
+  switch (status) {
+    case 401:
+      return new Error(
+        `QueQue: OpenAI rejected OPENAI_API_KEY (HTTP 401). Check the key, or ${SWITCH_HINT}.`,
+      );
+    case 403:
+      return new Error(
+        "QueQue: OpenAI refused the request (HTTP 403). Check the key's project access, or run `qq init provider`.",
+      );
+    case 404:
+      return new Error(
+        `QueQue: OpenAI model '${oneLine(model)}' is not available to this key (HTTP 404). Set "model" in ~/.config/qq/provider.json, or run \`qq init provider\`.`,
+      );
+    case 429:
+      return new Error(
+        `QueQue: OpenAI rate limit or quota reached (HTTP 429). Try again shortly, or ${SWITCH_HINT}.`,
+      );
+    default:
+      return new Error(
+        `QueQue: OpenAI request failed (HTTP ${status}${code ? `, code ${code}` : ''}).`,
+      );
+  }
+}
+
+/**
+ * Maps a rejected fetch (or body read) to one static QueQue line. A user abort is
+ * rethrown as QueQue's AbortError, unmapped (D-13 cancellation chain).
+ */
+function mapRequestFailure(
+  error: unknown,
+  timeoutMs: number,
+  signal: AbortSignal | undefined,
+): Error {
+  if (signal?.aborted) {
+    return abortError();
+  }
+  const name = errorName(error);
+  if (name === 'TimeoutError' || name === 'AbortError') {
+    const seconds = Math.ceil(timeoutMs / 1000);
+    return new Error(`QueQue: OpenAI did not answer within ${seconds}s. Try ?? again.`);
+  }
+  if (error instanceof TypeError) {
+    return new Error(
+      `QueQue: could not reach api.openai.com. Check your connection, or ${SWITCH_HINT}.`,
+    );
+  }
   return new Error('QueQue: OpenAI request failed.');
 }
 
@@ -46,7 +126,10 @@ function requestFailed(): Error {
  * The body carries only the model and the shared system (as `developer`) and
  * privacy-filtered user prompts: no sampling, token-limit, streaming or tool fields.
  * Debug lines carry model, status and duration only, never the key, the prompt, or the
- * response. Nothing here falls back to another provider (D-01, D-12).
+ * response. Every failure is one static QueQue-prefixed line built from the status, the
+ * model name and a safe `error.code` only, and nothing here falls back to another
+ * provider (D-01, D-12). The final list follows finalCandidateList with `finish_reason`
+ * `stop` as the only normal stop, so a cut-off fragment never becomes a command.
  */
 export async function fetchOpenAiCandidates(
   envelope: ContextEnvelope,
@@ -94,32 +177,46 @@ export async function fetchOpenAiCandidates(
       }),
       signal: requestSignal,
     });
-  } catch {
+  } catch (error) {
     logRequest(null);
-    if (signal?.aborted) {
-      throw abortError();
-    }
-    throw requestFailed();
+    throw mapRequestFailure(error, timeoutMs, signal);
   }
 
   logRequest(response.status);
 
   if (!response.ok) {
-    throw requestFailed();
+    throw statusFailure(response.status, settings.model, await readSafeErrorCode(response));
+  }
+
+  let raw: string;
+  try {
+    raw = await response.text();
+  } catch (error) {
+    throw mapRequestFailure(error, timeoutMs, signal);
   }
 
   let body: {
-    choices?: Array<{ message?: { content?: unknown }; finish_reason?: unknown }>;
-  };
+    choices?: Array<{
+      message?: { content?: unknown; refusal?: unknown };
+      finish_reason?: unknown;
+    }>;
+  } | null;
   try {
-    body = JSON.parse(await response.text()) as typeof body;
+    body = JSON.parse(raw) as typeof body;
   } catch {
-    throw requestFailed();
+    throw unexpectedResponse();
   }
-  const choice = body?.choices?.[0];
-  const content = choice?.message?.content;
+  const choice = Array.isArray(body?.choices) ? body.choices[0] : undefined;
+  const message = choice?.message;
+  if (!message || typeof message !== 'object') {
+    throw unexpectedResponse();
+  }
+  const { content, refusal } = message;
   if (typeof content !== 'string') {
-    throw requestFailed();
+    if (typeof refusal === 'string' && refusal.trim() !== '') {
+      throw new Error('QueQue: OpenAI declined this query. Rephrase it and press ?? again.');
+    }
+    throw unexpectedResponse();
   }
 
   try {
