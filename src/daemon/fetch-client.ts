@@ -3,7 +3,7 @@ import type { CandidateList } from '../contracts/candidates.js';
 import { ipcResponseSchema } from '../contracts/ipc.js';
 import type { ContextEnvelope } from '../contracts/request.js';
 import { abortError, type FetchOptions } from '../providers/provider.js';
-import { resolveClaudeDefaultAdapter } from '../providers/resolver.js';
+import { resolveProviderAdapter } from '../providers/provider-pin.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 
 /** How long to wait for `{kind:'fetch-accepted'}` before treating the daemon as stale. */
@@ -158,8 +158,12 @@ export function requestDaemonFetch(
 }
 
 /**
- * Fetches candidates from the daemon when it is reachable; otherwise uses the
- * in-process Claude adapter (cold SDK in this process).
+ * Fetches candidates from the daemon when it is reachable; otherwise resolves the
+ * same adapter in-process (cold, in this process).
+ *
+ * The fallback honors the provider.json pin exactly like the daemon (08-03): an Ollama
+ * pin calls Ollama, no pin means the Claude default, and an invalid pin throws. A
+ * daemon-down Ollama user is never routed to Claude.
  *
  * D-16: once a streamed row has been forwarded, a transport failure is rethrown
  * instead of re-querying in-process; a second query would duplicate the rows
@@ -194,6 +198,6 @@ export async function fetchCandidatesForUi(
       throw error;
     }
     void appendDebugLog('client', 'daemon fetch fallback', { message: error.message });
-    return resolveClaudeDefaultAdapter().fetchCandidates(envelope, options);
+    return resolveProviderAdapter().fetchCandidates(envelope, options);
   }
 }
