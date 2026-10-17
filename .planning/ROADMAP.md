@@ -226,13 +226,13 @@ Plans:
 
 **Known gap (resolved in 08-01):** Prototype detection (260522-vfd) only stat-checks `~/.claude/.credentials.json`, which misses macOS `/login` sessions stored in Keychain. 08-01 must make Step 2 platform-aware before 08-02 subprocess adapter can serve macOS zero-config users.
 
-**Plans**: 6 plans
+**Plans**: 3/6 plans executed
 **UI hint**: no
 Plans:
 **Wave 1**
 - [x] 08-01: Provider detection module — `detectProvider()` waterfall: `ANTHROPIC_API_KEY` → platform-aware Claude CLI auth (Linux/Windows: credentials file or `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_AUTH_TOKEN`; macOS: `claude` on PATH is sufficient because `/login` uses Keychain) → Ollama health check (`localhost:11434`) → `OPENAI_API_KEY` / openai CLI → none (message mentions credentials file or macOS Keychain login); returns a typed `DetectedProvider` union consumed by the provider registry.
 - [x] 08-02-PLAN.md — Claude-only `claude -p` + SDK rescue composite registered as `claude-cli`; bypass `detectProvider()` as selector; argv prompt (`ps` accepted); no OpenAI/Ollama/`provider.json` (08-03).
-- [ ] 08-03-PLAN.md — (gap closure) `~/.config/qq/provider.json` pin: schema decision checkpoint, loader + `resolveProviderAdapter()` as the runtime selector, Ollama `/api/chat` adapter end-to-end through the daemon; invalid pin fails closed, never Claude.
+- [x] 08-03-PLAN.md — (gap closure) `~/.config/qq/provider.json` pin: schema decision checkpoint, loader + `resolveProviderAdapter()` as the runtime selector, Ollama `/api/chat` adapter end-to-end through the daemon; invalid pin fails closed, never Claude.
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 08-04-PLAN.md — (gap closure) OpenAI Chat Completions adapter behind the pin (`OPENAI_API_KEY` from env or `.env.local`); static failure copy; no vendor fallthrough.
@@ -257,7 +257,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 3.1 → 3.2 → 4 → 6 → 7
 | 5. Clarification Chat in the Same TUI | 0/3 | Deferred | — |
 | 6. Hardening, Privacy Defaults, and Extension Seams | 3/3 | Complete | 2026-06-18 |
 | 7. Context-Aware Learning and Ambient Suggestions | 0/3 | Not started | - |
-| 8. Zero-Config Install and Provider Detection | 2/6 | In Progress | - |
+| 8. Zero-Config Install and Provider Detection | 3/6 | In Progress | - |
 | 9. Installed-Only Command Awareness | 6/6 | Complete    | 2026-10-11 |
 
 ### Phase 9: Installed-Only Command Awareness

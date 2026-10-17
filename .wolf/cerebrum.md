@@ -118,6 +118,11 @@
 - [2026-10-17] The README stays trim and user-facing: developer-only variables (dev root, force selector, instant frame, modal, result file) live in CONTRIBUTING.md (commit 0f3644f). Do not add a full env-var table to the README.
 - [2026-10-17] The Homebrew formula caveats live in two places: release.yaml `publish-homebrew` (normal path) and homebrew.yml (workflow_dispatch fallback). Edit both identically and check them by rendering `formula_includes` through python3 yaml + ruby (`eval`, then `puts caveats`).
 - [2026-10-17] `initCommand` writes ~/.zshrc itself and prints a status line on stdout, so every doc and help string must use `qq init zsh && source ~/.zshrc`, never a `>> ~/.zshrc` redirect (that writes the status line into ~/.zshrc as a command).
+- [2026-10-17] 08-03: `resolveProviderAdapter()` (provider-pin.ts) is the runtime selector in both daemon/server.ts and daemon/fetch-client.ts. Daemon/adapter tests need a temp `QQ_PROVIDER_FILE` so the developer's real `~/.config/qq/provider.json` cannot leak in.
+- [2026-10-17] Tests running a real adapter's `ensureSelectableCandidates` must stub `QQ_FORCE_SELECTOR=0`, else a worktree under `.claude/worktrees/` picks up the main checkout's `.env.local`.
+- [2026-10-17] Since 09.1 the claude-cli path runs `runClaudeTurn` (claude-process.ts), not `execFileAsync`; "no Claude fallback" tests assert on the SDK mock and `runClaudeTurn`.
+- [2026-10-17] A fresh GSD worktree has no node_modules: run `pnpm install --frozen-lockfile --prefer-offline` before verifying.
+- [2026-10-17] Timing-budget suites (command-words-fuzz, zsh-widget handoff/prewarm, claude-prewarm, claude-process timeout) flake under high machine load (load avg 70+); rerun the file alone before treating a post-merge failure as real.
 
 ## Do-Not-Repeat
 - [2026-10-12] Do not fail closed on one bad enum value (the WR-07 check for `stop_reason === 'max_tokens'` only): a `refusal` or `pause_turn` fragment still reached the prose fallback (WR-01-r2, T-09.1-14). Use an allow list of the known-good values (end_turn, stop_sequence) so refusal, pause_turn, null and future values fail closed.
@@ -156,6 +161,8 @@
 - [2026-10-10] commitlint subject-case also rejects subjects starting with a review ID (`fix(09): CR-01 …`). Put the ID at the end: `fix(09): skip heredoc bodies … (CR-01)`.
 
 ## Decision Log
+
+- [2026-10-17] provider.json schema = versioned-union (user choice, 08-03 Task 1): `{version:1, provider, ...}` strict zod union, no secrets at rest; unknown keys (apiKey) fail closed.
 - [2026-10-12] Phase 09.1 CR-02 (text directly followed by Enter/Tab in ONE stdin read stays filter text, Ink 7 paste rule) accepted by the user as a known limitation: predates 09.1, needs keys typed before Ink attaches, Backspace recovers. Override in 09.1-VERIFICATION.md; disposition deferred; CandidateSelect pendingInput comment and ROADMAP 09.1-10 line state the exception.
 
 <!-- Significant technical decisions with rationale. Why X was chosen over Y. -->

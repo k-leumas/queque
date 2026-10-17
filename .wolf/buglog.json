@@ -5571,6 +5571,22 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-17T11:25:00Z"
+    },
+    {
+      "id": "bug-339",
+      "timestamp": "2026-10-17T17:59:08.156Z",
+      "error_message": "TS2339 Property 'message' does not exist on type 'Error | CandidateList'",
+      "file": "tests/ollama-provider.test.ts",
+      "root_cause": ".catch((caught) => caught as Error) on a Promise<CandidateList> yields a union type",
+      "fix": "catch as unknown, assert toBeInstanceOf(Error), cast at use site",
+      "tags": [
+        "typescript",
+        "vitest",
+        "test"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-17T17:59:08.156Z"
     }
   ]
 }
