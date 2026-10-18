@@ -149,7 +149,7 @@ QueQue is **insertion-only**: it writes commands into your shell buffer — you 
 - Parsed filename hints from your query (no disk reads)
 - The names of installed tools that appear in QueQue's public tool catalog. Your full `PATH` inventory, functions and aliases stay on your machine. `QQ_TOOL_AWARENESS=0` stops even the catalog names.
 
-**With Ollama**, the same context goes only to your Ollama server (`http://localhost:11434` by default, or the `baseUrl` in `provider.json`). With the default setting, nothing leaves your machine.
+**With Ollama**, the same context goes only to your Ollama server (`http://localhost:11434` by default, or the `baseUrl` in `provider.json`). With the default setting, nothing leaves your machine. A `baseUrl` that starts with `http://` and names another machine sends that context across the network unencrypted; for a remote server, use an `https://` URL (for example behind a reverse proxy).
 
 **What QueQue never sends:**
 
