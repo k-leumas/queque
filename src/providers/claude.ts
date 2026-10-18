@@ -16,6 +16,7 @@ import {
   isAbortError,
   isNormalStopReason,
   type LLMAdapter,
+  UNPARSEABLE_RESPONSE_MESSAGE,
 } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
 
@@ -173,7 +174,7 @@ export function finalCandidateList(
 }
 
 /** Thrown by finalCandidateListWithoutProse when no candidate can be read from the text. */
-export const UNPARSEABLE_RESPONSE_MESSAGE = 'QueQue: response held no command candidates';
+export { UNPARSEABLE_RESPONSE_MESSAGE } from './provider.js';
 
 /** A `<think>` block, or an unclosed one through to the end of the text. */
 const THINK_BLOCK_RE = /<think>[\s\S]*?(?:<\/think>|$)/gi;

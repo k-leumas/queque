@@ -498,6 +498,22 @@ describe('OpenAI failure mapping (no Claude or Ollama fallback)', () => {
     expectNoFallback();
   });
 
+  it('maps an answer whose commands are only control bytes to unexpected response (IN-13)', async () => {
+    fetchStub.mockResolvedValue(
+      contentResponse(
+        JSON.stringify([
+          { command: '\u001b\u0007', explanation: 'only control bytes' },
+          { command: ' \u009b ', explanation: 'a C1 byte and spaces' },
+        ]),
+      ),
+    );
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/unexpected response/);
+    expectNoFallback();
+  });
+
   it('reads candidates from a prose-wrapped answer, never the whole text (WR-05)', async () => {
     fetchStub.mockResolvedValue(
       contentResponse(

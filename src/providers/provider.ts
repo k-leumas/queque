@@ -37,6 +37,13 @@ export function isNormalStopReason(stopReason: string | null | undefined): boole
   return stopReason === 'end_turn' || stopReason === 'stop_sequence';
 }
 
+/**
+ * Thrown by finalCandidateListWithoutProse and stripTerminalControls when no candidate can
+ * be read from the text. Defined here (not in claude.ts) so stripTerminalControls can
+ * throw it without an import cycle; claude.ts re-exports it.
+ */
+export const UNPARSEABLE_RESPONSE_MESSAGE = 'QueQue: response held no command candidates';
+
 /** Terminal control bytes (C0, DEL, C1) other than tab and newline. */
 const UNSAFE_CONTROL_BYTES = /[^\P{Cc}\t\n]/gu;
 
@@ -45,8 +52,9 @@ const UNSAFE_CONTROL_BYTES = /[^\P{Cc}\t\n]/gu;
  * and newline (WR-04). Used by the non-Claude adapters, whose text may come from a remote
  * server over plain http: an ESC in a candidate would reach the terminal through Ink as an
  * escape sequence (OSC 52 clipboard writes, title or screen rewrites). A candidate whose
- * command is empty afterwards is dropped; with none left the list is the same
- * `unexpected response format` placeholder parseCandidates uses.
+ * command is empty afterwards is dropped. With none left it throws
+ * UNPARSEABLE_RESPONSE_MESSAGE (IN-13), which the adapters map to their own "unexpected
+ * response" copy, so an unusable answer never shows as a selectable placeholder row.
  */
 export function stripTerminalControls(candidates: CandidateList): CandidateList {
   const cleaned = candidates
@@ -55,9 +63,10 @@ export function stripTerminalControls(candidates: CandidateList): CandidateList 
       explanation: candidate.explanation.replace(UNSAFE_CONTROL_BYTES, ''),
     }))
     .filter((candidate) => candidate.command.length > 0);
-  return cleaned.length > 0
-    ? cleaned
-    : [{ command: 'echo ""', explanation: 'QueQue: unexpected response format' }];
+  if (cleaned.length === 0) {
+    throw new Error(UNPARSEABLE_RESPONSE_MESSAGE);
+  }
+  return cleaned;
 }
 
 /** True for QueQue's own abort error and the Anthropic SDK's `APIUserAbortError`. */

@@ -473,6 +473,20 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     ]);
   });
 
+  it('maps an answer whose commands are only control bytes to unexpected response (IN-13)', async () => {
+    fetchStub.mockResolvedValue(
+      chatResponse(
+        JSON.stringify([{ command: '\u001b\u0007', explanation: 'only control bytes' }]),
+      ),
+    );
+
+    const error = await failure();
+
+    expect(error.message.startsWith('QueQue:')).toBe(true);
+    expect(error.message).toContain('unexpected response');
+    expectNoClaudeCall();
+  });
+
   it.each([
     [
       'a prose-wrapped json fence',
