@@ -277,6 +277,62 @@ describe('daemon bootstrap', () => {
     expect(options?.cwd).toBe(homedir());
   });
 
+  describe('a home directory that does not exist (WR-12)', () => {
+    const MISSING_HOME = '/nonexistent-qq-home-wr12';
+
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    /** Runs the real spawn with the options spawnDaemon chose, but a harmless child. */
+    async function realSpawnWith(override: { cwd?: string } = {}): Promise<void> {
+      const { spawn: realSpawn } =
+        await vi.importActual<typeof import('node:child_process')>('node:child_process');
+      (spawnFn as unknown as ReturnType<typeof vi.fn>).mockImplementation(
+        (_command: string, _args: string[], options: Record<string, unknown>) =>
+          realSpawn(process.execPath, ['-e', ''], { ...options, ...override }),
+      );
+    }
+
+    it('spawns the daemon in / instead and listens for spawn errors', async () => {
+      vi.stubEnv('HOME', MISSING_HOME);
+      const on = vi.fn();
+      spawnFn.mockImplementation(() => {
+        testServer = net.createServer(() => {});
+        testServer.listen(socketPath);
+        return { unref: vi.fn(), on };
+      });
+
+      const { daemonCwd, ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      expect(daemonCwd()).toBe('/');
+      await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+      const options = (spawnFn.mock.calls[0] as unknown[] | undefined)?.[2] as
+        | { cwd?: string }
+        | undefined;
+      expect(options?.cwd).toBe('/');
+      expect(on).toHaveBeenCalledWith('error', expect.any(Function));
+    });
+
+    it('a real spawn with the missing HOME does not emit an unhandled error', async () => {
+      vi.stubEnv('HOME', MISSING_HOME);
+      await realSpawnWith();
+
+      const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      // The harmless child never listens, so ensureDaemon fails the normal way.
+      await expect(ensureDaemon(socketPath)).rejects.toThrow('did not start');
+    });
+
+    it('a real spawn error event becomes a normal startup timeout, not a crash', async () => {
+      await realSpawnWith({ cwd: MISSING_HOME });
+
+      const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      await expect(ensureDaemon(socketPath)).rejects.toThrow('did not start');
+    });
+  });
+
   it('unlinks a stale socket and spawns after a failed connect', async () => {
     // Write a fake stale socket file (no server behind it)
     fs.writeFileSync(socketPath, '');

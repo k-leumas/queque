@@ -268,12 +268,28 @@ function spawnDaemon(socketPath: string): void {
   // cwd) is the same however it started: ~/.env.local, never the `.env.local` of whatever
   // project directory the spawning terminal or `qq init provider` happened to be in.
   const child = spawn(qqBin, [qqScript, 'daemon', '--socket', socketPath], {
-    cwd: homedir(),
+    cwd: daemonCwd(),
     detached: true,
     stdio: 'ignore',
   });
+  // WR-12: a spawn failure is an asynchronous 'error' event, never a throw. Without a
+  // listener it would reach the process-wide uncaughtException handler, which cancels the
+  // `??`. Logged here, the failure surfaces as a normal waitForSocket timeout instead.
+  child.on('error', (error: NodeJS.ErrnoException) => {
+    void appendDebugLog('daemon', 'spawn failed', { code: error.code });
+  });
 
   child.unref();
+}
+
+/**
+ * The daemon's working directory: the home directory (WR-08), or `/` when that directory
+ * does not exist (WR-12: service accounts, containers with `HOME=/nonexistent`, sandboxes).
+ * Node reports a missing cwd as a misleading `spawn <node> ENOENT` 'error' event.
+ */
+export function daemonCwd(): string {
+  const home = homedir();
+  return home && fs.existsSync(home) ? home : '/';
 }
 
 /**

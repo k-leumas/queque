@@ -161,9 +161,17 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     const toolInventory =
       resultMode === 'llm' ? await readToolHandoff(path.dirname(requestFile)) : null;
 
-    // Ensure the daemon is reachable before we do anything interactive
-    await ensureDaemon(socketPath);
-    void appendDebugLog('client', 'daemon ensured', { socketPath });
+    // Ensure the daemon is reachable before we do anything interactive. A daemon that cannot
+    // start (WR-12: e.g. a spawn failure) must not end the `??`: fetchCandidatesForUi then
+    // cannot reach the socket and runs the provider in-process instead.
+    try {
+      await ensureDaemon(socketPath);
+      void appendDebugLog('client', 'daemon ensured', { socketPath });
+    } catch (error) {
+      void appendDebugLog('client', 'daemon ensure failed', {
+        message: error instanceof Error ? error.message : String(error),
+      });
+    }
 
     // Deterministic result seam — Phase 4 replaces this with the Ink TUI
     if (resultMode === 'replace-buffer-fixture') {

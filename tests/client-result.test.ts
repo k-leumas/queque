@@ -467,6 +467,21 @@ describe('runForegroundClient', () => {
     expect(shellResult.stdout).toContain('git status');
   });
 
+  it('still runs the in-process fallback when the daemon cannot start (WR-12)', async () => {
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+    vi.mocked(ensureDaemon).mockRejectedValueOnce(
+      new Error('qq daemon did not start within the expected window (/tmp/qq-test-999.sock)'),
+    );
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: '' }]);
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(fetchCandidatesMock).toHaveBeenCalledTimes(1);
+    const parsed = JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim());
+    expect(parsed).toMatchObject({ kind: 'replace-buffer', lbuffer: 'git status' });
+  });
+
   it('writes error ShellResult to FIFO when fetchCandidates rejects', async () => {
     fetchCandidatesMock.mockRejectedValue(new Error('API timeout'));
 
