@@ -416,6 +416,44 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     ]);
   });
 
+  it.each([
+    [
+      'a prose-wrapped json fence',
+      'Here are some commands:\n```json\n[{"command":"ls -la","explanation":"List files"}]\n```\nHope it helps!',
+    ],
+    [
+      'a think block first',
+      '<think>The user wants [files] listed, maybe {ls}.</think>\n[{"command":"ls -la","explanation":"List files"}]',
+    ],
+    [
+      'a trailing comment',
+      '[{"command":"ls -la","explanation":"List files"}]\n(These work on macOS.)',
+    ],
+    [
+      'brackets in the prose before the array',
+      'Options [pick one]:\n[{"command":"ls -la","explanation":"List files"}]',
+    ],
+  ])('reads candidates from %s, never the whole text (WR-05)', async (_name, content) => {
+    fetchStub.mockResolvedValue(chatResponse(content));
+
+    const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([{ command: 'ls -la', explanation: 'List files' }]);
+  });
+
+  it('maps a normal-stop answer with no candidates to unexpected response (WR-05)', async () => {
+    fetchStub.mockResolvedValue(
+      chatResponse('You can list files with ls.\nUse ls -la for hidden files too.'),
+    );
+
+    const error = await failure();
+
+    expect(error.message.startsWith('QueQue:')).toBe(true);
+    expect(error.message).toContain('unexpected response');
+    expect(error.message).not.toContain('ls -la');
+    expectNoClaudeCall();
+  });
+
   it('keeps the closed candidates of a cut-off answer', async () => {
     fetchStub.mockResolvedValue(
       chatResponse('[{"command":"ls -la","explanation":"List files"},{"command":"ls -', {

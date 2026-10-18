@@ -172,6 +172,47 @@ export function finalCandidateList(
   return parseCandidates(text);
 }
 
+/** Thrown by finalCandidateListWithoutProse when no candidate can be read from the text. */
+export const UNPARSEABLE_RESPONSE_MESSAGE = 'QueQue: response held no command candidates';
+
+/** `<think>…</think>` blocks some local models print before their answer. */
+const THINK_BLOCK_RE = /<think>[\s\S]*?<\/think>/gi;
+
+/**
+ * The final-list rule for the Ollama and OpenAI adapters (WR-05). Their models do not
+ * reliably follow "raw JSON array only": they wrap the array in prose ("Here are some
+ * commands: ```json …```"), print a `<think>` block first, or add a comment after it.
+ * parseCandidates' prose fallback would turn that whole text into one multi-line
+ * "command", so it is never used here.
+ *
+ * Order: the strict parse of the text without `<think>` blocks, then the candidate objects
+ * that closed inside the first `[ {` array in it. With none, a cut-off answer throws
+ * TRUNCATED_RESPONSE_MESSAGE and a normal stop throws UNPARSEABLE_RESPONSE_MESSAGE (both
+ * logged with `logFields` only, never the text). The raw text never becomes a candidate.
+ */
+export function finalCandidateListWithoutProse(
+  text: string,
+  finishedNormally: boolean,
+  logFields: Record<string, unknown> = {},
+): CandidateList {
+  const answer = text.replace(THINK_BLOCK_RE, ' ');
+  const strict = parseStrictCandidateList(answer);
+  if (strict) {
+    return strict;
+  }
+  const arrayStart = answer.search(/\[\s*\{/);
+  const closed = arrayStart === -1 ? [] : completeCandidates(answer.slice(arrayStart));
+  if (closed.length > 0) {
+    return closed;
+  }
+  if (!finishedNormally) {
+    void appendDebugLog('provider', 'response truncated', logFields);
+    throw new Error(TRUNCATED_RESPONSE_MESSAGE);
+  }
+  void appendDebugLog('provider', 'response unparseable', logFields);
+  throw new Error(UNPARSEABLE_RESPONSE_MESSAGE);
+}
+
 function shouldForceSelector(): boolean {
   const configured =
     process.env.QQ_FORCE_SELECTOR ?? readEnvValueFromDotEnvLocal('QQ_FORCE_SELECTOR');

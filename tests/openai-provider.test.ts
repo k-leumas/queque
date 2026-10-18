@@ -466,6 +466,27 @@ describe('OpenAI failure mapping (no Claude or Ollama fallback)', () => {
     expectNoFallback();
   });
 
+  it('reads candidates from a prose-wrapped answer, never the whole text (WR-05)', async () => {
+    fetchStub.mockResolvedValue(
+      contentResponse(
+        'Sure! Try these:\n```json\n[{"command":"git status","explanation":"Show status"}]\n```',
+      ),
+    );
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([{ command: 'git status', explanation: 'Show status' }]);
+  });
+
+  it('maps a normal-stop prose answer to unexpected response, not a command (WR-05)', async () => {
+    fetchStub.mockResolvedValue(contentResponse('Run git status to see your changes.'));
+
+    const error = await failure();
+
+    expect(error.message).toContain('unexpected response');
+    expect(error.message).not.toContain('git status');
+  });
+
   it('never turns a cut-off answer into a prose command (finish_reason length)', async () => {
     fetchStub.mockResolvedValue(contentResponse('[{"command":"rm -rf', 'length'));
 

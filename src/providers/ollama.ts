@@ -4,8 +4,9 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import {
   buildPrompt,
   ensureSelectableCandidates,
-  finalCandidateList,
+  finalCandidateListWithoutProse,
   TRUNCATED_RESPONSE_MESSAGE,
+  UNPARSEABLE_RESPONSE_MESSAGE,
 } from './claude.js';
 import {
   abortError,
@@ -108,9 +109,9 @@ async function readErrorDetail(response: Response): Promise<string> {
  * model, status and duration only, never the base URL, the prompt, or the response.
  *
  * Every failure is one QueQue-prefixed line naming the fix; nothing here falls back to
- * another provider (D-01, D-12). The final list follows finalCandidateList: an answer
- * that did not stop normally (`done_reason` other than `stop`) never reaches the prose
- * fallback, so a cut-off fragment never becomes a command.
+ * another provider (D-01, D-12). The final list follows finalCandidateListWithoutProse
+ * (WR-05): the model's text never becomes a command by itself, whether it was cut off
+ * (`done_reason` other than `stop`) or wrapped the array in prose or a `<think>` block.
  */
 export async function fetchOllamaCandidates(
   envelope: ContextEnvelope,
@@ -189,7 +190,9 @@ export async function fetchOllamaCandidates(
   try {
     return ensureSelectableCandidates(
       stripTerminalControls(
-        finalCandidateList(content, [], body.done_reason === 'stop', { model: settings.model }),
+        finalCandidateListWithoutProse(content, body.done_reason === 'stop', {
+          model: settings.model,
+        }),
       ),
     );
   } catch (error) {
@@ -197,6 +200,9 @@ export async function fetchOllamaCandidates(
       throw new Error(
         'QueQue: Ollama response was cut off before a full command. Try ?? again, or run `qq init provider` to pick another model.',
       );
+    }
+    if (error instanceof Error && error.message === UNPARSEABLE_RESPONSE_MESSAGE) {
+      throw unexpectedResponse();
     }
     throw error;
   }

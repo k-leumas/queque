@@ -5,8 +5,9 @@ import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js
 import {
   buildPrompt,
   ensureSelectableCandidates,
-  finalCandidateList,
+  finalCandidateListWithoutProse,
   TRUNCATED_RESPONSE_MESSAGE,
+  UNPARSEABLE_RESPONSE_MESSAGE,
 } from './claude.js';
 import {
   abortError,
@@ -133,8 +134,9 @@ function mapRequestFailure(
  * Debug lines carry model, status and duration only, never the key, the prompt, or the
  * response. Every failure is one static QueQue-prefixed line built from the status, the
  * model name and a safe `error.code` only, and nothing here falls back to another
- * provider (D-01, D-12). The final list follows finalCandidateList with `finish_reason`
- * `stop` as the only normal stop, so a cut-off fragment never becomes a command.
+ * provider (D-01, D-12). The final list follows finalCandidateListWithoutProse (WR-05)
+ * with `finish_reason` `stop` as the only normal stop: neither a cut-off fragment nor a
+ * prose-wrapped answer ever becomes a command by itself.
  */
 export async function fetchOpenAiCandidates(
   envelope: ContextEnvelope,
@@ -227,7 +229,7 @@ export async function fetchOpenAiCandidates(
   try {
     return ensureSelectableCandidates(
       stripTerminalControls(
-        finalCandidateList(content, [], choice?.finish_reason === 'stop', {
+        finalCandidateListWithoutProse(content, choice?.finish_reason === 'stop', {
           model: settings.model,
         }),
       ),
@@ -237,6 +239,9 @@ export async function fetchOpenAiCandidates(
       throw new Error(
         'QueQue: OpenAI response was cut off before a full command. Try ?? again, or run `qq init provider` to pick another model.',
       );
+    }
+    if (error instanceof Error && error.message === UNPARSEABLE_RESPONSE_MESSAGE) {
+      throw unexpectedResponse();
     }
     throw error;
   }
