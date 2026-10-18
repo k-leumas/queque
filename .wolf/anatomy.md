@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T02:37:54.553Z
-> Files: 583 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T03:03:51.899Z
+> Files: 584 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -835,6 +835,7 @@
 - `08-REVIEW-FIX.md` — Phase 8: Code Review Fix Report (~4018 tok)
 - `08-REVIEW.md` — Phase 8: Code Review Report (gap closure 08-03..08-06) (~5168 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
+- `08-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2301 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
 - `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~8927 tok)
 - `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~4525 tok)
