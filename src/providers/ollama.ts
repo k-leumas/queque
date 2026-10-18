@@ -124,8 +124,12 @@ async function readErrorDetail(response: Response): Promise<string> {
  * Calls Ollama's POST {baseUrl}/api/chat (non-streaming) and returns parsed candidates.
  *
  * The body carries only the model, `stream: false`, and the shared system and
- * privacy-filtered user prompts. No Authorization header is sent. Debug lines carry
- * model, status and duration only, never the base URL, the prompt, or the response.
+ * privacy-filtered user prompts. No Authorization header is sent. This function's own
+ * `ollama request` debug line carries model, status and duration only, never the prompt or
+ * the response. Error messages name the server's origin (scheme, host and port: never the
+ * path, query or credentials) so the user can act on them, and the daemon logs each error
+ * message in its `replied fetch-error` line, so that origin can appear in the debug log
+ * (IN-04).
  *
  * Every failure is one QueQue-prefixed line naming the fix; nothing here falls back to
  * another provider (D-01, D-12). The final list follows finalCandidateListWithoutProse
