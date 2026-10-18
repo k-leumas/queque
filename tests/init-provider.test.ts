@@ -512,7 +512,7 @@ describe('re-running the picker (D-15)', () => {
     expect(output).toContain('at http://gpu.lan:11434');
   });
 
-  it('names the saved remote Ollama URL when it is not answering (WR-02)', async () => {
+  it('names the saved remote Ollama URL when it is not answering (WR-02, IN-09)', async () => {
     writeProviderPin({
       version: 1,
       provider: 'ollama',
@@ -526,11 +526,17 @@ describe('re-running the picker (D-15)', () => {
       }),
     );
 
-    const { code, output } = await runPicker(['3', 'n']);
+    const { code, output, openUrl } = await runPicker(['3', 'y']);
 
     expect(code).toBe(1);
     expect(output).toContain('Ollama is not answering at http://gpu.lan:11434.');
     expect(output).not.toContain('localhost:11434');
+    // IN-09: remote advice and the way back to this machine, no local install advice.
+    expect(output).toContain('Check that the Ollama server at http://gpu.lan:11434 is running');
+    expect(output).toContain('remove "baseUrl" from');
+    expect(output).not.toContain('https://ollama.com/download');
+    expect(output).not.toContain('[y/N]');
+    expect(openUrl).not.toHaveBeenCalled();
     // Nothing was written: the old pin, baseUrl included, is still in place.
     expect(readPin()).toEqual({
       version: 1,

@@ -81,7 +81,7 @@ qq init provider
 It asks one question (Claude, OpenAI or Ollama), saves your answer to `~/.config/qq/provider.json`, and restarts the background daemon. Nothing is probed until you answer, and `??` never asks you to choose.
 
 - **OpenAI** needs `OPENAI_API_KEY` in your environment (`export OPENAI_API_KEY="sk-..."` in `~/.zshrc`, above the QueQue source line) or in `~/.env.local`. Set the key first, open a new terminal, then run `qq init provider`. QueQue never asks for the key and never stores it: `provider.json` only records that you chose OpenAI. The default model is `gpt-5.5`.
-- **Ollama** lists the models you have already pulled and pins the one you pick. If Ollama is not running, the picker prints the download link and `ollama serve`. If it has no models, the picker tells you to run `ollama pull`.
+- **Ollama** lists the models you have already pulled and pins the one you pick. If Ollama is not running, the picker prints the download link and `ollama serve`. If it has no models, the picker tells you to run `ollama pull`. When `provider.json` has a `baseUrl` (a remote server), the picker lists and keeps that server; to go back to Ollama on this machine, remove `baseUrl` from `provider.json`.
 
 Your choice sticks. If the chosen provider fails, `??` shows that provider's error; QueQue never switches to a different provider on its own. Run `qq init provider` again to switch, including back to Claude.
 

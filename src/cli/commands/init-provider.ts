@@ -221,13 +221,24 @@ function keptPinFields(state: ProviderPinState): KeptPinFields {
   return {};
 }
 
-/** Ollama is down or not Ollama: print the next step and offer (only) the download page. */
+/**
+ * Ollama is down or not Ollama: print the next step. For the local default server, offer
+ * (only) the download page. For a saved `baseUrl` (IN-09) installing Ollama here does not
+ * help, so point at that server and at the way back to this machine instead.
+ */
 async function explainOllamaDown(
   prompter: Prompter,
   deps: PickerDeps,
   baseUrl: string,
+  savedBaseUrl: boolean,
 ): Promise<void> {
   prompter.say(`Ollama is not answering at ${baseUrl}.`);
+  if (savedBaseUrl) {
+    prompter.say(
+      `Check that the Ollama server at ${baseUrl} is running, or remove "baseUrl" from ${providerPinPath()} to use Ollama on this machine, then run \`qq init provider\` again.`,
+    );
+    return;
+  }
   prompter.say(
     `Install it from ${OLLAMA_DOWNLOAD_URL}, start it with \`ollama serve\`, then run \`qq init provider\` again.`,
   );
@@ -241,11 +252,12 @@ async function explainOllamaDown(
 async function pickOllamaModel(
   prompter: Prompter,
   deps: PickerDeps,
-  baseUrl: string,
+  savedBaseUrl: string | undefined,
 ): Promise<string | null> {
+  const baseUrl = savedBaseUrl ?? OLLAMA_DEFAULT_BASE_URL;
   const listed = await deps.listOllamaModels(baseUrl);
   if (!listed.ok) {
-    await explainOllamaDown(prompter, deps, baseUrl);
+    await explainOllamaDown(prompter, deps, baseUrl, savedBaseUrl !== undefined);
     return null;
   }
   const { models } = listed;
@@ -339,7 +351,7 @@ async function pickAndSave(prompter: Prompter, deps: PickerDeps): Promise<number
     );
   } else {
     const { ollamaBaseUrl } = kept;
-    const model = await pickOllamaModel(prompter, deps, ollamaBaseUrl ?? OLLAMA_DEFAULT_BASE_URL);
+    const model = await pickOllamaModel(prompter, deps, ollamaBaseUrl);
     if (model === null) {
       return 1;
     }
