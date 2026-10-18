@@ -1,215 +1,334 @@
 ---
 phase: 08-zero-config-install-and-provider-detection
-verified: 2026-08-26T04:15:00Z
-status: gaps_found
-score: 10/15 must-haves verified
-gaps:
-  - truth: "D-07/D-03: Claude /login (claude -p) and ANTHROPIC_API_KEY both produce candidates"
-    status: failed
-    reason: "CR-01: execFileAsync is promisify(execFile), which ignores stdio. child.stdin stays an open pipe. Research Pitfall 2 says claude -p reads stdin; an open pipe can hang until the 25s budget, then remainingMs < MIN_SDK_RESCUE_MS skips SDK rescue even when a key exists. Tests mock execFileAsync and only assert options.stdio[0]==='ignore', so they cannot catch this. Same root cause also falsifies the spawn stdin-ignore clause."
-    artifacts:
-      - path: "src/providers/claude-exec.ts"
-        issue: "promisify(execFile) discards stdio; empirically child.stdin remains writable under { stdio: ['ignore','pipe','pipe'] }"
-      - path: "src/providers/claude-cli.ts"
-        issue: "Passes stdio ignore into execFileAsync, but the option is a no-op at runtime"
-    missing:
-      - "Implement execFileAsync with spawn so stdio ignore is actually applied"
-      - "Unmocked unit test that a stdin-until-EOF child exits instead of hanging"
-  - truth: "Spawn argv never includes --bare; stdin is ignore; prompt stays last argv"
-    status: partial
-    reason: "No --bare and prompt-last-argv are wired. stdin ignore is set on the options object but not honored by execFile (CR-01). Grouped with D-07."
-    artifacts:
-      - path: "src/providers/claude-exec.ts"
-        issue: "stdio ignore not applied"
-    missing:
-      - "Same spawn-based execFileAsync fix as D-07"
-  - truth: "A developer with Ollama running locally gets a working qq with zero extra steps"
-    status: failed
-    reason: "08-03 not planned or executed. Locked D-01–D-15: OpenAI/Ollama are pin-not-waterfall, not 08-02 bugs. No Ollama adapter exists; resolver maps ollama → Claude default."
-    artifacts:
-      - path: "src/providers/resolver.ts"
-        issue: "ollama kind returns Claude default as an 08-02 bridge, not an Ollama adapter"
-    missing:
-      - "08-03 Ollama adapter registered in provider-backends"
-      - "provider.json pin so runtime honors ollama without probing every ?? "
-  - truth: "A developer with OPENAI_API_KEY gets a working qq with zero extra steps"
-    status: failed
-    reason: "08-03 not planned or executed. ANTHROPIC_API_KEY works via Claude SDK rescue; OPENAI_API_KEY is detected by leftover detectProvider but never used as a backend."
-    artifacts: []
-    missing:
-      - "08-03 OpenAI adapter"
-      - "provider.json pin for openai"
-  - truth: "When nothing is detected, guide the user to a working setup in under 60 seconds"
-    status: failed
-    reason: "08-03 wizard not implemented. None-path today tries Claude default then FIFO D-13 /login copy — actionable for Claude, not a picker, not <60s install guidance for Ollama/OpenAI."
-    artifacts: []
-    missing:
-      - "08-03 first-failed-?? or qq init provider quiz on /dev/tty"
-      - "Persist ~/.config/qq/provider.json"
-      - "Do not attach the quiz to qq init zsh (D-05)"
+verified: 2026-10-18T02:45:00Z
+status: human_needed
+score: 24/26 must-haves verified
+covered_files:
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-01-PLAN.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-01-SUMMARY.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-02-PLAN.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-02-SUMMARY.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-03-PLAN.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-03-SUMMARY.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-04-PLAN.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-04-SUMMARY.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-05-PLAN.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-05-SUMMARY.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-06-PLAN.md
+  - .planning/phases/08-zero-config-install-and-provider-detection/08-06-SUMMARY.md
+  - README.md
+  - docs/EXTENSIONS.md
+  - src/cli/commands/init-provider.ts
+  - src/cli/main.ts
+  - src/contracts/ipc.ts
+  - src/daemon/bootstrap.ts
+  - src/daemon/fetch-client.ts
+  - src/daemon/server.ts
+  - src/providers/claude-default.ts
+  - src/providers/claude-exec.ts
+  - src/providers/detect.ts
+  - src/providers/ollama.ts
+  - src/providers/openai.ts
+  - src/providers/provider-pin.ts
+  - src/providers/provider.ts
+  - src/providers/resolver.ts
+  - src/registry/bootstrap.ts
+covered_digest: "v3:sha256:f2dbaa04e028d02685c78b1825a12ffa349e65798753bceb8d31ab7979481dcf"
+behavior_unverified: 0
+overrides_applied: 0
+re_verification:
+  previous_status: gaps_found
+  previous_score: 10/15
+  gaps_closed:
+    - "D-07/D-03: Claude /login (claude -p) and ANTHROPIC_API_KEY both produce candidates (CR-01 stdin hang)"
+    - "Spawn argv never includes --bare; child stdin cannot hold claude -p open"
+    - "Truth #13 (as amended by D-04/D-14): an Ollama pin answers ?? through the daemon"
+    - "Truth #14 (as amended by D-04/D-14): an OpenAI pin with OPENAI_API_KEY answers ?? through the daemon"
+    - "Truth #15 (as amended by D-04/D-14): nothing works -> clear copy plus `qq init provider`, at most two answers"
+  gaps_remaining: []
+  regressions: []
+advisory:
+  - finding: "Daemon-down in-process fallback reads ANTHROPIC_API_KEY / OPENAI_API_KEY from .env.local relative to the client's cwd, while the daemon (WR-08) and the picker read from the home directory"
+    category: other
+    reason: "A key that exists only in a project .env.local works when the daemon is down but not when it is up. WR-08 aligned the picker and the daemon only. Resolve by passing homedir() as startDir in lookupApiKey (claude-default.ts) and lookupOpenAiKey (openai.ts), or document the difference."
+    evidence_status: "none provided"
+  - finding: "08-02 PLAN must_have artifact patterns are stale: src/providers/claude-default.ts no longer contains `sdk-rescue` or exports MIN_SDK_RESCUE_MS (gsd verify.artifacts 6/7 for 08-02)"
+    category: other
+    reason: "Commit 07738ca changed the composite to SDK-first when a key exists, which is what locked D-08 says. The behavior is covered by tests (claude-cli-provider: 'uses the SDK and does not spawn when ANTHROPIC_API_KEY is set (D-08)'). Only the 08-02 plan text is stale. Resolve by noting the supersession in 08-02-SUMMARY or leaving it as history."
+    evidence_status: "none provided"
+  - finding: "Review info items IN-01..IN-08 are still open (e.g. IN-07: auth failures on the API-key SDK path never get the `qq init provider` pointer; IN-05: an invalid header value for the OpenAI key is reported as 'could not reach api.openai.com'; IN-03: a chmod failure after rename prints 'No changes made' although the pin is live)"
+    category: other
+    reason: "Out of the fix scope (critical+warning) by design per 08-REVIEW-DISPOSITION.md. None blocks a must-have."
+    evidence_status: "none provided"
+human_verification:
+  - test: "DECISION: accept or reject the roadmap/locked-decision divergence for ROADMAP SC #2 ('Ollama running locally gets a working qq with zero extra steps') and the OPENAI_API_KEY half of SC #3"
+    expected: "Either add the suggested overrides (or amend ROADMAP.md SC #2/#3 and the Phase 8 goal line) to record that Ollama/OpenAI are one explicit `qq init provider` step by design (D-01, D-04, D-14), or reopen auto-detection as a gap"
+    why_human: "The code deliberately does not meet the literal roadmap wording. The locked decisions in 08-CONTEXT.md say they supersede it, but no override or roadmap amendment records that acceptance. A verifier cannot accept a scope change on the developer's behalf."
+  - test: "Live Claude /login: on macOS, with claude on PATH, logged in via `claude /login`, no ANTHROPIC_API_KEY, no provider.json, trigger ?? in zsh"
+    expected: "Ranked candidates within 25s, no provider question, and the debug log shows `provider selected {provider: claude, source: default}`"
+    why_human: "Needs the real Claude Code binary and Keychain auth. Tests replace the claude -p runner."
+  - test: "Live Ollama pin (08-03 human-check): with `ollama list` showing a model, run `qq init provider`, press 3 then Enter, then trigger ?? in zsh"
+    expected: "Candidates appear. The debug log shows `provider selected {provider: ollama, source: pin}` and an `ollama request` line with model/status/durationMs only."
+    why_human: "Needs a running Ollama server and an interactive terminal"
+  - test: "Live OpenAI pin (08-04 human-check): export OPENAI_API_KEY in ~/.zshrc before the queque source line, open a new terminal, run `qq init provider`, pick 2, then trigger ??"
+    expected: "Candidates come from api.openai.com, and the debug log shows provider openai source pin. A bad key gives the static HTTP 401 copy with no key fragment."
+    why_human: "Needs a real OPENAI_API_KEY and network access"
+  - test: "Logged-out Claude hint (08-06 human-check): `claude /logout`, no ANTHROPIC_API_KEY, no provider.json, trigger ?? in zsh"
+    expected: "One QueQue line above the prompt naming `claude /login`, ANTHROPIC_API_KEY, and `qq init provider`. The typed query is restored in the buffer. If the real logged-out stdout does not match AUTH_FAILURE_RE, the neutral WR-01 copy appears instead, without the picker hint."
+    why_human: "The real `claude -p` logged-out output text is the input to AUTH_FAILURE_RE. Tests use fixture text."
+  - test: "Picker restarts the real daemon (08-05 human-check): with a daemon running, run `pnpm build && node dist/cli/main.js init provider` with QQ_PROVIDER_FILE set to a scratch absolute path, press Enter"
+    expected: "The Claude menu item is first, the pin file is -rw------- inside a 0700 directory, 'Restarted the QueQue daemon' is printed, and `lsof`/`ps` shows a new daemon pid with cwd = $HOME"
+    why_human: "Unit tests use injected restartDaemon fakes and test sockets. The real IPC shutdown, spawn, and 2s poll need a live daemon."
+  - test: "Under-60s end-to-end (08-05 human-check): claude logged out, no keys, Ollama running with one model. Trigger ?? (fails with the hint), run `qq init provider`, press 3, Enter, trigger ?? again"
+    expected: "Wall time from the failed ?? to candidates on screen is under 60 seconds"
+    why_human: "A wall-clock UX measurement across shell, picker, daemon restart, and model load"
+  - test: "unverified-prohibition, human review recommended (08-06, judgment tier): 'MUST NOT document runtime auto-detection as the provider selector or describe a Claude to OpenAI to Ollama fallthrough'"
+    expected: "Read docs/EXTENSIONS.md lines 16-45 and README.md lines 40-100 and confirm no auto-detection selector or vendor fallthrough is described"
+    why_human: "Judgment-tier prohibition. The verifier's LLM judgment (non-authoritative) is that it holds: EXTENSIONS.md:23 says 'No fallthrough', EXTENSIONS.md:44 calls detectProvider() leftover preflight, and README.md:86 says 'QueQue never switches to a different provider on its own'."
 ---
 
 # Phase 08: Zero-Config Install and Provider Detection Verification Report
 
 **Phase Goal:** Make `qq` work on first run without any manual configuration. Detect Claude Code, Ollama, and OpenAI CLI auth in priority order and use the first available backend. When nothing is detected, guide the user to a working setup in under 60 seconds. The subprocess adapter is the right first implementation — token reuse and native API integration are later optimizations.
-**Verified:** 2026-08-26T04:15:00Z
-**Status:** gaps_found
-**Re-verification:** No — initial verification
+**Verified:** 2026-10-18T02:45:00Z
+**Status:** human_needed
+**Re-verification:** Yes. This follows gap-closure plans 08-03..08-06 and the post-review fixes (commits 1321da8..cfe36ab). The previous report (gaps_found, 10/15) is in git history.
 
-Locked D-01–D-15 supersede ROADMAP’s “detect every backend and use the first” as the *selector*. Claude is the silent default; OpenAI/Ollama are an explicit `provider.json` pin in 08-03. This report scores 08-01/08-02 must-haves against the codebase and treats 08-03 success criteria as phase gaps, not 08-02 implementation bugs.
+## Roadmap Wording vs Locked Decisions (read first)
 
-**Executed this run:** 08-01 (platform-aware Claude auth detection) and 08-02 (Claude CLI-first + SDK rescue). **Not executed:** 08-03 (pin + OpenAI/Ollama adapters + wizard). ROADMAP shows 2/3 plans complete.
+The ROADMAP goal and two of its success criteria still describe the original design: auto-detect in priority order and use the first backend found. The phase's locked decisions in 08-CONTEXT.md (D-01..D-15) replaced that on purpose:
+
+| Roadmap text | Locked decision | What the code does | How this report scores it |
+| --- | --- | --- | --- |
+| Goal: "Detect Claude Code, Ollama, and OpenAI CLI auth in priority order and use the first available backend" | D-01/D-02: no runtime auto-selection. Use the pin, otherwise the Claude default. D-12: no cross-vendor fallthrough | `resolveProviderAdapter()` reads `provider.json` on every fetch. If there is no pin it uses Claude. Nothing probes Ollama or sniffs OPENAI_API_KEY on the `??` path | The amended truths are scored. The literal wording is **not met** and is flagged below |
+| SC #2: "Ollama running locally gets a working `qq` with zero extra steps" | D-04/D-14: Ollama is opt-in. Ask once with `qq init provider`, then persist the pin | An Ollama user with no pin is sent to Claude. They need **one** `qq init provider` step | **? UNCERTAIN: human decision.** Literally FAILED, intentionally |
+| SC #3: "`OPENAI_API_KEY` ... set gets the same" | D-04/D-14: OpenAI is opt-in through the pin | OPENAI_API_KEY alone does nothing. It needs one `qq init provider` step. (The ANTHROPIC_API_KEY half works with zero steps) | **? UNCERTAIN: human decision.** The OpenAI half is literally FAILED, intentionally |
+| SC #5: "Detection runs in under 200 ms ... Ollama health check with a 300 ms timeout" | D-01/D-10: no detection on the fetch path | The selector is one sync `readFileSync` of the pin with no network call. `detectProvider()` is only re-exported from `src/providers/index.ts` and never called | ✓ VERIFIED. Holds trivially: the timed detection step no longer exists |
+| Goal: "OpenAI CLI auth" | D-14: OpenAI adapter keyed by OPENAI_API_KEY | No OpenAI CLI support. Key only (env or `.env.local`) | Noted. Covered by the SC #3 decision item |
+| ROADMAP line 25: "no manual setup required" for Claude Code, Ollama, or an OpenAI key | D-03: zero setup for **Claude** only | As above | Noted. Covered by the SC #2/#3 decision item |
+
+08-CONTEXT.md `canonical_refs` states: "D-01–D-05 supersede 'detect every backend in priority order and use the first available' as the *selector*." That is a recorded developer decision. However, ROADMAP.md was never amended and this report has no `overrides:` entry, so the verifier does not quietly score SC #2/#3 as passed. If the developer **rejects** the deviation, both items become FAILED (BLOCKER) and the status is `gaps_found`.
+
+**This looks intentional.** To accept the deviation, add this to the frontmatter of this file (or amend ROADMAP.md SC #2/#3 and the goal line):
+
+```yaml
+overrides:
+  - must_have: "A developer with Ollama running locally gets a working qq with zero extra steps"
+    reason: "Locked D-01/D-04/D-14: Ollama is an explicit provider.json pin chosen once via `qq init provider`; runtime auto-detection was rejected because it can steal requests (e.g. Ollama up while Claude is logged out)"
+    accepted_by: "{name}"
+    accepted_at: "{ISO timestamp}"
+  - must_have: "A developer with OPENAI_API_KEY or ANTHROPIC_API_KEY set gets the same"
+    reason: "Locked D-04/D-14: ANTHROPIC_API_KEY works with zero steps (Claude default, SDK-first per D-08); OPENAI_API_KEY is opt-in via one `qq init provider` pin, no key sniffing on the ?? path"
+    accepted_by: "{name}"
+    accepted_at: "{ISO timestamp}"
+```
 
 ## Goal Achievement
 
-08-01 detection and 08-02 Claude-default wiring exist and are connected. The phase goal is not achieved: (1) live `claude -p` stdin isolation is a no-op (CR-01), so `/login` zero-config is not proven and can hang the 25s budget; (2) Ollama, OpenAI, and the setup wizard are still 08-03.
+Scored against the locked decisions: a Claude user gets zero-config `??`. Ollama and OpenAI work through one `qq init provider` pin, which is re-read on every fetch and fails closed when invalid. With no usable backend, `??` shows short, actionable copy that points at the picker. All of this exists, is wired through the daemon and the daemon-down fallback, and is exercised by passing tests (42 files, 962 tests, `--maxWorkers=1`; typecheck exit 0). What remains: one scope decision and live-environment checks.
 
 ### Observable Truths
 
 | # | Truth | Status | Evidence |
-| --- | ------- | ---------- | -------------- |
-| 1 | darwin + `claude` on PATH + no credentials file → `detectProvider` returns `claude-cli` | ✓ VERIFIED | `claudeAuthPresent()` returns true on darwin after PATH gate; `tests/provider-detect.test.ts` darwin case |
-| 2 | linux/win + `claude` on PATH + no credentials file → falls through | ✓ VERIFIED | Non-darwin uses `claudeAuthFileExists()`; linux test expects Ollama fallthrough |
-| 3 | `CLAUDE_CODE_OAUTH_TOKEN` or `ANTHROPIC_AUTH_TOKEN` + `claude` on PATH → `claude-cli` | ✓ VERIFIED | Truthiness-only env check; two dedicated tests |
-| 4 | Credentials file still detects `claude-cli` on non-darwin | ✓ VERIFIED | `fsp.stat` only; linux + auth file test |
-| 5 | `none` message mentions credentials file or macOS Keychain login | ✓ VERIFIED | `detect.ts` Step 5 copy; test assertion |
-| 6 | Detection never reads credential contents or Keychain secrets | ✓ VERIFIED | `stat` only; no `readFile`, no `security`/`keychain`, no `claude -p` in `detect.ts` |
-| 7 | D-07/D-03: `/login` via `claude -p` and `ANTHROPIC_API_KEY` both produce candidates | ✗ FAILED | SDK rescue + CLI-success paths are coded and unit-tested; **runtime stdin ignore is a no-op (CR-01)**. `execFile` leaves `child.stdin` writable. If `claude -p` reads stdin, the CLI hangs ~25s and SDK rescue is skipped |
-| 8 | D-08/D-09/D-10: CLI-first, SDK rescue when key exists, no `detectProvider` fetch gate | ✓ VERIFIED | Composite tries CLI first; ENOENT/auth-fail + key calls SDK; `run-foreground.ts` has no `detectProvider`. CR-01 can starve rescue after a hang — tracked under truth 7 |
-| 9 | D-11/D-12/D-13: no “not wired yet”; no OpenAI/Ollama fallthrough; FIFO `/login` error, buffer unchanged | ✓ VERIFIED | Resolver maps every kind to Claude default; D-13 copy; `formatFifoError` single `QueQue:` prefix; `writeShellResult({ kind: 'error' })` |
-| 10 | D-01–D-06/D-14/D-15: 08-02 ships Claude only — no OpenAI/Ollama adapters, no `provider.json` | ✓ VERIFIED | No openai/ollama modules under `src/`; `provider.json` only in comments/docs as upcoming 08-03; `init.ts` has no provider quiz |
-| 11 | Combined CLI+SDK budget 25s (RUN-01); `claude-cli` registry id is `claudeDefaultAdapter` (EXT-01) | ✓ VERIFIED | `TOTAL_BUDGET_MS = 25_000`, `remainingMs` + `MIN_SDK_RESCUE_MS = 1000`; zsh `read -r -t 30`; bootstrap registers composite, not `claudeCliAdapter` |
-| 12 | Spawn argv never `--bare`; stdin ignore; prompt last argv; child env is `process.env` | ✗ FAILED | `--bare` absent; prompt is last argv; env not injected. **`stdio: ['ignore',…]` is set but discarded by `execFile`** |
-| 13 | Ollama running locally → working `qq` with zero extra steps (ROADMAP #2) | ✗ FAILED | 08-03 not started; no Ollama adapter |
-| 14 | `OPENAI_API_KEY` → working `qq` with zero extra steps (ROADMAP #3) | ✗ FAILED | 08-03 not started. Anthropic key works via Claude default; OpenAI key is unused on the hot path |
-| 15 | Nothing detected → setup wizard under 60 seconds (ROADMAP #4) | ✗ FAILED | 08-03 not started. None-path is Claude attempt then D-13 FIFO copy |
+| --- | --- | --- | --- |
+| 1 | ROADMAP SC #1 / D-03: Claude Code installed and authenticated gives a working `qq` with zero extra steps | ✓ VERIFIED | `resolveProviderAdapter()` with an absent pin calls `resolveClaudeDefaultAdapter()` (provider-pin.ts:185-188). The composite is SDK-first when a key exists, otherwise `claude -p` (claude-default.ts:102-131). Tests: provider-pin "resolves the claude-cli composite when no pin exists (D-03)"; claude-cli-provider "returns the result text via parseCandidates without calling the SDK". Live run is in Human Verification |
+| 2 | ROADMAP SC #2 (literal): Ollama running locally, zero extra steps | ? UNCERTAIN (scope decision) | Not met as worded: no pin means Claude. Met as amended (truth 9). See the divergence section |
+| 3 | ROADMAP SC #3: OPENAI_API_KEY **or** ANTHROPIC_API_KEY gets the same | ? UNCERTAIN (scope decision) | ANTHROPIC half ✓: claude-cli-provider "uses the SDK and does not spawn when ANTHROPIC_API_KEY is set (D-08)" plus the `.env.local` cases. OPENAI half needs a pin (truth 10) |
+| 4 | ROADMAP SC #4 / D-02 step 3: nothing usable gives a clear, short prompt, not a cryptic error | ✓ VERIFIED | `ENOENT_MESSAGE` / `D13_MESSAGE` name `claude /login`, ANTHROPIC_API_KEY, and `qq init provider` (claude-default.ts:16-20). daemon server.ts:180 forwards `error.message` verbatim as fetch-error. run-foreground `formatFifoError` writes `{kind:'error'}` |
+| 5 | ROADMAP SC #5: detection < 200 ms, no blocking network | ✓ VERIFIED (divergent wording) | The runtime selector is a single sync file read. `grep detectProvider src` finds only the `index.ts` re-export. No Ollama probe on `??` |
+| 6 | ROADMAP SC #6: the selected provider is logged | ✓ VERIFIED | `appendDebugLog('provider','provider selected',{provider,source})` for pin, default, and invalid (provider-pin.ts:186-198). Test: "logs provider and source only — never the pin file contents" |
+| 7 | ROADMAP SC #7: macOS `/login` is detected as `claude-cli` without ANTHROPIC_API_KEY | ✓ VERIFIED | `detect.ts` darwin branch; provider-detect.test.ts (12 pass). The runtime does not depend on detection: it always validates `/login` at call time with `claude -p` (D-10) |
+| 8 | Previous gaps #7/#12 (CR-01 stdin): `claude -p` cannot hang on an open stdin, and `--bare` is never passed | ✓ VERIFIED | `claude-exec.ts` is now `spawn`-based with `stdio: ['ignore','pipe','pipe']`. Unmocked test "ignores stdin so a child waiting for EOF exits without hanging" passes (604 ms). Since 09.1, the `claude -p` path (claude-process.ts:467-468) writes one stream-json line and then calls `stdin.end()`, so the child always sees EOF. claude-cli.ts:48 says never `--bare` |
+| 9 | Previous gap #13 (amended): an Ollama pin plus a running Ollama returns candidates from POST `{baseUrl}/api/chat` through the daemon, with no Claude call and no per-`??` probing | ✓ VERIFIED | `ollamaAdapter` registered as `ollama` (registry/bootstrap.ts). Named test passes: daemon-fetch "pinned ollama answers fetch-candidates through the daemon" |
+| 10 | Previous gap #14 (amended): an OpenAI pin plus a usable OPENAI_API_KEY returns candidates from api.openai.com through the daemon | ✓ VERIFIED | `openaiAdapter` registered as `openai`. Named tests pass: daemon-fetch "pinned openai answers fetch-candidates through the daemon" and "pinned openai model overrides the default" |
+| 11 | Previous gap #15 (amended): `qq init provider` lists Claude, OpenAI, Ollama in that order on /dev/tty. Enter picks Claude. At most two answers write the pin | ✓ VERIFIED | `PROVIDER_MENU` order (init-provider.ts:29-41). Tests: "menu lists Claude, OpenAI, Ollama in that order", "Enter selects Claude and writes a 0600 pin", "Ollama lists models in /api/tags order and Enter picks the first" |
+| 12 | D-02 order: pinned ollama/openai resolves only that backend. A claude pin or no pin resolves the claude-cli composite | ✓ VERIFIED | provider-pin.ts:182-209. Tests: "resolves only the ollama backend for an ollama pin", "resolves claude-cli for a claude pin" |
+| 13 | An empty, malformed, schema-invalid, unreadable, or relative-path (WR-03) pin is a hard error naming the file and `qq init provider`, and never resolves to Claude | ✓ VERIFIED | `loadProviderPin()` returns `absent` only for ENOENT at an absolute path. Tests: "throws for an invalid pin and never touches the Claude default (fail closed)", "throws for an unreadable pin…", "a relative override throws instead of resolving the Claude default", "treats an empty QQ_PROVIDER_FILE as unset (WR-03)" |
+| 14 | D-15: the pin is re-read on every fetch with no restart. An invalid pin inside the daemon becomes fetch-error and the daemon keeps answering | ✓ VERIFIED | server.ts:156-160 resolves inside the promise chain. Named tests pass: "pin change applies on the next fetch without restart", "invalid pin is a fetch-error and the daemon stays up", "re-reads the file on every call (D-15)" |
+| 15 | Daemon-down fallback resolves the same pinned adapter (an Ollama or OpenAI pin is never sent to Claude in-process) | ✓ VERIFIED | fetch-client.ts:201 `resolveProviderAdapter()`. Named tests pass: "daemon-down fallback calls Ollama, not the Claude default" and the same for OpenAI |
+| 16 | Ollama request is model + `stream:false` + system/user messages with filterContextEnvelope applied and no Authorization header. Failures map to one QueQue line naming `ollama serve` / `ollama pull` / `qq init provider`. WR-06 keeps the baseUrl path, and a URL 404 is reported as a URL 404 | ✓ VERIFIED | ollama.ts:142-257. Tests: "posts model, stream false…", "sends no authorization header", "keeps a .env changed file out of the request body", "maps a refused connection to the ollama serve hint", "maps HTTP 404 to the ollama pull hint", "keeps the path prefix of a proxied baseUrl (WR-06)" |
+| 17 | OpenAI: Bearer key only to the constant `api.openai.com` URL (the strict pin schema has no baseUrl). Missing key fails before any network call. 401/403/404/429/other/timeout/network/refusal map to static copy with no upstream `error.message` | ✓ VERIFIED | openai.ts:25, 151-156, 85-110. 32 tests incl. "fails before any network call when no key is set anywhere", "maps HTTP 401 to a static key message without echoing the upstream text", "logs no key, prompt or upstream error text on a failure" |
+| 18 | EXT-01: after `bootstrapBuiltins()` the provider backend ids include claude, claude-cli, ollama, openai, each with `fetchCandidates` | ✓ VERIFIED | registry/bootstrap.ts:48-71. Test: "registers the ollama and openai provider backends with adapter instances" |
+| 19 | Picker safety: atomic `wx`-temp then rename at mode 0600 in a 0700 dir. Nothing goes to process.stdout. No /dev/tty gives exit 1 with one stderr line. OpenAI is pinned only when a key is present. An unreachable Ollama gives download/`ollama serve` guidance and the browser opens only on an explicit y. Zero models gives `ollama pull` guidance. Nothing is written on any dead end | ✓ VERIFIED | provider-pin.ts:153-175, init-provider.ts. Tests: "picker writes nothing to process.stdout", "without /dev/tty exits 1…", "OpenAI without a usable key exits 1 with export guidance", "Ollama unreachable … Enter does not open it", "with %s opens only the download URL", "Ollama with zero models prints ollama pull guidance" |
+| 20 | After a saved pin the picker restarts the daemon (IPC shutdown first, lsof as backstop, WR-07). A failed restart keeps the pin, warns, and exits 0. D-15: a re-run shows the current pin and replaces it, keeping baseUrl and model (WR-02) | ✓ VERIFIED | init-provider.ts:270-283; daemon/bootstrap.ts:290. Tests: "restartDaemon is called once with socketPath()", "a failed restart keeps the pin, warns, and still exits 0", "restartDaemon stops a current daemon over IPC, without lsof (WR-07)", "keeps a saved Ollama baseUrl… (WR-02)". The real daemon restart is in Human Verification |
+| 21 | D-05/D-03: only the literal `qq init provider` reaches the picker. `qq init zsh` is unchanged. The picker is never on the `??` widget, client, or daemon path | ✓ VERIFIED | `dispatchInit` (init-provider.ts:428-438). `grep init-provider src` finds only main.ts. Tests: "dispatchInit sends provider to the picker and zsh to initCommand", "Claude default source never references the picker", "does not probe any backend before the user answers (D-04)" |
+| 22 | 08-06 / D-13 / WR-01: copy keeps `claude /login` first and appends `qq init provider`. Timeout copy stays a plain retry. A non-auth `claude -p` failure gets neutral copy, never "not authenticated" | ✓ VERIFIED | claude-default.ts:16-30, 78-93. Tests: "timeout copy stays a retry message", "does not call a non-auth claude -p failure 'not authenticated' (WR-01)" |
+| 23 | Docs: EXTENSIONS.md and README document pin-or-Claude-default, provider.json examples, `qq init provider`, QQ_PROVIDER_FILE, OPENAI_API_KEY, Ollama, and what leaves the machine per provider | ✓ VERIFIED | EXTENSIONS.md:20-44, 71-74, 113-114; README.md:42, 78-100, 144-152 |
+| 24 | Review CR-01: a pre-pin daemon (pong without `providerPin`) is replaced so provider.json is honored | ✓ VERIFIED | ipc.ts:52, server.ts:102, bootstrap.ts:107. Named test passes: "replaces a live daemon whose pong lacks providerPin (v0.6.0 flags only)" |
+| 25 | Review WR-04/05/08 hardening: control bytes are stripped from non-Claude text and pin model names. Ollama/OpenAI prose never becomes a command. The daemon spawns with cwd = home | ✓ VERIFIED | `stripTerminalControls` + `finalCandidateListWithoutProse` in both adapters; `cwd: homedir()` (daemon/bootstrap.ts:271). Tests: "strips terminal control bytes … (WR-04)", "maps a normal-stop prose answer to unexpected response, not a command (WR-05)", "spawns the daemon in the home directory, whatever the caller cwd (WR-08)" |
+| 26 | Phase gate: the full suite, typecheck, and `tests/claude-exec.test.ts` exit 0 | ✓ VERIFIED | `vitest run --maxWorkers=1`: 42 files / 962 tests passed, exit 0 (one run, no flakes). `pnpm typecheck` exit 0 |
 
-**Score:** 10/15 truths verified
+**Score:** 24/26 truths verified (0 present-but-behavior-unverified; 2 pending a scope decision)
 
-ROADMAP #5 (detection &lt; 200 ms) holds for leftover `detectProvider` (PATH + optional stat/env; Ollama fetch 300 ms timeout) but that function is not the hot-path selector. ROADMAP #6 (detected provider logged) is met by `appendDebugLog` `path: 'claude-cli' | 'sdk-rescue'` as the 08-02 stand-in. ROADMAP #7 (macOS `/login` detected as `claude-cli`) is true for leftover detect; runtime `/login` does not use detect — it always tries `claude -p` (truth 7).
+### Prohibitions (ADR-550)
+
+| Plan | Prohibition | Tier | Disposition | Enforcement evidence |
+| --- | --- | --- | --- | --- |
+| 08-03 | No runtime probing; no pinned-Ollama to Claude fallthrough or the reverse | test | ✓ verified | claude-cli-provider "does not import detect.ts…(D-10)", "never spawns openai or fetches localhost:11434 (D-12)"; provider-resolver "resolveAdapter ignores a provider.json pin"; fallback tests; server/fetch-client have no cross-adapter path |
+| 08-03 | An invalid or unreadable pin never sends the prompt to a hosted provider | test | ✓ verified | provider-pin fail-closed tests (truth 13) |
+| 08-03 | No credential-file contents or Keychain reads | test | ✓ verified | detect.ts uses `stat`/`which` only; no readFile/security in pin, adapter, or picker modules |
+| 08-03 | No auto-execute | test | ✓ verified | Candidates still reach the shell only through the FIFO `writeShellResult` (shell-contract, client-result suites pass) |
+| 08-04 | OPENAI_API_KEY only to api.openai.com; never in pin, log, or error | test | ✓ verified | Constant URL; strict schema; openai log and 401 tests |
+| 08-04 | No fallback from a failed OpenAI pin | test | ✓ verified | "daemon-down fallback calls OpenAI, not the Claude default"; no fallback code |
+| 08-05 | Picker never attached to `qq init zsh`, `??`, client, or daemon | test | ✓ verified | truth 21 |
+| 08-05 | Never prompt for, store, print, or log a key | test | ✓ verified | "OpenAI with a usable key writes an openai pin and never prints the key"; strict schema |
+| 08-05 | No browser or spawn without an explicit y, fixed URL only | test | ✓ verified | "Enter does not open it", "opens only the download URL"; `openDownloadUrl` guard |
+| 08-06 | No picker or provider question for a Claude user whose `??` succeeds | test | ✓ verified | "Claude default source never references the picker"; the hint exists only in failure copy |
+| 08-06 | Docs must not describe auto-detection as the selector or a vendor fallthrough | judgment | ⚠️ flagged: unverified-prohibition, human review recommended | Non-authoritative LLM judgment: holds (EXTENSIONS.md:23, :44; README.md:86) |
+
+### Advisory (New Scope, Unevidenced)
+
+| # | Finding | Category | Why Advisory |
+| --- | --- | --- | --- |
+| 1 | Daemon-down fallback reads `.env.local` keys from the client cwd; the daemon and picker read from home (WR-08 covered only those two) | other | new scope, no deterministic evidence |
+| 2 | 08-02 PLAN artifact patterns (`sdk-rescue`, `MIN_SDK_RESCUE_MS`) are stale after SDK-first commit 07738ca (matches D-08) | other | plan text only; behavior tested |
+| 3 | Review info items IN-01..IN-08 remain open by disposition | other | out of fix scope by design |
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
-| -------- | ----------- | ------ | ------- |
-| `src/providers/detect.ts` | Platform-aware `claudeAuthPresent` | ✓ VERIFIED | Exists, substantive, leftover preflight only (D-10) |
-| `tests/provider-detect.test.ts` | Platform-split + env-token coverage | ✓ VERIFIED | 12/12 pass. WR-01: Branch 2 does not stub OAuth env vars |
-| `src/providers/claude-exec.ts` | Mockable `{ stdout, stderr }` spawn | ⚠️ DEFECTIVE | Exists, exported, wired; **uses `promisify(execFile)` so stdio ignore is a no-op** |
-| `src/providers/claude-cli.ts` | `claude -p` + `parseCandidates` | ✓ VERIFIED | Locked argv, `--safe-mode`, `--tools ""`, no `--bare`; calls `execFileAsync` |
-| `src/providers/claude-default.ts` | CLI-first composite + `remainingMs` | ✓ VERIFIED | `sdk-rescue` path; no `detect.ts` import |
-| `src/providers/claude.ts` | Shared prompt/parse/`QUEQUE_SYSTEM` | ✓ VERIFIED | Exports required; optional `timeoutMs`; no temperature/top_p/top_k |
-| `src/registry/bootstrap.ts` | Register `claudeDefaultAdapter` as `claude-cli` | ✓ VERIFIED | `claudeCliAdapter` not registered |
-| `src/providers/resolver.ts` | Claude-default resolution, 08-02 bridge comment | ✓ VERIFIED | All kinds → `resolveClaudeDefaultAdapter()` |
-| `tests/claude-cli-provider.test.ts` | Wave 0 object-shaped mocks | ✓ VERIFIED | `execFileAsync` `{ stdout }` mocks; `/claude \/login/` regex (gsd-tools `contains: "claude /login"` is a false negative) |
-| `src/client/run-foreground.ts` | Resolve composite, FIFO errors | ✓ VERIFIED | `resolveClaudeDefaultAdapter()`; no `detectProvider` |
+| --- | --- | --- | --- |
+| `src/providers/provider-pin.ts` | schema, path, loader, writer, `resolveProviderAdapter` | ✓ VERIFIED | Substantive (209 lines). Imported by server.ts, fetch-client.ts, ollama.ts, openai.ts, init-provider.ts |
+| `src/providers/ollama.ts` | `/api/chat` adapter + `listOllamaModels` | ✓ VERIFIED | Registered; used by picker |
+| `src/providers/openai.ts` | Chat Completions adapter | ✓ VERIFIED | Registered as `openai` |
+| `src/cli/commands/init-provider.ts` | picker + `dispatchInit` | ✓ VERIFIED | Wired from main.ts `init <shell>` |
+| `src/daemon/bootstrap.ts` | `restartDaemon`, providerPin capability check | ✓ VERIFIED | Used by picker and `ensureDaemon` |
+| `src/registry/bootstrap.ts` | claude, claude-cli, ollama, openai registrations | ✓ VERIFIED | |
+| `src/providers/claude-default.ts` | failure copy with `qq init provider` | ✓ VERIFIED | Message reaches the FIFO via server fetch-error, then `formatFifoError` |
+| `src/providers/claude-exec.ts` | spawn-based exec honoring stdio | ✓ VERIFIED | Unmocked EOF test |
+| `docs/EXTENSIONS.md`, `README.md` | shipped pin docs | ✓ VERIFIED | |
+| tests: provider-pin / ollama-provider / openai-provider / init-provider | coverage | ✓ VERIFIED | 40 / 36 / 32 / 44 tests pass |
 
-gsd-tools artifacts: 08-01 2/2 passed; 08-02 6/7 passed (false fail on test `contains`).
+gsd `verify.artifacts`: 08-01 2/2, 08-03 5/5, 08-04 3/3, 08-05 5/5, 08-06 3/3, 08-02 6/7 (stale pattern, advisory #2).
 
 ### Key Link Verification
 
-| From | To | Via | Status | Details |
-| ---- | --- | --- | ------ | ------- |
-| `src/client/run-foreground.ts` | `src/providers/resolver.ts` | `resolveClaudeDefaultAdapter` | WIRED | llm path line 147; no `detectProvider` |
-| `src/providers/claude-default.ts` | `src/providers/claude-cli.ts` | `fetchClaudeCliCandidates` | WIRED | then SDK `fetchCandidates` with remaining ms |
-| `src/providers/claude-cli.ts` | `src/providers/claude-exec.ts` | `execFileAsync` | PARTIAL | Call is real; **stdio option not applied** |
-| `src/providers/claude-cli.ts` | `src/providers/claude.ts` | `buildPrompt` / `QUEQUE_SYSTEM` | WIRED | Prompt last argv |
-| `src/registry/bootstrap.ts` | `src/providers/claude-default.ts` | `adapter: claudeDefaultAdapter` | WIRED | id `claude-cli` |
-| `src/client/run-foreground.ts` | `src/client/result-writer.ts` | `kind: 'error'` | WIRED | `formatFifoError` prevents `QueQue: QueQue:` |
-| `src/providers/detect.ts` | `src/providers/resolver.ts` | kind `claude-cli` | LEFTOVER | Pattern exists; **hot path does not call `detectProvider`** (D-10, by design) |
+| From | To | Via | Status |
+| --- | --- | --- | --- |
+| `src/daemon/server.ts` | `provider-pin.ts` | `resolveProviderAdapter()` inside the fetch promise chain | WIRED |
+| `src/daemon/fetch-client.ts` | `provider-pin.ts` | transport-failure fallback | WIRED |
+| `provider-pin.ts` | `registry/provider-backends.ts` | `getProviderAdapter(PIN_BACKEND_IDS[...])` | WIRED |
+| `provider-pin.ts` | `resolver.ts` | absent or claude pin goes to `resolveClaudeDefaultAdapter` | WIRED |
+| `registry/bootstrap.ts` | `ollama.ts` / `openai.ts` | `registerProviderBackend` | WIRED |
+| `ollama.ts` / `openai.ts` | `claude.ts` | `buildPrompt`, `finalCandidateListWithoutProse`, `ensureSelectableCandidates` (+ `buildSystemPrompt` from steering, which supersedes the raw QUEQUE_SYSTEM since 09) | WIRED |
+| `cli/main.ts` | `init-provider.ts` | `dispatchInit(shell)` | WIRED |
+| `init-provider.ts` | `provider-pin.ts`, `ollama.ts`, `daemon/bootstrap.ts` | `writeProviderPin`/`loadProviderPin`, `listOllamaModels`, `restartDaemon` | WIRED |
+| `claude-default.ts` | `daemon/server.ts` | thrown message becomes `fetch-error` verbatim (server.ts:180) | WIRED (confirmed by reading, beyond the pattern match) |
+| `fetch-client.ts` | `run-foreground.ts` | rejection, then `formatFifoError`, then `writeShellResult({kind:'error'})` | WIRED |
+| `daemon/bootstrap.ts` `ensureDaemon` | `server.ts` pong | `providerPin: true` required (CR-01) | WIRED |
 
-gsd-tools key-links: 08-01 1/1, 08-02 6/6 pattern-found (does not catch CR-01).
+gsd `verify.key-links`: 08-01 1/1, 08-02 6/6, 08-03 6/6, 08-04 4/4, 08-05 4/4, 08-06 2/2.
 
 ### Data-Flow Trace (Level 4)
 
 | Artifact | Data Variable | Source | Produces Real Data | Status |
-| -------- | ------------- | ------ | ------------------ | ------ |
-| `claudeDefaultAdapter` | `CandidateList` | `claude -p` stdout → `parseCandidates` | Yes when spawn succeeds; **hang risk if CLI reads stdin** | ⚠️ AT RISK |
-| `claudeDefaultAdapter` SDK rescue | `CandidateList` | Anthropic `messages.create` | Yes when key present and remaining ≥ 1000 ms | ✓ FLOWING |
-| `runForegroundClient` llm | candidates → Ink modal | `adapter.fetchCandidates(envelope)` | Wired; not hardcoded empty | ✓ FLOWING |
-| FIFO error | `message` | adapter throw → `formatFifoError` | D-13 copy, not empty | ✓ FLOWING |
-
-No hollow empty-array props. Candidate data is not stubbed in production; tests mock spawn/SDK.
+| --- | --- | --- | --- | --- |
+| `ollamaAdapter` | `CandidateList` | `fetch(POST {baseUrl}/api/chat)` body `message.content`, then parse | Yes (pin model/baseUrl read from disk per call) | ✓ FLOWING |
+| `openaiAdapter` | `CandidateList` | `fetch(POST api.openai.com…)` `choices[0].message.content` | Yes | ✓ FLOWING |
+| `resolveProviderAdapter` | adapter | `readFileSync(providerPinPath())`, then zod | Yes, no cache | ✓ FLOWING |
+| picker Ollama menu | `models` | `GET {baseUrl}/api/tags` | Yes, server order | ✓ FLOWING |
+| FIFO error | `message` | adapter throw, then IPC fetch-error, then `formatFifoError` | Static actionable copy | ✓ FLOWING |
 
 ### Behavioral Spot-Checks
 
 | Behavior | Command | Result | Status |
-| -------- | ------- | ------ | ------ |
-| 08-01/08-02 unit tests | `pnpm vitest run tests/provider-detect.test.ts tests/claude-cli-provider.test.ts tests/provider-resolver.test.ts tests/registry-bootstrap.test.ts tests/client-result.test.ts tests/claude-provider.test.ts` | 6 files, **62 passed** | ✓ PASS |
-| `execFile` honors stdio ignore | Node script: `execFile(node, stdin-EOF-script, { stdio: ['ignore','pipe','pipe'] })` vs `spawn` | `execFile` `child.stdin` is writable (`typeof write === 'function'`); `spawn` `child.stdin === null` | ✗ FAIL (CR-01) |
-| No `--bare` in providers | `rg --bare src/providers` | no matches | ✓ PASS |
-| No detect selector on hot path | `rg detectProvider src/client/run-foreground.ts` | no matches | ✓ PASS |
-| No “not wired yet” in resolver/client | `rg "not wired yet" src/providers/resolver.ts src/client` | no matches | ✓ PASS |
-| Composite registered | `bootstrap.ts` `adapter: claudeDefaultAdapter` | present; `claudeCliAdapter` absent from registry | ✓ PASS |
-| Full suite | `pnpm test:run` in sandbox | 232 passed / 4 daemon EPERM (Unix sockets) | ? SKIP in sandbox; orchestrator reported **236 passed** unsandboxed |
+| --- | --- | --- | --- |
+| Full suite (single run) | `pnpm exec vitest run --maxWorkers=1` | 42 files, 962 passed, exit 0 | ✓ PASS |
+| Typecheck | `pnpm typecheck` | exit 0 | ✓ PASS |
+| Key invariants by name | `vitest run … -t "invalid pin is a fetch-error\|pin change applies…\|lacks providerPin\|daemon-down fallback calls\|pinned ollama answers\|pinned openai answers\|throws for an invalid pin\|picker writes nothing…\|dispatchInit…\|does not probe…\|a failed restart keeps…\|Enter selects Claude…"` | 14 passed, 0 failed | ✓ PASS |
+| CR-01 stdin isolation (unmocked) | `tests/claude-exec.test.ts` | "ignores stdin so a child waiting for EOF exits without hanging" passed | ✓ PASS |
+| No detection on the hot path | `grep -rn detectProvider src` | only the `src/providers/index.ts` re-export | ✓ PASS |
+| No "not wired yet" | `grep -rn "not wired yet" src` | no matches | ✓ PASS |
+| Picker isolation | `grep -rn init-provider src` | only `src/cli/main.ts` | ✓ PASS |
+
+### Probe Execution
+
+Step 7c: SKIPPED. The phase declares no `scripts/*/tests/probe-*.sh` probes.
 
 ### Requirements Coverage
 
-Plan frontmatter IDs: **RUN-01**, **EXT-01** (both 08-01 and 08-02). `REQUIREMENTS.md` maps those IDs to Phase 1 / Phase 2 Complete — no additional Phase 8 IDs. No orphaned REQUIREMENTS.md IDs for Phase 8.
+Every plan (08-01..08-06) declares **RUN-01** and **EXT-01**. In REQUIREMENTS.md both are mapped to earlier phases (RUN-01: Phase 1, EXT-01: Phase 2, both Complete). No REQUIREMENTS.md ID maps to Phase 8, so there are no orphaned requirements.
 
-| Requirement | Source Plan | Description | Status | Evidence |
-| ----------- | ---------- | ----------- | ------ | -------- |
-| RUN-01 | 08-01, 08-02 | Daemon keeps repeat invocations fast; 08-02 adds 25s CLI+SDK budget under zsh `read -t 30` | ✓ SATISFIED | `ensureDaemon` still on foreground path; `TOTAL_BUDGET_MS = 25_000`; `remainingMs` / `MIN_SDK_RESCUE_MS`. CR-01 can consume the full 25s on a stdin hang |
-| EXT-01 | 08-01, 08-02 | Internal registries including provider backends | ✓ SATISFIED | `registerProviderBackend({ id: 'claude-cli', adapter: claudeDefaultAdapter })` beside existing `claude`; four registries unchanged |
-
-`REQUIREMENTS.md` checkboxes were already `[x]` from earlier phases. Phase 8 extends them; it does not introduce new IDs.
+| Requirement | Source Plans | Description | Status | Evidence |
+| --- | --- | --- | --- | --- |
+| RUN-01 | 08-01..08-06 | Background daemon keeps repeat invocations fast | ✓ SATISFIED | Every provider is served by the warm daemon (server.ts fetch-candidates). The pin is a sync read with no probing. CR-01 capability check replaces stale daemons. Daemon cwd is pinned to home (WR-08). The picker restarts the daemon so it inherits fresh env. 25s provider budgets stay under the 30s FIFO |
+| EXT-01 | 08-01..08-06 | Internal registries incl. provider backends | ✓ SATISFIED | `registerProviderBackend` for `claude`, `claude-cli`, `ollama`, `openai`. The pin maps to registry ids through `PIN_BACKEND_IDS` |
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
-| ---- | ---- | ------- | -------- | ------ |
-| `src/providers/claude-exec.ts` | 10–24 | `promisify(execFile)` with unused `stdio` | 🛑 Blocker | CR-01 — stdin isolation no-op; can hang `/login` and skip SDK rescue |
-| `tests/provider-detect.test.ts` | 133–143 | Branch 2 does not stub `CLAUDE_CODE_OAUTH_TOKEN` / `ANTHROPIC_AUTH_TOKEN` | ⚠️ Warning | WR-01 — leftover detect test can false-pass if host env is set |
-| `src/providers/detect.ts` | 13–19 | `execSync('which claude')` | ⚠️ Warning | WR-02 — Windows leftover preflight never reaches auth checks; not the 08-02 selector |
-| `src/providers/claude-default.ts` | 65–68 | `process.env.ANTHROPIC_API_KEY ?? .env.local` | ⚠️ Warning | WR-03 — empty `ANTHROPIC_API_KEY=` blocks `.env.local` rescue (`??` not `\|\|`) |
-| `src/providers/claude.ts` | 15 | angle-bracket `<placeholder>` in `QUEQUE_SYSTEM` | ℹ️ Info | Prompt contract, not a stub |
+| --- | --- | --- | --- | --- |
+| `src/cli/main.ts` | 43, 47 | `XXXXXX` | ℹ️ Info | `mktemp` template in a comment, not a debt marker |
+| `src/daemon/server.ts` | 44 | `TODO(CR-005)` | ℹ️ Info | Pre-existing (2026-05-15, a3b09a3), not added in Phase 8; references a tracked item |
 
-No TODO/FIXME/not-implemented in 08-02 production modules. `detectProvider()` waterfall remains as leftover preflight (locked, not a bug).
+No TBD/FIXME debt markers, stubs, empty handlers, or hardcoded-empty data in the Phase 8 files.
 
 ### Human Verification Required
 
-### 1. Live Claude `/login` (Keychain, no API key)
+#### 1. Scope decision: roadmap SC #2 and the OPENAI half of SC #3
 
-**Test:** On macOS, with `claude` on PATH, authenticated via `claude /login`, no `ANTHROPIC_API_KEY`, trigger `??`.
-**Expected:** Ranked candidates from `claude -p` within 25s; no provider quiz.
-**Why human:** Needs real Claude Code + Keychain. CR-01 predicts a hang/timeout instead.
+**Test:** Decide whether "one explicit `qq init provider` step for Ollama/OpenAI" (D-01/D-04/D-14) replaces "zero extra steps".
+**Expected:** Add the overrides above or amend ROADMAP.md, or reopen auto-detection as a gap.
+**Why human:** A scope change cannot be accepted by the verifier.
 
-### 2. Confirm stdin hang with real `claude -p`
+#### 2. Live Claude `/login`
 
-**Test:** Spawn `claude -p ...` the same way production does (`execFile` vs `spawn` with stdin ignore) and watch whether print mode waits on stdin.
-**Expected:** After a spawn-based fix, the child should see EOF and return candidates; today `execFile` should leave stdin open.
-**Why human:** Must not stub a fake `claude` binary (cerebrum Do-Not-Repeat).
+**Test:** macOS, `claude /login`, no key, no pin, trigger `??`.
+**Expected:** Candidates within 25s, no provider question, and the debug log shows provider claude source default.
+**Why human:** Needs the real Claude Code binary and Keychain auth.
 
-### 3. SDK rescue with `.env.local` only
+#### 3. Live Ollama pin
 
-**Test:** Logged-out or missing CLI, key only in `.env.local`, trigger `??`.
-**Expected:** Candidates via SDK; child env has no injected `.env.local` key.
-**Why human:** Live Anthropic API.
+**Test:** `qq init provider`, then 3, Enter, then `??`.
+**Expected:** Candidates. The debug log shows provider ollama source pin.
+**Why human:** Needs a running Ollama.
 
-### 4. Zellij pane isolation
+#### 4. Live OpenAI pin
 
-**Test:** Trigger `??` inside Zellij.
-**Expected:** No Claude TUI chrome stealing the pane (`--safe-mode`, `--tools ""`, stdin not inherited).
-**Why human:** Interactive TTY / pane behavior.
+**Test:** Export the key, open a new terminal, `qq init provider`, then 2, then `??`.
+**Expected:** Candidates from OpenAI. A bad key gives the static 401 copy.
+**Why human:** Needs a real key and network access.
 
-### 5. 08-03 wizard and non-Claude backends
+#### 5. Logged-out Claude hint
 
-**Test:** Not available yet.
-**Expected:** After 08-03: Ollama pin, OpenAI pin, first-failed-`??` / `qq init provider` under 60s.
-**Why human:** Feature not implemented.
+**Test:** `claude /logout`, no key, no pin, trigger `??`.
+**Expected:** One QueQue line naming `claude /login`, ANTHROPIC_API_KEY, and `qq init provider`. The buffer is restored.
+**Why human:** Real logged-out output must match AUTH_FAILURE_RE, otherwise the neutral WR-01 copy shows instead.
+
+#### 6. Picker restarts the real daemon
+
+**Test:** Built CLI, scratch absolute QQ_PROVIDER_FILE, press Enter.
+**Expected:** Pin file is 0600, restart message printed, new daemon pid with cwd `$HOME`.
+**Why human:** Unit tests use injected fakes.
+
+#### 7. Under-60s end-to-end
+
+**Test:** Failed `??`, then `qq init provider` (Ollama), then `??`.
+**Expected:** Under 60 seconds wall time.
+**Why human:** A wall-clock UX measurement.
+
+#### 8. Judgment-tier prohibition (08-06 docs)
+
+**Test:** Read EXTENSIONS.md and README provider sections.
+**Expected:** No auto-detection selector and no vendor fallthrough described.
+**Why human:** Judgment tier. The verifier's verdict (holds) is non-authoritative.
 
 ### Gaps Summary
 
-Two independent gap groups:
+There are no code gaps. All five gaps from the previous report are closed in the codebase:
 
-**A. 08-02 runtime defect (CR-01)** — blocks Claude `/login` zero-config (success criteria 1 and 7 as a *working* `??`, not merely leftover detect). `claude-cli.ts` correctly *requests* `stdio: ['ignore','pipe','pipe']`, but `claude-exec.ts` uses `promisify(execFile)`, which does not accept `stdio`. Empirical check on Node 26: `execFile(..., { stdio: ['ignore',…] })` still exposes a writable `child.stdin`; `spawn` sets `child.stdin` to `null`. Wave 0 tests mock `execFileAsync` and cannot see this. If `claude -p` reads stdin (RESEARCH Pitfall 2), `/login` users hang until timeout and key-holders with `claude` on PATH also miss SDK rescue.
+- CR-01 stdin: spawn-based exec, plus a stream-json prompt followed by `stdin.end()`.
+- Ollama pin: works through the daemon.
+- OpenAI pin: works through the daemon.
+- Picker and failure copy: `qq init provider` exists and the failure copy points at it.
 
-**B. 08-03 not started** — ROADMAP criteria 2–4 (Ollama, OpenAI, wizard) and D-14/D-15. Missing adapters are **not** 08-02 bugs. 08-02 correctly maps `ollama` / `openai-key` / `none` to Claude default and documents the pin as upcoming.
+The post-review fixes CR-01 (providerPin pong flag) and WR-01..WR-08 are each present with regression tests. Full suite: 962/962. Typecheck: clean.
 
-WR-01/WR-02/WR-03 are advisory and do not by themselves fail the 08-01/08-02 must-haves, except WR-03 is an edge-case hole in D-09 when `ANTHROPIC_API_KEY` is exported empty.
-
-08-01 platform-aware detection is complete as leftover preflight. 08-02 wiring (composite registry, detect bypass, D-13 FIFO, 25s budget, argv contract minus live stdin) is in place. Phase 8 goal is not achieved until CR-01 is fixed and 08-03 lands.
+The phase is **not** marked `passed` for two reasons:
+1. **Roadmap/decision divergence.** The ROADMAP goal ("detect … in priority order and use the first available backend") and SC #2/#3 ("zero extra steps" for Ollama and OPENAI_API_KEY) are deliberately not implemented as worded. Locked D-01/D-04/D-14 replaced them with a Claude silent default plus a one-time `qq init provider` pin, with no cross-vendor fallback. The code faithfully implements the locked decisions. The roadmap was never amended and there is no override, so the developer must record the acceptance (or reject it, in which case SC #2/#3 become BLOCKERS).
+2. **Live-environment checks** (real Claude `/login`, Ollama, OpenAI, logged-out hint, real daemon restart, under-60s end-to-end) cannot be automated here.
 
 ---
 
-_Verified: 2026-08-26T04:15:00Z_
+_Verified: 2026-10-18T02:45:00Z_
 _Verifier: Claude (gsd-verifier)_
