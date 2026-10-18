@@ -50,6 +50,9 @@ const SAFE_ERROR_CODE = /^[a-z0-9_]{1,64}$/;
 
 const SWITCH_HINT = 'run `qq init provider` to switch providers';
 
+/** Printable ASCII with no space: the only bytes a bearer token can carry in a header. */
+const HEADER_SAFE_KEY = /^[\x21-\x7e]+$/;
+
 function errorName(error: unknown): string | undefined {
   const name = (error as { name?: unknown } | null)?.name;
   return typeof name === 'string' ? name : undefined;
@@ -153,6 +156,14 @@ export async function fetchOpenAiCandidates(
   if (!apiKey) {
     throw new Error(
       'QueQue: OpenAI is pinned but OPENAI_API_KEY is not set for QueQue. Export it (or add it to ~/.env.local), then run `qq init provider` to refresh the background daemon.',
+    );
+  }
+
+  if (!HEADER_SAFE_KEY.test(apiKey)) {
+    // IN-05: fetch would throw a TypeError for the header before any I/O, which reads as
+    // "could not reach api.openai.com". The value itself is never echoed.
+    throw new Error(
+      'QueQue: OPENAI_API_KEY contains invalid characters (spaces, line breaks or non-ASCII). Check the key in your environment or ~/.env.local.',
     );
   }
 

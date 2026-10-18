@@ -245,6 +245,21 @@ describe('OpenAI key handling', () => {
     expect(error.message).toContain('~/.env.local');
     expect(fetchStub).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ['an embedded newline', 'sk-test-abc\ndef'],
+    ['an inner space', 'sk-test-abc def'],
+    ['a non-Latin-1 character', 'sk-test-abc\u2014def'],
+  ])('reports a key with %s as invalid, not as unreachable (IN-05)', async (_name, key) => {
+    vi.stubEnv('OPENAI_API_KEY', key);
+
+    const error = await failure();
+
+    expect(error.message).toContain('OPENAI_API_KEY contains invalid characters');
+    expect(error.message).not.toContain('api.openai.com');
+    expect(error.message).not.toContain('sk-test-abc');
+    expect(fetchStub).not.toHaveBeenCalled();
+  });
 });
 
 describe('key-file copy names ~/.env.local (WR-11)', () => {
