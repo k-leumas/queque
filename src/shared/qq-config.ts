@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import { z } from 'zod';
 
 /** Built-in sensitive path patterns — always applied; user config adds more. */
@@ -90,9 +90,19 @@ let cachedConfig: ResolvedQqConfig | null = null;
 /**
  * Returns the default config file path: ~/.config/qq/config.json.
  * Override with QQ_CONFIG_FILE for tests or custom installs.
+ *
+ * IN-14: like providerPinPath(), an empty or whitespace-only override counts as unset
+ * (never `??`, which would read `''`, fall back to the defaults and silently drop the
+ * user's extra privacy patterns). A relative override is resolved against the home
+ * directory, explicitly, so the daemon (which runs in `~`) and the foreground client in
+ * any other directory read the same file.
  */
 export function defaultConfigPath(): string {
-  return process.env.QQ_CONFIG_FILE ?? join(homedir(), '.config', 'qq', 'config.json');
+  const override = process.env.QQ_CONFIG_FILE?.trim();
+  if (!override) {
+    return join(homedir(), '.config', 'qq', 'config.json');
+  }
+  return isAbsolute(override) ? override : resolve(homedir(), override);
 }
 
 /** Maximum length for user-supplied regex patterns in config.json. */

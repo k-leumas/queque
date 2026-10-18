@@ -1,9 +1,10 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   DEFAULT_EFFORT,
+  defaultConfigPath,
   EFFORT_LEVELS,
   loadQqConfig,
   qqConfigFileSchema,
@@ -118,5 +119,47 @@ describe('loadQqConfig effort (D-01)', () => {
 
     expect(resolveEffort()).toBe(loadQqConfig().effort);
     expect(resolveEffort()).toBe('xhigh');
+  });
+});
+
+describe('QQ_CONFIG_FILE override (IN-14)', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    resetQqConfigCache();
+  });
+
+  it.each(['', '   '])('an empty override %j reads the default path', (value) => {
+    vi.stubEnv('QQ_CONFIG_FILE', value);
+    expect(defaultConfigPath()).toBe(join(homedir(), '.config', 'qq', 'config.json'));
+  });
+
+  it('an absolute override is used as is (trimmed)', () => {
+    vi.stubEnv('QQ_CONFIG_FILE', '  /etc/qq/config.json  ');
+    expect(defaultConfigPath()).toBe('/etc/qq/config.json');
+  });
+
+  it('a relative override resolves against the home directory, not the cwd', () => {
+    vi.stubEnv('QQ_CONFIG_FILE', 'qq/config.json');
+    expect(defaultConfigPath()).toBe(join(homedir(), 'qq', 'config.json'));
+  });
+
+  it('an empty override still loads the privacy patterns of the default file', () => {
+    const home = mkdtempSync(join(tmpdir(), 'qq-config-home-'));
+    try {
+      vi.stubEnv('HOME', home);
+      vi.stubEnv('QQ_CONFIG_FILE', '');
+      mkdirSync(join(home, '.config', 'qq'), { recursive: true });
+      writeFileSync(
+        join(home, '.config', 'qq', 'config.json'),
+        JSON.stringify({ privacy: { sensitivePathPatterns: ['zz-in14'] } }),
+      );
+      resetQqConfigCache();
+
+      const config = loadQqConfig();
+
+      expect(config.sensitivePathRegexes.some((regex) => regex.source === 'zz-in14')).toBe(true);
+    } finally {
+      rmSync(home, { recursive: true, force: true });
+    }
   });
 });

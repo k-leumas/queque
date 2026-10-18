@@ -67,7 +67,7 @@ Then reload your shell (`source ~/.zshrc`) and trigger `??` — rebuilds from `p
 |----------|---------|---------|
 | `QQ_ALLOW_FILE_READ` | off | Gate for any future file-content context (no reads in v1) |
 | `QQ_DEBUG_VERBOSE` | off | Log full buffer text in debug logs |
-| `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path |
+| `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path. A relative path is resolved against your home directory; an empty value counts as unset |
 | `QQ_PANE_WIDTH` | `80` | Zellij floating pane width |
 | `QQ_PANE_HEIGHT` | `24` | Zellij floating pane height |
 
