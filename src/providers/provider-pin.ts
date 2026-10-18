@@ -26,17 +26,24 @@ const modelName = z
   .max(200)
   .regex(/^[^\p{Cc}]+$/u, { message: 'model must not contain control characters' });
 
-const httpUrl = z.string().refine(
-  (value) => {
-    try {
-      const { protocol } = new URL(value);
-      return protocol === 'http:' || protocol === 'https:';
-    } catch {
-      return false;
-    }
-  },
-  { message: 'baseUrl must be an http or https URL' },
-);
+// IN-10: the picker prints the stored string verbatim, so control characters are rejected
+// like in `model` (the URL parser would only percent-encode them in its own copy). A URL
+// with a username or password can never work (fetch rejects credentials in the URL), so
+// it is rejected here instead of being printed in full and reported as "not answering".
+const httpUrl = z
+  .string()
+  .regex(/^[^\p{Cc}]+$/u, { message: 'baseUrl must not contain control characters' })
+  .refine(
+    (value) => {
+      try {
+        const { protocol, username, password } = new URL(value);
+        return (protocol === 'http:' || protocol === 'https:') && !username && !password;
+      } catch {
+        return false;
+      }
+    },
+    { message: 'baseUrl must be an http or https URL without a username or password' },
+  );
 
 const version = z.literal(PROVIDER_PIN_VERSION);
 

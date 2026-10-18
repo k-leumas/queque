@@ -189,6 +189,19 @@ describe('loadProviderPin()', () => {
       '{"version":1,"provider":"ollama","model":"gemma4\\u001b]52;c;eA==\\u0007"}',
     ],
     ['an openai model with a C1 byte', '{"version":1,"provider":"openai","model":"gpt\\u009b2J"}'],
+    // IN-10: the picker prints baseUrl verbatim, and fetch rejects URLs with credentials.
+    [
+      'a baseUrl with ESC',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"http://gpu.lan/\\u001b[2Jx"}',
+    ],
+    [
+      'a baseUrl with a username and password',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"http://user:pass@gpu.lan:11434"}',
+    ],
+    [
+      'a baseUrl with a username only',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"https://user@gpu.lan"}',
+    ],
   ])('reports %s as invalid', (_name, content) => {
     writePin(content);
     const state = loadProviderPin();
