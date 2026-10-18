@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   loadProviderPin,
+  MAX_ISSUE_REASON,
   OLLAMA_DEFAULT_BASE_URL,
   PIN_BACKEND_IDS,
   providerPinPath,
@@ -195,6 +196,26 @@ describe('loadProviderPin()', () => {
     expect(state).toMatchObject({ kind: 'invalid' });
     expect(JSON.stringify(state)).not.toContain('sk-not-a-real-key');
     expect(JSON.stringify(state)).toContain('apiKey');
+  });
+
+  it('caps unknown key names and replaces their control characters (IN-02)', () => {
+    const longKey = `k${'x'.repeat(300)}`;
+    writePin(
+      JSON.stringify({
+        version: 1,
+        provider: 'claude',
+        'evil\u001b]0;pwned\u0007': 1,
+        [longKey]: 2,
+      }),
+    );
+    const state = loadProviderPin();
+    expect(state.kind).toBe('invalid');
+    if (state.kind === 'invalid') {
+      expect(state.message).toContain('unknown key evil?]0;pwned?');
+      expect(state.message).not.toMatch(/\p{Cc}/u);
+      expect(state.message.length).toBeLessThanOrEqual(MAX_ISSUE_REASON);
+      expect(state.message.endsWith('…')).toBe(true);
+    }
   });
 
   it('reports an unreadable path (a directory) as invalid, not absent', () => {

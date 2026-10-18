@@ -91,7 +91,16 @@ export function providerPinPath(): string {
  */
 const RELATIVE_PIN_PATH_MESSAGE = 'QQ_PROVIDER_FILE must be an absolute path';
 
-/** A short reason built from zod issue paths and key names, never from file values. */
+/** Longest reason describeIssues returns; the message reaches the terminal and the log. */
+export const MAX_ISSUE_REASON = 120;
+
+/**
+ * A short reason built from zod issue paths and key names, never from file values.
+ *
+ * IN-02: unknown key names come from the file, so control characters (C0, DEL, C1) are
+ * replaced with `?` and the joined reason is capped at MAX_ISSUE_REASON characters before
+ * it reaches the fetch-error message, the daemon debug log and the terminal.
+ */
 function describeIssues(error: z.ZodError): string {
   const parts = error.issues.map((issue) => {
     if (issue.code === 'unrecognized_keys') {
@@ -99,7 +108,8 @@ function describeIssues(error: z.ZodError): string {
     }
     return issue.path.length > 0 ? issue.path.join('.') : issue.code;
   });
-  return [...new Set(parts)].join(', ');
+  const reason = [...new Set(parts)].join(', ').replace(/\p{Cc}/gu, '?');
+  return reason.length > MAX_ISSUE_REASON ? `${reason.slice(0, MAX_ISSUE_REASON - 1)}…` : reason;
 }
 
 /**
