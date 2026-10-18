@@ -5892,6 +5892,147 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-17T20:35:00Z"
+    },
+    {
+      "id": "bug-359",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review CR-01: pre-pin v0.6.0 daemon passed 3-flag capability check and ignored provider.json",
+      "file": "src/daemon/bootstrap.ts",
+      "root_cause": "capability check lacked a flag for routing changes",
+      "fix": "added providerPin pong flag required by ensureDaemon",
+      "tags": [
+        "daemon",
+        "ipc",
+        "capability",
+        "privacy"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-360",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-01: every claude -p failure showed 'not authenticated' copy",
+      "file": "src/providers/claude-default.ts",
+      "root_cause": "most specific copy was the fall-through; isAuthFailure branch dead",
+      "fix": "neutral CLI_FAILED_MESSAGE fall-through",
+      "tags": [
+        "error-copy",
+        "claude-cli"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-361",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-02: picker re-run dropped saved baseUrl/model; only probed localhost",
+      "file": "src/cli/commands/init-provider.ts",
+      "root_cause": "new pin built from scratch",
+      "fix": "keptPinFields + listOllamaModels(baseUrl)",
+      "tags": [
+        "picker",
+        "provider-pin"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-362",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-03: empty/relative QQ_PROVIDER_FILE resolved to absent -> Claude",
+      "file": "src/providers/provider-pin.ts",
+      "root_cause": "?? treats empty string as set",
+      "fix": "trim + isAbsolute check; relative = invalid pin",
+      "tags": [
+        "env",
+        "fail-closed",
+        "privacy"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-363",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-04: control bytes from remote Ollama reached terminal",
+      "file": "src/providers/ollama.ts",
+      "root_cause": "oneLine kept C0/C1 bytes",
+      "fix": "stripTerminalControls + model name validation",
+      "tags": [
+        "terminal-injection",
+        "security"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-364",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-05: prose fallback turned local-model prose/<think> into a command",
+      "file": "src/providers/claude.ts",
+      "root_cause": "non-Claude adapters used finalCandidateList prose fallback",
+      "fix": "finalCandidateListWithoutProse",
+      "tags": [
+        "parsing",
+        "ollama",
+        "openai"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-365",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-06: baseUrl path prefix dropped; proxy 404 reported as missing model",
+      "file": "src/providers/ollama.ts",
+      "root_cause": "new URL('/api/chat', base) absolute path",
+      "fix": "ollamaApiUrl relative join; 404 model-vs-URL split",
+      "tags": [
+        "url",
+        "ollama"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-366",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-07: restart orphaned old daemon without lsof",
+      "file": "src/daemon/bootstrap.ts",
+      "root_cause": "restart relied only on lsof",
+      "fix": "IPC shutdown request, lsof fallback",
+      "tags": [
+        "daemon",
+        "lsof",
+        "linux"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-367",
+      "timestamp": "2026-10-18T02:30:00Z",
+      "error_message": "08 review WR-08: OpenAI key source depended on picker/daemon spawn cwd",
+      "file": "src/daemon/bootstrap.ts",
+      "root_cause": "daemon inherited caller cwd for .env.local",
+      "fix": "spawn daemon with cwd homedir(); picker checks ~/.env.local",
+      "tags": [
+        "env-file",
+        "daemon",
+        "privacy"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T02:30:00Z"
     }
   ]
 }

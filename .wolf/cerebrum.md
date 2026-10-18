@@ -135,6 +135,12 @@
 - [2026-10-17] commitlint `body-max-line-length` is 100 chars per body line, not only the subject; wrap bullets before committing.
 - [2026-10-17] README provider section is "Choose a provider" (anchor `#choose-a-provider`, linked from Requirements).
 - [2026-10-17] Only the Claude adapters stream rows (`onCandidate`); OpenAI and Ollama return the full list at once, so docs saying rows "stream in" must say Claude.
+- [2026-10-17] Pong flags: `providerPin` is the fourth (after fetchCandidates, installedTools, streamCandidates). Daemon ROUTING changes need a pong flag too: a v0.6.0 daemon passed the 3-flag check and sent Ollama-pinned prompts to Claude (08 CR-01).
+- [2026-10-17] `restartDaemon` / `replaceStaleListener` first send IPC `{kind:'shutdown'}` (ack `shutdown-accepted`, 500 ms); `lsof` only for older daemons.
+- [2026-10-17] The daemon always spawns with `cwd: homedir()` (08 WR-08): its `.env.local` is `~/.env.local`. A repo `.env.local` reaches only the client's in-process fallback.
+- [2026-10-17] Ollama and OpenAI use `finalCandidateListWithoutProse` (no prose fallback, strips `<think>`) and `stripTerminalControls`; Claude keeps `finalCandidateList`.
+- [2026-10-17] `QQ_PROVIDER_FILE`: empty = unset; relative path = invalid pin (fail closed).
+- [2026-10-17] context7 MCP tools may not be exposed to subagents; defer fixes that need verified request params.
 
 ## Do-Not-Repeat
 - [2026-10-12] Do not fail closed on one bad enum value (the WR-07 check for `stop_reason === 'max_tokens'` only): a `refusal` or `pause_turn` fragment still reached the prose fallback (WR-01-r2, T-09.1-14). Use an allow list of the known-good values (end_turn, stop_sequence) so refusal, pause_turn, null and future values fail closed.
@@ -172,6 +178,8 @@
 - [2026-10-10] Don't put per-selection status text (e.g. `not installed: fd`, `will install: fd`) in a conditional footer of CandidateSelect — it changes modal height on arrow keys (user-reported jump). The pre-existing destructive ⚠ footer is the only exception so far.
 - [2026-10-10] commitlint subject-case also rejects subjects starting with a review ID (`fix(09): CR-01 …`). Put the ID at the end: `fix(09): skip heredoc bodies … (CR-01)`.
 - [2026-10-17] Do not write `qq init zsh >> ~/.zshrc` in help or docs: initCommand appends to ~/.zshrc itself and prints a status line on stdout. Use `qq init zsh && source ~/.zshrc`.
+- [2026-10-17] Do not end an error-mapping function with the most specific copy as the fall-through (claude-default made isAuthFailure dead code). The fall-through must be neutral.
+- [2026-10-17] Do not join API paths with `new URL('/api/x', base)`: it drops the base's path prefix. Ensure trailing `/` and join `api/x` relatively.
 
 ## Decision Log
 

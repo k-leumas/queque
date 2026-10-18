@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-17T19:30:07.022Z
-> Files: 582 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T02:29:18.569Z
+> Files: 583 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -832,7 +832,8 @@
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
-- `08-REVIEW.md` — Phase 08: Code Review Report (~2665 tok)
+- `08-REVIEW-FIX.md` — Phase 8: Code Review Fix Report (~4018 tok)
+- `08-REVIEW.md` — Phase 8: Code Review Report (gap closure 08-03..08-06) (~5168 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
 - `08-VERIFICATION.md` — Phase 08 goal-backward verification: 08-01/08-02 vs CR-01 stdin gap and 08-03 remaining. (~3200 tok)
