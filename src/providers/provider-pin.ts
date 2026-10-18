@@ -171,8 +171,10 @@ export function writeProviderPin(pin: ProviderPin): string {
   const temp = `${target}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
   try {
     writeFileSync(temp, `${JSON.stringify(parsed, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
+    // IN-03: chmod before the rename, so a failure leaves the old pin in place and the
+    // caller's "No changes made" is true (after the rename the new pin would already be live).
+    chmodSync(temp, 0o600);
     renameSync(temp, target);
-    chmodSync(target, 0o600);
   } catch (error) {
     try {
       unlinkSync(temp);

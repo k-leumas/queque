@@ -17,13 +17,22 @@ import { clearProviderBackends, getProviderAdapter } from '../src/registry/provi
 import { clearShellAdapters } from '../src/registry/shell-adapters.js';
 import { clearStorageHooks } from '../src/registry/storage-hooks.js';
 
-const { appendDebugLogMock } = vi.hoisted(() => ({
+const { appendDebugLogMock, chmodSyncMock } = vi.hoisted(() => ({
   appendDebugLogMock: vi.fn().mockResolvedValue(undefined),
+  chmodSyncMock: vi.fn(),
 }));
 
 vi.mock('../src/shared/debug-log.js', () => ({
   appendDebugLog: appendDebugLogMock,
 }));
+
+// IN-03: provider-pin.ts gets a passthrough chmodSync spy so one test can make it fail.
+// (The mock reaches src modules; this file's own `fs` namespace import stays the original.)
+vi.mock('node:fs', async (importOriginal) => {
+  const original = await importOriginal<typeof import('node:fs')>();
+  chmodSyncMock.mockImplementation(original.chmodSync);
+  return { ...original, chmodSync: chmodSyncMock };
+});
 
 function resetRegistries(): void {
   clearContextProviders();
@@ -299,5 +308,28 @@ describe('resolveProviderAdapter()', () => {
     writePin('{"version":1,"provider":"ollama","model":"secret-model-name"}');
     resolveProviderAdapter();
     expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('secret-model-name');
+  });
+});
+
+describe('writeProviderPin() permissions (IN-03)', () => {
+  it('writes the pin with mode 0600', () => {
+    writeProviderPin({ version: 1, provider: 'claude' });
+    expect(fs.statSync(pinFile).mode & 0o777).toBe(0o600);
+  });
+
+  it('a chmod failure leaves the old pin in place and no temp file', () => {
+    writeProviderPin({ version: 1, provider: 'claude' });
+    chmodSyncMock.mockImplementationOnce(() => {
+      throw Object.assign(new Error('EPERM: operation not permitted'), { code: 'EPERM' });
+    });
+
+    expect(() => writeProviderPin({ version: 1, provider: 'ollama', model: 'gemma4' })).toThrow(
+      'EPERM',
+    );
+    expect(loadProviderPin()).toEqual({
+      kind: 'pinned',
+      pin: { version: 1, provider: 'claude' },
+    });
+    expect(fs.readdirSync(pinDir)).toEqual(['provider.json']);
   });
 });
