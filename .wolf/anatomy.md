@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T03:03:51.899Z
-> Files: 584 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T03:46:48.959Z
+> Files: 587 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -832,8 +832,8 @@
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
-- `08-REVIEW-FIX.md` — Phase 8: Code Review Fix Report (~4018 tok)
-- `08-REVIEW.md` — Phase 8: Code Review Report (gap closure 08-03..08-06) (~5168 tok)
+- `08-REVIEW-FIX.md` — Phase 8: Code Review Fix Report (~5743 tok)
+- `08-REVIEW.md` — Phase 8: Code Review Report (iteration 2, re-review of fixes 1321da8..cfe36ab) (~4802 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
 - `08-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2301 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
@@ -1111,6 +1111,8 @@
 
 ## src/providers/
 
+- `provider.ts` — (08 iter-2) UNPARSEABLE_RESPONSE_MESSAGE, sanitizeCandidate/sanitizeCandidates (\p{Cc} minus tab/newline, plus \p{Cf}) for every provider; stripTerminalControls throws when nothing is left (IN-13).
+- `claude.ts` — (08 iter-2) stripThinking: text after last </think>, unclosed <think> dropped (WR-09); finalCandidateList sanitizes every row (IN-12); re-exports UNPARSEABLE_RESPONSE_MESSAGE.
 - `candidate-stream.ts` — Incremental JSON-array candidate scanner for streamed text deltas (09.1-02): `createCandidateScanner(onCandidate)` changes no state before the first `[`, tracks depth, strings and escapes, emits only commandCandidateSchema-valid objects that close at depth 2, stops at the array close or after `MAX_STREAMED_CANDIDATES` (5); `parseStrictCandidateList(text)` accepts a fenced or bare array of 1-5 candidates, else undefined. Used by the CLI and SDK paths. (~900 tok)
 - `claude-cli.ts` — `CLAUDE_COMMAND`, `buildClaudeCliArgv(envelope)` (`-p --input-format stream-json --output-format stream-json --verbose --include-partial-messages --effort <resolveEffort()> --safe-mode --tools '' --no-session-persistence --system-prompt buildSystemPrompt(envelope)`; no prompt, no `--model`, never bare); `fetchClaudeCliCandidates(envelope, budget, options)` builds a per-query `PrewarmSpec`, `takePrewarmed` before the turn (`prewarm hit` / `prewarm miss {reason}`) and `schedulePrewarm` in `finally`; one cold retry (`prewarm retry cold`) only for a warm `exit-without-result` with no streamed rows; runs `runClaudeTurn` with the prompt on stdin and `signal`; with `onCandidate`, text deltas feed `createCandidateScanner` and rows pass on only while the signal is live (`cli first candidate` once); final list = strict parse, then streamed rows, then `parseCandidates`; logs `cli spawned|init|first delta|first candidate|result|exit|aborted|timed out` with `ms` and `warm` (09.1-01/02/05). WR-02: warm turns get `warmInitDeadlineMs(spawnedAt)` (`WARM_INIT_DEADLINE_MS` 1500 + rest of `PREWARM_BOOT_ALLOWANCE_MS` 3000 for a young child) and `stale-prewarm` is retried cold too; a stall after `init` is still a timeout. WR-01-r2: the final list is `finalCandidateList(text, streamed, finishedNormally, { stopReason })`; a `truncated` runner failure (`isTruncatedFailure`, caught around both attempts, never retried cold) feeds its stdout with finishedNormally false, so only strict/streamed/closed rows or TRUNCATED_RESPONSE_MESSAGE, never the prose fallback (~2050 tok)
 - `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`; forwards FetchOptions to the CLI path; an AbortError is logged `claude-cli aborted` and re-thrown unmapped (09.1-01); the SDK branch passes `options` (`remainingMs(deadline), options`) as a direct return outside the CLI try/catch, so an SDK AbortError is never mapped by hardError (09.1-04); WR-01-r2: hardError returns a TRUNCATED_RESPONSE_MESSAGE error unchanged before the ENOENT/timeout/D13 mapping, so `/login` users see the same truncation copy as the SDK path (~1100 tok)

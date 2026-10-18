@@ -6033,6 +6033,139 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-18T02:30:00Z"
+    },
+    {
+      "id": "bug-368",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review WR-09: orphan </think> / unclosed <think> draft array returned as the command",
+      "file": "src/providers/claude.ts",
+      "root_cause": "THINK_BLOCK_RE removed only complete pairs",
+      "fix": "stripThinking",
+      "tags": [
+        "ollama",
+        "openai",
+        "think",
+        "reasoning",
+        "candidates"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-369",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review WR-12: spawn ENOENT uncaught; ?? cancelled when HOME does not exist",
+      "file": "src/daemon/bootstrap.ts",
+      "root_cause": "cwd: homedir() with no child 'error' listener; run-foreground did not catch ensureDaemon",
+      "fix": "daemonCwd() + error listener + try/catch in-process fallback",
+      "tags": [
+        "daemon",
+        "spawn",
+        "cwd",
+        "HOME",
+        "fallback"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-370",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review WR-10: in-process fallback used a project dotenv key",
+      "file": "src/shared/env-file.ts",
+      "root_cause": "default startDir = process.cwd()",
+      "fix": "default homedir()",
+      "tags": [
+        "env-file",
+        "privacy",
+        "fallback",
+        "daemon"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-371",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review WR-11: error copy told users to add a project dotenv file the daemon never reads",
+      "file": "src/providers/claude-default.ts",
+      "root_cause": "copy predated WR-08",
+      "fix": "copy says ~/ path, guarded by a source scan",
+      "tags": [
+        "copy",
+        "docs",
+        "env-file"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-372",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review IN-03: picker said No changes made after the new pin was renamed into place",
+      "file": "src/providers/provider-pin.ts",
+      "root_cause": "chmod after rename",
+      "fix": "chmod the temp file first",
+      "tags": [
+        "provider-pin",
+        "atomic-write"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-373",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review IN-11: baseUrl with ?query or #fragment lost its path prefix",
+      "file": "src/providers/ollama.ts",
+      "root_cause": "/ appended to the whole string",
+      "fix": "build the URL from its parts",
+      "tags": [
+        "ollama",
+        "url",
+        "baseUrl"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-374",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review IN-13: all-control-byte answer showed a selectable echo \"\" row",
+      "file": "src/providers/provider.ts",
+      "root_cause": "sanitized list fell back to placeholder",
+      "fix": "throw UNPARSEABLE_RESPONSE_MESSAGE for non-Claude",
+      "tags": [
+        "sanitize",
+        "candidates",
+        "ollama",
+        "openai"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-375",
+      "timestamp": "2026-10-18T03:50:00Z",
+      "error_message": "08 review IN-14: empty QQ_CONFIG_FILE silently dropped the user's privacy patterns",
+      "file": "src/shared/qq-config.ts",
+      "root_cause": "?? on an empty string",
+      "fix": "trim, empty = unset, relative resolves against home",
+      "tags": [
+        "config",
+        "privacy",
+        "env"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-18T03:50:00Z"
     }
   ]
 }
