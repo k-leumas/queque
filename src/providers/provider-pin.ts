@@ -1,7 +1,7 @@
 import { randomBytes } from 'node:crypto';
 import { chmodSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, isAbsolute, join } from 'node:path';
 import { z } from 'zod';
 import { getProviderAdapter } from '../registry/provider-backends.js';
 import { appendDebugLog } from '../shared/debug-log.js';
@@ -68,10 +68,21 @@ export const PIN_BACKEND_IDS: Record<ProviderPin['provider'], string> = {
 /**
  * Returns the pin path: ~/.config/qq/provider.json, a sibling of config.json.
  * Override with QQ_PROVIDER_FILE for tests or custom installs.
+ *
+ * WR-03: an empty or whitespace-only override counts as unset (never `??`, which would
+ * use the empty string as a path, read ENOENT and fall through to the Claude default).
  */
 export function providerPinPath(): string {
-  return process.env.QQ_PROVIDER_FILE ?? join(homedir(), '.config', 'qq', 'provider.json');
+  const override = process.env.QQ_PROVIDER_FILE?.trim();
+  return override ? override : join(homedir(), '.config', 'qq', 'provider.json');
 }
+
+/**
+ * WR-03: a relative QQ_PROVIDER_FILE resolves against each process's own cwd, so the
+ * daemon or the client in another directory would read ENOENT and silently use Claude.
+ * It is rejected as an invalid pin (fail closed) instead.
+ */
+const RELATIVE_PIN_PATH_MESSAGE = 'QQ_PROVIDER_FILE must be an absolute path';
 
 /** A short reason built from zod issue paths and key names, never from file values. */
 function describeIssues(error: z.ZodError): string {
@@ -88,11 +99,15 @@ function describeIssues(error: z.ZodError): string {
  * Reads and validates the pin. Runs a sync read on every call with no cache, so an edited
  * pin applies on the next fetch without a daemon restart (D-15).
  *
- * ENOENT is the only `absent` case. Any other read error, an empty file, invalid JSON, or
- * a schema failure is `invalid`; the message never carries file contents.
+ * ENOENT at an absolute path is the only `absent` case. A relative QQ_PROVIDER_FILE, any
+ * other read error, an empty file, invalid JSON, or a schema failure is `invalid`; the
+ * message never carries file contents.
  */
 export function loadProviderPin(): ProviderPinState {
   const path = providerPinPath();
+  if (!isAbsolute(path)) {
+    return { kind: 'invalid', path, message: RELATIVE_PIN_PATH_MESSAGE };
+  }
 
   let raw: string;
   try {
@@ -131,6 +146,10 @@ export function loadProviderPin(): ProviderPinState {
 export function writeProviderPin(pin: ProviderPin): string {
   const parsed = providerPinSchema.parse(pin);
   const target = providerPinPath();
+  if (!isAbsolute(target)) {
+    // The loader would reject this path, so never write a pin no process can read.
+    throw new Error(RELATIVE_PIN_PATH_MESSAGE);
+  }
   mkdirSync(dirname(target), { recursive: true, mode: 0o700 });
   const temp = `${target}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
   try {

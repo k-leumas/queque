@@ -8,6 +8,7 @@ import {
   PIN_BACKEND_IDS,
   providerPinPath,
   resolveProviderAdapter,
+  writeProviderPin,
 } from '../src/providers/provider-pin.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import { clearContextProviders } from '../src/registry/context-providers.js';
@@ -61,6 +62,66 @@ describe('providerPinPath()', () => {
   it('defaults to ~/.config/qq/provider.json, a sibling of config.json', () => {
     vi.stubEnv('QQ_PROVIDER_FILE', undefined);
     expect(providerPinPath()).toMatch(/\.config\/qq\/provider\.json$/);
+  });
+
+  it.each(['', '   '])('treats an empty QQ_PROVIDER_FILE (%j) as unset (WR-03)', (value) => {
+    vi.stubEnv('QQ_PROVIDER_FILE', value);
+    expect(providerPinPath()).toMatch(/\.config\/qq\/provider\.json$/);
+  });
+});
+
+describe('relative or empty QQ_PROVIDER_FILE (WR-03)', () => {
+  it('an empty override reads the default pin instead of resolving to absent', () => {
+    // HOME points at the temp dir, so the default path is a scratch file, never the real one.
+    vi.stubEnv('HOME', pinDir);
+    vi.stubEnv('QQ_PROVIDER_FILE', '');
+    fs.mkdirSync(join(pinDir, '.config', 'qq'), { recursive: true });
+    fs.writeFileSync(
+      join(pinDir, '.config', 'qq', 'provider.json'),
+      '{"version":1,"provider":"ollama","model":"gemma4"}',
+    );
+
+    expect(loadProviderPin()).toEqual({
+      kind: 'pinned',
+      pin: { version: 1, provider: 'ollama', model: 'gemma4' },
+    });
+  });
+
+  it('a relative override is an invalid pin, not absent', () => {
+    vi.stubEnv('QQ_PROVIDER_FILE', 'provider.json');
+    expect(loadProviderPin()).toEqual({
+      kind: 'invalid',
+      path: 'provider.json',
+      message: 'QQ_PROVIDER_FILE must be an absolute path',
+    });
+  });
+
+  it('a relative override throws instead of resolving the Claude default', () => {
+    vi.stubEnv('QQ_PROVIDER_FILE', 'nested/provider.json');
+    const claudeDefault = getProviderAdapter('claude-cli');
+
+    let resolved: unknown;
+    expect(() => {
+      resolved = resolveProviderAdapter();
+    }).toThrow(/must be an absolute path/);
+    expect(resolved).toBeUndefined();
+    expect(claudeDefault).toBeDefined();
+  });
+
+  it('writeProviderPin refuses a relative override and writes nothing', () => {
+    const cwd = process.cwd();
+    const relDir = fs.mkdtempSync(join(tmpdir(), 'qq-pin-rel-'));
+    process.chdir(relDir);
+    try {
+      vi.stubEnv('QQ_PROVIDER_FILE', 'provider.json');
+      expect(() => writeProviderPin({ version: 1, provider: 'claude' })).toThrow(
+        /must be an absolute path/,
+      );
+      expect(fs.readdirSync(relDir)).toEqual([]);
+    } finally {
+      process.chdir(cwd);
+      fs.rmSync(relDir, { recursive: true, force: true });
+    }
   });
 });
 

@@ -110,5 +110,5 @@ Built-in sensitive patterns are never removed by user config.
 | `QQ_DEBUG_VERBOSE` | off | Log full buffer text in debug logs |
 | `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Debug log path |
 | `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path |
-| `QQ_PROVIDER_FILE` | `~/.config/qq/provider.json` | Provider pin path (read on every `??`) |
+| `QQ_PROVIDER_FILE` | `~/.config/qq/provider.json` | Provider pin path (read on every `??`); must be absolute, empty means unset |
 | `OPENAI_API_KEY` | unset | OpenAI key for an `openai` pin, from the environment or `.env.local`. The daemon reads it, so re-run `qq init provider` after exporting it |
