@@ -117,9 +117,9 @@ find docker containers using port 3000??
 git undo last commit but keep changes??
 ```
 
-A selection UI opens in-terminal. Rows stream in as Claude answers, and you can pick one before the rest have arrived. What you typed stays in the dim `queque ›` header, and the FILTER box opens empty: type to narrow the list, even while `thinking…` is still showing. Move with the arrow keys and press `Enter`. The command lands in your buffer exactly as shown, ready to run or edit. QueQue never runs it for you.
+A selection UI opens in-terminal. Rows appear as the provider answers. Only Claude streams them today, so with Claude you can pick one before the rest have arrived; OpenAI and Ollama show the whole list at once. What you typed stays in the dim `queque ›` header, and the FILTER box opens empty: type to narrow the list, even while `thinking…` is still showing. Move with the arrow keys and press `Enter`. The command lands in your buffer exactly as shown, ready to run or edit. QueQue never runs it for you.
 
-Press `Esc` to cancel. It stops the request to Claude and restores what you were typing, so you can tweak your intent and hit `??` again.
+Press `Esc` to cancel. It stops the request to the provider and restores what you were typing, so you can tweak your intent and hit `??` again.
 
 A command that matches a destructive pattern (`rm`, `sudo` and similar) is marked `⚠ review carefully — this command may be destructive`. The mark is a warning only; the row stays selectable.
 
