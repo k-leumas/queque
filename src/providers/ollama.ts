@@ -93,10 +93,17 @@ function mapRequestFailure(
  * Joins an Ollama API path onto `baseUrl`, keeping the base's own path (WR-06): a
  * reverse-proxied `https://gpu.lan/ollama` becomes `https://gpu.lan/ollama/api/chat`, not
  * `https://gpu.lan/api/chat` (an absolute `/api/chat` would drop the prefix).
+ *
+ * The URL is built from its parts (IN-11): appending `/` to the whole string would put it
+ * inside a query or fragment (`…/ollama?x=1/`), and the relative join would then drop
+ * the last path segment. A query or fragment in `baseUrl` is not sent.
  */
 export function ollamaApiUrl(baseUrl: string, path: 'api/chat' | 'api/tags'): URL {
-  const base = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-  return new URL(path, base);
+  const url = new URL(baseUrl);
+  url.pathname = `${url.pathname.replace(/\/+$/, '')}/${path}`;
+  url.search = '';
+  url.hash = '';
+  return url;
 }
 
 /** The body's non-empty `error` string, or undefined (not JSON, or no such field). */
