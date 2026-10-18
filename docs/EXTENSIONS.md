@@ -37,7 +37,7 @@ The pin lives at `~/.config/qq/provider.json` (override with `QQ_PROVIDER_FILE`)
 {"version":1,"provider":"ollama","model":"gemma4","baseUrl":"http://localhost:11434"}
 ```
 
-For OpenAI, `model` is optional (default `gpt-5.5`), and there is no `baseUrl` field, so a pin cannot send the key to another host. For Ollama, `model` is required and `baseUrl` is optional (default `http://localhost:11434`, http or https only).
+For OpenAI, `model` is optional (default `gpt-5.5`), and there is no `baseUrl` field, so a pin cannot send the key to another host. For Ollama, `model` is required and `baseUrl` is optional (default `http://localhost:11434`, http or https only). A path in `baseUrl` is kept, so a reverse-proxied `https://gpu.lan/ollama` is called at `https://gpu.lan/ollama/api/chat`.
 
 `qq init provider` is the only way to write the pin interactively. It asks once on `/dev/tty` (Claude, OpenAI, Ollama), writes the file atomically with mode 0600, and restarts the daemon so it picks up a newly exported key. It pins OpenAI only when `OPENAI_API_KEY` is already usable. For Ollama, it lists your installed models. The `??` path never opens the picker. When the Claude default cannot answer (no `claude`, logged out, no key), the error text points at `qq init provider`.
 

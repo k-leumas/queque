@@ -89,14 +89,33 @@ function mapRequestFailure(
   );
 }
 
-async function readErrorDetail(response: Response): Promise<string> {
+/**
+ * Joins an Ollama API path onto `baseUrl`, keeping the base's own path (WR-06): a
+ * reverse-proxied `https://gpu.lan/ollama` becomes `https://gpu.lan/ollama/api/chat`, not
+ * `https://gpu.lan/api/chat` (an absolute `/api/chat` would drop the prefix).
+ */
+export function ollamaApiUrl(baseUrl: string, path: 'api/chat' | 'api/tags'): URL {
+  const base = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  return new URL(path, base);
+}
+
+/** The body's non-empty `error` string, or undefined (not JSON, or no such field). */
+async function readErrorField(response: Response): Promise<string | undefined> {
   try {
-    const body = (await response.json()) as { error?: unknown };
-    if (typeof body.error === 'string' && body.error.trim() !== '') {
-      return oneLine(body.error);
+    const body = (await response.json()) as { error?: unknown } | null;
+    if (typeof body?.error === 'string' && body.error.trim() !== '') {
+      return body.error;
     }
   } catch {
-    // Not JSON — fall back to the status text.
+    // Not JSON.
+  }
+  return undefined;
+}
+
+async function readErrorDetail(response: Response): Promise<string> {
+  const error = await readErrorField(response);
+  if (error !== undefined) {
+    return oneLine(error);
   }
   return oneLine(response.statusText) || 'no detail';
 }
@@ -124,7 +143,7 @@ export async function fetchOllamaCandidates(
     throw abortError();
   }
 
-  const url = new URL('/api/chat', settings.baseUrl);
+  const url = ollamaApiUrl(settings.baseUrl, 'api/chat');
   const { origin } = url;
   const timeout = AbortSignal.timeout(timeoutMs);
   const requestSignal = signal ? AbortSignal.any([signal, timeout]) : timeout;
@@ -160,8 +179,16 @@ export async function fetchOllamaCandidates(
   logRequest(response.status);
 
   if (response.status === 404) {
+    // WR-06: only Ollama's own "model … not found" body means the model is missing; any
+    // other 404 (a proxy, or a wrong baseUrl path) points at the URL instead.
+    const error = await readErrorField(response);
+    if (error !== undefined && /\bmodel\b/i.test(error)) {
+      throw new Error(
+        `QueQue: Ollama model '${settings.model}' is not installed. Run \`ollama pull ${settings.model}\`, or run \`qq init provider\` to pick another model.`,
+      );
+    }
     throw new Error(
-      `QueQue: Ollama model '${settings.model}' is not installed. Run \`ollama pull ${settings.model}\`, or run \`qq init provider\` to pick another model.`,
+      `QueQue: Ollama returned HTTP 404 from ${origin}. Check "baseUrl" in provider.json, or run \`qq init provider\`.`,
     );
   }
   if (!response.ok) {
@@ -261,7 +288,7 @@ export async function listOllamaModels(
   const signal = AbortSignal.timeout(timeoutMs);
   let response: Response;
   try {
-    response = await fetch(new URL('/api/tags', baseUrl), { signal });
+    response = await fetch(ollamaApiUrl(baseUrl, 'api/tags'), { signal });
   } catch {
     return { ok: false, reason: 'unreachable' };
   }

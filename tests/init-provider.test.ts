@@ -284,6 +284,12 @@ describe('listOllamaModels()', () => {
     await expect(listOllamaModels()).resolves.toEqual({ ok: false, reason: 'http', status: 503 });
   });
 
+  it('keeps the path prefix of a proxied baseUrl (WR-06)', async () => {
+    const fetchMock = stubTags(['gemma4']);
+    await listOllamaModels('https://gpu.lan/ollama');
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe('https://gpu.lan/ollama/api/tags');
+  });
+
   it('drops names with terminal control bytes', async () => {
     stubTags(['ok-model', 'bad\u001b[2Jmodel']);
     await expect(listOllamaModels()).resolves.toEqual({ ok: true, models: ['ok-model'] });

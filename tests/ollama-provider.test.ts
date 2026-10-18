@@ -232,6 +232,19 @@ describe('Ollama request shape and privacy', () => {
     expect(String(fetchStub.mock.calls[0]?.[0])).toBe('http://127.0.0.1:9999/api/chat');
   });
 
+  it.each([
+    ['https://gpu.lan/ollama', 'https://gpu.lan/ollama/api/chat'],
+    ['https://gpu.lan/ollama/', 'https://gpu.lan/ollama/api/chat'],
+    ['http://127.0.0.1:9999/', 'http://127.0.0.1:9999/api/chat'],
+  ])('keeps the path prefix of baseUrl %s (WR-06)', async (baseUrl, expected) => {
+    pinOllama({ baseUrl });
+    fetchStub.mockResolvedValue(chatResponse(CANDIDATE_JSON));
+
+    await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(String(fetchStub.mock.calls[0]?.[0])).toBe(expected);
+  });
+
   it('sends no authorization header', async () => {
     fetchStub.mockResolvedValue(chatResponse(CANDIDATE_JSON));
 
@@ -298,6 +311,22 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expect(error.message.startsWith('QueQue:')).toBe(true);
     expect(error.message).toContain('ollama pull gemma4');
     expect(error.message).toContain('qq init provider');
+    expectNoClaudeCall();
+  });
+
+  it.each([
+    ['an HTML proxy page', '<html><body>404 Not Found</body></html>'],
+    ['an unrelated JSON error', '{"error":"no route"}'],
+  ])('maps a 404 with %s to the URL, not to ollama pull (WR-06)', async (_name, body) => {
+    pinOllama({ baseUrl: 'https://gpu.lan/ollama' });
+    fetchStub.mockResolvedValue(new Response(body, { status: 404 }));
+
+    const error = await failure();
+
+    expect(error.message.startsWith('QueQue:')).toBe(true);
+    expect(error.message).toContain('HTTP 404 from https://gpu.lan');
+    expect(error.message).toContain('baseUrl');
+    expect(error.message).not.toContain('ollama pull');
     expectNoClaudeCall();
   });
 
