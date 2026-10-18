@@ -4,7 +4,14 @@ import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import { fetchCandidatesForUi } from '../src/daemon/fetch-client.js';
-import { buildPrompt, QUEQUE_SYSTEM } from '../src/providers/claude.js';
+import {
+  buildPrompt,
+  finalCandidateListWithoutProse,
+  QUEQUE_SYSTEM,
+  stripThinking,
+  TRUNCATED_RESPONSE_MESSAGE,
+  UNPARSEABLE_RESPONSE_MESSAGE,
+} from '../src/providers/claude.js';
 import {
   fetchOllamaCandidates,
   OLLAMA_TIMEOUT_MS,
@@ -470,6 +477,35 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expect(candidates).toEqual([{ command: 'ls -la', explanation: 'List files' }]);
   });
 
+  it('reads the answer after an orphan </think>, never the draft before it (WR-09)', async () => {
+    fetchStub.mockResolvedValue(
+      chatResponse(
+        'Draft: [{"command":"rm -rf ~/build","explanation":"draft"}] no wait, safer.\n' +
+          '</think>\n[{"command":"ls build","explanation":"List build"}]',
+      ),
+    );
+
+    const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([{ command: 'ls build', explanation: 'List build' }]);
+  });
+
+  it('never returns a draft from unclosed thinking in a cut-off answer (WR-09)', async () => {
+    fetchStub.mockResolvedValue(
+      chatResponse(
+        '<think>Maybe [{"command":"git reset --hard","explanation":"draft"}] hmm, but that loses',
+        { done_reason: 'length' },
+      ),
+    );
+
+    const error = await failure();
+
+    expect(error.message.startsWith('QueQue:')).toBe(true);
+    expect(error.message).toContain('cut off');
+    expect(error.message).not.toContain('git reset');
+    expectNoClaudeCall();
+  });
+
   it('maps a normal-stop answer with no candidates to unexpected response (WR-05)', async () => {
     fetchStub.mockResolvedValue(
       chatResponse('You can list files with ls.\nUse ls -la for hidden files too.'),
@@ -564,5 +600,38 @@ describe('pinned Ollama resolution', () => {
     expect(fetchStub).toHaveBeenCalledTimes(1);
     expect(String(fetchStub.mock.calls[0]?.[0])).toBe('http://localhost:11434/api/chat');
     expectNoClaudeCall();
+  });
+});
+
+describe('stripThinking and finalCandidateListWithoutProse (WR-09)', () => {
+  const DRAFT = '[{"command":"rm -rf ~/build","explanation":"draft"}]';
+  const FINAL = '[{"command":"ls build","explanation":"List build"}]';
+
+  it('keeps only the text after the last </think>', () => {
+    expect(stripThinking(`Draft: ${DRAFT} no wait.\n</think>\n${FINAL}`).trim()).toBe(FINAL);
+    expect(stripThinking(`<think>a</think>${DRAFT}<THINK>b</THINK>${FINAL}`).trim()).toBe(FINAL);
+  });
+
+  it('drops an unclosed <think> through to the end of the text', () => {
+    expect(stripThinking(`${FINAL}\n<think>${DRAFT} hmm`).trim()).toBe(FINAL);
+    expect(stripThinking(`<think>${DRAFT} hmm`).trim()).toBe('');
+  });
+
+  it('returns the final answer after an orphan </think>, not the draft', () => {
+    expect(
+      finalCandidateListWithoutProse(`Draft: ${DRAFT} no wait.\n</think>\n${FINAL}`, true),
+    ).toEqual([{ command: 'ls build', explanation: 'List build' }]);
+  });
+
+  it('throws TRUNCATED_RESPONSE_MESSAGE for a draft inside cut-off thinking', () => {
+    expect(() => finalCandidateListWithoutProse(`<think>Maybe ${DRAFT} hmm, but`, false)).toThrow(
+      TRUNCATED_RESPONSE_MESSAGE,
+    );
+  });
+
+  it('throws UNPARSEABLE_RESPONSE_MESSAGE for a draft inside unclosed thinking at a normal stop', () => {
+    expect(() => finalCandidateListWithoutProse(`<think>Maybe ${DRAFT} hmm`, true)).toThrow(
+      UNPARSEABLE_RESPONSE_MESSAGE,
+    );
   });
 });

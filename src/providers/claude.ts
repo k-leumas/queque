@@ -175,8 +175,23 @@ export function finalCandidateList(
 /** Thrown by finalCandidateListWithoutProse when no candidate can be read from the text. */
 export const UNPARSEABLE_RESPONSE_MESSAGE = 'QueQue: response held no command candidates';
 
-/** `<think>…</think>` blocks some local models print before their answer. */
-const THINK_BLOCK_RE = /<think>[\s\S]*?<\/think>/gi;
+/** A `<think>` block, or an unclosed one through to the end of the text. */
+const THINK_BLOCK_RE = /<think>[\s\S]*?(?:<\/think>|$)/gi;
+
+const THINK_CLOSE = '</think>';
+
+/**
+ * The answer part of a local reasoning model's text (WR-09). Only the text after the last
+ * `</think>` is kept, because some chat templates put `<think>` in the prompt and the
+ * output then starts inside the thinking with only the closing tag. A `<think>` with no
+ * `</think>` after it (a cut-off answer) is dropped through to the end, so a draft array
+ * inside unfinished thinking never becomes a command.
+ */
+export function stripThinking(text: string): string {
+  const close = text.toLowerCase().lastIndexOf(THINK_CLOSE);
+  const afterClose = close === -1 ? text : text.slice(close + THINK_CLOSE.length);
+  return afterClose.replace(THINK_BLOCK_RE, ' ');
+}
 
 /**
  * The final-list rule for the Ollama and OpenAI adapters (WR-05). Their models do not
@@ -185,7 +200,7 @@ const THINK_BLOCK_RE = /<think>[\s\S]*?<\/think>/gi;
  * parseCandidates' prose fallback would turn that whole text into one multi-line
  * "command", so it is never used here.
  *
- * Order: the strict parse of the text without `<think>` blocks, then the candidate objects
+ * Order: the strict parse of the text after stripThinking, then the candidate objects
  * that closed inside the first `[ {` array in it. With none, a cut-off answer throws
  * TRUNCATED_RESPONSE_MESSAGE and a normal stop throws UNPARSEABLE_RESPONSE_MESSAGE (both
  * logged with `logFields` only, never the text). The raw text never becomes a candidate.
@@ -195,7 +210,7 @@ export function finalCandidateListWithoutProse(
   finishedNormally: boolean,
   logFields: Record<string, unknown> = {},
 ): CandidateList {
-  const answer = text.replace(THINK_BLOCK_RE, ' ');
+  const answer = stripThinking(text);
   const strict = parseStrictCandidateList(answer);
   if (strict) {
     return strict;
