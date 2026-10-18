@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T02:29:18.569Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-18T02:37:54.553Z
 > Files: 583 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -836,7 +836,7 @@
 - `08-REVIEW.md` — Phase 8: Code Review Report (gap closure 08-03..08-06) (~5168 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
-- `08-VERIFICATION.md` — Phase 08 goal-backward verification: 08-01/08-02 vs CR-01 stdin gap and 08-03 remaining. (~3200 tok)
+- `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~8927 tok)
 - `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~4525 tok)
 - `COVERAGE.md` — API coverage matrix (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) for the seal-time gate (~1900 tok)
 - `COVERAGE.md` — API Coverage — Phase 08 (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) (~1524 tok)
