@@ -7,7 +7,12 @@ import {
   finalCandidateList,
   TRUNCATED_RESPONSE_MESSAGE,
 } from './claude.js';
-import { abortError, type FetchOptions, type LLMAdapter } from './provider.js';
+import {
+  abortError,
+  type FetchOptions,
+  type LLMAdapter,
+  stripTerminalControls,
+} from './provider.js';
 import { loadProviderPin, OLLAMA_DEFAULT_BASE_URL } from './provider-pin.js';
 import { buildSystemPrompt } from './steering.js';
 
@@ -35,9 +40,16 @@ function errorName(error: unknown): string | undefined {
   return typeof name === 'string' ? name : undefined;
 }
 
-/** One line, capped: the FIFO error is a single shell line. */
+/**
+ * One line, capped: the FIFO error is a single shell line. Control bytes (C0, DEL, C1)
+ * become spaces first, so a remote server's `error` text cannot carry terminal escape
+ * sequences to the widget's `print -r` (WR-04).
+ */
 function oneLine(text: string): string {
-  const flat = text.replace(/\s+/g, ' ').trim();
+  const flat = text
+    .replace(/[\p{Cc}]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
   return flat.length > MAX_ERROR_DETAIL ? `${flat.slice(0, MAX_ERROR_DETAIL)}…` : flat;
 }
 
@@ -176,7 +188,9 @@ export async function fetchOllamaCandidates(
 
   try {
     return ensureSelectableCandidates(
-      finalCandidateList(content, [], body.done_reason === 'stop', { model: settings.model }),
+      stripTerminalControls(
+        finalCandidateList(content, [], body.done_reason === 'stop', { model: settings.model }),
+      ),
     );
   } catch (error) {
     if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {

@@ -8,7 +8,12 @@ import {
   finalCandidateList,
   TRUNCATED_RESPONSE_MESSAGE,
 } from './claude.js';
-import { abortError, type FetchOptions, type LLMAdapter } from './provider.js';
+import {
+  abortError,
+  type FetchOptions,
+  type LLMAdapter,
+  stripTerminalControls,
+} from './provider.js';
 import { loadProviderPin } from './provider-pin.js';
 import { buildSystemPrompt } from './steering.js';
 
@@ -221,9 +226,11 @@ export async function fetchOpenAiCandidates(
 
   try {
     return ensureSelectableCandidates(
-      finalCandidateList(content, [], choice?.finish_reason === 'stop', {
-        model: settings.model,
-      }),
+      stripTerminalControls(
+        finalCandidateList(content, [], choice?.finish_reason === 'stop', {
+          model: settings.model,
+        }),
+      ),
     );
   } catch (error) {
     if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {

@@ -451,6 +451,21 @@ describe('OpenAI failure mapping (no Claude or Ollama fallback)', () => {
     expect(error.message).toMatch(/unexpected response/);
   });
 
+  it('strips terminal control bytes from candidate text (WR-04)', async () => {
+    fetchStub.mockResolvedValue(
+      contentResponse(
+        JSON.stringify([
+          { command: 'git\u001b]0;pwned\u0007 status', explanation: 'Show\r status\u009b' },
+        ]),
+      ),
+    );
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([{ command: 'git]0;pwned status', explanation: 'Show status' }]);
+    expectNoFallback();
+  });
+
   it('never turns a cut-off answer into a prose command (finish_reason length)', async () => {
     fetchStub.mockResolvedValue(contentResponse('[{"command":"rm -rf', 'length'));
 

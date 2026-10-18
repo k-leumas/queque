@@ -173,6 +173,12 @@ describe('loadProviderPin()', () => {
       '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"ftp://localhost:11434"}',
     ],
     ['a JSON array', '[]'],
+    // WR-04: the model is echoed on the terminal, so control bytes are rejected.
+    [
+      'an ollama model with ESC',
+      '{"version":1,"provider":"ollama","model":"gemma4\\u001b]52;c;eA==\\u0007"}',
+    ],
+    ['an openai model with a C1 byte', '{"version":1,"provider":"openai","model":"gpt\\u009b2J"}'],
   ])('reports %s as invalid', (_name, content) => {
     writePin(content);
     const state = loadProviderPin();

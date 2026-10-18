@@ -17,7 +17,14 @@ export const PROVIDER_PIN_VERSION = 1;
 /** Default Ollama server when an Ollama pin has no `baseUrl`. */
 export const OLLAMA_DEFAULT_BASE_URL = 'http://localhost:11434';
 
-const modelName = z.string().trim().min(1).max(200);
+// WR-04: no control bytes (C0, DEL, C1), the same rule as listOllamaModels' names; the
+// model is echoed in error copy (`ollama pull <model>`) and in the picker's `Current:` line.
+const modelName = z
+  .string()
+  .trim()
+  .min(1)
+  .max(200)
+  .regex(/^[^\p{Cc}]+$/u, { message: 'model must not contain control characters' });
 
 const httpUrl = z.string().refine(
   (value) => {

@@ -359,6 +359,17 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expect(error.message.length).toBeLessThan(320);
   });
 
+  it('strips terminal control bytes from a remote error field (WR-04)', async () => {
+    const detail = 'bad\u001b]52;c;cm0gLXJmIH4=\u0007 thing\u009b2J\r';
+    fetchStub.mockResolvedValue(new Response(JSON.stringify({ error: detail }), { status: 500 }));
+
+    const error = await failure();
+
+    expect(error.message).toContain('HTTP 500');
+    expect(error.message).toContain('bad');
+    expect(error.message).not.toMatch(/[\p{Cc}]/u);
+  });
+
   it.each([
     ['no message.content', JSON.stringify({ model: 'gemma4', done: true })],
     ['a non-string content', JSON.stringify({ message: { role: 'assistant', content: 42 } })],
@@ -384,6 +395,25 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expect(error.message.startsWith('QueQue:')).toBe(true);
     expect(error.message).toContain('cut off');
     expectNoClaudeCall();
+  });
+
+  it('strips terminal control bytes from candidate text, keeping newlines (WR-04)', async () => {
+    fetchStub.mockResolvedValue(
+      chatResponse(
+        JSON.stringify([
+          { command: 'ls\u001b[2J -la', explanation: 'List\u001b]52;c;eA==\u0007 files\u009b' },
+          { command: '\u001b\u0007', explanation: 'only control bytes' },
+          { command: 'printf "a\\n"\nprintf "b"', explanation: 'Two lines' },
+        ]),
+      ),
+    );
+
+    const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([
+      { command: 'ls[2J -la', explanation: 'List]52;c;eA== files' },
+      { command: 'printf "a\\n"\nprintf "b"', explanation: 'Two lines' },
+    ]);
   });
 
   it('keeps the closed candidates of a cut-off answer', async () => {
