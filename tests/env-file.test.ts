@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../src/shared/env-file.js';
 
 describe('usableSecret', () => {
@@ -36,12 +36,14 @@ describe('readEnvValueFromDotEnvLocal', () => {
   });
 
   // ---------------------------------------------------------------------------
-  // Regression: default startDir must be process.cwd(), NOT the module file path.
-  // In production (Homebrew), import.meta.url resolves to the Cellar bundle path
-  // (e.g. /usr/local/Cellar/queque/0.2.13/.../dist/cli/main.js) — searching upward
-  // from there never finds the user's project .env.local.
+  // Regression: the default startDir is never the module file path. In production
+  // (Homebrew), import.meta.url resolves to the Cellar bundle path (e.g.
+  // /usr/local/Cellar/queque/0.2.13/.../dist/cli/main.js), and searching upward from there
+  // never finds the user's .env.local. Since WR-10 the default is the home directory, the
+  // file the daemon reads (WR-08), so the in-process fallback never picks up a project's
+  // .env.local from the shell's cwd.
   // ---------------------------------------------------------------------------
-  describe('default startDir is process.cwd() (production bundle regression)', () => {
+  describe('default startDir is the home directory (WR-10)', () => {
     let originalCwd: string;
 
     beforeEach(() => {
@@ -50,22 +52,31 @@ describe('readEnvValueFromDotEnvLocal', () => {
 
     afterEach(() => {
       process.chdir(originalCwd);
+      vi.unstubAllEnvs();
     });
 
-    it('finds .env.local when cwd is a child of the directory containing it', () => {
-      const root = mkdtempSync(join(tmpdir(), 'qq-env-cwd-'));
+    function projectWithEnvLocal(value: string): string {
+      const root = mkdtempSync(join(tmpdir(), 'qq-env-project-'));
       const child = join(root, 'project', 'src');
       mkdirSync(child, { recursive: true });
-      writeFileSync(join(root, '.env.local'), 'ANTHROPIC_API_KEY=cwd-value\n');
+      writeFileSync(join(root, '.env.local'), `ANTHROPIC_API_KEY=${value}\n`);
+      return child;
+    }
 
-      process.chdir(child);
-      expect(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY')).toBe('cwd-value');
+    it('reads ~/.env.local, not the .env.local above the cwd', () => {
+      const home = mkdtempSync(join(tmpdir(), 'qq-env-home-'));
+      writeFileSync(join(home, '.env.local'), 'ANTHROPIC_API_KEY=home-value\n');
+      vi.stubEnv('HOME', home);
+
+      process.chdir(projectWithEnvLocal('project-value'));
+      expect(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY')).toBe('home-value');
     });
 
-    it('returns null when no .env.local exists above cwd', () => {
-      const root = mkdtempSync(join(tmpdir(), 'qq-env-nocwd-'));
-      process.chdir(root);
-      // deliberately pass an unreachable startDir to prove the default uses cwd
+    it('ignores a project .env.local when the home directory has none', () => {
+      const home = mkdtempSync(join(tmpdir(), 'qq-env-nohome-'));
+      vi.stubEnv('HOME', home);
+
+      process.chdir(projectWithEnvLocal('project-value'));
       expect(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY')).toBeNull();
     });
   });

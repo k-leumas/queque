@@ -264,9 +264,9 @@ function spawnDaemon(socketPath: string): void {
   }
 
   void appendDebugLog('daemon', 'spawning daemon', { qqScript, socketPath });
-  // WR-08: a fixed cwd, so the daemon's `.env.local` key source (searched upward from its
-  // cwd) is the same however it started: ~/.env.local, never the `.env.local` of whatever
-  // project directory the spawning terminal or `qq init provider` happened to be in.
+  // WR-08: a fixed cwd, so the daemon never depends on whatever project directory the
+  // spawning terminal or `qq init provider` happened to be in. Its `.env.local` key source is
+  // ~/.env.local: readEnvValueFromDotEnvLocal starts at the home directory (WR-10).
   const child = spawn(qqBin, [qqScript, 'daemon', '--socket', socketPath], {
     cwd: daemonCwd(),
     detached: true,

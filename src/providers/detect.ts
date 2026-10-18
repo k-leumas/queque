@@ -61,7 +61,7 @@ async function ollamaHealthy(): Promise<boolean> {
 }
 
 export async function detectProvider(): Promise<DetectedProvider> {
-  // Step 1 — Anthropic key: env var OR .env.local (searched from process.cwd())
+  // Step 1 — Anthropic key: env var OR ~/.env.local (searched upward from the home directory)
   if (process.env.ANTHROPIC_API_KEY || readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY')) {
     return { kind: 'anthropic-key' };
   }
@@ -87,7 +87,7 @@ export async function detectProvider(): Promise<DetectedProvider> {
     message:
       'queque: no AI provider configured\n' +
       'Checked (in order):\n' +
-      '  1. ANTHROPIC_API_KEY env var or .env.local\n' +
+      '  1. ANTHROPIC_API_KEY env var or ~/.env.local\n' +
       '  2. Claude CLI (claude on PATH + credentials file or macOS Keychain login)\n' +
       '  3. Ollama at http://localhost:11434\n' +
       '  4. OPENAI_API_KEY env var\n' +

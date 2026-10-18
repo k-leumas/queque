@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 
 function findUp(startDir: string, filename: string): string | null {
@@ -67,7 +68,15 @@ export function usableSecret(value: string | null | undefined): string | undefin
   return trimmed === '' ? undefined : trimmed;
 }
 
-export function readEnvValueFromDotEnvLocal(key: string, startDir = process.cwd()): string | null {
+/**
+ * The value of `key` in the nearest `.env.local` at or above `startDir`, or null.
+ *
+ * `startDir` defaults to the home directory (WR-10), the same file the daemon reads
+ * (WR-08), so the client's in-process fallback and the daemon never disagree and a
+ * project's own `.env.local` in the shell's cwd is never used for keys or settings. It is
+ * never the module's own path: in a Homebrew install that is the Cellar bundle.
+ */
+export function readEnvValueFromDotEnvLocal(key: string, startDir = homedir()): string | null {
   const cacheKey = `${key}\0${startDir}`;
   if (envCache.has(cacheKey)) {
     return envCache.get(cacheKey) ?? null;

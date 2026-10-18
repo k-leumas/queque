@@ -184,9 +184,10 @@ function describeCurrent(prompter: Prompter, state: ProviderPinState): void {
 }
 
 function openAiKeyPresent(): boolean {
-  // Presence only: the value is never printed, logged, prompted for, or stored. WR-08: the
-  // `.env.local` lookup starts at the home directory, the daemon's fixed cwd, so the picker
-  // accepts only a key the daemon will also find (never a project's own `.env.local`).
+  // Presence only: the value is never printed, logged, prompted for, or stored. WR-08/WR-10:
+  // the `.env.local` lookup starts at the home directory (the shared default, passed
+  // explicitly here), so the picker accepts only a key the daemon and the in-process
+  // fallback will also find (never a project's own `.env.local`).
   return (
     (usableSecret(process.env.OPENAI_API_KEY) ??
       usableSecret(readEnvValueFromDotEnvLocal('OPENAI_API_KEY', homedir()))) !== undefined
