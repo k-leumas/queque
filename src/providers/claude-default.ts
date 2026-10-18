@@ -26,6 +26,14 @@ const ENOENT_MESSAGE =
 const CLI_FAILED_MESSAGE =
   'QueQue: Claude Code could not answer (claude -p failed). Try ?? again; run `claude -p "hi"` to see the error.';
 
+// IN-07: the Anthropic API rejected the key (SDK APIError status 401) or refused it (403).
+// Static copy naming the key and the ways out, never the raw SDK error text.
+const SDK_KEY_REJECTED_MESSAGE =
+  'QueQue: Anthropic rejected ANTHROPIC_API_KEY (HTTP 401). Check the key in your environment or ~/.env.local, remove it to use your Claude Code login, or run `qq init provider` to switch providers.';
+
+const SDK_KEY_REFUSED_MESSAGE =
+  "QueQue: Anthropic refused the request for ANTHROPIC_API_KEY (HTTP 403). Check the key's permissions, remove it to use your Claude Code login, or run `qq init provider` to switch providers.";
+
 const TIMEOUT_MESSAGE =
   'QueQue: Claude timed out. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or ~/.env.local.';
 
@@ -93,6 +101,24 @@ function hardError(error: unknown): Error {
 }
 
 /**
+ * Maps an SDK auth failure (APIError status 401 or 403) to static copy (IN-07). Every
+ * other error, AbortError included, is returned unchanged.
+ */
+function sdkError(error: unknown): unknown {
+  if (isAbortError(error)) {
+    return error;
+  }
+  const status = errorField(error, 'status');
+  if (status === 401) {
+    return new Error(SDK_KEY_REJECTED_MESSAGE);
+  }
+  if (status === 403) {
+    return new Error(SDK_KEY_REFUSED_MESSAGE);
+  }
+  return error;
+}
+
+/**
  * Claude composite: SDK-first when a usable API key exists, otherwise
  * `claude -p` for `/login`-only users. Shared 25s budget under FIFO 30s.
  */
@@ -105,9 +131,14 @@ export const claudeDefaultAdapter: LLMAdapter = {
       void appendDebugLog('provider', 'sdk path', {
         path: 'sdk',
       });
-      // A direct return outside the CLI try/catch: hardError never sees an SDK error, so an
-      // SDK AbortError reaches the daemon unmapped (D-13), like the CLI branch's re-throw.
-      return fetchSdkCandidates(envelope, '', remainingMs(deadline), options);
+      // Outside the CLI try/catch: hardError never sees an SDK error. sdkError maps only a
+      // 401/403 to static copy, so an SDK AbortError reaches the daemon unmapped (D-13), like
+      // the CLI branch's re-throw.
+      try {
+        return await fetchSdkCandidates(envelope, '', remainingMs(deadline), options);
+      } catch (error) {
+        throw sdkError(error);
+      }
     }
 
     try {

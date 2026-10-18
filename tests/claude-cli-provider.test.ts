@@ -456,6 +456,48 @@ describe('claudeDefaultAdapter', () => {
     expect(requestOptions.timeout).toBeGreaterThan(24_000);
   });
 
+  function sdkRejects(error: Error): void {
+    streamMock.mockImplementation(() => {
+      const stream = {
+        on: () => stream,
+        finalMessage: () => Promise.reject(error),
+      };
+      return stream;
+    });
+  }
+
+  it.each([
+    [401, /rejected ANTHROPIC_API_KEY \(HTTP 401\)/],
+    [403, /refused the request for ANTHROPIC_API_KEY \(HTTP 403\)/],
+  ])('maps an SDK %i to static key copy with the picker hint (IN-07)', async (status, copy) => {
+    process.env.ANTHROPIC_API_KEY = 'test-key';
+    sdkRejects(
+      Object.assign(new Error(`${status} {"error":{"message":"invalid x-api-key sk-ant-abc"}}`), {
+        status,
+      }),
+    );
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const error = await claudeDefaultAdapter
+      .fetchCandidates(buildEnvelope())
+      .catch((err: unknown) => err);
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toMatch(copy);
+    expect((error as Error).message).toMatch(PICKER_HINT);
+    expect((error as Error).message).not.toContain('sk-ant-abc');
+    expect(runClaudeTurnMock).not.toHaveBeenCalled();
+  });
+
+  it('passes any other SDK error through unchanged (IN-07)', async () => {
+    process.env.ANTHROPIC_API_KEY = 'test-key';
+    const overloaded = Object.assign(new Error('529 overloaded'), { status: 529 });
+    sdkRejects(overloaded);
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    await expect(claudeDefaultAdapter.fetchCandidates(buildEnvelope())).rejects.toBe(overloaded);
+  });
+
   it('uses the SDK and does not spawn when a key is in the environment (D-09)', async () => {
     process.env.ANTHROPIC_API_KEY = 'test-key';
     runClaudeTurnMock.mockRejectedValue(enoentError());
