@@ -85,8 +85,11 @@ function openDownloadUrl(url: string): void {
   }
 }
 
-// Bound lazily: main.ts imports this module on every `qq` run (including `qq client`), so
-// loading it must not touch the daemon or provider imports until the picker uses them.
+// The wrappers read the imported bindings at call time, not at module load. They do not
+// delay loading: daemon/bootstrap.ts and providers/ollama.ts are static imports, evaluated
+// on every `qq` run because main.ts imports this module (IN-01). What the wrappers avoid is
+// reading a binding that a strict test mock (client-result.test.ts mocks daemon/bootstrap.js
+// with only ensureDaemon) does not export, which would throw while main.ts loads.
 const defaultDeps: PickerDeps = {
   openUrl: openDownloadUrl,
   restartDaemon: (path) => restartDaemon(path),
