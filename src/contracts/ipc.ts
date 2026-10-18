@@ -41,6 +41,10 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
     installedTools: z.literal(true).optional(),
     // Daemon streams `candidate` messages to a `stream: true` request (Phase 09.1).
     streamCandidates: z.literal(true).optional(),
+    // Daemon resolves the adapter from provider.json on every fetch (Phase 8, 08-03).
+    // A routing change, not an envelope shape change: a daemon without it sends every
+    // prompt to Claude even when the user pinned a local provider.
+    providerPin: z.literal(true).optional(),
   }),
   z.object({
     kind: z.literal('session-ready'),

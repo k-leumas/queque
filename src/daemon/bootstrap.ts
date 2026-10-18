@@ -39,17 +39,20 @@ function tryConnect(socketPath: string): Promise<boolean> {
  * Whether the listener on `socketPath` can handle the current `fetch-candidates`
  * envelope.
  *
- * - `yes`: pong includes `fetchCandidates: true`, `installedTools: true` and
- *   `streamCandidates: true`
+ * - `yes`: pong includes `fetchCandidates: true`, `installedTools: true`,
+ *   `streamCandidates: true` and `providerPin: true`
  * - `no`: pong missing any flag (older production daemon — replace it). Such a
  *   daemon silently drops `fetch-candidates` envelopes it cannot validate, which
  *   costs the 800 ms ack timeout plus a cold in-process fetch on every `??`, or
- *   (without `streamCandidates`) never streams rows to a `stream: true` client.
+ *   (without `streamCandidates`) never streams rows to a `stream: true` client, or
+ *   (without `providerPin`, e.g. v0.6.0) ignores provider.json and sends every
+ *   prompt to Claude even for a local-only pin.
  * - `unknown`: no reply, timeout or unparseable reply (tests' dumb
  *   `net.createServer`, or a hung socket — keep)
  *
- * Envelope SHAPE changes (a new chunk kind or field) need a new pong flag here;
- * catalog CONTENT changes do not, because the daemon filters unknown names.
+ * Envelope SHAPE changes (a new chunk kind or field) and daemon ROUTING changes
+ * (which provider receives the prompt) need a new pong flag here; catalog CONTENT
+ * changes do not, because the daemon filters unknown names.
  */
 export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | 'unknown'> {
   return new Promise((resolve) => {
@@ -98,7 +101,8 @@ export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | '
       const current =
         response.data.fetchCandidates === true &&
         response.data.installedTools === true &&
-        response.data.streamCandidates === true;
+        response.data.streamCandidates === true &&
+        response.data.providerPin === true;
       done(current ? 'yes' : 'no');
     });
 
@@ -231,11 +235,12 @@ export async function restartDaemon(socketPath: string): Promise<void> {
  * Algorithm:
  *   1. Try to connect. If it succeeds, ping. Keep listeners that advertise every
  *      capability or do not reply (test sockets). Replace a live pong lacking
- *      any of `fetchCandidates`, `installedTools` or `streamCandidates` — such a
- *      daemon silently drops `fetch-candidates` envelopes it cannot validate and
- *      stalls the client, or never streams rows. IPC SHAPE changes need a new
- *      pong flag; catalog CONTENT changes do not (the daemon filters unknown
- *      names).
+ *      any of `fetchCandidates`, `installedTools`, `streamCandidates` or
+ *      `providerPin` — such a daemon silently drops `fetch-candidates` envelopes
+ *      it cannot validate and stalls the client, never streams rows, or ignores
+ *      provider.json and sends the prompt to Claude. IPC SHAPE and routing changes
+ *      need a new pong flag; catalog CONTENT changes do not (the daemon filters
+ *      unknown names).
  *   2. If the socket file exists but the connect failed, unlink it (stale socket).
  *   3. Spawn `qq daemon --socket <path>` as a detached, unreferenced child.
  *   4. Poll until the new daemon starts listening, then return.

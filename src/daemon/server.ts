@@ -10,7 +10,7 @@ import { appendDebugLog } from '../shared/debug-log.js';
  *
  * Handles newline-delimited JSON IPC messages. Supported requests:
  *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true,
- *                                   streamCandidates: true}
+ *                                   streamCandidates: true, providerPin: true}
  *   {kind: 'ensure-session'}    → {kind: 'session-ready', socketPath}
  *   {kind: 'run-query'}         → {kind: 'query-accepted', requestId}
  *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'}, then {kind: 'candidate'} × N when the
@@ -88,6 +88,7 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
                 fetchCandidates: true,
                 installedTools: true,
                 streamCandidates: true,
+                providerPin: true,
               });
               void appendDebugLog('daemon', 'replied pong');
               break;

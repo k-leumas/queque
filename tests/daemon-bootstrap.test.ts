@@ -176,7 +176,49 @@ describe('daemon bootstrap', () => {
     }
   });
 
-  it('keeps a live daemon whose pong has all three capabilities', async () => {
+  it('replaces a live daemon whose pong lacks providerPin (v0.6.0 flags only)', async () => {
+    // A v0.6.0 daemon advertises the three earlier flags but resolves the Claude default
+    // unconditionally and never reads provider.json, so an Ollama pin would still send
+    // the prompt to Anthropic (CR-01).
+    const legacyServer = net.createServer((socket) => {
+      socket.on('data', (chunk) => {
+        const line = chunk.toString();
+        if (line.includes('"ping"')) {
+          socket.write(
+            `${JSON.stringify({
+              kind: 'pong',
+              fetchCandidates: true,
+              installedTools: true,
+              streamCandidates: true,
+            })}\n`,
+          );
+        }
+      });
+    });
+    await new Promise<void>((resolve, reject) => {
+      legacyServer.listen(socketPath, () => resolve());
+      legacyServer.once('error', reject);
+    });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { ensureDaemon, pingDaemonFetchCap } = await import('../src/daemon/bootstrap.js');
+
+    try {
+      await expect(pingDaemonFetchCap(socketPath)).resolves.toBe('no');
+      await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+    } finally {
+      legacyServer.close();
+      legacyServer.unref();
+    }
+  });
+
+  it('keeps a live daemon whose pong has all four capabilities', async () => {
     testServer = net.createServer((socket) => {
       socket.on('data', (chunk) => {
         const line = chunk.toString();
@@ -187,6 +229,7 @@ describe('daemon bootstrap', () => {
               fetchCandidates: true,
               installedTools: true,
               streamCandidates: true,
+              providerPin: true,
             })}\n`,
           );
         }
@@ -247,6 +290,7 @@ describe('daemon bootstrap', () => {
               fetchCandidates: true,
               installedTools: true,
               streamCandidates: true,
+              providerPin: true,
             })}\n`,
           );
         }
@@ -355,6 +399,7 @@ describe('daemon server', () => {
       fetchCandidates: true,
       installedTools: true,
       streamCandidates: true,
+      providerPin: true,
     });
   });
 });
