@@ -44,25 +44,46 @@ export function isNormalStopReason(stopReason: string | null | undefined): boole
  */
 export const UNPARSEABLE_RESPONSE_MESSAGE = 'QueQue: response held no command candidates';
 
-/** Terminal control bytes (C0, DEL, C1) other than tab and newline. */
-const UNSAFE_CONTROL_BYTES = /[^\P{Cc}\t\n]/gu;
+/**
+ * Characters that can make candidate text act on, or look different on, the terminal:
+ * control bytes (C0, DEL, C1) other than tab and newline, and format characters (`\p{Cf}`:
+ * bidi overrides such as U+202E, the U+2066..U+2069 isolates, zero-width characters and
+ * the BOM), which can make a command read differently from what will run (IN-12).
+ */
+const UNSAFE_TEXT_CHARS = /[^\P{Cc}\t\n]|\p{Cf}/gu;
 
 /**
- * Removes terminal control bytes (ESC, BEL, CR, C1 ...) from candidate text, keeping tab
- * and newline (WR-04). Used by the non-Claude adapters, whose text may come from a remote
- * server over plain http: an ESC in a candidate would reach the terminal through Ink as an
- * escape sequence (OSC 52 clipboard writes, title or screen rewrites). A candidate whose
- * command is empty afterwards is dropped. With none left it throws
- * UNPARSEABLE_RESPONSE_MESSAGE (IN-13), which the adapters map to their own "unexpected
- * response" copy, so an unusable answer never shows as a selectable placeholder row.
+ * One candidate without UNSAFE_TEXT_CHARS (WR-04, IN-12), or null when its command is empty
+ * afterwards. Tab and newline are kept; the command is trimmed.
+ */
+export function sanitizeCandidate(candidate: CommandCandidate): CommandCandidate | null {
+  const command = candidate.command.replace(UNSAFE_TEXT_CHARS, '').trim();
+  if (command.length === 0) {
+    return null;
+  }
+  return { command, explanation: candidate.explanation.replace(UNSAFE_TEXT_CHARS, '') };
+}
+
+/** The candidates that survive sanitizeCandidate, in order. */
+export function sanitizeCandidates(candidates: readonly CommandCandidate[]): CommandCandidate[] {
+  return candidates.flatMap((candidate) => {
+    const clean = sanitizeCandidate(candidate);
+    return clean ? [clean] : [];
+  });
+}
+
+/**
+ * Removes terminal control bytes (ESC, BEL, CR, C1 ...) and format characters (bidi,
+ * zero-width) from candidate text, keeping tab and newline (WR-04, IN-12). Used by the
+ * non-Claude adapters, whose text may come from a remote server over plain http: an ESC in
+ * a candidate would reach the terminal through Ink as an escape sequence (OSC 52 clipboard
+ * writes, title or screen rewrites). A candidate whose command is empty afterwards is
+ * dropped. With none left it throws UNPARSEABLE_RESPONSE_MESSAGE (IN-13), which the
+ * adapters map to their own "unexpected response" copy, so an unusable answer never shows
+ * as a selectable placeholder row.
  */
 export function stripTerminalControls(candidates: CandidateList): CandidateList {
-  const cleaned = candidates
-    .map((candidate) => ({
-      command: candidate.command.replace(UNSAFE_CONTROL_BYTES, '').trim(),
-      explanation: candidate.explanation.replace(UNSAFE_CONTROL_BYTES, ''),
-    }))
-    .filter((candidate) => candidate.command.length > 0);
+  const cleaned = sanitizeCandidates(candidates);
   if (cleaned.length === 0) {
     throw new Error(UNPARSEABLE_RESPONSE_MESSAGE);
   }

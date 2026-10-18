@@ -23,6 +23,18 @@ const CANDIDATE_JSON = '[{"command":"git status","explanation":"Show repo status
 const D13_LOGIN = /claude \/login/;
 const D13_KEY = /ANTHROPIC_API_KEY/;
 const PICKER_HINT = /qq init provider/;
+
+// IN-12: a JSON `\u001b`, bidi overrides and zero-width characters (e.g. copied from
+// prompt-injected file or branch names) never reach Ink or the zsh buffer.
+const UNSAFE_ANSWER = JSON.stringify([
+  { command: 'git\u001b]0;pwned\u0007 status', explanation: 'Show\u202e status' },
+  { command: '\u200b\u2066\u2069', explanation: 'only format characters' },
+  { command: 'ls\u200b -la', explanation: 'List\ufeff files' },
+]);
+const SANITIZED_CANDIDATES = [
+  { command: 'git]0;pwned status', explanation: 'Show status' },
+  { command: 'ls -la', explanation: 'List files' },
+];
 const FORBIDDEN_DEBUG = /"args"|"env"|"argv"|"stdout"|"stderr"|apiKey|sk-ant-|sk-|token/i;
 
 const {
@@ -1042,6 +1054,17 @@ describe('claude -p effort and streamed candidates', () => {
     expect(onCandidate).toHaveBeenCalledTimes(2);
   });
 
+  it('sanitizes streamed and final CLI rows and drops an empty one (IN-12)', async () => {
+    playDeltas(deltaPieces(UNSAFE_ANSWER), UNSAFE_ANSWER);
+    const onCandidate = vi.fn();
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(onCandidate.mock.calls.map((call) => call[0])).toEqual(SANITIZED_CANDIDATES);
+    expect(result).toEqual(SANITIZED_CANDIDATES);
+  });
+
   it('logs cli first candidate once per turn with elapsed ms', async () => {
     playDeltas(deltaPieces(STREAMED_ANSWER), STREAMED_ANSWER);
     const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
@@ -1109,6 +1132,29 @@ describe('SDK path streaming and abort', () => {
       { command: 'git diff', explanation: 'Show changes' },
     ]);
     expect(result).toEqual(onCandidate.mock.calls.map((call) => call[0]));
+  });
+
+  it('sanitizes streamed and final SDK rows and drops an empty one (IN-12)', async () => {
+    sdkStream({ pieces: [UNSAFE_ANSWER.slice(0, 40), UNSAFE_ANSWER.slice(40)] });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+    const onCandidate = vi.fn();
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate });
+
+    expect(onCandidate.mock.calls.map((call) => call[0])).toEqual(SANITIZED_CANDIDATES);
+    expect(result).toEqual(SANITIZED_CANDIDATES);
+  });
+
+  it('turns an answer with only unsafe commands into the unexpected-format row (IN-12)', async () => {
+    const answer = JSON.stringify([{ command: '\u001b\u202e', explanation: 'x' }]);
+    sdkStream({ pieces: [answer] });
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    const result = await claudeDefaultAdapter.fetchCandidates(buildEnvelope());
+
+    expect(result).toEqual([
+      { command: 'echo ""', explanation: 'QueQue: unexpected response format' },
+    ]);
   });
 
   it('re-throws an aborted SDK request unmapped, never as the timeout or D13 copy', async () => {

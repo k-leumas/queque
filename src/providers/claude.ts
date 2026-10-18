@@ -16,6 +16,8 @@ import {
   isAbortError,
   isNormalStopReason,
   type LLMAdapter,
+  sanitizeCandidate,
+  sanitizeCandidates,
   UNPARSEABLE_RESPONSE_MESSAGE,
 } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
@@ -148,6 +150,11 @@ export function parseCandidates(text: string): CandidateList {
  * with none it logs `response truncated` (with `logFields`, never the text) and throws
  * TRUNCATED_RESPONSE_MESSAGE. parseCandidates' prose fallback is reached only after a
  * normal stop, so a cut-off fragment never becomes a command.
+ *
+ * Every returned candidate goes through sanitizeCandidate (IN-12): Claude text can carry a
+ * JSON `\u001b` or a bidi override copied from prompt-injected context (file or branch
+ * names). A list that is empty after sanitizing becomes parseCandidates' `unexpected
+ * response format` placeholder, the same as a well-formed answer with the wrong shape.
  */
 export function finalCandidateList(
   text: string,
@@ -157,20 +164,27 @@ export function finalCandidateList(
 ): CandidateList {
   const strict = parseStrictCandidateList(text);
   if (strict) {
-    return strict;
+    return sanitizedOrPlaceholder(strict);
   }
   if (streamed.length > 0) {
-    return streamed;
+    return sanitizedOrPlaceholder(streamed);
   }
   if (!finishedNormally) {
-    const complete = completeCandidates(text);
+    const complete = sanitizeCandidates(completeCandidates(text));
     if (complete.length === 0) {
       void appendDebugLog('provider', 'response truncated', logFields);
       throw new Error(TRUNCATED_RESPONSE_MESSAGE);
     }
     return complete;
   }
-  return parseCandidates(text);
+  return sanitizedOrPlaceholder(parseCandidates(text));
+}
+
+function sanitizedOrPlaceholder(candidates: readonly CommandCandidate[]): CandidateList {
+  const clean = sanitizeCandidates(candidates);
+  return clean.length > 0
+    ? clean
+    : [{ command: 'echo ""', explanation: 'QueQue: unexpected response format' }];
 }
 
 /** Thrown by finalCandidateListWithoutProse when no candidate can be read from the text. */
@@ -349,9 +363,15 @@ export async function fetchCandidates(
 
     if (onCandidate) {
       const scan = createCandidateScanner((candidate) => {
-        streamed.push(candidate);
+        // IN-12: a row with control or format characters is sanitized before it is shown;
+        // one whose command is empty afterwards is never handed over.
+        const clean = sanitizeCandidate(candidate);
+        if (!clean) {
+          return;
+        }
+        streamed.push(clean);
         if (!signal?.aborted) {
-          onCandidate(candidate);
+          onCandidate(clean);
         }
       });
       stream.on('text', (textDelta) => {

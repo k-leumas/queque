@@ -11,7 +11,7 @@ import {
   type ClaudeTurnStageDetail,
   runClaudeTurn,
 } from './claude-process.js';
-import type { FetchOptions, LLMAdapter } from './provider.js';
+import { type FetchOptions, type LLMAdapter, sanitizeCandidate } from './provider.js';
 import { buildSystemPrompt } from './steering.js';
 
 const CLI_BUDGET_MS = 25_000;
@@ -112,12 +112,17 @@ export async function fetchClaudeCliCandidates(
   const createTextDeltaHandler = (): ((text: string) => void) | undefined =>
     onCandidate
       ? createCandidateScanner((candidate) => {
-          streamed.push(candidate);
+          // IN-12: sanitized before it is shown; an empty command afterwards is never sent.
+          const clean = sanitizeCandidate(candidate);
+          if (!clean) {
+            return;
+          }
+          streamed.push(clean);
           if (streamed.length === 1) {
             void appendDebugLog('provider', 'cli first candidate', { ms: Date.now() - startedAt });
           }
           if (!signal?.aborted) {
-            onCandidate(candidate);
+            onCandidate(clean);
           }
         })
       : undefined;

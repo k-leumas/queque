@@ -473,6 +473,24 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     ]);
   });
 
+  it('strips bidi and zero-width format characters from candidate text (IN-12)', async () => {
+    fetchStub.mockResolvedValue(
+      chatResponse(
+        JSON.stringify([
+          { command: 'rm -rf \u202e/tmp/x', explanation: 'Remove\u2066 it\u2069' },
+          { command: 'ls\u200b\u200d -la\ufeff', explanation: 'List\u00ad files' },
+        ]),
+      ),
+    );
+
+    const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([
+      { command: 'rm -rf /tmp/x', explanation: 'Remove it' },
+      { command: 'ls -la', explanation: 'List files' },
+    ]);
+  });
+
   it('maps an answer whose commands are only control bytes to unexpected response (IN-13)', async () => {
     fetchStub.mockResolvedValue(
       chatResponse(
