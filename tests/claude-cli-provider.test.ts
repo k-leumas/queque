@@ -556,6 +556,7 @@ describe('claudeDefaultAdapter', () => {
     expect((error as Error).message).toMatch(D13_LOGIN);
     expect((error as Error).message).toMatch(D13_KEY);
     expect((error as Error).message).toMatch(PICKER_HINT);
+    expect((error as Error).message).toContain('~/.env.local');
     expect((error as Error).message.indexOf('claude /login')).toBeLessThan(
       (error as Error).message.indexOf('qq init provider'),
     );

@@ -315,7 +315,7 @@ export async function fetchCandidates(
     usableSecret(process.env.ANTHROPIC_API_KEY) ??
     usableSecret(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY'));
   if (!apiKey) {
-    throw new Error('ANTHROPIC_API_KEY is required in the environment or .env.local');
+    throw new Error('ANTHROPIC_API_KEY is required in the environment or ~/.env.local');
   }
 
   const client = await getAnthropicClient(apiKey);

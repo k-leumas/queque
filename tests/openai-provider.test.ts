@@ -242,7 +242,24 @@ describe('OpenAI key handling', () => {
 
     expect(error.message).toMatch(/OPENAI_API_KEY/);
     expect(error.message).toMatch(/qq init provider/);
+    expect(error.message).toContain('~/.env.local');
     expect(fetchStub).not.toHaveBeenCalled();
+  });
+});
+
+describe('key-file copy names ~/.env.local (WR-11)', () => {
+  // The daemon and the in-process fallback read only ~/.env.local (WR-08, WR-10). Copy that
+  // says a bare `.env.local` sends users to create one in a project directory, where QueQue
+  // never looks, so every `??` keeps failing with the same message.
+  it.each([
+    'src/providers/claude-default.ts',
+    'src/providers/claude.ts',
+    'src/providers/openai.ts',
+  ])('no string literal in %s names .env.local without ~/', (file) => {
+    const source = fs.readFileSync(join(process.cwd(), file), 'utf8');
+    const literals = source.match(/'(?:[^'\\\n]|\\.)*'/g) ?? [];
+    const bare = literals.filter((literal) => /(?<!~\/)\.env\.local/.test(literal));
+    expect(bare).toEqual([]);
   });
 });
 

@@ -539,7 +539,7 @@ describe('runForegroundClient', () => {
   it('writes FIFO kind error with D-13 /login copy and a single QueQue prefix', async () => {
     fetchCandidatesMock.mockRejectedValue(
       new Error(
-        'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.',
+        'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or ~/.env.local.',
       ),
     );
 

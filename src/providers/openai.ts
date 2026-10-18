@@ -34,7 +34,7 @@ export interface OpenAiSettings {
   model: string;
 }
 
-/** Empty or whitespace-only values are missing, so an empty export never blocks .env.local. */
+/** Empty or whitespace-only values are missing, so an empty export never blocks ~/.env.local. */
 function lookupOpenAiKey(): string | undefined {
   return (
     usableSecret(process.env.OPENAI_API_KEY) ??
@@ -152,7 +152,7 @@ export async function fetchOpenAiCandidates(
   const apiKey = lookupOpenAiKey();
   if (!apiKey) {
     throw new Error(
-      'QueQue: OpenAI is pinned but OPENAI_API_KEY is not set for QueQue. Export it (or add it to .env.local), then run `qq init provider` to refresh the background daemon.',
+      'QueQue: OpenAI is pinned but OPENAI_API_KEY is not set for QueQue. Export it (or add it to ~/.env.local), then run `qq init provider` to refresh the background daemon.',
     );
   }
 

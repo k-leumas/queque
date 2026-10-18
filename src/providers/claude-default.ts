@@ -14,10 +14,10 @@ const AUTH_FAILURE_RE =
 // D-02 step 3 / D-13: `claude /login` first, the key second, then the path into the
 // provider picker. The hint is static copy only; nothing here prompts or probes (D-03).
 const D13_MESSAGE =
-  'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
+  'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or ~/.env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
 
 const ENOENT_MESSAGE =
-  'QueQue: No AI provider is ready. Install Claude Code and run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
+  'QueQue: No AI provider is ready. Install Claude Code and run `claude /login`, or set ANTHROPIC_API_KEY in the environment or ~/.env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
 
 // WR-01: any other `claude -p` failure (an `is-error` result such as an overload, a usage
 // limit or a network error, `invalid-result`, `exit-without-result`). Static copy that
@@ -27,7 +27,7 @@ const CLI_FAILED_MESSAGE =
   'QueQue: Claude Code could not answer (claude -p failed). Try ?? again; run `claude -p "hi"` to see the error.';
 
 const TIMEOUT_MESSAGE =
-  'QueQue: Claude timed out. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.';
+  'QueQue: Claude timed out. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or ~/.env.local.';
 
 /**
  * Returns milliseconds left before `deadline`, floored at zero.

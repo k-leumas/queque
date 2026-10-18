@@ -17,7 +17,7 @@ Built-ins wire up in `src/registry/bootstrap.ts`. Production code should resolve
 
 The rule is: the pin, otherwise the Claude default. Both the daemon's `fetch-candidates` handler and the in-process fallback (used when the daemon is down) call `resolveProviderAdapter()` from `src/providers/provider-pin.ts`:
 
-- **No `provider.json`, or a `claude` pin**: the Claude default, registered as `claude-cli`. It uses the Anthropic SDK first when `ANTHROPIC_API_KEY` is usable (environment, then `.env.local`). Otherwise it runs `claude -p` on the user's Claude Code `/login`.
+- **No `provider.json`, or a `claude` pin**: the Claude default, registered as `claude-cli`. It uses the Anthropic SDK first when `ANTHROPIC_API_KEY` is usable (environment, then `~/.env.local`). Otherwise it runs `claude -p` on the user's Claude Code `/login`.
 - **An `openai` or `ollama` pin**: only that backend (`openai` or `ollama`) runs.
 - **An invalid or unreadable `provider.json`**: a hard error naming the file and `qq init provider`. It never falls back to Claude, so a prompt meant for a local model is never sent to a hosted provider.
 - **No fallthrough.** When the selected backend fails, `??` shows that backend's one-line error. QueQue never retries with another vendor.
@@ -111,4 +111,4 @@ Built-in sensitive patterns are never removed by user config.
 | `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Debug log path |
 | `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path |
 | `QQ_PROVIDER_FILE` | `~/.config/qq/provider.json` | Provider pin path (read on every `??`); must be absolute, empty means unset |
-| `OPENAI_API_KEY` | unset | OpenAI key for an `openai` pin, from the environment or `.env.local`. The daemon reads it, so re-run `qq init provider` after exporting it |
+| `OPENAI_API_KEY` | unset | OpenAI key for an `openai` pin, from the environment or `~/.env.local`. The daemon reads it, so re-run `qq init provider` after exporting it |
