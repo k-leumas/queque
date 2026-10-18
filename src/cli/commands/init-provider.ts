@@ -10,6 +10,7 @@ import {
   loadProviderPin,
   OLLAMA_DEFAULT_BASE_URL,
   type ProviderPin,
+  type ProviderPinState,
   providerPinPath,
   writeProviderPin,
 } from '../../providers/provider-pin.js';
@@ -51,8 +52,8 @@ export interface PickerDeps {
   openUrl: (url: string) => void;
   /** Restarts the qq daemon so it inherits this process's environment. */
   restartDaemon: (socketPath: string) => Promise<void>;
-  /** Lists local Ollama models (one GET /api/tags, 2s budget). */
-  listOllamaModels: () => Promise<OllamaModelList>;
+  /** Lists the models of the Ollama at `baseUrl` (one GET /api/tags, 2s budget). */
+  listOllamaModels: (baseUrl: string) => Promise<OllamaModelList>;
 }
 
 /** Invalid answers allowed per prompt before the picker gives up. */
@@ -88,7 +89,7 @@ function openDownloadUrl(url: string): void {
 const defaultDeps: PickerDeps = {
   openUrl: openDownloadUrl,
   restartDaemon: (path) => restartDaemon(path),
-  listOllamaModels: () => listOllamaModels(),
+  listOllamaModels: (baseUrl) => listOllamaModels(baseUrl),
 };
 
 /** One line, capped, for an error reason shown on the terminal. */
@@ -171,8 +172,7 @@ class Prompter {
   }
 }
 
-function describeCurrent(prompter: Prompter): void {
-  const state = loadProviderPin();
+function describeCurrent(prompter: Prompter, state: ProviderPinState): void {
   if (state.kind === 'pinned') {
     const { pin } = state;
     const model = 'model' in pin && pin.model ? ` (${pin.model})` : '';
@@ -190,9 +190,37 @@ function openAiKeyPresent(): boolean {
   );
 }
 
+/**
+ * Fields of the current pin that a re-run keeps (WR-02): an Ollama `baseUrl` (a remote
+ * server the user added by hand) and an OpenAI `model`. Re-picking the same provider must
+ * not silently drop them.
+ */
+interface KeptPinFields {
+  ollamaBaseUrl?: string;
+  openAiModel?: string;
+}
+
+function keptPinFields(state: ProviderPinState): KeptPinFields {
+  if (state.kind !== 'pinned') {
+    return {};
+  }
+  const { pin } = state;
+  if (pin.provider === 'ollama' && pin.baseUrl) {
+    return { ollamaBaseUrl: pin.baseUrl };
+  }
+  if (pin.provider === 'openai' && pin.model) {
+    return { openAiModel: pin.model };
+  }
+  return {};
+}
+
 /** Ollama is down or not Ollama: print the next step and offer (only) the download page. */
-async function explainOllamaDown(prompter: Prompter, deps: PickerDeps): Promise<void> {
-  prompter.say(`Ollama is not answering at ${OLLAMA_DEFAULT_BASE_URL}.`);
+async function explainOllamaDown(
+  prompter: Prompter,
+  deps: PickerDeps,
+  baseUrl: string,
+): Promise<void> {
+  prompter.say(`Ollama is not answering at ${baseUrl}.`);
   prompter.say(
     `Install it from ${OLLAMA_DOWNLOAD_URL}, start it with \`ollama serve\`, then run \`qq init provider\` again.`,
   );
@@ -203,10 +231,14 @@ async function explainOllamaDown(prompter: Prompter, deps: PickerDeps): Promise<
 }
 
 /** The chosen Ollama model, or null after printing why nothing can be pinned. */
-async function pickOllamaModel(prompter: Prompter, deps: PickerDeps): Promise<string | null> {
-  const listed = await deps.listOllamaModels();
+async function pickOllamaModel(
+  prompter: Prompter,
+  deps: PickerDeps,
+  baseUrl: string,
+): Promise<string | null> {
+  const listed = await deps.listOllamaModels(baseUrl);
   if (!listed.ok) {
-    await explainOllamaDown(prompter, deps);
+    await explainOllamaDown(prompter, deps, baseUrl);
     return null;
   }
   const { models } = listed;
@@ -255,7 +287,9 @@ async function refreshDaemon(prompter: Prompter, deps: PickerDeps): Promise<void
 /** Asks for the provider (and Ollama model), saves the pin, and returns the exit code. */
 async function pickAndSave(prompter: Prompter, deps: PickerDeps): Promise<number> {
   prompter.say('QueQue provider setup');
-  describeCurrent(prompter);
+  const current = loadProviderPin();
+  describeCurrent(prompter, current);
+  const kept = keptPinFields(current);
   PROVIDER_MENU.forEach((entry, index) => {
     prompter.say(`  ${index + 1}. ${entry.label.padEnd(7)} ${entry.hint}`);
   });
@@ -282,24 +316,39 @@ async function pickAndSave(prompter: Prompter, deps: PickerDeps): Promise<number
       prompter.say(OPENAI_KEY_MISSING);
       return 1;
     }
-    const path = savePin(prompter, { version: 1, provider: 'openai' });
+    const { openAiModel } = kept;
+    const path = savePin(prompter, {
+      version: 1,
+      provider: 'openai',
+      ...(openAiModel ? { model: openAiModel } : {}),
+    });
     if (path === null) {
       return 1;
     }
     prompter.say(
-      `Saved ${path}: OpenAI (default model; add "model" to provider.json to change it).`,
+      openAiModel
+        ? `Saved ${path}: OpenAI (kept model ${openAiModel}).`
+        : `Saved ${path}: OpenAI (default model; add "model" to provider.json to change it).`,
     );
   } else {
-    const model = await pickOllamaModel(prompter, deps);
+    const { ollamaBaseUrl } = kept;
+    const model = await pickOllamaModel(prompter, deps, ollamaBaseUrl ?? OLLAMA_DEFAULT_BASE_URL);
     if (model === null) {
       return 1;
     }
-    const path = savePin(prompter, { version: 1, provider: 'ollama', model });
+    const path = savePin(prompter, {
+      version: 1,
+      provider: 'ollama',
+      model,
+      ...(ollamaBaseUrl ? { baseUrl: ollamaBaseUrl } : {}),
+    });
     if (path === null) {
       return 1;
     }
     prompter.say(
-      `Saved ${path}: Ollama (${model}). Using a remote Ollama? Add "baseUrl" to provider.json.`,
+      ollamaBaseUrl
+        ? `Saved ${path}: Ollama (${model}) at ${ollamaBaseUrl}.`
+        : `Saved ${path}: Ollama (${model}). Using a remote Ollama? Add "baseUrl" to provider.json.`,
     );
   }
 

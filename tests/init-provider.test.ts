@@ -472,6 +472,78 @@ describe('re-running the picker (D-15)', () => {
     expect(readPin()).toEqual({ version: 1, provider: 'claude' });
   });
 
+  it('keeps a saved Ollama baseUrl and lists models from it (WR-02)', async () => {
+    writeProviderPin({
+      version: 1,
+      provider: 'ollama',
+      model: 'gemma4',
+      baseUrl: 'http://gpu.lan:11434',
+    });
+    const fetchMock = stubTags(['gemma4', 'qwen3']);
+
+    const { code, output } = await runPicker(['3', '2']);
+
+    expect(code).toBe(0);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe('http://gpu.lan:11434/api/tags');
+    expect(readPin()).toEqual({
+      version: 1,
+      provider: 'ollama',
+      model: 'qwen3',
+      baseUrl: 'http://gpu.lan:11434',
+    });
+    expect(output).toContain('at http://gpu.lan:11434');
+  });
+
+  it('names the saved remote Ollama URL when it is not answering (WR-02)', async () => {
+    writeProviderPin({
+      version: 1,
+      provider: 'ollama',
+      model: 'gemma4',
+      baseUrl: 'http://gpu.lan:11434',
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('fetch failed');
+      }),
+    );
+
+    const { code, output } = await runPicker(['3', 'n']);
+
+    expect(code).toBe(1);
+    expect(output).toContain('Ollama is not answering at http://gpu.lan:11434.');
+    expect(output).not.toContain('localhost:11434');
+    // Nothing was written: the old pin, baseUrl included, is still in place.
+    expect(readPin()).toEqual({
+      version: 1,
+      provider: 'ollama',
+      model: 'gemma4',
+      baseUrl: 'http://gpu.lan:11434',
+    });
+  });
+
+  it('keeps a hand-set OpenAI model when OpenAI is picked again (WR-02)', async () => {
+    writeProviderPin({ version: 1, provider: 'openai', model: 'gpt-5.4-mini' });
+    vi.stubEnv('OPENAI_API_KEY', 'sk-test-picker-key');
+
+    const { code, output } = await runPicker(['2']);
+
+    expect(code).toBe(0);
+    expect(readPin()).toEqual({ version: 1, provider: 'openai', model: 'gpt-5.4-mini' });
+    expect(output).toContain('kept model gpt-5.4-mini');
+  });
+
+  it('does not carry an OpenAI model into an Ollama pin (WR-02)', async () => {
+    writeProviderPin({ version: 1, provider: 'openai', model: 'gpt-5.4-mini' });
+    const fetchMock = stubTags(['gemma4']);
+
+    const { code } = await runPicker(['3', '']);
+
+    expect(code).toBe(0);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(TAGS_URL);
+    expect(readPin()).toEqual({ version: 1, provider: 'ollama', model: 'gemma4' });
+  });
+
   it('says an invalid file is invalid and replaces it', async () => {
     fs.mkdirSync(join(pinDir, 'qq'), { recursive: true });
     fs.writeFileSync(pinFile, '{"version":1,"provider":"openai","apiKey":"sk-x"}');
