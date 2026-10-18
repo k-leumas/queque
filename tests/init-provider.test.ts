@@ -1,5 +1,5 @@
 import * as fs from 'node:fs';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { PassThrough, Writable } from 'node:stream';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -187,6 +187,18 @@ describe('qq init provider picker', () => {
     expect(code).toBe(0);
     expect(readPin()).toEqual({ version: 1, provider: 'openai' });
     expect(output).not.toContain('sk-dotenv-picker-key');
+  });
+
+  it('looks up the .env.local key from the home directory, like the daemon (WR-08)', async () => {
+    readEnvValueMock.mockImplementation((key) =>
+      key === 'OPENAI_API_KEY' ? 'sk-dotenv-picker-key' : null,
+    );
+
+    const { code } = await runPicker(['2']);
+
+    expect(code).toBe(0);
+    expect(readEnvValueMock).toHaveBeenCalledWith('OPENAI_API_KEY', homedir());
+    expect(readEnvValueMock).not.toHaveBeenCalledWith('OPENAI_API_KEY');
   });
 
   it('Ollama lists models in /api/tags order and Enter picks the first', async () => {

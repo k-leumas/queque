@@ -62,7 +62,7 @@ If `claude` is not on your `PATH` at all, the message starts with `QueQue: No AI
 **Anthropic API key.** QueQue looks for `ANTHROPIC_API_KEY` in this order:
 
 1. **Environment variable**: `export ANTHROPIC_API_KEY="sk-ant-..."` in `~/.zshrc`, above the QueQue source line.
-2. **`.env.local` file**: a line `ANTHROPIC_API_KEY=sk-ant-...`. The background daemon searches upward from the directory it was started in, usually the directory your first terminal opened in, and reads the file once. A `~/.env.local` is found from any start directory inside your home directory.
+2. **`.env.local` file**: a line `ANTHROPIC_API_KEY=sk-ant-...` in `~/.env.local`. The background daemon always starts in your home directory, searches upward from there, and reads the file once. A `.env.local` inside a project directory is not used by the daemon.
 
 An empty or whitespace-only value counts as unset.
 
@@ -80,7 +80,7 @@ qq init provider
 
 It asks one question (Claude, OpenAI or Ollama), saves your answer to `~/.config/qq/provider.json`, and restarts the background daemon. Nothing is probed until you answer, and `??` never asks you to choose.
 
-- **OpenAI** needs `OPENAI_API_KEY` in your environment (`export OPENAI_API_KEY="sk-..."` in `~/.zshrc`, above the QueQue source line) or in `.env.local`. Set the key first, open a new terminal, then run `qq init provider`. QueQue never asks for the key and never stores it: `provider.json` only records that you chose OpenAI. The default model is `gpt-5.5`.
+- **OpenAI** needs `OPENAI_API_KEY` in your environment (`export OPENAI_API_KEY="sk-..."` in `~/.zshrc`, above the QueQue source line) or in `~/.env.local`. Set the key first, open a new terminal, then run `qq init provider`. QueQue never asks for the key and never stores it: `provider.json` only records that you chose OpenAI. The default model is `gpt-5.5`.
 - **Ollama** lists the models you have already pulled and pins the one you pick. If Ollama is not running, the picker prints the download link and `ollama serve`. If it has no models, the picker tells you to run `ollama pull`.
 
 Your choice sticks. If the chosen provider fails, `??` shows that provider's error; QueQue never switches to a different provider on its own. Run `qq init provider` again to switch, including back to Claude.

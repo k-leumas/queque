@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { closeSync, openSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { createInterface } from 'node:readline';
 import type { Readable, Writable } from 'node:stream';
 import * as tty from 'node:tty';
@@ -64,7 +65,7 @@ const NO_CHANGES = 'No changes made.';
 const CLAUDE_AUTH_HINT =
   'If ?? says Claude is not authenticated, run `claude /login` or set ANTHROPIC_API_KEY (docs: https://code.claude.com/docs/en/authentication).';
 const OPENAI_KEY_MISSING =
-  'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to ~/.zshrc (before the queque source line) or put it in .env.local, open a new terminal, and run `qq init provider` again.';
+  'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to ~/.zshrc (before the queque source line) or put it in ~/.env.local, open a new terminal, and run `qq init provider` again.';
 
 /**
  * Opens the Ollama download page with the platform opener, without a shell. Spawn failures
@@ -183,10 +184,12 @@ function describeCurrent(prompter: Prompter, state: ProviderPinState): void {
 }
 
 function openAiKeyPresent(): boolean {
-  // Presence only: the value is never printed, logged, prompted for, or stored.
+  // Presence only: the value is never printed, logged, prompted for, or stored. WR-08: the
+  // `.env.local` lookup starts at the home directory, the daemon's fixed cwd, so the picker
+  // accepts only a key the daemon will also find (never a project's own `.env.local`).
   return (
     (usableSecret(process.env.OPENAI_API_KEY) ??
-      usableSecret(readEnvValueFromDotEnvLocal('OPENAI_API_KEY'))) !== undefined
+      usableSecret(readEnvValueFromDotEnvLocal('OPENAI_API_KEY', homedir()))) !== undefined
   );
 }
 

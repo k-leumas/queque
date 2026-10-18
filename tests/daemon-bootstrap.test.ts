@@ -1,5 +1,6 @@
 import * as fs from 'node:fs';
 import * as net from 'node:net';
+import { homedir } from 'node:os';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn
@@ -258,6 +259,22 @@ describe('daemon bootstrap', () => {
 
     await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
     expect(spawnFn).toHaveBeenCalledTimes(1);
+  });
+
+  it('spawns the daemon in the home directory, whatever the caller cwd (WR-08)', async () => {
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+    await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+    const options = (spawnFn.mock.calls[0] as unknown[] | undefined)?.[2] as
+      | { cwd?: string }
+      | undefined;
+    expect(options?.cwd).toBe(homedir());
   });
 
   it('unlinks a stale socket and spawns after a failed connect', async () => {

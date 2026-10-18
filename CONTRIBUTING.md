@@ -115,7 +115,7 @@ The interactive shell hook also prewarms the daemon once per shell session, so t
 
 The foreground client asks Claude for a strict JSON command suggestion.
 
-QueQue reaches Claude through the Anthropic SDK when `ANTHROPIC_API_KEY` is set, and through `claude -p` on your Claude Code `/login` when it is not (see [Authentication](README.md#authentication)). Set these variables in the environment, or in a `.env.local` that the daemon finds by searching upward from the directory it was started in. The daemon reads them once at start, so restart it after a change ([restart steps](README.md#after-changing-your-key-or-settings)).
+QueQue reaches Claude through the Anthropic SDK when `ANTHROPIC_API_KEY` is set, and through `claude -p` on your Claude Code `/login` when it is not (see [Authentication](README.md#authentication)). Set these variables in the environment, or in `~/.env.local`: the daemon always starts in your home directory and searches upward from there, so a repo-level `.env.local` reaches only the in-process fallback, never the daemon. The daemon reads them once at start, so restart it after a change ([restart steps](README.md#after-changing-your-key-or-settings)).
 
 | Variable | Default | Description |
 |---|---|---|

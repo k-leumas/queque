@@ -1,6 +1,7 @@
 import { execFileSync, spawn } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as net from 'node:net';
+import { homedir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { ipcResponseSchema } from '../contracts/ipc.js';
 import { appendDebugLog } from '../shared/debug-log.js';
@@ -263,7 +264,11 @@ function spawnDaemon(socketPath: string): void {
   }
 
   void appendDebugLog('daemon', 'spawning daemon', { qqScript, socketPath });
+  // WR-08: a fixed cwd, so the daemon's `.env.local` key source (searched upward from its
+  // cwd) is the same however it started: ~/.env.local, never the `.env.local` of whatever
+  // project directory the spawning terminal or `qq init provider` happened to be in.
   const child = spawn(qqBin, [qqScript, 'daemon', '--socket', socketPath], {
+    cwd: homedir(),
     detached: true,
     stdio: 'ignore',
   });
