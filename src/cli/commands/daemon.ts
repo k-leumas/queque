@@ -81,8 +81,10 @@ export async function daemonCommand(options: DaemonCommandOptions): Promise<void
     return;
   }
 
-  // Start the server and block indefinitely
-  const server = await startDaemonServer(sock);
+  // Start the server and block indefinitely. A `shutdown` IPC request (restartDaemon,
+  // WR-07) runs the same shutdown as SIGTERM; it is wired once `shutdown` exists below.
+  let onShutdownRequest = (): void => undefined;
+  const server = await startDaemonServer(sock, { onShutdown: () => onShutdownRequest() });
   const connections = trackConnections(server);
   void appendDebugLog('daemon', 'server started', { socket: sock });
 
@@ -98,6 +100,7 @@ export async function daemonCommand(options: DaemonCommandOptions): Promise<void
     shutdownDaemon(server, connections);
   };
 
+  onShutdownRequest = shutdown;
   process.once('SIGTERM', shutdown);
   process.once('SIGINT', shutdown);
 

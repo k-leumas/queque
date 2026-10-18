@@ -17,6 +17,9 @@ import { appendDebugLog } from '../shared/debug-log.js';
  *                                   request has `stream: true`, then {kind: 'candidates'} (the done
  *                                   signal and authoritative list) | {kind: 'fetch-error'};
  *                                   aborted when the client closes its socket
+ *   {kind: 'shutdown'}          → {kind: 'shutdown-accepted'}, then `onShutdown()` (WR-07); ignored
+ *                                   when no `onShutdown` was given. Shutting down ends in-flight
+ *                                   fetches of other terminals (their `??` shows the error copy)
  *
  * The server is intentionally free of Ink, React, and /dev/tty assumptions —
  * it runs fully in the background without a TTY. LLM fetch lives here so the
@@ -26,7 +29,15 @@ import { appendDebugLog } from '../shared/debug-log.js';
  * Enter, or exit) the provider call is aborted through that signal, and the daemon
  * writes nothing more for the aborted fetch.
  */
-export function startDaemonServer(socketPath: string): Promise<net.Server> {
+export interface DaemonServerOptions {
+  /** Runs after a `shutdown` request was acknowledged (the daemon command's shutdown). */
+  onShutdown?: () => void;
+}
+
+export function startDaemonServer(
+  socketPath: string,
+  options: DaemonServerOptions = {},
+): Promise<net.Server> {
   return new Promise((resolve, reject) => {
     const MAX_BUF_BYTES = 256 * 1024;
 
@@ -91,6 +102,19 @@ export function startDaemonServer(socketPath: string): Promise<net.Server> {
                 providerPin: true,
               });
               void appendDebugLog('daemon', 'replied pong');
+              break;
+            }
+            case 'shutdown': {
+              const { onShutdown } = options;
+              if (!onShutdown) {
+                void appendDebugLog('daemon', 'ignored shutdown request');
+                break;
+              }
+              void appendDebugLog('daemon', 'shutdown requested');
+              // Shut down only after the ack is flushed: shutdown destroys this socket too.
+              socket.write(`${JSON.stringify({ kind: 'shutdown-accepted' })}\n`, () => {
+                onShutdown();
+              });
               break;
             }
             case 'ensure-session': {

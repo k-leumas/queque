@@ -26,6 +26,11 @@ export const ipcRequestSchema = z.discriminatedUnion('kind', [
     // `candidates` message (Phase 09.1). Old daemons strip the key and reply once.
     stream: z.literal(true).optional(),
   }),
+  // Stop the daemon (WR-07): `qq init provider` restarts it without relying on `lsof`.
+  // Old daemons ignore the unknown kind, so the caller falls back to signalling listeners.
+  z.object({
+    kind: z.literal('shutdown'),
+  }),
 ]);
 
 export type IpcRequest = z.infer<typeof ipcRequestSchema>;
@@ -70,6 +75,10 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('fetch-error'),
     message: z.string(),
+  }),
+  // Sent before the daemon closes its server for a `shutdown` request (WR-07).
+  z.object({
+    kind: z.literal('shutdown-accepted'),
   }),
 ]);
 

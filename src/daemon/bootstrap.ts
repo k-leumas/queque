@@ -10,6 +10,7 @@ const CONNECT_TIMEOUT_MS = 500;
 const PING_TIMEOUT_MS = 500;
 const POLL_INTERVAL_MS = 50;
 const POLL_MAX_ATTEMPTS = 40; // 2 seconds total
+const SHUTDOWN_ACK_TIMEOUT_MS = 500;
 
 /**
  * Attempts to connect to the daemon socket at `socketPath`.
@@ -113,6 +114,60 @@ export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | '
 }
 
 /**
+ * Asks the daemon on `socketPath` to shut itself down over IPC (WR-07). Resolves true when
+ * it replied `shutdown-accepted`; false for no reply, a timeout, an error or another reply
+ * (a daemon from before this request ignores it, so the caller falls back to `lsof`).
+ */
+export function requestDaemonShutdown(socketPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    let settled = false;
+    let buf = '';
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const done = (accepted: boolean) => {
+      if (settled) {
+        return;
+      }
+      settled = true;
+      if (timer !== undefined) {
+        clearTimeout(timer);
+      }
+      client.destroy();
+      resolve(accepted);
+    };
+
+    const client = net.createConnection(socketPath);
+    timer = setTimeout(() => {
+      done(false);
+    }, SHUTDOWN_ACK_TIMEOUT_MS);
+
+    client.on('connect', () => {
+      client.write(`${JSON.stringify({ kind: 'shutdown' })}\n`);
+    });
+
+    client.on('data', (chunk) => {
+      buf += chunk.toString();
+      const nl = buf.indexOf('\n');
+      if (nl === -1) {
+        return;
+      }
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(buf.slice(0, nl));
+      } catch {
+        done(false);
+        return;
+      }
+      const response = ipcResponseSchema.safeParse(parsed);
+      done(response.success && response.data.kind === 'shutdown-accepted');
+    });
+
+    client.on('error', () => {
+      done(false);
+    });
+  });
+}
+
+/**
  * Polls the socket path until the daemon becomes connectable or
  * the attempt limit is reached.
  */
@@ -149,11 +204,22 @@ function sleep(ms: number): Promise<void> {
 }
 
 /**
- * Stops other processes holding `socketPath` and unlinks the path so a new
- * daemon can bind. Never signals the current pid (test servers share the vitest process).
+ * Stops the daemon holding `socketPath` and unlinks the path so a new daemon can bind.
+ *
+ * First the daemon is asked to shut down over IPC (WR-07), which works without `lsof`
+ * (missing on many minimal Linux systems) and lets it retire its `claude` children. Daemons
+ * from before the `shutdown` request do not answer it; for them, and as a backstop, the
+ * `lsof -t` listeners get SIGTERM then SIGKILL. Never signals the current pid (test servers
+ * share the vitest process).
  */
 async function replaceStaleListener(socketPath: string): Promise<void> {
   void appendDebugLog('daemon', 'replacing stale daemon', { socketPath });
+  if (await requestDaemonShutdown(socketPath)) {
+    void appendDebugLog('daemon', 'daemon accepted shutdown', { socketPath });
+    for (let i = 0; i < 20 && (await tryConnect(socketPath)); i++) {
+      await sleep(50);
+    }
+  }
   for (const pid of listenerPids(socketPath)) {
     try {
       process.kill(pid, 'SIGTERM');
@@ -209,7 +275,8 @@ function spawnDaemon(socketPath: string): void {
  * Replaces whatever daemon holds `socketPath` (even a fully current one) with a fresh
  * daemon spawned from this process, so it inherits this process's environment. `qq init
  * provider` calls it after saving a pin, so a key exported a moment ago is visible to the
- * warm daemon on the next ??.
+ * warm daemon on the next ??. The old daemon is stopped over IPC first (replaceStaleListener),
+ * which also ends `??` fetches in flight in other terminals.
  *
  * Only listeners of the safe qq socket are signalled, never the current pid
  * (replaceStaleListener). Throws for an unsafe path or when the new daemon does not

@@ -278,9 +278,55 @@ describe('daemon bootstrap', () => {
     expect(spawnFn).toHaveBeenCalledTimes(1);
   });
 
-  it('restartDaemon replaces a current daemon and spawns once', async () => {
+  it('restartDaemon stops a current daemon over IPC, without lsof (WR-07)', async () => {
+    // The daemon server lives in the vitest pid, which the lsof fallback never signals, so
+    // only the `shutdown` IPC request can stop it: that proves the restart needs no lsof.
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    const { shutdownDaemon, trackConnections } = await import('../src/cli/commands/daemon.js');
+    const exit = vi.fn();
+    let requestShutdown = (): void => undefined;
+    const currentServer = await startDaemonServer(socketPath, {
+      onShutdown: () => requestShutdown(),
+    });
+    const connections = trackConnections(currentServer);
+    requestShutdown = () => shutdownDaemon(currentServer, connections, { exit, graceMs: 0 });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+
+    const { restartDaemon } = await import('../src/daemon/bootstrap.js');
+
+    try {
+      await expect(restartDaemon(socketPath)).resolves.toBeUndefined();
+      expect(currentServer.listening).toBe(false);
+      await vi.waitFor(() => expect(exit).toHaveBeenCalledTimes(1));
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+    } finally {
+      currentServer.close();
+      currentServer.unref();
+    }
+  });
+
+  it('requestDaemonShutdown is false for a daemon that ignores the request', async () => {
+    // A pre-WR-07 daemon (or a server without onShutdown) never acknowledges; the caller
+    // then falls back to signalling lsof listeners.
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    testServer = await startDaemonServer(socketPath);
+
+    const { requestDaemonShutdown } = await import('../src/daemon/bootstrap.js');
+
+    await expect(requestDaemonShutdown(socketPath)).resolves.toBe(false);
+    expect(testServer.listening).toBe(true);
+  });
+
+  it('restartDaemon unlinks a daemon that ignores shutdown and spawns once', async () => {
     // A fully current daemon (ensureDaemon would keep it) is still replaced, so the new
-    // daemon inherits the caller's environment (`qq init provider` after an export).
+    // daemon inherits the caller's environment (`qq init provider` after an export). This
+    // fake ignores `shutdown` and shares the vitest pid (never signalled), so the test proves
+    // the socket path is unlinked and a new daemon spawned, not that the old one stopped.
     const currentServer = net.createServer((socket) => {
       socket.on('data', (chunk) => {
         if (chunk.toString().includes('"ping"')) {
