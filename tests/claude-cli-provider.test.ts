@@ -144,6 +144,32 @@ function loggedOutError(): Error {
   });
 }
 
+/** The runner's is-error shape for a non-auth failure: an API overload (WR-01). */
+function overloadedError(): Error {
+  return Object.assign(new Error('Command failed: claude'), {
+    code: 1,
+    killed: false,
+    signal: null,
+    stdout: 'API Error: 529 {"type":"error","error":{"type":"overloaded_error"}}',
+    stderr: '',
+    reason: 'is-error',
+    sawInit: true,
+  });
+}
+
+/** The runner's exit-without-result shape (WR-01). */
+function exitWithoutResultError(): Error {
+  return Object.assign(new Error('Command failed: claude'), {
+    code: 1,
+    killed: false,
+    signal: null,
+    stdout: '',
+    stderr: '',
+    reason: 'exit-without-result',
+    sawInit: true,
+  });
+}
+
 /** The runner's truncated shape: a result whose stop_reason is not normal (WR-01-r2). */
 function truncatedFailure(stdout: string, stopReason: string | null = 'refusal'): Error {
   return Object.assign(new Error('Command failed: claude'), {
@@ -534,6 +560,28 @@ describe('claudeDefaultAdapter', () => {
       (error as Error).message.indexOf('qq init provider'),
     );
     expect((error as Error).message).not.toMatch(/not wired yet/i);
+    expect(createMock).not.toHaveBeenCalled();
+  });
+
+  it('does not call a non-auth claude -p failure "not authenticated" (WR-01)', async () => {
+    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+
+    for (const failure of [overloadedError(), exitWithoutResultError()]) {
+      runClaudeTurnMock.mockReset();
+      runClaudeTurnMock.mockRejectedValue(failure);
+
+      const error = await claudeDefaultAdapter
+        .fetchCandidates(buildEnvelope())
+        .catch((err: unknown) => err);
+
+      expect(error).toBeInstanceOf(Error);
+      const message = (error as Error).message;
+      expect(message).toMatch(/Claude Code could not answer \(claude -p failed\)/);
+      expect(message).not.toMatch(/not authenticated/);
+      expect(message).not.toMatch(PICKER_HINT);
+      // Static copy only: the raw result text never reaches the user.
+      expect(message).not.toMatch(/529|overloaded/);
+    }
     expect(createMock).not.toHaveBeenCalled();
   });
 

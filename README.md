@@ -57,7 +57,7 @@ On this route QueQue uses whatever account and default model Claude Code is set 
 QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local. To use OpenAI or Ollama instead, run `qq init provider`.
 ```
 
-If `claude` is not on your `PATH` at all, the message starts with `QueQue: No AI provider is ready.` and lists the same three options.
+If `claude` is not on your `PATH` at all, the message starts with `QueQue: No AI provider is ready.` and lists the same three options. Any other `claude -p` failure, such as an overloaded API or a usage limit, shows `QueQue: Claude Code could not answer (claude -p failed).`; run `claude -p "hi"` to see the underlying error.
 
 **Anthropic API key.** QueQue looks for `ANTHROPIC_API_KEY` in this order:
 

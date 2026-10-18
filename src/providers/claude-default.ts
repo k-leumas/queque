@@ -19,6 +19,13 @@ const D13_MESSAGE =
 const ENOENT_MESSAGE =
   'QueQue: No AI provider is ready. Install Claude Code and run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
 
+// WR-01: any other `claude -p` failure (an `is-error` result such as an overload, a usage
+// limit or a network error, `invalid-result`, `exit-without-result`). Static copy that
+// names the failure class only, never the raw stdout, and does not send the user to
+// `qq init provider` for what is usually a transient problem.
+const CLI_FAILED_MESSAGE =
+  'QueQue: Claude Code could not answer (claude -p failed). Try ?? again; run `claude -p "hi"` to see the error.';
+
 const TIMEOUT_MESSAGE =
   'QueQue: Claude timed out. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or .env.local.';
 
@@ -82,7 +89,7 @@ function hardError(error: unknown): Error {
   if (isAuthFailure(error)) {
     return new Error(D13_MESSAGE);
   }
-  return new Error(D13_MESSAGE);
+  return new Error(CLI_FAILED_MESSAGE);
 }
 
 /**
