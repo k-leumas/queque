@@ -25,3 +25,20 @@ created: 2026-10-17
 | IN-06 | info | open | |
 | IN-07 | info | open | |
 | IN-08 | info | open | |
+
+## Iteration 2 (re-review of fix commits, 2026-10-18)
+
+| Finding | Severity | Disposition | Note |
+|---|---|---|---|
+| WR-09 | warning | open | new in iteration 2 |
+| WR-10 | warning | open | new in iteration 2 |
+| WR-11 | warning | open | new in iteration 2 |
+| WR-12 | warning | open | new in iteration 2 |
+| IN-09 | info | open | new in iteration 2 |
+| IN-10 | info | open | new in iteration 2 |
+| IN-11 | info | open | new in iteration 2 |
+| IN-12 | info | open | new in iteration 2 |
+| IN-13 | info | open | new in iteration 2 |
+| IN-14 | info | open | new in iteration 2 |
+
+IN-01..IN-08 carried forward unchanged (still open).
