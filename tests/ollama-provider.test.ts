@@ -15,6 +15,8 @@ import {
 } from '../src/providers/claude.js';
 import {
   fetchOllamaCandidates,
+  OLLAMA_NUM_CTX,
+  OLLAMA_NUM_PREDICT,
   OLLAMA_TIMEOUT_MS,
   ollamaAdapter,
   ollamaApiUrl,
@@ -223,13 +225,37 @@ describe('Ollama request shape and privacy', () => {
     expect(body.stream).toBe(false);
     expect(body.think).toBe(false);
     expect(body.format).toEqual(CANDIDATE_LIST_JSON_SCHEMA);
-    expect(body.options).toEqual({ num_predict: 16000, num_ctx: 20480 });
+    expect(body.options).toEqual({ num_predict: 2048, num_ctx: 8192 });
     expect(body.messages).toEqual([
       { role: 'system', content: buildSystemPrompt(envelope) },
       { role: 'user', content: buildPrompt(envelope) },
     ]);
     expect(body.messages[0]?.content).toBe(QUEQUE_SYSTEM);
     expectNoClaudeCall();
+  });
+
+  it('sizes num_predict and num_ctx to the 25 s budget, not the 16k SDK cap (WR-15)', () => {
+    expect(OLLAMA_NUM_PREDICT).toBe(2048);
+    expect(OLLAMA_NUM_CTX).toBe(8192);
+    // The prompt (about 3 chars per token, a conservative estimate) plus the output cap
+    // must fit the window, or Ollama would truncate the prompt.
+    const envelope = buildEnvelope([
+      { kind: 'installed-tools', payload: { tools: ['fd', 'rg', 'jq', 'bat'] } },
+    ]);
+    const promptChars = buildSystemPrompt(envelope).length + buildPrompt(envelope).length;
+    expect(Math.ceil(promptChars / 3) + OLLAMA_NUM_PREDICT).toBeLessThanOrEqual(OLLAMA_NUM_CTX);
+  });
+
+  it('sends the same options on the cut-off retry, so the model is never reloaded', async () => {
+    fetchStub
+      .mockResolvedValueOnce(chatResponse('[{"command":"ls -', { done_reason: 'length' }))
+      .mockResolvedValueOnce(chatResponse(CANDIDATE_JSON));
+
+    await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    const retryBody = JSON.parse(String(fetchStub.mock.calls[1]?.[1]?.body)) as ChatBody;
+    expect(retryBody.options).toEqual({ num_predict: 2048, num_ctx: 8192 });
   });
 
   it('sends the installed-tools steering in the system message', async () => {

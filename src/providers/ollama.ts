@@ -18,22 +18,28 @@ import { buildSystemPrompt } from './steering.js';
 import {
   CANDIDATE_LIST_JSON_SCHEMA,
   candidatesWithCutOffRetry,
-  MAX_OUTPUT_TOKENS,
   type ModelTurn,
 } from './structured-output.js';
 
 /** Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. */
 export const OLLAMA_TIMEOUT_MS = 25_000;
 
-/** Output ceiling (`options.num_predict`): the same as every other provider. */
-export const OLLAMA_NUM_PREDICT = MAX_OUTPUT_TOKENS;
+/**
+ * Output ceiling (`options.num_predict`), sized to the 25 s budget (WR-15): with
+ * `think: false` the whole answer is a few hundred tokens, and no local model writes more
+ * than ~2k tokens inside the budget, so a larger cap is never reached before the timeout.
+ * (MAX_OUTPUT_TOKENS is for OpenAI, where reasoning tokens count against the cap.)
+ */
+export const OLLAMA_NUM_PREDICT = 2048;
 
 /**
- * Context window (`options.num_ctx`): 16000 output tokens plus ~4.5k of prompt headroom.
- * It is fixed, not sized per prompt, because Ollama reloads the model whenever num_ctx
- * changes between requests.
+ * Context window (`options.num_ctx`): OLLAMA_NUM_PREDICT output tokens plus ~6k for the
+ * ~4.5k-token prompt (WR-15). Kept small because the KV cache grows with num_ctx (a 20k
+ * window costs an 8B model ~2.5 GB more than Ollama's default) and Ollama reloads the model
+ * whenever num_ctx differs from the loaded instance, including another client's. It is
+ * fixed, not sized per prompt, so QueQue's own requests never force a reload.
  */
-export const OLLAMA_NUM_CTX = 20_480;
+export const OLLAMA_NUM_CTX = 8192;
 
 /** Ollama's `error` field is local and carries no secrets; it is still capped. */
 const MAX_ERROR_DETAIL = 160;

@@ -9,8 +9,9 @@ import {
 import { isAbortError } from './provider.js';
 
 /**
- * Output ceiling for the Ollama and OpenAI requests: the same value as the Claude SDK
- * request (SDK_MAX_TOKENS), by construction rather than a second literal.
+ * Output ceiling for the OpenAI request (`max_completion_tokens`, reasoning included): the
+ * same value as the Claude SDK request (SDK_MAX_TOKENS), by construction rather than a
+ * second literal. Ollama uses its own budget-sized OLLAMA_NUM_PREDICT (WR-15).
  */
 export const MAX_OUTPUT_TOKENS = SDK_MAX_TOKENS;
 

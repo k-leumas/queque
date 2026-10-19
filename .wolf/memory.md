@@ -3141,3 +3141,14 @@
 | 02:40 | Edited tests/openai-provider.test.ts | added optional chaining | ~959 |
 | 02:40 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr14.json | — | ~246 |
 | 02:40 | WR-14: OpenAI 400 for response_format now re-sends once without it and remembers the model | src/providers/openai.ts, tests/openai-provider.test.ts | fixed, 6 new tests | ~3500 |
+| 02:41 | Edited src/providers/ollama.ts | modified budget() | ~251 |
+| 02:41 | Edited src/providers/ollama.ts | 3→2 lines | ~14 |
+| 02:41 | Edited src/providers/structured-output.ts | modified request() | ~77 |
+| 02:41 | Edited tests/ollama-provider.test.ts | 3→5 lines | ~30 |
+| 02:41 | Edited tests/ollama-provider.test.ts | inline fix | ~21 |
+| 02:41 | Edited tests/ollama-provider.test.ts | expanded (+27 lines) | ~365 |
+| 02:42 | Edited tests/ollama-provider.test.ts | added optional chaining | ~126 |
+| 02:42 | Edited docs/EXTENSIONS.md | inline fix | ~115 |
+| 02:42 | Edited docs/EXTENSIONS.md | inline fix | ~30 |
+| 02:42 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr15.json | — | ~197 |
+| 02:42 | WR-15: Ollama num_predict 2048 / num_ctx 8192 (was 16000/20480), sized to the 25s budget | src/providers/ollama.ts, src/providers/structured-output.ts, docs/EXTENSIONS.md, tests/ollama-provider.test.ts | fixed, 2 new tests | ~2500 |

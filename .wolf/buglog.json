@@ -6282,6 +6282,88 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:40:45Z"
+    },
+    {
+      "id": "bug-383",
+      "timestamp": "2026-10-19T08:41:19.366Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/providers/ollama.ts",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 9→16 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:41:19.366Z"
+    },
+    {
+      "id": "bug-384",
+      "timestamp": "2026-10-19T08:41:20.343Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/providers/structured-output.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 4→5 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:41:20.343Z"
+    },
+    {
+      "id": "bug-385",
+      "timestamp": "2026-10-19T08:41:54.408Z",
+      "error_message": "Missing await",
+      "file": "tests/ollama-provider.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:41:54.408Z"
+    },
+    {
+      "id": "bug-386",
+      "timestamp": "2026-10-19T08:42:07.436Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/ollama-provider.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:42:07.436Z"
+    },
+    {
+      "id": "bug-387",
+      "timestamp": "2026-10-19T08:42:39Z",
+      "error_message": "Every Ollama request forced num_ctx 20480 / num_predict 16000: ~2.5 GB more KV cache on an 8B model and a model reload on every switch from another Ollama client, risking the 25s timeout (review WR-15)",
+      "file": "src/providers/ollama.ts",
+      "root_cause": "OLLAMA_NUM_PREDICT reused the 16k SDK cap (MAX_OUTPUT_TOKENS) and num_ctx was sized for it, though no local model can write 16k tokens inside the 25s budget",
+      "fix": "OLLAMA_NUM_PREDICT 2048 and OLLAMA_NUM_CTX 8192 (prompt ~4.5k + output); MAX_OUTPUT_TOKENS documented as OpenAI-only; EXTENSIONS.md updated",
+      "tags": [
+        "ollama",
+        "num_ctx",
+        "memory",
+        "performance",
+        "review-WR-15"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:42:39Z"
     }
   ]
 }
