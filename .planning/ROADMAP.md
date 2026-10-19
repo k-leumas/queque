@@ -22,7 +22,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [~] **Phase 5: Clarification Chat in the Same TUI** - Keep ambiguous requests in flow until a refined command is ready. **(DEFERRED — Esc + re-query is acceptable workaround)**
 - [x] **Phase 6: Hardening, Privacy Defaults, and Extension Seams** - Make the product safe enough to use daily and future-proof enough to extend.
 - [ ] **Phase 7: Context-Aware Learning and Ambient Suggestions** - Make QueQue learn from every interaction and act without needing a query.
-- [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make QueQue work out of the box for anyone who already has Claude Code, Ollama, or an OpenAI key — no manual setup required.
+- [ ] **Phase 8: Zero-Config Install and Provider Detection** - Make QueQue work out of the box for anyone who already has Claude Code or `ANTHROPIC_API_KEY`; Ollama and OpenAI take one `qq init provider` step.
 - [x] **Phase 9: Installed-Only Command Awareness** - Favour installed tools and visibly flag suggestions that use a missing one (completed 2026-10-10)
 
 ## Phase Details
@@ -211,14 +211,14 @@ Plans:
 
 ### Phase 8: Zero-Config Install and Provider Detection
 
-**Goal**: Make `qq` work on first run without any manual configuration. Detect Claude Code, Ollama, and OpenAI CLI auth in priority order and use the first available backend. When nothing is detected, guide the user to a working setup in under 60 seconds. The subprocess adapter is the right first implementation — token reuse and native API integration are later optimizations.
+**Goal**: Make `qq` work on first run without any manual configuration for Claude users. Claude (Claude Code `/login` or `ANTHROPIC_API_KEY`) is the zero-step default; Ollama and OpenAI are one explicit `qq init provider` pin, never auto-detected (locked D-01, D-04, D-14 — runtime auto-detection was rejected because it can steal requests, e.g. Ollama up while Claude is logged out). When nothing is detected, guide the user to a working setup in under 60 seconds. The subprocess adapter is the right first implementation — token reuse and native API integration are later optimizations.
 **Depends on**: Phase 6
 **Requirements**: RUN-01, EXT-01
 **Success Criteria** (what must be TRUE):
 
   1. A developer who already has Claude Code installed and authenticated gets a working `qq` with zero extra steps.
-  2. A developer with Ollama running locally gets a working `qq` with zero extra steps.
-  3. A developer with `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` set gets the same.
+  2. A developer with Ollama running locally gets a working `qq` after one `qq init provider` step (D-01, D-04, D-14).
+  3. A developer with `ANTHROPIC_API_KEY` set gets a working `qq` with zero extra steps. A developer with `OPENAI_API_KEY` set gets one after one `qq init provider` step (D-04, D-14).
   4. A developer with none of the above gets a clear, short prompt explaining what to do — not a cryptic error.
   5. Detection runs in under 200 ms on startup (no blocking network calls except Ollama health check with a 300 ms timeout).
   6. The detected provider is logged to debug output so users can verify what QueQue is using.
