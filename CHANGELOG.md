@@ -1,3 +1,83 @@
+# [0.7.0](https://x-access-token:[secure]@github.com/k-leumas/queque/compare/v0.6.1...v0.7.0) (2026-10-19)
+
+### Features
+
+- You can now set up OpenAI or Ollama as your assistant provider with a new qq init provider picker that securely saves your choice and restarts the background daemon to use it right away.
+- If your first ?? ever fails, QueQue now guides you straight into qq init provider so you can get set up instead of hitting a dead end.
+- OpenAI and Ollama support are now available and clearly labeled as beta so you know what to expect.
+- Once you pin OpenAI or Ollama as your provider, ?? now answers through a warm, already-running daemon for faster responses, and that same pin is honored even when QueQue falls back to an in-process run.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **quick-261018-wax:** label OpenAI and Ollama as beta ([5aaabd6](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/5aaabd624fa868361a85f4baf56bfd0d3caae9a0))
+* **08-06:** point the first failed ?? at qq init provider ([36ad008](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/36ad0086afb8f2949b5622b398181ee9b9f56852))
+* **08-05:** finish picker dead ends and restart the daemon after a saved pin ([39553a8](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/39553a8f441c9748b83c3ae3f0068a19f46d117c))
+* **08-05:** add qq init provider picker that persists a 0600 pin ([71231f6](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/71231f6bf57c4d70ef7c878ddfe538ae714e7179))
+* **08-04:** map openai failures to static copy with no vendor fallback ([67a98f4](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/67a98f4979c5873367f5a044cd031ccb3405e521))
+* **08-04:** answer ?? from a pinned openai through the warm daemon ([f9acfec](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/f9acfece3365bcc1a883fd82966e1d2e63a27a1c))
+* **08-03:** map ollama failures and honor the pin in the in-process fallback ([dd7503c](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/dd7503c35d2092ff6bf60b5c1db96e879ba1cd80))
+* **08-03:** route fetch-candidates through the provider.json pin ([7768e52](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/7768e52c8b4343db2b8776a89e27922517f7dc96))
+
+</details>
+
+### Bug Fixes
+
+- Fixed cases where OpenAI or Ollama could return answers that were cut off midway; QueQue now enforces a stricter response format and automatically retries once so you get a complete suggestion.
+- QueQue no longer produces a command suggestion from plain prose explanations returned by OpenAI or Ollama.
+- Local model answers no longer leak internal 'thinking' text; only the final answer is kept and shown.
+- Fixed several issues where QQ_CONFIG_FILE or provider pin paths weren't handled correctly, including leading ~/, empty values, relative paths, and a missing home directory, so ?? keeps working in more environments.
+- Hardened handling of provider responses and saved settings against hidden or malicious characters (bidirectional, zero-width, and control bytes), and blocked key files from being read outside your home directory.
+- Credentials and control characters are now rejected if found in a saved Ollama base URL, and QueQue warns when a remote Ollama URL uses unencrypted plain HTTP.
+- Error messages are now clearer and more specific across providers: invalid OpenAI keys, 401/403 auth failures, Ollama connection issues, 404s on your Ollama URL, and streaming/cancellation behavior are all described accurately.
+- The provider pin file is now written with safe permissions before it's finalized, and the picker keeps your previously saved base URL and model when you run it again.
+- Improved daemon reliability: QueQue now properly stops an old daemon before starting a new one, starts the daemon from your home directory for consistent key lookup, and automatically replaces a running daemon that can't honor a newly saved provider pin.
+- Fixed a startup issue where loading QueQue's main command could trigger an unintended daemon restart.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **08:** expand a leading ~/ in QQ_CONFIG_FILE (IN-19) ([8d49761](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/8d497612e8ae88a50f603bab35706114c5d67dce))
+* **08:** remember rejected openai retry efforts per model (IN-18) ([5bf7513](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/5bf751340322a15d262735cd2fb8d7152067b90d))
+* **08:** name cut-off retries and content filters correctly (IN-17) ([61fc5e6](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/61fc5e670303bbacea3805b9172d77accf8e6e00))
+* **08:** never read a key file above the home directory (IN-16) ([221b6ea](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/221b6ea82c42543889f026b388bc04292d182aa5))
+* **08:** reject bidi characters in ollama errors and baseUrl (IN-15) ([f113535](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/f113535b08d5b52131671925a50b3202a686e4b7))
+* **08:** size ollama num_ctx and num_predict to the budget (WR-15) ([a888b67](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/a888b671930b1b17099adb30e04f412dc17e335f))
+* **08:** resend openai request without a rejected schema (WR-14) ([3e994b4](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/3e994b417f1fd06f9d2d553dbf3ee92ac200052c))
+* **08:** keep think tags inside candidate strings (WR-13) ([afd9920](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/afd9920261ceb1309a22885df627e8fbfacd22d7))
+* **quick-261018-wax:** stop cut-off OpenAI answers with a strict schema and one retry ([713e0a4](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/713e0a42fa87006e19763a6902048949f83a743d))
+* **quick-261018-wax:** stop cut-off Ollama answers with a schema and one retry ([aa4fa94](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/aa4fa94d8acb1eea90617087ff3dd729a70ee5e9))
+* **08:** filter bidi and zero-width characters and sanitize Claude rows (IN-12) ([9d12678](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/9d126785f5ae0d604071997896bdc15e2b5fabc3))
+* **08:** treat an empty QQ_CONFIG_FILE as unset and resolve relative ones (IN-14) ([d040370](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/d04037029c4f5c8dea62508b1b647a3e2f1d7ca3))
+* **08:** treat an all-control-byte answer as an unexpected response (IN-13) ([8d67e72](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/8d67e7287c744b5f112433614de6add639c057e2))
+* **08:** keep the baseUrl path prefix when it has a query or fragment (IN-11) ([55f060f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/55f060f45f55a677e777b09324dfc2cd18958d3d))
+* **08:** reject control characters and credentials in the pin baseUrl (IN-10) ([da30fab](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/da30fab56814b1efa99b38ff75cba10472780f0f))
+* **08:** give remote Ollama advice when a saved baseUrl is down (IN-09) ([d133063](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/d1330631edae403597ee2f0cb61bbe0b6273dddd))
+* **08:** document that a remote plain-http Ollama baseUrl is unencrypted (IN-08) ([1f77710](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/1f7771089a373dc0a08f38523d6716425d636886))
+* **08:** map SDK 401 and 403 to key copy with the picker hint (IN-07) ([695eeb2](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/695eeb2af5cc40ae3687132cd3a79927189a0ca9))
+* **08:** describe streaming and cancellation for every provider (IN-06) ([b1421d0](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/b1421d08d3ff5f0a9aca2ba678fe7d9460bd475d))
+* **08:** report an OpenAI key with invalid header characters as such (IN-05) ([958cfff](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/958cfff689946dbab1637d138d6706e2c2bfaadf))
+* **08:** make the Ollama docstring match what is logged (IN-04) ([641c505](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/641c5051ccc95851c08b3b8e50893c58073c8393))
+* **08:** chmod the pin temp file before the rename (IN-03) ([7775828](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/7775828879ffe3805ec8bb88c74a78cf810ad897))
+* **08:** cap and sanitize unknown pin key names in the invalid reason (IN-02) ([6c1eefb](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/6c1eefb2fc807cbfc67e24c2ef95be3a79c77575))
+* **08:** correct the picker's lazy-binding comment (IN-01) ([aa52e99](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/aa52e99b48e6572335aeab6b5e307b51d35bb9c6))
+* **08:** point key error copy and docs at the home key file (WR-11) ([605c79a](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/605c79a3aba942a0a417845388c0af1a7b895b10))
+* **08:** read .env.local from the home directory in the in-process fallback (WR-10) ([0835025](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/08350250979a0cbb56ffbab0d7705ec255117af7))
+* **08:** keep ?? working when the home directory does not exist (WR-12) ([22d712f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/22d712f406654d3711e7573d736a854245d5f39e))
+* **08:** keep only the answer after thinking in local model output (WR-09) ([35195d8](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/35195d81883be74ef19023a702f1453b15b71bba))
+* **08:** start the daemon in the home directory for a stable key source (WR-08) ([9cceb4f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/9cceb4f2cc817b4492df7fe521716d86ca873da2))
+* **08:** stop the old daemon over IPC before falling back to lsof (WR-07) ([78f053f](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/78f053f452b1fee4d0b54ab36a483192b2f152fd))
+* **08:** keep the Ollama baseUrl path and report a URL 404 as such (WR-06) ([099fcb0](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/099fcb0a09b0f1e63c55c9ccda00dc64d1ff15c4))
+* **08:** never turn Ollama or OpenAI prose into a command (WR-05) ([675f1ae](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/675f1ae5b02aebd81c38c128880801e231922e61))
+* **08:** strip terminal control bytes from non-Claude provider text (WR-04) ([b0da1ac](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/b0da1ac71a43b8fff897cc8785355a24fdd85a82))
+* **08:** fail closed on an empty or relative QQ_PROVIDER_FILE (WR-03) ([e4710a1](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/e4710a1a467832f1fdcc968cc5935840aa310429))
+* **08:** keep a saved baseUrl and model when the picker re-runs (WR-02) ([eb96a93](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/eb96a93dc116a7ec615a03fda047e135b419b453))
+* **08:** report non-auth claude -p failures with neutral copy (WR-01) ([3e51244](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/3e51244faf209dfaa90122d46192900c1f5a7b45))
+* **08:** replace daemons that cannot honor the provider pin (CR-01) ([130f367](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/130f3676888954fa3fad2f01a0046e7e24f7b19a))
+* **08-05:** bind picker restartDaemon lazily so loading main.ts stays inert ([db67b70](https://x-access-token:[secure]@github.com/k-leumas/queque/commit/db67b702dd492f39c8bfff23109724a501d2cfa8))
+
+</details>
+
 ## [0.6.1](https://x-access-token:[secure]@github.com/k-leumas/queque/compare/v0.6.0...v0.6.1) (2026-10-17)
 
 ### Bug Fixes
