@@ -99,6 +99,11 @@ function unexpectedResponse(): Error {
   return new Error('QueQue: OpenAI returned an unexpected response.');
 }
 
+/** A refusal or a `content_filter` finish (IN-17): the query, not the model, is the problem. */
+function declinedQuery(): Error {
+  return new Error('QueQue: OpenAI declined this query. Rephrase it and press ?? again.');
+}
+
 /** The pin's model name on one line: the FIFO error is a single shell line. */
 function oneLine(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
@@ -340,11 +345,16 @@ export async function fetchOpenAiCandidates(
     if (!message || typeof message !== 'object') {
       throw unexpectedResponse();
     }
+    if (choice?.finish_reason === 'content_filter') {
+      // IN-17: a filtered answer is a declined query, not a cut-off: no retry, and any
+      // partial text is dropped.
+      throw declinedQuery();
+    }
     const finishedNormally = choice?.finish_reason === 'stop';
     const { content, refusal } = message;
     if (typeof content !== 'string') {
       if (typeof refusal === 'string' && refusal.trim() !== '') {
-        throw new Error('QueQue: OpenAI declined this query. Rephrase it and press ?? again.');
+        throw declinedQuery();
       }
       if (finishedNormally) {
         throw unexpectedResponse();
@@ -386,7 +396,7 @@ export async function fetchOpenAiCandidates(
 
   try {
     return ensureSelectableCandidates(
-      stripTerminalControls(await candidatesWithCutOffRetry(first.turn, retry, { model })),
+      stripTerminalControls(await candidatesWithCutOffRetry(first.turn, retry, { model }, timeout)),
     );
   } catch (error) {
     if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {

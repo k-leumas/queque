@@ -146,4 +146,36 @@ describe('candidatesWithCutOffRetry', () => {
     expect(retry).toHaveBeenCalledTimes(1);
     expect((error as Error).message).toBe(TRUNCATED_RESPONSE_MESSAGE);
   });
+
+  it('(i) reports a retry that ran out of the budget as cut off, not a timeout (IN-17)', async () => {
+    const retry = vi
+      .fn<() => Promise<ModelTurn>>()
+      .mockRejectedValue(new Error('QueQue: Ollama did not answer within 25s'));
+
+    await expect(
+      candidatesWithCutOffRetry(turn('[{"command":"rm -', false), retry, {}, AbortSignal.abort()),
+    ).rejects.toThrow(TRUNCATED_RESPONSE_MESSAGE);
+  });
+
+  it('(j) keeps a retry error that is not a budget timeout (IN-17)', async () => {
+    const live = new AbortController().signal;
+    const retry = vi.fn<() => Promise<ModelTurn>>().mockRejectedValue(new Error('HTTP 500'));
+
+    await expect(
+      candidatesWithCutOffRetry(turn('[{"command":"rm -', false), retry, {}, live),
+    ).rejects.toThrow('HTTP 500');
+  });
+
+  it('(k) still rethrows a user abort after the budget fired (IN-17)', async () => {
+    const retry = vi.fn<() => Promise<ModelTurn>>().mockRejectedValue(abortError());
+
+    const error = await candidatesWithCutOffRetry(
+      turn('[{"command":"rm -', false),
+      retry,
+      {},
+      AbortSignal.abort(),
+    ).catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
+  });
 });

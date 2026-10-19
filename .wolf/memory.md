@@ -3168,3 +3168,17 @@
 | 02:46 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~76 |
 | 02:46 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in16.json | — | ~197 |
 | 02:46 | IN-16: env key file read only from ~ itself, never above home | src/shared/env-file.ts, tests/env-file.test.ts, README.md | fixed, 3 new tests | ~2000 |
+| 02:47 | Edited src/providers/structured-output.ts | modified candidatesWithCutOffRetry() | ~203 |
+| 02:47 | Edited src/providers/structured-output.ts | added optional chaining | ~84 |
+| 02:47 | Edited src/providers/ollama.ts | inline fix | ~27 |
+| 02:47 | Edited src/providers/openai.ts | 1→3 lines | ~34 |
+| 02:47 | Edited src/providers/openai.ts | Error() → declinedQuery() | ~132 |
+| 02:47 | Edited src/providers/openai.ts | added nullish coalescing | ~96 |
+| 02:47 | Edited tests/structured-output.test.ts | added error handling | ~377 |
+| 02:47 | Edited tests/openai-provider.test.ts | added error handling | ~389 |
+| 02:47 | Edited tests/ollama-provider.test.ts | added error handling | ~276 |
+| 02:48 | Edited tests/openai-provider.test.ts | 5→9 lines | ~89 |
+| 02:49 | Edited tests/ollama-provider.test.ts | 6→8 lines | ~80 |
+| 02:49 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in17.json | — | ~249 |
+| 02:49 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~68 |
+| 02:49 | IN-17: budget-timeout retry shows cut-off copy; OpenAI content_filter shows declined | src/providers/structured-output.ts, ollama.ts, openai.ts, tests | fixed, 6 new tests | ~3000 |

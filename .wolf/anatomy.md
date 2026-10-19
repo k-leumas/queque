@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:46:14.373Z
-> Files: 594 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:49:26.075Z
+> Files: 595 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -46,10 +46,11 @@
 - `addbug.py` (~222 tok)
 - `bug-in15.json` (~178 tok)
 - `bug-in16.json` (~197 tok)
+- `bug-in17.json` (~249 tok)
 - `bug-wr13.json` (~206 tok)
 - `bug-wr14.json` (~246 tok)
 - `bug-wr15.json` (~197 tok)
-- `msg.txt` (~71 tok)
+- `msg.txt` (~64 tok)
 - `probe.test.ts` — Declares show (~794 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
@@ -1131,14 +1132,14 @@
 - `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~5476 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
-- `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~3790 tok)
-- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~4598 tok)
+- `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~3793 tok)
+- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~4712 tok)
 - `provider-pin.ts` — On-disk pin format version; bump it (with a reader migration) to reshape the file. (~2612 tok)
 - `provider.ts` — Per-call options shared by every adapter (Phase 09.1). (~1416 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
 - `steering.ts` — `QUEQUE_SYSTEM` (moved from claude.ts), `buildSteeringText(tools)` (catalog re-filter, dedupe, sort, 4 lines D-15/16/17), `buildSystemPrompt(envelope)` (filterContextEnvelope first; byte-identical without the chunk). (~700 tok)
 - `stream-json.ts` — Pure stream-json helpers (09.1-01): `streamJsonResultSchema` (non-strict; is_error gate, subtype not a success signal), `createLineParser` (carry + newline split, non-JSON lines skipped), `textDeltaOf`, `isInitEvent`, `buildStreamJsonUserLine`, `STREAM_JSON_CARRY_CAP_BYTES` (enforced in plan 06); 09.1-06: `createLineParser(onEvent, { maxCarryBytes, onOverflow })` keeps a running UTF-8 byte count of the unfinished tail; past the cap (default 1 MiB) it calls onOverflow once, drops the tail and ignores later input; exports `LineParserOptions`. Review WR-01-r2: `streamJsonResultSchema.stop_reason` is `z.string().nullable().optional()` (2.1.285 records it; older builds and the auth result omit it) (~1100 tok)
-- `structured-output.ts` — Output ceiling for the OpenAI request (`max_completion_tokens`, reasoning included): the (~1053 tok)
+- `structured-output.ts` — Output ceiling for the OpenAI request (`max_completion_tokens`, reasoning included): the (~1225 tok)
 
 ## src/registry/
 
@@ -1197,8 +1198,8 @@
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
-- `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~9192 tok)
-- `openai-provider.test.ts` — The `reasoning_effort` of every request, in order (undefined when the key is absent). (~8853 tok)
+- `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~9463 tok)
+- `openai-provider.test.ts` — The `reasoning_effort` of every request, in order (undefined when the key is absent). (~9226 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-pin.test.ts` — original: resetRegistries, writePin (~3837 tok)
@@ -1209,7 +1210,7 @@
 - `semantic-release-user-notes.test.ts` — grouping, formatting, highlight JSON parse, generateNotes fallbacks, Unreleased strip. (~900 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d); adapters (b) model-call markers include `'messages.stream('` (09.1-04) (~2580 tok)
-- `structured-output.test.ts` — schema parity vs commandCandidateSchema and the cut-off retry decision table. (~1300 tok)
+- `structured-output.test.ts` — ModelTurn: turn, timeout, fired (~1991 tok)
 - `tool-awareness.test.ts` — Characterization tests for missing-tool semantics, installer choice, package aliases, install forms/wrapping/blocked plans and annotateCandidates (incl. CR-02: no install form for a wrapper option value such as `sudo --user root`). (~3573 tok)
 - `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — argv, height cap, trailing cursor row mapping (QQ_PANE_HEIGHT=24: 15→18, 21→24, 22→24, min 6), pane-id format, dedupe, outside-Zellij no-op; fake Zellij applies heights in completion order: slower stale action lands last, coalescing to the newest, equal-height drop, ENOENT error release, RESIZE_SETTLE_TIMEOUT_MS kill release, every child unref'd. (~1900 tok)

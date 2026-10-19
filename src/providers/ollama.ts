@@ -263,7 +263,7 @@ export async function fetchOllamaCandidates(
   try {
     return ensureSelectableCandidates(
       stripTerminalControls(
-        await candidatesWithCutOffRetry(first, postChat, { model: settings.model }),
+        await candidatesWithCutOffRetry(first, postChat, { model: settings.model }, timeout),
       ),
     );
   } catch (error) {

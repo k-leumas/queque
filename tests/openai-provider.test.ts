@@ -807,6 +807,42 @@ describe('OpenAI structured output, effort fallback and cut-off retry', () => {
     expectNoFallback();
   });
 
+  it.each([
+    ['with partial text', contentResponse(WRAPPED, 'content_filter')],
+    ['with null content', chatResponse({ content: null, refusal: null }, 'content_filter')],
+  ])('maps a content_filter finish %s to declined, with no retry (IN-17)', async (_name, response) => {
+    fetchStub.mockResolvedValueOnce(response);
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/declined this query/);
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows cut off, not a timeout, when the retry runs out of the budget (IN-17)', async () => {
+    fetchStub.mockResolvedValueOnce(contentResponse(FRAGMENT, 'length')).mockImplementationOnce(
+      (_input, init) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(init.signal?.reason), {
+            once: true,
+          });
+        }),
+    );
+
+    const caught: unknown = await fetchOpenAiCandidates(
+      buildEnvelope(),
+      { model: 'gpt-5.5' },
+      200,
+    ).catch((rejection: unknown) => rejection);
+    expect(caught).toBeInstanceOf(Error);
+    const error = caught as Error;
+
+    expect(error.message).toMatch(/OpenAI response was cut off/);
+    expect(error.message).not.toMatch(/did not answer/);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expectNoFallback();
+  });
+
   it('treats null content at finish_reason length as an empty cut-off and retries', async () => {
     fetchStub
       .mockResolvedValueOnce(chatResponse({ content: null, refusal: null }, 'length'))

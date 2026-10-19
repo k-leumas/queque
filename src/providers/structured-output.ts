@@ -75,11 +75,18 @@ function closedCandidates(content: string, logFields: Record<string, unknown>): 
  * reason other than a user abort, the first turn's closed candidates are returned if it had
  * any; otherwise the retry's error (TRUNCATED_RESPONSE_MESSAGE for a second cut-off)
  * surfaces. A user abort always wins.
+ *
+ * `budget` is the adapter's shared timeout signal (the AbortSignal.timeout, not the user
+ * signal). When it has fired by the time the retry fails and nothing closed, the error is
+ * TRUNCATED_RESPONSE_MESSAGE (IN-17): the real problem is the cut-off first answer, not a
+ * server that "did not answer". Any other retry error (a refusal, an HTTP status) keeps
+ * its own copy.
  */
 export async function candidatesWithCutOffRetry(
   first: ModelTurn,
   retry: () => Promise<ModelTurn>,
   logFields: Record<string, unknown> = {},
+  budget?: AbortSignal,
 ): Promise<CandidateList> {
   if (first.finishedNormally) {
     return finalCandidateListWithoutProse(first.content, true, logFields);
@@ -94,7 +101,14 @@ export async function candidatesWithCutOffRetry(
     const second = await retry();
     return finalCandidateListWithoutProse(second.content, second.finishedNormally, logFields);
   } catch (error) {
-    if (isAbortError(error) || closed.length === 0) {
+    if (isAbortError(error)) {
+      throw error;
+    }
+    if (closed.length === 0) {
+      if (budget?.aborted) {
+        void appendDebugLog('provider', 'response truncated', logFields);
+        throw new Error(TRUNCATED_RESPONSE_MESSAGE);
+      }
       throw error;
     }
     return closed;

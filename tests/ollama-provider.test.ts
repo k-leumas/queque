@@ -623,6 +623,32 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expectNoClaudeCall();
   });
 
+  it('shows cut off, not "did not answer", when the retry runs out of the budget (IN-17)', async () => {
+    fetchStub
+      .mockResolvedValueOnce(chatResponse('[{"command":"ls -', { done_reason: 'length' }))
+      .mockImplementationOnce(
+        (_input, init) =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () => reject(init.signal?.reason), {
+              once: true,
+            });
+          }),
+      );
+
+    const caught: unknown = await fetchOllamaCandidates(
+      buildEnvelope(),
+      { baseUrl: 'http://localhost:11434', model: 'gemma4' },
+      200,
+    ).catch((rejection: unknown) => rejection);
+    expect(caught).toBeInstanceOf(Error);
+    const error = caught as Error;
+
+    expect(error.message).toMatch(/Ollama response was cut off/);
+    expect(error.message).not.toMatch(/did not answer/);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expectNoClaudeCall();
+  });
+
   it('keeps the closed candidates of a cut-off answer when the retry closes none', async () => {
     fetchStub
       .mockResolvedValueOnce(

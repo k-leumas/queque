@@ -6464,6 +6464,137 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:46:17Z"
+    },
+    {
+      "id": "bug-394",
+      "timestamp": "2026-10-19T08:47:08.878Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/providers/structured-output.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:47:08.878Z"
+    },
+    {
+      "id": "bug-395",
+      "timestamp": "2026-10-19T08:47:10.586Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/providers/openai.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:47:10.586Z"
+    },
+    {
+      "id": "bug-396",
+      "timestamp": "2026-10-19T08:47:36.220Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "tests/structured-output.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:47:36.220Z"
+    },
+    {
+      "id": "bug-397",
+      "timestamp": "2026-10-19T08:47:36.620Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "tests/openai-provider.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:47:36.620Z"
+    },
+    {
+      "id": "bug-398",
+      "timestamp": "2026-10-19T08:47:46.838Z",
+      "error_message": "Missing error handling in unknown",
+      "file": "tests/ollama-provider.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:47:46.838Z"
+    },
+    {
+      "id": "bug-399",
+      "timestamp": "2026-10-19T08:48:10.019Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/openai-provider.test.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→9 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:48:10.019Z"
+    },
+    {
+      "id": "bug-400",
+      "timestamp": "2026-10-19T08:49:05.474Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/ollama-provider.test.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 6→8 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:49:05.474Z"
+    },
+    {
+      "id": "bug-401",
+      "timestamp": "2026-10-19T08:49:29Z",
+      "error_message": "A cut-off retry that ran out of the 25s budget showed 'did not answer within 25s', and an OpenAI content_filter finish was retried and shown as 'cut off' instead of declined (review IN-17)",
+      "file": "src/providers/structured-output.ts",
+      "root_cause": "candidatesWithCutOffRetry rethrew the retry's mapped timeout error when nothing closed, and openai.ts treated every non-stop finish_reason, content_filter included, as a cut-off",
+      "fix": "candidatesWithCutOffRetry takes the adapter's AbortSignal.timeout as `budget` and throws TRUNCATED_RESPONSE_MESSAGE when it fired and nothing closed (user abort still wins, other retry errors keep their copy); openai postChat maps finish_reason content_filter to the declined copy with no retry",
+      "tags": [
+        "ollama",
+        "openai",
+        "retry",
+        "timeout",
+        "error-copy",
+        "review-IN-17"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:49:29Z"
     }
   ]
 }
