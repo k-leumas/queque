@@ -11,10 +11,12 @@ import {
   OPENAI_DEFAULT_MODEL,
   OPENAI_TIMEOUT_MS,
   openaiAdapter,
+  resetOpenAiEffortCache,
 } from '../src/providers/openai.js';
 import { isAbortError } from '../src/providers/provider.js';
 import { resolveProviderAdapter } from '../src/providers/provider-pin.js';
 import { buildSystemPrompt } from '../src/providers/steering.js';
+import { WRAPPED_CANDIDATE_LIST_JSON_SCHEMA } from '../src/providers/structured-output.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import { clearContextProviders } from '../src/registry/context-providers.js';
 import { clearProviderBackends, getProviderAdapter } from '../src/registry/provider-backends.js';
@@ -166,9 +168,23 @@ function pinOpenAi(extra: Record<string, unknown> = {}): void {
   fs.writeFileSync(pinFile, JSON.stringify({ version: 1, provider: 'openai', ...extra }));
 }
 
-function sentBody(): ChatBody {
-  const init = fetchStub.mock.calls[0]?.[1];
+function sentBody(index = 0): ChatBody {
+  const init = fetchStub.mock.calls[index]?.[1];
   return JSON.parse(String(init?.body)) as ChatBody;
+}
+
+/** The `reasoning_effort` of every request, in order (undefined when the key is absent). */
+function sentEfforts(): unknown[] {
+  return fetchStub.mock.calls.map((_call, index) => sentBody(index).reasoning_effort);
+}
+
+function effortRejected(message = 'Unsupported value for reasoning_effort'): Response {
+  return errorResponse(400, {
+    message,
+    type: 'invalid_request_error',
+    param: 'reasoning_effort',
+    code: 'unsupported_value',
+  });
 }
 
 /** No Claude entry point and no other host (Ollama's localhost:11434) was touched. */
@@ -211,6 +227,7 @@ beforeEach(() => {
   // A Claude key is present, so any silent fallback to Claude would reach the SDK mock.
   vi.stubEnv('ANTHROPIC_API_KEY', 'test-anthropic-key');
   resetQqConfigCache();
+  resetOpenAiEffortCache();
   fetchStub = vi.fn<(...args: FetchArgs) => Promise<Response>>();
   vi.stubGlobal('fetch', fetchStub);
   pinOpenAi();
@@ -279,7 +296,7 @@ describe('key-file copy names ~/.env.local (WR-11)', () => {
 });
 
 describe('OpenAI request shape and privacy', () => {
-  it('posts only model and messages (developer system prompt, then user prompt)', async () => {
+  it('posts model, messages, the token cap, low effort and the strict schema', async () => {
     fetchStub.mockResolvedValue(contentResponse(CANDIDATE_JSON));
     const envelope = buildEnvelope();
 
@@ -294,7 +311,26 @@ describe('OpenAI request shape and privacy', () => {
     expect(headers.get('authorization')).toBe(`Bearer ${KEY}`);
     expect(headers.get('content-type')).toBe('application/json');
     const body = sentBody();
-    expect(Object.keys(body).sort()).toEqual(['messages', 'model']);
+    expect(Object.keys(body).sort()).toEqual([
+      'max_completion_tokens',
+      'messages',
+      'model',
+      'reasoning_effort',
+      'response_format',
+    ]);
+    expect(body.max_completion_tokens).toBe(16000);
+    expect(body.reasoning_effort).toBe('low');
+    expect(body.response_format).toEqual({
+      type: 'json_schema',
+      json_schema: {
+        name: 'command_candidates',
+        strict: true,
+        schema: WRAPPED_CANDIDATE_LIST_JSON_SCHEMA,
+      },
+    });
+    for (const key of ['temperature', 'top_p', 'max_tokens']) {
+      expect(body).not.toHaveProperty(key);
+    }
     expect(body.model).toBe(OPENAI_DEFAULT_MODEL);
     expect(body.messages).toEqual([
       { role: 'developer', content: buildSystemPrompt(envelope) },
@@ -536,11 +572,12 @@ describe('OpenAI failure mapping (no Claude or Ollama fallback)', () => {
   });
 
   it('never turns a cut-off answer into a prose command (finish_reason length)', async () => {
-    fetchStub.mockResolvedValue(contentResponse('[{"command":"rm -rf', 'length'));
+    fetchStub.mockImplementation(async () => contentResponse('[{"command":"rm -rf', 'length'));
 
     const error = await failure();
 
     expect(error.message).toMatch(/cut off/);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
   });
 
   it('rethrows a user abort unmapped', async () => {
@@ -561,6 +598,147 @@ describe('OpenAI failure mapping (no Claude or Ollama fallback)', () => {
 
     expect(isAbortError(error)).toBe(true);
     expectNoFallback();
+  });
+});
+
+describe('OpenAI structured output, effort fallback and cut-off retry', () => {
+  const LS = [{ command: 'ls -la', explanation: 'List files' }];
+  const WRAPPED = JSON.stringify({ candidates: LS });
+  const FRAGMENT = '{"candidates":[{"command":"rm -rf';
+
+  it('reads a { candidates } answer', async () => {
+    fetchStub.mockResolvedValue(contentResponse(WRAPPED));
+
+    await expect(openaiAdapter.fetchCandidates(buildEnvelope())).resolves.toEqual(LS);
+  });
+
+  it('still reads a bare-array answer', async () => {
+    fetchStub.mockResolvedValue(contentResponse(CANDIDATE_JSON));
+
+    await expect(openaiAdapter.fetchCandidates(buildEnvelope())).resolves.toEqual(LS);
+  });
+
+  it('retries a cut-off answer once at the lowest effort on the same signal', async () => {
+    fetchStub
+      .mockResolvedValueOnce(contentResponse(FRAGMENT, 'length'))
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual(LS);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expect(sentEfforts()).toEqual(['low', 'none']);
+    const [first, second] = fetchStub.mock.calls;
+    expect(first?.[1]?.signal).toBeDefined();
+    expect(second?.[1]?.signal).toBe(first?.[1]?.signal);
+    expectNoFallback();
+  });
+
+  it('shows cut off when the retry is cut off too, never a fragment', async () => {
+    fetchStub.mockImplementation(async () => contentResponse(FRAGMENT, 'length'));
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/cut off/);
+    expect(error.message).not.toContain('rm -rf');
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+  });
+
+  it('resends without reasoning_effort when the model rejects it, and remembers', async () => {
+    fetchStub
+      .mockResolvedValueOnce(effortRejected('Unsupported value: low. sk-proj-SECRET'))
+      .mockImplementation(async () => contentResponse(WRAPPED));
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual(LS);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expect(sentBody(1)).not.toHaveProperty('reasoning_effort');
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('sk-proj-SECRET');
+
+    fetchStub.mockClear();
+    await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+    expect(sentBody(0)).not.toHaveProperty('reasoning_effort');
+  });
+
+  it('never leaks the upstream message of a rejected effort into an error', async () => {
+    fetchStub
+      .mockResolvedValueOnce(effortRejected('Unsupported value: low. sk-proj-SECRET'))
+      .mockResolvedValueOnce(
+        errorResponse(500, { message: 'sk-proj-SECRET', code: 'server_error' }),
+      );
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/HTTP 500/);
+    expect(error.message).not.toContain('sk-proj-SECRET');
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('sk-proj-SECRET');
+  });
+
+  it('walks none, minimal, then no effort on the retry past rejected values', async () => {
+    fetchStub
+      .mockResolvedValueOnce(contentResponse(FRAGMENT, 'length'))
+      .mockResolvedValueOnce(effortRejected())
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual(LS);
+    expect(sentEfforts()).toEqual(['low', 'none', 'minimal']);
+  });
+
+  it.each([
+    ['response_format', 'response_format'],
+    ['another param', 'messages'],
+  ])('maps a 400 for %s to the static failure line after 1 call', async (_name, param) => {
+    fetchStub.mockResolvedValue(
+      errorResponse(400, {
+        message: 'Invalid schema',
+        type: 'invalid_request_error',
+        param,
+        code: 'invalid_value',
+      }),
+    );
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/OpenAI request failed \(HTTP 400, code invalid_value\)/);
+    expect(error.message).not.toContain('Invalid schema');
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+  });
+
+  it('rethrows a user abort fired during the retry', async () => {
+    const controller = new AbortController();
+    fetchStub.mockResolvedValueOnce(contentResponse(FRAGMENT, 'length')).mockImplementationOnce(
+      (_input, init) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(init.signal?.reason), {
+            once: true,
+          });
+          controller.abort();
+        }),
+    );
+
+    const error = await openaiAdapter
+      .fetchCandidates(buildEnvelope(), { signal: controller.signal })
+      .catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expectNoFallback();
+  });
+
+  it('treats null content at finish_reason length as an empty cut-off and retries', async () => {
+    fetchStub
+      .mockResolvedValueOnce(chatResponse({ content: null, refusal: null }, 'length'))
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual(LS);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
   });
 });
 

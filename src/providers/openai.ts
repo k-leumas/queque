@@ -30,6 +30,10 @@ export const OPENAI_DEFAULT_MODEL = 'gpt-5.5';
 /** Same budget as Claude and Ollama: zsh reads the FIFO for 30s and the IPC client waits 26s. */
 export const OPENAI_TIMEOUT_MS = 25_000;
 
+export function resetOpenAiEffortCache(): void {
+  // RED stub: no cache yet.
+}
+
 export interface OpenAiSettings {
   model: string;
 }
