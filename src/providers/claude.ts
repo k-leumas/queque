@@ -208,6 +208,10 @@ export function stripThinking(text: string): string {
   return afterClose.replace(THINK_BLOCK_RE, ' ');
 }
 
+export function strictCandidateListWithoutProse(_text: string): CandidateList | undefined {
+  throw new Error('not implemented');
+}
+
 /**
  * The final-list rule for the Ollama and OpenAI adapters (WR-05). Their models do not
  * reliably follow "raw JSON array only": they wrap the array in prose ("Here are some

@@ -8,6 +8,7 @@ import {
   buildPrompt,
   finalCandidateListWithoutProse,
   QUEQUE_SYSTEM,
+  strictCandidateListWithoutProse,
   stripThinking,
   TRUNCATED_RESPONSE_MESSAGE,
   UNPARSEABLE_RESPONSE_MESSAGE,
@@ -21,6 +22,7 @@ import {
 import { isAbortError } from '../src/providers/provider.js';
 import { resolveProviderAdapter } from '../src/providers/provider-pin.js';
 import { buildSystemPrompt } from '../src/providers/steering.js';
+import { CANDIDATE_LIST_JSON_SCHEMA } from '../src/providers/structured-output.js';
 import { bootstrapBuiltins, resetBootstrap } from '../src/registry/bootstrap.js';
 import { clearContextProviders } from '../src/registry/context-providers.js';
 import { clearProviderBackends, getProviderAdapter } from '../src/registry/provider-backends.js';
@@ -197,7 +199,7 @@ afterEach(() => {
 });
 
 describe('Ollama request shape and privacy', () => {
-  it('posts model, stream false, and the shared system and user prompts', async () => {
+  it('posts model, stream false, think false, the schema, options and the prompts', async () => {
     fetchStub.mockResolvedValue(chatResponse(CANDIDATE_JSON));
     const envelope = buildEnvelope();
 
@@ -209,9 +211,19 @@ describe('Ollama request shape and privacy', () => {
     expect(String(url)).toBe('http://localhost:11434/api/chat');
     expect(init?.method).toBe('POST');
     const body = sentBody();
-    expect(Object.keys(body).sort()).toEqual(['messages', 'model', 'stream']);
+    expect(Object.keys(body).sort()).toEqual([
+      'format',
+      'messages',
+      'model',
+      'options',
+      'stream',
+      'think',
+    ]);
     expect(body.model).toBe('gemma4');
     expect(body.stream).toBe(false);
+    expect(body.think).toBe(false);
+    expect(body.format).toEqual(CANDIDATE_LIST_JSON_SCHEMA);
+    expect(body.options).toEqual({ num_predict: 16000, num_ctx: 20480 });
     expect(body.messages).toEqual([
       { role: 'system', content: buildSystemPrompt(envelope) },
       { role: 'user', content: buildPrompt(envelope) },
@@ -443,7 +455,7 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
   });
 
   it('never turns a cut-off answer into a prose command (done_reason length)', async () => {
-    fetchStub.mockResolvedValue(
+    fetchStub.mockImplementation(async () =>
       chatResponse('Here are some ways to list fil', { done_reason: 'length' }),
     );
 
@@ -451,6 +463,7 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
 
     expect(error.message.startsWith('QueQue:')).toBe(true);
     expect(error.message).toContain('cut off');
+    expect(fetchStub).toHaveBeenCalledTimes(2);
     expectNoClaudeCall();
   });
 
@@ -544,7 +557,7 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
   });
 
   it('never returns a draft from unclosed thinking in a cut-off answer (WR-09)', async () => {
-    fetchStub.mockResolvedValue(
+    fetchStub.mockImplementation(async () =>
       chatResponse(
         '<think>Maybe [{"command":"git reset --hard","explanation":"draft"}] hmm, but that loses',
         { done_reason: 'length' },
@@ -556,6 +569,7 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expect(error.message.startsWith('QueQue:')).toBe(true);
     expect(error.message).toContain('cut off');
     expect(error.message).not.toContain('git reset');
+    expect(fetchStub).toHaveBeenCalledTimes(2);
     expectNoClaudeCall();
   });
 
@@ -572,16 +586,89 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expectNoClaudeCall();
   });
 
-  it('keeps the closed candidates of a cut-off answer', async () => {
-    fetchStub.mockResolvedValue(
-      chatResponse('[{"command":"ls -la","explanation":"List files"},{"command":"ls -', {
-        done_reason: 'length',
-      }),
-    );
+  it('keeps the closed candidates of a cut-off answer when the retry closes none', async () => {
+    fetchStub
+      .mockResolvedValueOnce(
+        chatResponse('[{"command":"ls -la","explanation":"List files"},{"command":"ls -', {
+          done_reason: 'length',
+        }),
+      )
+      .mockResolvedValueOnce(chatResponse('[{"command":"rm -', { done_reason: 'length' }));
 
     const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
 
     expect(candidates).toEqual([{ command: 'ls -la', explanation: 'List files' }]);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+  });
+
+  it('retries a cut-off answer once with the same body, then shows cut off', async () => {
+    fetchStub.mockImplementation(async () =>
+      chatResponse('[{"command":"rm -rf', { done_reason: 'length' }),
+    );
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/cut off/);
+    expect(error.message).not.toContain('rm -rf');
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    const [first, second] = fetchStub.mock.calls;
+    expect(String(second?.[1]?.body)).toBe(String(first?.[1]?.body));
+    expectNoClaudeCall();
+  });
+
+  it('returns the retry candidates after a cut-off first answer', async () => {
+    fetchStub
+      .mockResolvedValueOnce(chatResponse('[{"command":"rm -', { done_reason: 'length' }))
+      .mockResolvedValueOnce(chatResponse(CANDIDATE_JSON));
+
+    const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([{ command: 'ls -la', explanation: 'List files' }]);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+  });
+
+  it('sends the retry on the same signal (one shared budget)', async () => {
+    fetchStub
+      .mockResolvedValueOnce(chatResponse('[{"command":"rm -', { done_reason: 'length' }))
+      .mockResolvedValueOnce(chatResponse(CANDIDATE_JSON));
+
+    await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    const [first, second] = fetchStub.mock.calls;
+    expect(first?.[1]?.signal).toBeDefined();
+    expect(second?.[1]?.signal).toBe(first?.[1]?.signal);
+  });
+
+  it('rethrows a user abort fired during the retry', async () => {
+    const controller = new AbortController();
+    fetchStub
+      .mockResolvedValueOnce(chatResponse('[{"command":"rm -', { done_reason: 'length' }))
+      .mockImplementationOnce(
+        (_input, init) =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener('abort', () => reject(init.signal?.reason), {
+              once: true,
+            });
+            controller.abort();
+          }),
+      );
+
+    const error = await ollamaAdapter
+      .fetchCandidates(buildEnvelope(), { signal: controller.signal })
+      .catch((caught: unknown) => caught);
+
+    expect(isAbortError(error)).toBe(true);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expectNoClaudeCall();
+  });
+
+  it('returns a complete array from a done_reason length reply without retrying', async () => {
+    fetchStub.mockResolvedValueOnce(chatResponse(CANDIDATE_JSON, { done_reason: 'length' }));
+
+    const candidates = await ollamaAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual([{ command: 'ls -la', explanation: 'List files' }]);
+    expect(fetchStub).toHaveBeenCalledTimes(1);
   });
 
   it('rethrows a user abort unmapped', async () => {
@@ -686,5 +773,29 @@ describe('stripThinking and finalCandidateListWithoutProse (WR-09)', () => {
     expect(() => finalCandidateListWithoutProse(`<think>Maybe ${DRAFT} hmm`, true)).toThrow(
       UNPARSEABLE_RESPONSE_MESSAGE,
     );
+  });
+
+  const WRAPPED = '{"candidates":[{"command":"ls -la","explanation":"List files"}]}';
+  const LS = [{ command: 'ls -la', explanation: 'List files' }];
+
+  it.each([
+    ['a candidates object', WRAPPED],
+    ['a candidates object in a json fence', `\`\`\`json\n${WRAPPED}\n\`\`\``],
+    ['a candidates object after </think>', `<think>hmm</think>\n${WRAPPED}`],
+    ['a bare array', CANDIDATE_JSON],
+  ])('parses %s at a normal stop', (_name, text) => {
+    expect(finalCandidateListWithoutProse(text, true)).toEqual(LS);
+  });
+
+  it('throws UNPARSEABLE_RESPONSE_MESSAGE for an empty candidates object at a normal stop', () => {
+    expect(() => finalCandidateListWithoutProse('{"candidates":[]}', true)).toThrow(
+      UNPARSEABLE_RESPONSE_MESSAGE,
+    );
+  });
+
+  it('strictCandidateListWithoutProse rejects a cut-off wrapper and prose', () => {
+    expect(strictCandidateListWithoutProse(WRAPPED)).toEqual(LS);
+    expect(strictCandidateListWithoutProse('{"candidates":[{"command":"ls -')).toBeUndefined();
+    expect(strictCandidateListWithoutProse('You can use ls -la.')).toBeUndefined();
   });
 });
