@@ -3194,3 +3194,4 @@
 | 02:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in19.json | — | ~211 |
 | 02:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~55 |
 | 02:52 | IN-19: QQ_CONFIG_FILE leading ~/ expands to home (debug line skipped: import cycle) | src/shared/qq-config.ts, tests/qq-config.test.ts | fixed, 3 new tests | ~1500 |
+| 02:54 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW-FIX.md | — | ~3237 |
