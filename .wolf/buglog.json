@@ -6629,6 +6629,56 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:50:49Z"
+    },
+    {
+      "id": "bug-404",
+      "timestamp": "2026-10-19T08:51:52.415Z",
+      "error_message": "Type error",
+      "file": "src/shared/qq-config.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:51:52.415Z"
+    },
+    {
+      "id": "bug-405",
+      "timestamp": "2026-10-19T08:51:52.810Z",
+      "error_message": "Type error",
+      "file": "tests/qq-config.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:51:52.810Z"
+    },
+    {
+      "id": "bug-406",
+      "timestamp": "2026-10-19T08:52:13Z",
+      "error_message": "A quoted QQ_CONFIG_FILE='~/qq.json' resolved to $HOME/~/qq.json, read as {} and silently dropped the user's extra sensitivePathPatterns (review IN-19)",
+      "file": "src/shared/qq-config.ts",
+      "root_cause": "defaultConfigPath resolved a relative override against home (IN-14) but did not expand a leading ~/ the shell left unexpanded",
+      "fix": "defaultConfigPath expands a leading ~/ to homedir() before the absolute/relative rule. The suggested debug line for a missing override file was not added: debug-log -> privacy-filter -> qq-config is an import cycle and a log call inside readConfigFile could re-enter loadQqConfig",
+      "tags": [
+        "config",
+        "privacy",
+        "env",
+        "tilde",
+        "review-IN-19"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:52:13Z"
     }
   ]
 }

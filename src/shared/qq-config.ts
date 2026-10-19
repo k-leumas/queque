@@ -96,13 +96,19 @@ let cachedConfig: ResolvedQqConfig | null = null;
  * user's extra privacy patterns). A relative override is resolved against the home
  * directory, explicitly, so the daemon (which runs in `~`) and the foreground client in
  * any other directory read the same file.
+ *
+ * IN-19: a leading `~/` (a quoted `QQ_CONFIG_FILE='~/qq.json'`, which the shell does not
+ * expand) means the home directory, as the user meant. Without this it resolved to
+ * `$HOME/~/qq.json`, a missing file read as `{}`, which silently dropped the user's extra
+ * privacy patterns.
  */
 export function defaultConfigPath(): string {
   const override = process.env.QQ_CONFIG_FILE?.trim();
   if (!override) {
     return join(homedir(), '.config', 'qq', 'config.json');
   }
-  return isAbsolute(override) ? override : resolve(homedir(), override);
+  const expanded = override.startsWith('~/') ? join(homedir(), override.slice(2)) : override;
+  return isAbsolute(expanded) ? expanded : resolve(homedir(), expanded);
 }
 
 /** Maximum length for user-supplied regex patterns in config.json. */

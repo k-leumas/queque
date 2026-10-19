@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:50:46.305Z
-> Files: 596 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:52:09.607Z
+> Files: 597 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -48,10 +48,11 @@
 - `bug-in16.json` (~197 tok)
 - `bug-in17.json` (~249 tok)
 - `bug-in18.json` (~185 tok)
+- `bug-in19.json` (~211 tok)
 - `bug-wr13.json` (~206 tok)
 - `bug-wr14.json` (~246 tok)
 - `bug-wr15.json` (~197 tok)
-- `msg.txt` (~67 tok)
+- `msg.txt` (~52 tok)
 - `probe.test.ts` — Declares show (~794 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
@@ -1153,7 +1154,7 @@
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~1050 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
-- `qq-config.ts` — `~/.config/qq/config.json` loader (`QQ_CONFIG_FILE` override), cached per process (`resetQqConfigCache()` for tests): built-in + user sensitive path patterns; `EFFORT_LEVELS`, `Effort`, `DEFAULT_EFFORT = 'low'`, `resolveEffort()`; the `effort` key is lenient (trim, lowercase, enum, `.optional().catch(undefined)`, then `?? 'low'`) so a bad value never drops the file (09.1-02). (~1430 tok)
+- `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~1899 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
 - `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), per-installer `PACKAGE_ALIASES` (brew/apt/dnf/pacman maps; null = no package installs that binary) + `packageFor(tool, installer)` (Homebrew-aliased tools with no Linux entry are null, never guessed), `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/unknown packages/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
 - `tool-catalog.ts` — Shipped 196-name allow list of notable CLI tools (spike 003 seed, frozen), `CATALOG_SET`, `installedCatalogTools(isInstalled)` (sorted in Node), shape constants `TOOL_NAME_RE` / `TOOL_NAME_MAX_LENGTH` (64) / `INSTALLED_TOOLS_MAX` (512). Zero imports. (~1000 tok)
@@ -1205,7 +1206,7 @@
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-pin.test.ts` — original: resetRegistries, writePin (~3837 tok)
 - `provider-resolver.test.ts` — Declares resetRegistries (~774 tok)
-- `qq-config.test.ts` — qq-config schema and loader tests incl. `effort` (lenient enum, trim/lowercase, invalid → low) through a temp QQ_CONFIG_FILE (09.1-02). (~940 tok)
+- `qq-config.test.ts` — parsed: writeConfig (~1793 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `semantic-release-user-notes.test.ts` — grouping, formatting, highlight JSON parse, generateNotes fallbacks, Unreleased strip. (~900 tok)

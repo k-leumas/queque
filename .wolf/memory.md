@@ -3189,3 +3189,8 @@
 | 02:50 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in18.json | — | ~185 |
 | 02:50 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~72 |
 | 02:50 | IN-18: OpenAI retry ladder skips efforts the model already rejected | src/providers/openai.ts, tests/openai-provider.test.ts | fixed, 2 new tests | ~1500 |
+| 02:51 | Edited src/shared/qq-config.ts | modified defaultConfigPath() | ~222 |
+| 02:51 | Edited tests/qq-config.test.ts | expanded (+29 lines) | ~317 |
+| 02:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in19.json | — | ~211 |
+| 02:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~55 |
+| 02:52 | IN-19: QQ_CONFIG_FILE leading ~/ expands to home (debug line skipped: import cycle) | src/shared/qq-config.ts, tests/qq-config.test.ts | fixed, 3 new tests | ~1500 |

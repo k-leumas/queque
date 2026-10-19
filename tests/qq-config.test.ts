@@ -143,6 +143,35 @@ describe('QQ_CONFIG_FILE override (IN-14)', () => {
     expect(defaultConfigPath()).toBe(join(homedir(), 'qq', 'config.json'));
   });
 
+  it('a leading ~/ in the override means the home directory (IN-19)', () => {
+    vi.stubEnv('QQ_CONFIG_FILE', '  ~/qq/config.json ');
+    expect(defaultConfigPath()).toBe(join(homedir(), 'qq', 'config.json'));
+  });
+
+  it('a ~/ override still loads its privacy patterns (IN-19)', () => {
+    const home = mkdtempSync(join(tmpdir(), 'qq-config-tilde-'));
+    try {
+      vi.stubEnv('HOME', home);
+      vi.stubEnv('QQ_CONFIG_FILE', '~/qq.json');
+      writeFileSync(
+        join(home, 'qq.json'),
+        JSON.stringify({ privacy: { sensitivePathPatterns: ['zz-in19'] } }),
+      );
+      resetQqConfigCache();
+
+      const config = loadQqConfig();
+
+      expect(config.sensitivePathRegexes.some((regex) => regex.source === 'zz-in19')).toBe(true);
+    } finally {
+      rmSync(home, { recursive: true, force: true });
+    }
+  });
+
+  it('a ~ that is not a leading ~/ is a plain relative name', () => {
+    vi.stubEnv('QQ_CONFIG_FILE', '~qq.json');
+    expect(defaultConfigPath()).toBe(join(homedir(), '~qq.json'));
+  });
+
   it('an empty override still loads the privacy patterns of the default file', () => {
     const home = mkdtempSync(join(tmpdir(), 'qq-config-home-'));
     try {
