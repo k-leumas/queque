@@ -208,8 +208,29 @@ export function stripThinking(text: string): string {
   return afterClose.replace(THINK_BLOCK_RE, ' ');
 }
 
-export function strictCandidateListWithoutProse(_text: string): CandidateList | undefined {
-  throw new Error('not implemented');
+/**
+ * The strict parse for the Ollama and OpenAI adapters: the text after stripThinking must be
+ * a complete candidate list, either a bare array (optionally in a json code fence) or an
+ * object whose `candidates` value is that array (OpenAI strict structured output needs an
+ * object root). Returns undefined otherwise, never a prose fallback.
+ */
+export function strictCandidateListWithoutProse(text: string): CandidateList | undefined {
+  const answer = stripThinking(text);
+  const bare = parseStrictCandidateList(answer);
+  if (bare) {
+    return bare;
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(stripCodeFence(answer));
+  } catch {
+    return undefined;
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    return undefined;
+  }
+  const list = candidateListSchema.safeParse((parsed as { candidates?: unknown }).candidates);
+  return list.success ? list.data : undefined;
 }
 
 /**
@@ -219,8 +240,9 @@ export function strictCandidateListWithoutProse(_text: string): CandidateList | 
  * parseCandidates' prose fallback would turn that whole text into one multi-line
  * "command", so it is never used here.
  *
- * Order: the strict parse of the text after stripThinking, then the candidate objects
- * that closed inside the first `[ {` array in it. With none, a cut-off answer throws
+ * Order: the strict parse of the text after stripThinking (strictCandidateListWithoutProse:
+ * a bare array or a `{ "candidates": [...] }` object), then the candidate objects that
+ * closed inside the first `[ {` array in it. With none, a cut-off answer throws
  * TRUNCATED_RESPONSE_MESSAGE and a normal stop throws UNPARSEABLE_RESPONSE_MESSAGE (both
  * logged with `logFields` only, never the text). The raw text never becomes a candidate.
  */
@@ -230,7 +252,7 @@ export function finalCandidateListWithoutProse(
   logFields: Record<string, unknown> = {},
 ): CandidateList {
   const answer = stripThinking(text);
-  const strict = parseStrictCandidateList(answer);
+  const strict = strictCandidateListWithoutProse(text);
   if (strict) {
     return strict;
   }

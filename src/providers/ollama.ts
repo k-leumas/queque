@@ -4,7 +4,6 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import {
   buildPrompt,
   ensureSelectableCandidates,
-  finalCandidateListWithoutProse,
   TRUNCATED_RESPONSE_MESSAGE,
   UNPARSEABLE_RESPONSE_MESSAGE,
 } from './claude.js';
@@ -16,9 +15,25 @@ import {
 } from './provider.js';
 import { loadProviderPin, OLLAMA_DEFAULT_BASE_URL } from './provider-pin.js';
 import { buildSystemPrompt } from './steering.js';
+import {
+  CANDIDATE_LIST_JSON_SCHEMA,
+  candidatesWithCutOffRetry,
+  MAX_OUTPUT_TOKENS,
+  type ModelTurn,
+} from './structured-output.js';
 
 /** Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. */
 export const OLLAMA_TIMEOUT_MS = 25_000;
+
+/** Output ceiling (`options.num_predict`): the same as every other provider. */
+export const OLLAMA_NUM_PREDICT = MAX_OUTPUT_TOKENS;
+
+/**
+ * Context window (`options.num_ctx`): 16000 output tokens plus ~4.5k of prompt headroom.
+ * It is fixed, not sized per prompt, because Ollama reloads the model whenever num_ctx
+ * changes between requests.
+ */
+export const OLLAMA_NUM_CTX = 20_480;
 
 /** Ollama's `error` field is local and carries no secrets; it is still capped. */
 const MAX_ERROR_DETAIL = 160;
@@ -130,18 +145,23 @@ async function readErrorDetail(response: Response): Promise<string> {
 /**
  * Calls Ollama's POST {baseUrl}/api/chat (non-streaming) and returns parsed candidates.
  *
- * The body carries only the model, `stream: false`, and the shared system and
- * privacy-filtered user prompts. No Authorization header is sent. This function's own
- * `ollama request` debug line carries model, status and duration only, never the prompt or
- * the response. Error messages name the server's origin (scheme, host and port: never the
+ * The body carries the model, `stream: false`, `think: false` (no thinking output when the
+ * model allows it), `format` (CANDIDATE_LIST_JSON_SCHEMA, the same array the system prompt
+ * asks for), `options` (OLLAMA_NUM_PREDICT output tokens in an OLLAMA_NUM_CTX window), and
+ * the shared system and privacy-filtered user prompts. A reply that was cut off (see
+ * candidatesWithCutOffRetry) is re-sent once, silently, with the same body on the same
+ * signal, so the whole call stays inside one `timeoutMs` budget; only a second cut-off
+ * shows the "cut off" line. No Authorization header is sent. Each `ollama request` debug
+ * line carries model, status and duration only, never the prompt or the response. Error messages name the server's origin (scheme, host and port: never the
  * path, query or credentials) so the user can act on them, and the daemon logs each error
  * message in its `replied fetch-error` line, so that origin can appear in the debug log
  * (IN-04).
  *
  * Every failure is one QueQue-prefixed line naming the fix; nothing here falls back to
- * another provider (D-01, D-12). The final list follows finalCandidateListWithoutProse
- * (WR-05): the model's text never becomes a command by itself, whether it was cut off
- * (`done_reason` other than `stop`) or wrapped the array in prose or a `<think>` block.
+ * another provider (D-01, D-12). Every reply goes through finalCandidateListWithoutProse
+ * (WR-05), the hidden safety net: the model's text never becomes a command by itself,
+ * whether it was cut off (`done_reason` other than `stop`) or wrapped the array in prose or
+ * a `<think>` block.
  */
 export async function fetchOllamaCandidates(
   envelope: ContextEnvelope,
@@ -158,79 +178,87 @@ export async function fetchOllamaCandidates(
   const { origin } = url;
   const timeout = AbortSignal.timeout(timeoutMs);
   const requestSignal = signal ? AbortSignal.any([signal, timeout]) : timeout;
-  const started = Date.now();
-  const logRequest = (status: number | null) => {
-    void appendDebugLog('provider', 'ollama request', {
-      model: settings.model,
-      status,
-      durationMs: Date.now() - started,
-    });
-  };
+  const requestBody = JSON.stringify({
+    model: settings.model,
+    stream: false,
+    think: false,
+    format: CANDIDATE_LIST_JSON_SCHEMA,
+    options: { num_predict: OLLAMA_NUM_PREDICT, num_ctx: OLLAMA_NUM_CTX },
+    messages: [
+      { role: 'system', content: buildSystemPrompt(envelope) },
+      { role: 'user', content: buildPrompt(envelope) },
+    ],
+  });
 
-  let response: Response;
-  try {
-    response = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+  /** One POST of the same body on the shared signal; every failure is already mapped. */
+  const postChat = async (): Promise<ModelTurn> => {
+    const started = Date.now();
+    const logRequest = (status: number | null) => {
+      void appendDebugLog('provider', 'ollama request', {
         model: settings.model,
-        stream: false,
-        messages: [
-          { role: 'system', content: buildSystemPrompt(envelope) },
-          { role: 'user', content: buildPrompt(envelope) },
-        ],
-      }),
-      signal: requestSignal,
-    });
-  } catch (error) {
-    logRequest(null);
-    throw mapRequestFailure(error, origin, timeoutMs, signal);
-  }
+        status,
+        durationMs: Date.now() - started,
+      });
+    };
 
-  logRequest(response.status);
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: requestBody,
+        signal: requestSignal,
+      });
+    } catch (error) {
+      logRequest(null);
+      throw mapRequestFailure(error, origin, timeoutMs, signal);
+    }
 
-  if (response.status === 404) {
-    // WR-06: only Ollama's own "model … not found" body means the model is missing; any
-    // other 404 (a proxy, or a wrong baseUrl path) points at the URL instead.
-    const error = await readErrorField(response);
-    if (error !== undefined && /\bmodel\b/i.test(error)) {
+    logRequest(response.status);
+
+    if (response.status === 404) {
+      // WR-06: only Ollama's own "model … not found" body means the model is missing; any
+      // other 404 (a proxy, or a wrong baseUrl path) points at the URL instead.
+      const error = await readErrorField(response);
+      if (error !== undefined && /\bmodel\b/i.test(error)) {
+        throw new Error(
+          `QueQue: Ollama model '${settings.model}' is not installed. Run \`ollama pull ${settings.model}\`, or run \`qq init provider\` to pick another model.`,
+        );
+      }
       throw new Error(
-        `QueQue: Ollama model '${settings.model}' is not installed. Run \`ollama pull ${settings.model}\`, or run \`qq init provider\` to pick another model.`,
+        `QueQue: Ollama returned HTTP 404 from ${origin}. Check "baseUrl" in provider.json, or run \`qq init provider\`.`,
       );
     }
-    throw new Error(
-      `QueQue: Ollama returned HTTP 404 from ${origin}. Check "baseUrl" in provider.json, or run \`qq init provider\`.`,
-    );
-  }
-  if (!response.ok) {
-    const detail = await readErrorDetail(response);
-    throw new Error(`QueQue: Ollama returned HTTP ${response.status}: ${detail}. ${SWITCH_HINT}`);
-  }
+    if (!response.ok) {
+      const detail = await readErrorDetail(response);
+      throw new Error(`QueQue: Ollama returned HTTP ${response.status}: ${detail}. ${SWITCH_HINT}`);
+    }
 
-  let raw: string;
-  try {
-    raw = await response.text();
-  } catch (error) {
-    throw mapRequestFailure(error, origin, timeoutMs, signal);
-  }
+    let raw: string;
+    try {
+      raw = await response.text();
+    } catch (error) {
+      throw mapRequestFailure(error, origin, timeoutMs, signal);
+    }
 
-  let body: { message?: { content?: unknown }; done_reason?: unknown };
-  try {
-    body = JSON.parse(raw) as typeof body;
-  } catch {
-    throw unexpectedResponse();
-  }
-  const content = body?.message?.content;
-  if (typeof content !== 'string') {
-    throw unexpectedResponse();
-  }
+    let body: { message?: { content?: unknown }; done_reason?: unknown };
+    try {
+      body = JSON.parse(raw) as typeof body;
+    } catch {
+      throw unexpectedResponse();
+    }
+    const content = body?.message?.content;
+    if (typeof content !== 'string') {
+      throw unexpectedResponse();
+    }
+    return { content, finishedNormally: body.done_reason === 'stop' };
+  };
 
+  const first = await postChat();
   try {
     return ensureSelectableCandidates(
       stripTerminalControls(
-        finalCandidateListWithoutProse(content, body.done_reason === 'stop', {
-          model: settings.model,
-        }),
+        await candidatesWithCutOffRetry(first, postChat, { model: settings.model }),
       ),
     );
   } catch (error) {
