@@ -5,7 +5,6 @@ import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js
 import {
   buildPrompt,
   ensureSelectableCandidates,
-  finalCandidateListWithoutProse,
   TRUNCATED_RESPONSE_MESSAGE,
   UNPARSEABLE_RESPONSE_MESSAGE,
 } from './claude.js';
@@ -17,6 +16,12 @@ import {
 } from './provider.js';
 import { loadProviderPin } from './provider-pin.js';
 import { buildSystemPrompt } from './steering.js';
+import {
+  candidatesWithCutOffRetry,
+  MAX_OUTPUT_TOKENS,
+  type ModelTurn,
+  WRAPPED_CANDIDATE_LIST_JSON_SCHEMA,
+} from './structured-output.js';
 
 /**
  * The only host an OpenAI key is ever sent to. A constant: never derived from the pin or
@@ -30,8 +35,29 @@ export const OPENAI_DEFAULT_MODEL = 'gpt-5.5';
 /** Same budget as Claude and Ollama: zsh reads the FIFO for 30s and the IPC client waits 26s. */
 export const OPENAI_TIMEOUT_MS = 25_000;
 
+/** `reasoning_effort` on the first request: little thinking, so the answer fits the cap. */
+export const OPENAI_REASONING_EFFORT = 'low';
+
+/**
+ * `reasoning_effort` values the cut-off retry tries, lowest first. Not every model accepts
+ * every value; a rejected one moves on to the next, and the last resort omits the field.
+ */
+export const OPENAI_RETRY_REASONING_EFFORTS = ['none', 'minimal', 'low'] as const;
+
+/** The `json_schema.name` of the strict structured-output response format. */
+export const OPENAI_RESPONSE_FORMAT_NAME = 'command_candidates';
+
+type ReasoningEffort = (typeof OPENAI_RETRY_REASONING_EFFORTS)[number];
+
+/**
+ * Models that rejected OPENAI_REASONING_EFFORT in this process, so the long-lived daemon
+ * skips the known-failing first request. Holds model names only, never keys or prompts.
+ */
+const modelsRejectingDefaultEffort = new Set<string>();
+
+/** Forgets every remembered effort rejection (tests). */
 export function resetOpenAiEffortCache(): void {
-  // RED stub: no cache yet.
+  modelsRejectingDefaultEffort.clear();
 }
 
 export interface OpenAiSettings {
@@ -71,14 +97,26 @@ function oneLine(text: string): string {
   return text.replace(/\s+/g, ' ').trim();
 }
 
-/** Reads `error.code` from an error body, keeping it only when it matches SAFE_ERROR_CODE. */
-async function readSafeErrorCode(response: Response): Promise<string | undefined> {
+interface SafeErrorFields {
+  /** `error.code`, kept only when it matches SAFE_ERROR_CODE. */
+  code: string | undefined;
+  /** True when `error.param` names `reasoning_effort` (the model rejects that value). */
+  rejectsReasoningEffort: boolean;
+}
+
+/** Reads only `error.code` and `error.param` from an error body, never `error.message`. */
+async function readSafeErrorFields(response: Response): Promise<SafeErrorFields> {
   try {
-    const body = (await response.json()) as { error?: { code?: unknown } } | null;
+    const body = (await response.json()) as {
+      error?: { code?: unknown; param?: unknown };
+    } | null;
     const code = body?.error?.code;
-    return typeof code === 'string' && SAFE_ERROR_CODE.test(code) ? code : undefined;
+    return {
+      code: typeof code === 'string' && SAFE_ERROR_CODE.test(code) ? code : undefined,
+      rejectsReasoningEffort: body?.error?.param === 'reasoning_effort',
+    };
   } catch {
-    return undefined;
+    return { code: undefined, rejectsReasoningEffort: false };
   }
 }
 
@@ -136,14 +174,22 @@ function mapRequestFailure(
 /**
  * Calls OpenAI's POST /v1/chat/completions and returns parsed candidates.
  *
- * The body carries only the model and the shared system (as `developer`) and
- * privacy-filtered user prompts: no sampling, token-limit, streaming or tool fields.
- * Debug lines carry model, status and duration only, never the key, the prompt, or the
- * response. Every failure is one static QueQue-prefixed line built from the status, the
- * model name and a safe `error.code` only, and nothing here falls back to another
- * provider (D-01, D-12). The final list follows finalCandidateListWithoutProse (WR-05)
- * with `finish_reason` `stop` as the only normal stop: neither a cut-off fragment nor a
- * prose-wrapped answer ever becomes a command by itself.
+ * The body carries the model, the shared system (as `developer`) and privacy-filtered user
+ * prompts, `max_completion_tokens` (MAX_OUTPUT_TOKENS, reasoning included),
+ * `reasoning_effort` OPENAI_REASONING_EFFORT, and a strict `json_schema` response format
+ * whose root is `{ "candidates": [...] }`. No sampling, `max_tokens`, streaming or tool
+ * fields. When the model answers HTTP 400 for `reasoning_effort`, the request is re-sent
+ * without it (and the model is remembered for this process); `error.message` is never read.
+ * A cut-off reply (see candidatesWithCutOffRetry) is re-sent once, silently, on the same
+ * signal (one `timeoutMs` budget) at the lowest effort the model accepts
+ * (OPENAI_RETRY_REASONING_EFFORTS, then none); only a second cut-off shows the "cut off" line.
+ *
+ * Debug lines carry model, status and duration (and a rejected effort value) only, never
+ * the key, the prompt, or the response. Every failure is one static QueQue-prefixed line
+ * built from the status, the model name and a safe `error.code` only, and nothing here
+ * falls back to another provider (D-01, D-12). Every reply goes through
+ * finalCandidateListWithoutProse (WR-05) with `finish_reason` `stop` as the only normal
+ * stop: neither a cut-off fragment nor a prose-wrapped answer ever becomes a command.
  */
 export async function fetchOpenAiCandidates(
   envelope: ContextEnvelope,
@@ -173,81 +219,139 @@ export async function fetchOpenAiCandidates(
 
   const timeout = AbortSignal.timeout(timeoutMs);
   const requestSignal = signal ? AbortSignal.any([signal, timeout]) : timeout;
-  const started = Date.now();
-  const logRequest = (status: number | null) => {
-    void appendDebugLog('provider', 'openai request', {
-      model: settings.model,
-      status,
-      durationMs: Date.now() - started,
+  const { model } = settings;
+  const messages = [
+    { role: 'developer', content: buildSystemPrompt(envelope) },
+    { role: 'user', content: buildPrompt(envelope) },
+  ];
+  const requestBody = (effort: ReasoningEffort | undefined): string =>
+    JSON.stringify({
+      model,
+      messages,
+      max_completion_tokens: MAX_OUTPUT_TOKENS,
+      ...(effort === undefined ? {} : { reasoning_effort: effort }),
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: OPENAI_RESPONSE_FORMAT_NAME,
+          strict: true,
+          schema: WRAPPED_CANDIDATE_LIST_JSON_SCHEMA,
+        },
+      },
     });
+
+  /**
+   * One POST on the shared signal. Returns undefined only when the model rejected a
+   * defined `effort` (HTTP 400 for `reasoning_effort`); every other failure is mapped and
+   * thrown, so a request without `reasoning_effort` always yields a turn or an error.
+   */
+  const postChat = async (effort: ReasoningEffort | undefined): Promise<ModelTurn | undefined> => {
+    const started = Date.now();
+    const logRequest = (status: number | null) => {
+      void appendDebugLog('provider', 'openai request', {
+        model,
+        status,
+        durationMs: Date.now() - started,
+      });
+    };
+
+    let response: Response;
+    try {
+      response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${apiKey}`,
+          'content-type': 'application/json',
+        },
+        body: requestBody(effort),
+        signal: requestSignal,
+      });
+    } catch (error) {
+      logRequest(null);
+      throw mapRequestFailure(error, timeoutMs, signal);
+    }
+
+    logRequest(response.status);
+
+    if (!response.ok) {
+      const { code, rejectsReasoningEffort } = await readSafeErrorFields(response);
+      if (response.status === 400 && rejectsReasoningEffort && effort !== undefined) {
+        void appendDebugLog('provider', 'openai reasoning_effort rejected', { model, effort });
+        return undefined;
+      }
+      throw statusFailure(response.status, model, code);
+    }
+
+    let raw: string;
+    try {
+      raw = await response.text();
+    } catch (error) {
+      throw mapRequestFailure(error, timeoutMs, signal);
+    }
+
+    let body: {
+      choices?: Array<{
+        message?: { content?: unknown; refusal?: unknown };
+        finish_reason?: unknown;
+      }>;
+    } | null;
+    try {
+      body = JSON.parse(raw) as typeof body;
+    } catch {
+      throw unexpectedResponse();
+    }
+    const choice = Array.isArray(body?.choices) ? body.choices[0] : undefined;
+    const message = choice?.message;
+    if (!message || typeof message !== 'object') {
+      throw unexpectedResponse();
+    }
+    const finishedNormally = choice?.finish_reason === 'stop';
+    const { content, refusal } = message;
+    if (typeof content !== 'string') {
+      if (typeof refusal === 'string' && refusal.trim() !== '') {
+        throw new Error('QueQue: OpenAI declined this query. Rephrase it and press ?? again.');
+      }
+      if (finishedNormally) {
+        throw unexpectedResponse();
+      }
+      // No text before a non-stop finish (all output spent on reasoning): an empty cut-off.
+      return { content: '', finishedNormally };
+    }
+    return { content, finishedNormally };
   };
 
-  let response: Response;
-  try {
-    response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${apiKey}`,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: settings.model,
-        messages: [
-          { role: 'developer', content: buildSystemPrompt(envelope) },
-          { role: 'user', content: buildPrompt(envelope) },
-        ],
-      }),
-      signal: requestSignal,
-    });
-  } catch (error) {
-    logRequest(null);
-    throw mapRequestFailure(error, timeoutMs, signal);
-  }
-
-  logRequest(response.status);
-
-  if (!response.ok) {
-    throw statusFailure(response.status, settings.model, await readSafeErrorCode(response));
-  }
-
-  let raw: string;
-  try {
-    raw = await response.text();
-  } catch (error) {
-    throw mapRequestFailure(error, timeoutMs, signal);
-  }
-
-  let body: {
-    choices?: Array<{
-      message?: { content?: unknown; refusal?: unknown };
-      finish_reason?: unknown;
-    }>;
-  } | null;
-  try {
-    body = JSON.parse(raw) as typeof body;
-  } catch {
-    throw unexpectedResponse();
-  }
-  const choice = Array.isArray(body?.choices) ? body.choices[0] : undefined;
-  const message = choice?.message;
-  if (!message || typeof message !== 'object') {
-    throw unexpectedResponse();
-  }
-  const { content, refusal } = message;
-  if (typeof content !== 'string') {
-    if (typeof refusal === 'string' && refusal.trim() !== '') {
-      throw new Error('QueQue: OpenAI declined this query. Rephrase it and press ?? again.');
+  /** The first turn over `efforts` (which ends with undefined) and the effort it used. */
+  const firstTurn = async (
+    efforts: readonly (ReasoningEffort | undefined)[],
+  ): Promise<{ turn: ModelTurn; effort: ReasoningEffort | undefined }> => {
+    for (const effort of efforts) {
+      const turn = await postChat(effort);
+      if (turn) {
+        return { turn, effort };
+      }
     }
+    // Unreachable: postChat(undefined) never returns undefined.
     throw unexpectedResponse();
+  };
+
+  const knownRejection = modelsRejectingDefaultEffort.has(model);
+  const firstEfforts: readonly (ReasoningEffort | undefined)[] = knownRejection
+    ? [undefined]
+    : [OPENAI_REASONING_EFFORT, undefined];
+  const first = await firstTurn(firstEfforts);
+  if (first.effort === undefined && firstEfforts[0] === OPENAI_REASONING_EFFORT) {
+    modelsRejectingDefaultEffort.add(model);
   }
+  // A model that rejects `low` is not expected to accept a lower value: retry without one.
+  const retryEfforts: readonly (ReasoningEffort | undefined)[] =
+    first.effort === OPENAI_REASONING_EFFORT
+      ? [...OPENAI_RETRY_REASONING_EFFORTS, undefined]
+      : [undefined];
+  const retry = async (): Promise<ModelTurn> => (await firstTurn(retryEfforts)).turn;
 
   try {
     return ensureSelectableCandidates(
-      stripTerminalControls(
-        finalCandidateListWithoutProse(content, choice?.finish_reason === 'stop', {
-          model: settings.model,
-        }),
-      ),
+      stripTerminalControls(await candidatesWithCutOffRetry(first.turn, retry, { model })),
     );
   } catch (error) {
     if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {
