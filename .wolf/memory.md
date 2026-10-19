@@ -3133,3 +3133,11 @@
 | 02:38 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/addbug.py | 2→1 lines | ~15 |
 | 02:38 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr13.json | — | ~206 |
 | 02:38 | WR-13: think tags inside JSON strings no longer break Ollama/OpenAI parse; raw-first strict parse + string-aware scan | src/providers/claude.ts, tests/ollama-provider.test.ts | fixed, 6 new tests | ~3000 |
+| 02:39 | Edited src/providers/openai.ts | modified resetOpenAiEffortCache() | ~140 |
+| 02:40 | Edited src/providers/openai.ts | modified readSafeErrorFields() | ~299 |
+| 02:40 | Edited src/providers/openai.ts | 1→5 lines | ~117 |
+| 02:40 | Edited src/providers/openai.ts | expanded (+6 lines) | ~201 |
+| 02:40 | Edited src/providers/openai.ts | added 1 condition(s) | ~218 |
+| 02:40 | Edited tests/openai-provider.test.ts | added optional chaining | ~959 |
+| 02:40 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr14.json | — | ~246 |
+| 02:40 | WR-14: OpenAI 400 for response_format now re-sends once without it and remembers the model | src/providers/openai.ts, tests/openai-provider.test.ts | fixed, 6 new tests | ~3500 |

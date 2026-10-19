@@ -55,9 +55,16 @@ type ReasoningEffort = (typeof OPENAI_RETRY_REASONING_EFFORTS)[number];
  */
 const modelsRejectingDefaultEffort = new Set<string>();
 
-/** Forgets every remembered effort rejection (tests). */
+/**
+ * Models that rejected the strict `json_schema` response format in this process (WR-14),
+ * so later requests go without it. Holds model names only, never keys or prompts.
+ */
+const modelsRejectingSchema = new Set<string>();
+
+/** Forgets every remembered effort and response-format rejection (tests). */
 export function resetOpenAiEffortCache(): void {
   modelsRejectingDefaultEffort.clear();
+  modelsRejectingSchema.clear();
 }
 
 export interface OpenAiSettings {
@@ -102,6 +109,11 @@ interface SafeErrorFields {
   code: string | undefined;
   /** True when `error.param` names `reasoning_effort` (the model rejects that value). */
   rejectsReasoningEffort: boolean;
+  /**
+   * True when `error.param` names `response_format` or a field under it (the model does not
+   * accept the strict json_schema, or the endpoint refuses a schema keyword).
+   */
+  rejectsResponseFormat: boolean;
 }
 
 /** Reads only `error.code` and `error.param` from an error body, never `error.message`. */
@@ -111,12 +123,16 @@ async function readSafeErrorFields(response: Response): Promise<SafeErrorFields>
       error?: { code?: unknown; param?: unknown };
     } | null;
     const code = body?.error?.code;
+    const param = body?.error?.param;
     return {
       code: typeof code === 'string' && SAFE_ERROR_CODE.test(code) ? code : undefined,
-      rejectsReasoningEffort: body?.error?.param === 'reasoning_effort',
+      rejectsReasoningEffort: param === 'reasoning_effort',
+      rejectsResponseFormat:
+        typeof param === 'string' &&
+        (param === 'response_format' || param.startsWith('response_format.')),
     };
   } catch {
-    return { code: undefined, rejectsReasoningEffort: false };
+    return { code: undefined, rejectsReasoningEffort: false, rejectsResponseFormat: false };
   }
 }
 
@@ -180,6 +196,10 @@ function mapRequestFailure(
  * whose root is `{ "candidates": [...] }`. No sampling, `max_tokens`, streaming or tool
  * fields. When the model answers HTTP 400 for `reasoning_effort`, the request is re-sent
  * without it (and the model is remembered for this process); `error.message` is never read.
+ * A 400 for `response_format` (a model without strict structured output, WR-14) is handled
+ * the same way: the request is re-sent once without `response_format`, on the same signal,
+ * and the model is remembered. finalCandidateListWithoutProse stays the safety net for a
+ * reply that was not schema-constrained.
  * A cut-off reply (see candidatesWithCutOffRetry) is re-sent once, silently, on the same
  * signal (one `timeoutMs` budget) at the lowest effort the model accepts
  * (OPENAI_RETRY_REASONING_EFFORTS, then none); only a second cut-off shows the "cut off" line.
@@ -224,20 +244,26 @@ export async function fetchOpenAiCandidates(
     { role: 'developer', content: buildSystemPrompt(envelope) },
     { role: 'user', content: buildPrompt(envelope) },
   ];
+  /** False once this model rejected the strict response format (WR-14). */
+  let useSchema = !modelsRejectingSchema.has(model);
   const requestBody = (effort: ReasoningEffort | undefined): string =>
     JSON.stringify({
       model,
       messages,
       max_completion_tokens: MAX_OUTPUT_TOKENS,
       ...(effort === undefined ? {} : { reasoning_effort: effort }),
-      response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: OPENAI_RESPONSE_FORMAT_NAME,
-          strict: true,
-          schema: WRAPPED_CANDIDATE_LIST_JSON_SCHEMA,
-        },
-      },
+      ...(useSchema
+        ? {
+            response_format: {
+              type: 'json_schema',
+              json_schema: {
+                name: OPENAI_RESPONSE_FORMAT_NAME,
+                strict: true,
+                schema: WRAPPED_CANDIDATE_LIST_JSON_SCHEMA,
+              },
+            },
+          }
+        : {}),
     });
 
   /**
@@ -274,10 +300,19 @@ export async function fetchOpenAiCandidates(
     logRequest(response.status);
 
     if (!response.ok) {
-      const { code, rejectsReasoningEffort } = await readSafeErrorFields(response);
+      const { code, rejectsReasoningEffort, rejectsResponseFormat } =
+        await readSafeErrorFields(response);
       if (response.status === 400 && rejectsReasoningEffort && effort !== undefined) {
         void appendDebugLog('provider', 'openai reasoning_effort rejected', { model, effort });
         return undefined;
+      }
+      if (response.status === 400 && rejectsResponseFormat && useSchema) {
+        // WR-14: re-send this same request without response_format (at most once: useSchema
+        // is now false, so a second 400 for it cannot recurse).
+        modelsRejectingSchema.add(model);
+        useSchema = false;
+        void appendDebugLog('provider', 'openai response_format rejected', { model });
+        return postChat(effort);
       }
       throw statusFailure(response.status, model, code);
     }

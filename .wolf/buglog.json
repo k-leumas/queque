@@ -6216,6 +6216,72 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:38:32Z"
+    },
+    {
+      "id": "bug-379",
+      "timestamp": "2026-10-19T08:40:00.045Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/providers/openai.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 18→27 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:40:00.045Z"
+    },
+    {
+      "id": "bug-380",
+      "timestamp": "2026-10-19T08:40:00.441Z",
+      "error_message": "Type error",
+      "file": "src/providers/openai.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:40:00.441Z"
+    },
+    {
+      "id": "bug-381",
+      "timestamp": "2026-10-19T08:40:18.785Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/openai-provider.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:40:18.785Z"
+    },
+    {
+      "id": "bug-382",
+      "timestamp": "2026-10-19T08:40:45Z",
+      "error_message": "QueQue: OpenAI request failed (HTTP 400, code ...) on every ?? for a pinned model without strict json_schema structured output (review WR-14)",
+      "file": "src/providers/openai.ts",
+      "root_cause": "Every request carried response_format json_schema strict with no fallback; only a rejected reasoning_effort was re-sent, so gpt-4-turbo, gpt-3.5-turbo or o1-mini pins always failed with copy that named neither the model nor the fix",
+      "fix": "readSafeErrorFields reports error.param response_format (or response_format.*); postChat then re-sends the same request once without response_format on the same signal and remembers the model in modelsRejectingSchema (cleared by resetOpenAiEffortCache); error.message is still never read",
+      "tags": [
+        "openai",
+        "structured-output",
+        "fallback",
+        "http-400",
+        "review-WR-14"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:40:45Z"
     }
   ]
 }

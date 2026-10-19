@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:38:30.045Z
-> Files: 589 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:40:40.576Z
+> Files: 590 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -45,6 +45,7 @@
 
 - `addbug.py` (~222 tok)
 - `bug-wr13.json` (~206 tok)
+- `bug-wr14.json` (~246 tok)
 - `probe.test.ts` — Declares show (~794 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
@@ -1127,7 +1128,7 @@
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
 - `ollama.ts` — Ollama POST /api/chat adapter (stream false, buildSystemPrompt + buildPrompt, no auth). 25s timeout + abort signal; failures map to one QueQue line (ollama serve / ollama pull / HTTP / cut-off); finalCandidateList with done_reason 'stop'. Backend `ollama`. (~1800 tok)
-- `openai.ts` — OpenAI POST api.openai.com/v1/chat/completions adapter (constant URL; Bearer OPENAI_API_KEY from env then .env.local; body = model + developer buildSystemPrompt + user buildPrompt). 25s timeout + abort signal; static per-status QueQue copy, never echoes upstream error text; finalCandidateList with finish_reason 'stop'. OPENAI_DEFAULT_MODEL gpt-5.5. Backend `openai`. (~2300 tok)
+- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~4598 tok)
 - `provider-pin.ts` — provider.json pin: versioned strict union (claude, openai{model?}, ollama{model, baseUrl?}); extra keys like apiKey invalid. providerPinPath (QQ_PROVIDER_FILE), loadProviderPin re-reads every call, resolveProviderAdapter is the D-02 runtime selector (no pin → Claude; invalid → throws). (~1300 tok)
 - `provider.ts` — `LLMAdapter.fetchCandidates(envelope, options?)`, `FetchOptions { signal?, onCandidate? }`, `abortError()` (name AbortError, 'QueQue: request aborted'), `isAbortError` (AbortError or the SDK's APIUserAbortError) (09.1-01). `isNormalStopReason(stopReason)`: allow list, true only for `end_turn` and `stop_sequence`, shared by the SDK and `claude -p` paths (WR-01-r2, T-09.1-14) (~470 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
@@ -1193,7 +1194,7 @@
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
 - `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~8720 tok)
-- `openai-provider.test.ts` — OpenAI key handling, request shape/privacy, failure mapping with no Claude/Ollama fallback, masked-key non-echo, debug-log hygiene. Stubs global fetch. (~4700 tok)
+- `openai-provider.test.ts` — The `reasoning_effort` of every request, in order (undefined when the key is absent). (~8853 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-pin.test.ts` — pin schema/loader/resolver incl. apiKey-extra invalid, EISDIR, fail-closed invalid pin, per-call re-read. (~2000 tok)

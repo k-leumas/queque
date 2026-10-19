@@ -689,9 +689,86 @@ describe('OpenAI structured output, effort fallback and cut-off retry', () => {
     expect(sentEfforts()).toEqual(['low', 'none', 'minimal']);
   });
 
+  function schemaRejected(param = 'response_format'): Response {
+    return errorResponse(400, {
+      message: "Invalid schema for model 'gpt-4-turbo'. sk-proj-SECRET",
+      type: 'invalid_request_error',
+      param,
+      code: 'invalid_value',
+    });
+  }
+
   it.each([
     ['response_format', 'response_format'],
+    ['a field under response_format', 'response_format.json_schema.schema'],
+  ])('resends without response_format after a 400 for %s, and remembers (WR-14)', async (_name, param) => {
+    pinOpenAi({ model: 'gpt-4-turbo' });
+    fetchStub
+      .mockResolvedValueOnce(schemaRejected(param))
+      .mockImplementation(async () => contentResponse(CANDIDATE_JSON));
+
+    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(candidates).toEqual(LS);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expect(sentBody(0)).toHaveProperty('response_format');
+    expect(sentBody(1)).not.toHaveProperty('response_format');
+    expect(sentBody(1).reasoning_effort).toBe('low');
+    expect(fetchStub.mock.calls[1]?.[1]?.signal).toBe(fetchStub.mock.calls[0]?.[1]?.signal);
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('sk-proj-SECRET');
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('Invalid schema');
+    expectNoFallback();
+
+    fetchStub.mockClear();
+    await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(fetchStub).toHaveBeenCalledTimes(1);
+    expect(sentBody(0)).not.toHaveProperty('response_format');
+  });
+
+  it('resends without response_format, then without reasoning_effort, when both are rejected', async () => {
+    fetchStub
+      .mockResolvedValueOnce(schemaRejected())
+      .mockResolvedValueOnce(effortRejected())
+      .mockResolvedValueOnce(contentResponse(CANDIDATE_JSON));
+
+    await expect(openaiAdapter.fetchCandidates(buildEnvelope())).resolves.toEqual(LS);
+
+    expect(fetchStub).toHaveBeenCalledTimes(3);
+    expect(sentEfforts()).toEqual(['low', 'low', undefined]);
+    expect(sentBody(2)).not.toHaveProperty('response_format');
+  });
+
+  it('never leaks the upstream message or key when the schema-less request fails too', async () => {
+    fetchStub.mockResolvedValueOnce(schemaRejected()).mockResolvedValueOnce(
+      errorResponse(400, {
+        message: `Bad request ${KEY} sk-proj-SECRET`,
+        param: 'messages',
+        code: 'invalid_value',
+      }),
+    );
+
+    const error = await failure();
+
+    expect(error.message).toMatch(/OpenAI request failed \(HTTP 400, code invalid_value\)/);
+    expect(error.message).not.toContain('sk-proj-SECRET');
+    expect(error.message).not.toContain(KEY);
+    expect(error.message).not.toContain('Invalid schema');
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain(KEY);
+  });
+
+  it('still reads a { candidates } answer from a model without the schema', async () => {
+    fetchStub
+      .mockResolvedValueOnce(schemaRejected())
+      .mockResolvedValueOnce(contentResponse(`\`\`\`json\n${WRAPPED}\n\`\`\``));
+
+    await expect(openaiAdapter.fetchCandidates(buildEnvelope())).resolves.toEqual(LS);
+  });
+
+  it.each([
     ['another param', 'messages'],
+    ['no param', undefined],
   ])('maps a 400 for %s to the static failure line after 1 call', async (_name, param) => {
     fetchStub.mockResolvedValue(
       errorResponse(400, {
