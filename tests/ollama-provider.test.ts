@@ -799,3 +799,42 @@ describe('stripThinking and finalCandidateListWithoutProse (WR-09)', () => {
     expect(strictCandidateListWithoutProse('You can use ls -la.')).toBeUndefined();
   });
 });
+
+describe('think tags inside candidate strings (WR-13)', () => {
+  const SED = { command: "sed -i 's/<think>//g' out.txt", explanation: 'Remove think tags' };
+  const GREP = { command: "grep -c '</think>' run.log", explanation: 'count' };
+  const LS_ROW = { command: 'ls', explanation: 'x' };
+  const MENTION = { command: 'ls', explanation: 'no <think> here' };
+  const PWD = { command: 'pwd', explanation: 'ok' };
+
+  it.each([
+    ['a <think> in a wrapped command', JSON.stringify({ candidates: [SED] }), [SED]],
+    ['a </think> in a bare-array command', JSON.stringify([GREP, LS_ROW]), [GREP, LS_ROW]],
+    ['a <think> in an explanation', JSON.stringify({ candidates: [MENTION, PWD] }), [MENTION, PWD]],
+    ['a tag in a fenced answer', `\`\`\`json\n${JSON.stringify([GREP])}\n\`\`\``, [GREP]],
+  ])('parses %s at a normal stop', (_name, text, expected) => {
+    expect(finalCandidateListWithoutProse(text, true)).toEqual(expected);
+    expect(strictCandidateListWithoutProse(text)).toEqual(expected);
+  });
+
+  it('keeps the closed row before a cut-off when a command holds <think>', () => {
+    const cutOff = '{"candidates":[{"command":"echo <think>","explanation":"a"},{"comm';
+    expect(finalCandidateListWithoutProse(cutOff, false)).toEqual([
+      { command: 'echo <think>', explanation: 'a' },
+    ]);
+  });
+
+  it('keeps the closed row before a cut-off when a command holds </think>', () => {
+    const cutOff = '[{"command":"grep </think> a.log","explanation":"a"},{"command":"ls';
+    expect(finalCandidateListWithoutProse(cutOff, false)).toEqual([
+      { command: 'grep </think> a.log', explanation: 'a' },
+    ]);
+  });
+
+  it('still drops a draft array before an orphan </think> outside any string (WR-09)', () => {
+    const draft = '[{"command":"rm -rf ~/build","explanation":"draft"}] no wait </think>\n';
+    expect(() =>
+      finalCandidateListWithoutProse(`${draft}[{"command":"ls build","expl`, false),
+    ).toThrow(TRUNCATED_RESPONSE_MESSAGE);
+  });
+});

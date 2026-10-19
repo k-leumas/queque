@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T07:53:31.541Z
-> Files: 586 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:38:30.045Z
+> Files: 589 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -40,6 +40,12 @@
 - `verify2.sh` — Task 2 verify from the plan, run from the worktree root. (~346 tok)
 - `verify3.sh` — Task 3 verify from the plan (content checks), run from the worktree root. (~360 tok)
 - `wolf.py` — anatomy (~871 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/
+
+- `addbug.py` (~222 tok)
+- `bug-wr13.json` (~206 tok)
+- `probe.test.ts` — Declares show (~794 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
 
@@ -833,7 +839,7 @@
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
 - `08-REVIEW-FIX.md` — Phase 8: Code Review Fix Report (~5743 tok)
-- `08-REVIEW.md` — Phase 8: Code Review Report (iteration 2, re-review of fixes 1321da8..cfe36ab) (~4802 tok)
+- `08-REVIEW.md` — Phase 8: Code Review Report (iteration 3, incremental diff 3eb8bfb..HEAD) (~3419 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
 - `08-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2301 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
@@ -1117,7 +1123,7 @@
 - `claude-exec.ts` — Old argv `execFileAsync` runner on `spawn`. Unused by src/ since 09.1-01 (kept with its test; removal deferred). (~1256 tok)
 - `claude-prewarm.ts` — One-slot `claude -p` prewarm pool (09.1-05, D-11/D-12), disabled by default: `prewarmKey` (sha256 of `{command, cwd, argv}`), `enablePrewarm`, `disablePrewarm`, `schedulePrewarm(spec)` (refill after every settle; never at daemon start or take time), `takePrewarmed(spec)` (`{child}` or `{miss: disabled|empty|dead|cwd|prompt}`; one-shot `diedIdle` flag gives `dead`), `retirePrewarmed(graceMs?)`, `prewarmSnapshot`; exit/error handlers only clear the slot, never respawn; logs `prewarm spawned|retired|exit`. a hit is `{child, spawnedAt}` (WR-02); daemon shutdown uses `disablePrewarm` (WR-03) (~1760 tok)
 - `claude-process.ts` — One `claude -p` stream-json turn on a child (09.1-01): `runClaudeTurn` (stdin user line + `stdin.end()`, settle on zod-validated `result`, is_error gate → `is-error` with result text as stdout, budget timer rejects at kill time with killed/SIGTERM, abort → abortError(), spawn-error, exit-without-result, invalid-result; stages spawned/init/first-delta/result/exit/aborted/timed-out), `spawnClaudeChild`, `terminateChild` (SIGTERM then SIGKILL after `SIGKILL_GRACE_MS` 1500); declares `POST_RESULT_BACKSTOP_MS`, `STDERR_CAP_BYTES` for plan 06. argv stays opaque here; 09.1-06: `ClaudeTurnOptions.backstopMs` (2000) and `killGraceMs` (1500); stdout carry overflow (1 MiB) kills the child and rejects `invalid-result`; stderr capped at `STDERR_CAP_BYTES` (64 KiB); every `result` event (incl. is_error/invalid) arms an unref'd backstop `terminateChild`, cleared on exit. 09.1-05: `ClaudeTurnOptions.child` runs a turn on a prewarmed child (no spawn, no `spawned` stage); exported `isRunning(child)`; review WR-02: `initDeadlineMs` option fails a turn with no `init` in time as `stale-prewarm` (stage `init-timed-out`, terminates the child, `killed: false`). Review WR-01-r2: a non-error `result` whose stop_reason is present and fails `isNormalStopReason` (null included) rejects as `truncated` (stdout = result text, `ClaudeTurnFailure.stopReason`, no `result` stage, backstop still armed); an absent key counts as end_turn (~3400 tok)
-- `claude.ts` — Anthropic SDK adapter: reused client (async `getAnthropicClient`, lazy `import('@anthropic-ai/sdk')`, type-only static import); re-exports `QUEQUE_SYSTEM`; `system` from `buildSystemPrompt(envelope)`. `fetchCandidates(envelope, rbuffer = '', timeoutMs = 25_000, options = {})` calls `client.messages.stream(params, { timeout, signal })` + `finalMessage()`; with `onCandidate`, `text` deltas feed `createCandidateScanner` (rows only while the signal is live); final list = strict parse, then streamed rows, then `parseCandidates`; abort logs `request aborted` and throws `abortError()`. `sdkOutputConfig(model, effort)` / `EFFORT_UNSUPPORTED_MODEL_RE`: `output_config.effort` from `resolveEffort()`, omitted for Haiku, Sonnet 4.5, Claude 3.x, 4.0/4.1; never `thinking` or sampling params. `claudeAdapter` forwards options in the 4th slot (09.1-04). review WR-07: `SDK_MAX_TOKENS` 16000 (thinking counts against it; was 1024). Review WR-01-r2 (T-09.1-14): exported `finalCandidateList(text, streamed, finishedNormally, logFields)` is the one final-list rule for the SDK and `claude -p` paths (strict, then streamed, then, only when finishedNormally, `parseCandidates`; otherwise closed rows or `TRUNCATED_RESPONSE_MESSAGE` with a `response truncated` log of `logFields`); fetchCandidates passes `isNormalStopReason(message.stop_reason)` (allow list: end_turn, stop_sequence), so refusal, pause_turn, null, max_tokens and future stops never reach the prose fallback (~2650 tok)
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~5476 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
 - `ollama.ts` — Ollama POST /api/chat adapter (stream false, buildSystemPrompt + buildPrompt, no auth). 25s timeout + abort signal; failures map to one QueQue line (ollama serve / ollama pull / HTTP / cut-off); finalCandidateList with done_reason 'stop'. Backend `ollama`. (~1800 tok)
@@ -1186,7 +1192,7 @@
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
-- `ollama-provider.test.ts` — Ollama request shape, privacy, failure mapping, no Claude fallback, daemon-down fallback; stubs global fetch. (~4300 tok)
+- `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~8720 tok)
 - `openai-provider.test.ts` — OpenAI key handling, request shape/privacy, failure mapping with no Claude/Ollama fallback, masked-key non-echo, debug-log hygiene. Stubs global fetch. (~4700 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)

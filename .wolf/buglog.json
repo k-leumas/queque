@@ -6166,6 +6166,56 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-18T03:50:00Z"
+    },
+    {
+      "id": "bug-376",
+      "timestamp": "2026-10-19T08:37:05.925Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/providers/claude.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:37:05.925Z"
+    },
+    {
+      "id": "bug-377",
+      "timestamp": "2026-10-19T08:37:06.340Z",
+      "error_message": "Type error",
+      "file": "src/providers/claude.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:37:06.340Z"
+    },
+    {
+      "id": "bug-378",
+      "timestamp": "2026-10-19T08:38:32Z",
+      "error_message": "Ollama/OpenAI returned an unexpected response for a valid answer whose command or explanation contains <think> or </think> (review WR-13)",
+      "file": "src/providers/claude.ts",
+      "root_cause": "stripThinking ran on the raw text before any JSON parse and did not know whether a think tag was inside a JSON string, so a tag in a command cut the answer",
+      "fix": "strictCandidateListWithoutProse tries the raw text first, then the stripped text; the closed-object scan uses the raw JSON when the reply starts as JSON and has no think tag outside its strings (hasThinkTagOutsideStrings), else stripThinking",
+      "tags": [
+        "ollama",
+        "openai",
+        "think",
+        "parsing",
+        "review-WR-13"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:38:32Z"
     }
   ]
 }

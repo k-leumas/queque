@@ -208,21 +208,15 @@ export function stripThinking(text: string): string {
   return afterClose.replace(THINK_BLOCK_RE, ' ');
 }
 
-/**
- * The strict parse for the Ollama and OpenAI adapters: the text after stripThinking must be
- * a complete candidate list, either a bare array (optionally in a json code fence) or an
- * object whose `candidates` value is that array (OpenAI strict structured output needs an
- * object root). Returns undefined otherwise, never a prose fallback.
- */
-export function strictCandidateListWithoutProse(text: string): CandidateList | undefined {
-  const answer = stripThinking(text);
-  const bare = parseStrictCandidateList(answer);
+/** A bare candidate array or a `{ "candidates": [...] }` object, or undefined. */
+function strictListOrWrapped(text: string): CandidateList | undefined {
+  const bare = parseStrictCandidateList(text);
   if (bare) {
     return bare;
   }
   let parsed: unknown;
   try {
-    parsed = JSON.parse(stripCodeFence(answer));
+    parsed = JSON.parse(stripCodeFence(text));
   } catch {
     return undefined;
   }
@@ -234,15 +228,76 @@ export function strictCandidateListWithoutProse(text: string): CandidateList | u
 }
 
 /**
+ * The strict parse for the Ollama and OpenAI adapters: the text must be a complete
+ * candidate list, either a bare array (optionally in a json code fence) or an object whose
+ * `candidates` value is that array (OpenAI strict structured output needs an object root).
+ * Returns undefined otherwise, never a prose fallback.
+ *
+ * The raw text is tried first (WR-13): a complete JSON document cannot hold an unquoted
+ * think block, so a `<think>` or `</think>` there is inside a `command` or `explanation`
+ * string and must not be stripped. Only when that fails is the text after stripThinking
+ * tried.
+ */
+export function strictCandidateListWithoutProse(text: string): CandidateList | undefined {
+  return strictListOrWrapped(text) ?? strictListOrWrapped(stripThinking(text));
+}
+
+/** The text without a json code fence: a closed one, or (cut off) only its opening line. */
+function withoutCodeFence(text: string): string {
+  return stripCodeFence(text).replace(/^```(?:json)?\s*/, '');
+}
+
+/**
+ * True when `text` holds `<think` or `</think` outside a JSON string. Strings are tracked
+ * from the start of the text, with escapes, the same way the candidate scanner does.
+ */
+function hasThinkTagOutsideStrings(text: string): boolean {
+  let inString = false;
+  let escaped = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (ch === '\\') {
+        escaped = true;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+    } else if (ch === '<' && /^<\/?think\b/i.test(text.slice(i, i + 8))) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * The part of a reply to scan for closed candidate objects (WR-13). A reply that starts as
+ * JSON (after an optional json fence) and has no think tag outside its strings is the JSON
+ * itself, scanned as is, so a tag inside a `command` or `explanation` string never cuts the
+ * text. Anything else (thinking first, or a tag between JSON values) goes through
+ * stripThinking (WR-09), so a draft inside the thinking never becomes a command.
+ */
+function answerForScan(text: string): string {
+  const body = withoutCodeFence(text);
+  return /^[[{]/.test(body) && !hasThinkTagOutsideStrings(body) ? body : stripThinking(text);
+}
+
+/**
  * The final-list rule for the Ollama and OpenAI adapters (WR-05). Their models do not
  * reliably follow "raw JSON array only": they wrap the array in prose ("Here are some
  * commands: ```json …```"), print a `<think>` block first, or add a comment after it.
  * parseCandidates' prose fallback would turn that whole text into one multi-line
  * "command", so it is never used here.
  *
- * Order: the strict parse of the text after stripThinking (strictCandidateListWithoutProse:
- * a bare array or a `{ "candidates": [...] }` object), then the candidate objects that
- * closed inside the first `[ {` array in it. With none, a cut-off answer throws
+ * Order: the strict parse (strictCandidateListWithoutProse: the raw text, then the text
+ * after stripThinking; a bare array or a `{ "candidates": [...] }` object), then the
+ * candidate objects that closed inside the first `[ {` array of answerForScan's text (the
+ * raw JSON when the reply starts as JSON, WR-13). With none, a cut-off answer throws
  * TRUNCATED_RESPONSE_MESSAGE and a normal stop throws UNPARSEABLE_RESPONSE_MESSAGE (both
  * logged with `logFields` only, never the text). The raw text never becomes a candidate.
  */
@@ -251,11 +306,11 @@ export function finalCandidateListWithoutProse(
   finishedNormally: boolean,
   logFields: Record<string, unknown> = {},
 ): CandidateList {
-  const answer = stripThinking(text);
   const strict = strictCandidateListWithoutProse(text);
   if (strict) {
     return strict;
   }
+  const answer = answerForScan(text);
   const arrayStart = answer.search(/\[\s*\{/);
   const closed = arrayStart === -1 ? [] : completeCandidates(answer.slice(arrayStart));
   if (closed.length > 0) {
