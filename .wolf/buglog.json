@@ -6487,15 +6487,15 @@
       "error_message": "Null/undefined access in ",
       "file": "src/providers/openai.ts",
       "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check)",
+      "fix": "Added null safety (optional chaining or null check) | Also: /**; * Every `reasoning_effort` value each model rejected in this | Also: // IN-18: rungs this model already rejected in this process ; const rejectedEfforts = rejectedEffortsByModel.get(model);",
       "tags": [
         "auto-detected",
         "null-safety",
         "ts"
       ],
       "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-19T08:47:10.586Z"
+      "occurrences": 3,
+      "last_seen": "2026-10-19T08:50:09.434Z"
     },
     {
       "id": "bug-396",
@@ -6595,6 +6595,40 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:49:29Z"
+    },
+    {
+      "id": "bug-402",
+      "timestamp": "2026-10-19T08:50:29.123Z",
+      "error_message": "Missing await",
+      "file": "tests/openai-provider.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:50:29.123Z"
+    },
+    {
+      "id": "bug-403",
+      "timestamp": "2026-10-19T08:50:49Z",
+      "error_message": "The OpenAI cut-off retry ladder re-sent rejected low efforts (none, minimal) on every cut-off, paying two extra 400 round trips out of the shared 25s budget (review IN-18)",
+      "file": "src/providers/openai.ts",
+      "root_cause": "Only a rejected default effort (low) was cached in modelsRejectingDefaultEffort; rejected retry rungs were forgotten after each call",
+      "fix": "rejectedEffortsByModel records every rejected reasoning_effort per model (cleared by resetOpenAiEffortCache); the retry ladder filters those rungs out",
+      "tags": [
+        "openai",
+        "reasoning_effort",
+        "retry",
+        "cache",
+        "review-IN-18"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:50:49Z"
     }
   ]
 }

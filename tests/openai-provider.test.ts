@@ -689,6 +689,43 @@ describe('OpenAI structured output, effort fallback and cut-off retry', () => {
     expect(sentEfforts()).toEqual(['low', 'none', 'minimal']);
   });
 
+  it('remembers rejected retry efforts, so the next cut-off skips them (IN-18)', async () => {
+    fetchStub
+      .mockResolvedValueOnce(contentResponse(FRAGMENT, 'length'))
+      .mockResolvedValueOnce(effortRejected())
+      .mockResolvedValueOnce(effortRejected())
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+
+    await expect(openaiAdapter.fetchCandidates(buildEnvelope())).resolves.toEqual(LS);
+    expect(sentEfforts()).toEqual(['low', 'none', 'minimal', 'low']);
+
+    fetchStub.mockReset();
+    fetchStub
+      .mockResolvedValueOnce(contentResponse(FRAGMENT, 'length'))
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+
+    await expect(openaiAdapter.fetchCandidates(buildEnvelope())).resolves.toEqual(LS);
+    expect(sentEfforts()).toEqual(['low', 'low']);
+    expect(fetchStub).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps rejected retry efforts per model (IN-18)', async () => {
+    fetchStub
+      .mockResolvedValueOnce(contentResponse(FRAGMENT, 'length'))
+      .mockResolvedValueOnce(effortRejected())
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+    await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    pinOpenAi({ model: 'gpt-other' });
+    fetchStub.mockReset();
+    fetchStub
+      .mockResolvedValueOnce(contentResponse(FRAGMENT, 'length'))
+      .mockResolvedValueOnce(contentResponse(WRAPPED));
+    await openaiAdapter.fetchCandidates(buildEnvelope());
+
+    expect(sentEfforts()).toEqual(['low', 'none']);
+  });
+
   function schemaRejected(param = 'response_format'): Response {
     return errorResponse(400, {
       message: "Invalid schema for model 'gpt-4-turbo'. sk-proj-SECRET",

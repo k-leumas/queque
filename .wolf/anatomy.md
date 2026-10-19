@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:49:26.075Z
-> Files: 595 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:50:46.305Z
+> Files: 596 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -47,10 +47,11 @@
 - `bug-in15.json` (~178 tok)
 - `bug-in16.json` (~197 tok)
 - `bug-in17.json` (~249 tok)
+- `bug-in18.json` (~185 tok)
 - `bug-wr13.json` (~206 tok)
 - `bug-wr14.json` (~246 tok)
 - `bug-wr15.json` (~197 tok)
-- `msg.txt` (~64 tok)
+- `msg.txt` (~67 tok)
 - `probe.test.ts` — Declares show (~794 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
@@ -1133,7 +1134,7 @@
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
 - `index.ts` (~86 tok)
 - `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~3793 tok)
-- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~4712 tok)
+- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~4975 tok)
 - `provider-pin.ts` — On-disk pin format version; bump it (with a reader migration) to reshape the file. (~2612 tok)
 - `provider.ts` — Per-call options shared by every adapter (Phase 09.1). (~1416 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
@@ -1199,7 +1200,7 @@
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
 - `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~9463 tok)
-- `openai-provider.test.ts` — The `reasoning_effort` of every request, in order (undefined when the key is absent). (~9226 tok)
+- `openai-provider.test.ts` — The `reasoning_effort` of every request, in order (undefined when the key is absent). (~9647 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-pin.test.ts` — original: resetRegistries, writePin (~3837 tok)

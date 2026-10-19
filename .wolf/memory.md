@@ -3182,3 +3182,10 @@
 | 02:49 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in17.json | — | ~249 |
 | 02:49 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~68 |
 | 02:49 | IN-17: budget-timeout retry shows cut-off copy; OpenAI content_filter shows declined | src/providers/structured-output.ts, ollama.ts, openai.ts, tests | fixed, 6 new tests | ~3000 |
+| 02:50 | Edited src/providers/openai.ts | added nullish coalescing | ~265 |
+| 02:50 | Edited src/providers/openai.ts | 2→3 lines | ~48 |
+| 02:50 | Edited src/providers/openai.ts | added optional chaining | ~142 |
+| 02:50 | Edited tests/openai-provider.test.ts | expanded (+37 lines) | ~451 |
+| 02:50 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in18.json | — | ~185 |
+| 02:50 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~72 |
+| 02:50 | IN-18: OpenAI retry ladder skips efforts the model already rejected | src/providers/openai.ts, tests/openai-provider.test.ts | fixed, 2 new tests | ~1500 |

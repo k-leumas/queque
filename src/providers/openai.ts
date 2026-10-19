@@ -61,10 +61,25 @@ const modelsRejectingDefaultEffort = new Set<string>();
  */
 const modelsRejectingSchema = new Set<string>();
 
+/**
+ * Every `reasoning_effort` value each model rejected in this process (IN-18), so the
+ * cut-off retry skips the known-failing rungs of OPENAI_RETRY_REASONING_EFFORTS instead of
+ * paying their 400 round trips out of the shared budget on every cut-off. Holds model names
+ * and effort values only, never keys or prompts.
+ */
+const rejectedEffortsByModel = new Map<string, Set<ReasoningEffort>>();
+
+function rememberRejectedEffort(model: string, effort: ReasoningEffort): void {
+  const rejected = rejectedEffortsByModel.get(model) ?? new Set<ReasoningEffort>();
+  rejected.add(effort);
+  rejectedEffortsByModel.set(model, rejected);
+}
+
 /** Forgets every remembered effort and response-format rejection (tests). */
 export function resetOpenAiEffortCache(): void {
   modelsRejectingDefaultEffort.clear();
   modelsRejectingSchema.clear();
+  rejectedEffortsByModel.clear();
 }
 
 export interface OpenAiSettings {
@@ -309,6 +324,7 @@ export async function fetchOpenAiCandidates(
         await readSafeErrorFields(response);
       if (response.status === 400 && rejectsReasoningEffort && effort !== undefined) {
         void appendDebugLog('provider', 'openai reasoning_effort rejected', { model, effort });
+        rememberRejectedEffort(model, effort);
         return undefined;
       }
       if (response.status === 400 && rejectsResponseFormat && useSchema) {
@@ -388,9 +404,14 @@ export async function fetchOpenAiCandidates(
     modelsRejectingDefaultEffort.add(model);
   }
   // A model that rejects `low` is not expected to accept a lower value: retry without one.
+  // IN-18: rungs this model already rejected in this process are skipped.
+  const rejectedEfforts = rejectedEffortsByModel.get(model);
   const retryEfforts: readonly (ReasoningEffort | undefined)[] =
     first.effort === OPENAI_REASONING_EFFORT
-      ? [...OPENAI_RETRY_REASONING_EFFORTS, undefined]
+      ? [
+          ...OPENAI_RETRY_REASONING_EFFORTS.filter((effort) => !rejectedEfforts?.has(effort)),
+          undefined,
+        ]
       : [undefined];
   const retry = async (): Promise<ModelTurn> => (await firstTurn(retryEfforts)).turn;
 
