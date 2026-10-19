@@ -3102,3 +3102,18 @@
 | 23:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg6.txt | — | ~11 |
 | 23:45 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/wolf_wax.py | — | ~937 |
 | 23:45 | quick 261018-wax: Ollama/OpenAI cut-off prevention (schema, 16k, think off/low effort, 1 retry) + beta labels; suite 1039/1039 | src/providers/structured-output.ts, ollama.ts, openai.ts | done | ~220k |
+| 23:46 | Session end: 120 writes across 49 files (provider-pin.ts, ollama.ts, provider-pin.test.ts, ollama-provider.test.ts, mkred.py) | 53 reads | ~237707 tok |
+
+## Session: 2026-10-19 00:03
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+
+## Session: 2026-10-19 01:18
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 01:32 | Phase 08 UAT: 7 pass, test 4 (OpenAI pin) blocked on real key; ROADMAP SC #2/#3 amended; Ollama-log follow-up -> backlog 999.2 | 08-UAT.md, ROADMAP.md | partial | ~25k |
+| 01:53 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-VERIFICATION.md | — | ~7187 |
+| 01:54 | Phase 08 re-verified (verifier only, regression 1039/1039): 28/28 must-haves, human_needed on live OpenAI pin only | 08-VERIFICATION.md | ecd933d | ~30k |
+| 01:54 | Session end: 1 writes across 1 files (08-VERIFICATION.md) | 2 reads | ~7700 tok |
