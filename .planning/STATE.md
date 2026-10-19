@@ -5,10 +5,10 @@ current_phase: 08
 current_phase_name: Zero-Config Install and Provider Detection
 status: executing
 stopped_at: Phase 09.1 complete, ready to plan Phase 7
-last_updated: "2026-10-17T17:35:56.951Z"
+last_updated: "2026-10-19T05:45:39.887Z"
 last_activity: 2026-10-17
 last_activity_desc: Phase 08 execution started
-state_head: 2777470de5b7410f155c5c8d59134de79bedae6e
+state_head: b37ee48a33bb64bbc62dfcc9fd63cfce4273f0e4
 progress:
   total_phases: 12
   completed_phases: 8
@@ -32,7 +32,7 @@ Phase: 08 (Zero-Config Install and Provider Detection) — EXECUTING
 Plan: 1 of 6
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
 Status: Executing Phase 08
-Last activity: 2026-10-17 — Phase 08 execution started
+Last activity: 2026-10-18 - Completed quick task 261018-wax: Prevent Ollama and OpenAI cut-off answers and label them beta
 
 Progress: [███████░░░] 73%
 
@@ -168,10 +168,11 @@ None yet.
 | 261012-nlf | fix T-09.1-14 / WR-01-r2: fail closed on any non-normal SDK or claude -p stop_reason (no prose fallback on truncated text) | 2026-10-12 | fd05184 | [261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-](./quick/261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-/) |
 | 261017-4kt | Update README to match current functionality (Claude Code /login auth, key precedence, init fix, tool awareness, privacy) | 2026-10-17 | 3d0cb0a | [261017-4kt-update-the-readme-to-match-the-current-f](./quick/261017-4kt-update-the-readme-to-match-the-current-f/) |
 | 261017-5q6 | Fix stale qq init command and auth guidance in help, zsh widget, Homebrew caveats, CONTRIBUTING.md | 2026-10-17 | c4583bf | [261017-5q6-fix-the-stale-init-command-in-homebrew-y](./quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/) |
+| 261018-wax | Prevent Ollama and OpenAI cut-off answers (schema, 16k ceiling, one retry) and label them beta | 2026-10-18 | b37ee48 | [261018-wax-prevent-ollama-and-openai-cut-off-answer](./quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-17 - Completed quick task 261017-5q6: Fix stale qq init command and auth guidance
+Last activity: 2026-10-18 - Completed quick task 261018-wax: Prevent Ollama and OpenAI cut-off answers and label them beta
 
 Last session: 2026-10-12T21:58:47.187Z
 Stopped at: Phase 09.1 complete, ready to plan Phase 7

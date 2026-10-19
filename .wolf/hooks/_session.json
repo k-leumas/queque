@@ -93,12 +93,12 @@
       "first_read": "2026-10-17T19:26:09.552Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/openai.ts": {
-      "count": 2,
+      "count": 3,
       "tokens": 2300,
       "first_read": "2026-10-17T19:35:18.809Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/ollama.ts": {
-      "count": 2,
+      "count": 3,
       "tokens": 1800,
       "first_read": "2026-10-17T19:35:18.860Z"
     },
@@ -158,7 +158,7 @@
       "first_read": "2026-10-17T19:49:33.161Z"
     },
     "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
-      "count": 1,
+      "count": 2,
       "tokens": 2650,
       "first_read": "2026-10-18T01:48:48.368Z"
     },
@@ -191,6 +191,81 @@
       "count": 1,
       "tokens": 4018,
       "first_read": "2026-10-18T03:43:56.185Z"
+    },
+    "/Users/samuel/.claude/gsd-core/workflows/quick.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-19T05:14:52.062Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/contracts/candidates.ts": {
+      "count": 1,
+      "tokens": 104,
+      "first_read": "2026-10-19T05:16:48.044Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/providers/provider.ts": {
+      "count": 1,
+      "tokens": 470,
+      "first_read": "2026-10-19T05:16:48.419Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/providers/candidate-stream.ts": {
+      "count": 1,
+      "tokens": 900,
+      "first_read": "2026-10-19T05:17:23.647Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts": {
+      "count": 1,
+      "tokens": 4300,
+      "first_read": "2026-10-19T05:17:38.841Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/openai-provider.test.ts": {
+      "count": 1,
+      "tokens": 4700,
+      "first_read": "2026-10-19T05:19:53.116Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/.planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/261018-wax-PLAN.md": {
+      "count": 1,
+      "tokens": 9667,
+      "first_read": "2026-10-19T05:29:32.904Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/.wolf/cerebrum.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-19T05:29:50.893Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/ollama.ts": {
+      "count": 1,
+      "tokens": 1800,
+      "first_read": "2026-10-19T05:29:51.603Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/claude.ts": {
+      "count": 1,
+      "tokens": 2650,
+      "first_read": "2026-10-19T05:29:52.407Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts": {
+      "count": 1,
+      "tokens": 4300,
+      "first_read": "2026-10-19T05:30:04.354Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/steering.test.ts": {
+      "count": 1,
+      "tokens": 2580,
+      "first_read": "2026-10-19T05:30:11.403Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts": {
+      "count": 1,
+      "tokens": 2300,
+      "first_read": "2026-10-19T05:35:15.207Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts": {
+      "count": 1,
+      "tokens": 4700,
+      "first_read": "2026-10-19T05:35:19.050Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/docs/EXTENSIONS.md": {
+      "count": 1,
+      "tokens": 1540,
+      "first_read": "2026-10-19T05:39:59.556Z"
     }
   },
   "files_written": [
@@ -595,6 +670,324 @@
       "action": "create",
       "tokens": 2016,
       "at": "2026-10-18T03:46:48.978Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/COVERAGE.md",
+      "action": "create",
+      "tokens": 741,
+      "at": "2026-10-19T05:24:16.633Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/261018-wax-PLAN.md",
+      "action": "create",
+      "tokens": 10897,
+      "at": "2026-10-19T05:26:27.934Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/261018-wax-PLAN.md",
+      "action": "edit",
+      "tokens": 114,
+      "at": "2026-10-19T05:27:43.376Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/structured-output.ts",
+      "action": "create",
+      "tokens": 464,
+      "at": "2026-10-19T05:30:32.407Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/claude.ts",
+      "action": "edit",
+      "tokens": 58,
+      "at": "2026-10-19T05:30:32.932Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/structured-output.test.ts",
+      "action": "create",
+      "tokens": 1649,
+      "at": "2026-10-19T05:30:55.670Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 20,
+      "at": "2026-10-19T05:31:46.091Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 43,
+      "at": "2026-10-19T05:31:46.630Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 28,
+      "at": "2026-10-19T05:31:47.179Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 114,
+      "at": "2026-10-19T05:31:47.783Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 101,
+      "at": "2026-10-19T05:31:48.366Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 132,
+      "at": "2026-10-19T05:31:48.896Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 932,
+      "at": "2026-10-19T05:32:08.880Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts",
+      "action": "edit",
+      "tokens": 356,
+      "at": "2026-10-19T05:32:09.417Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg1.txt",
+      "action": "create",
+      "tokens": 120,
+      "at": "2026-10-19T05:33:02.261Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/claude.ts",
+      "action": "edit",
+      "tokens": 267,
+      "at": "2026-10-19T05:33:28.404Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/claude.ts",
+      "action": "edit",
+      "tokens": 199,
+      "at": "2026-10-19T05:33:28.932Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/structured-output.ts",
+      "action": "edit",
+      "tokens": 565,
+      "at": "2026-10-19T05:33:48.937Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/structured-output.ts",
+      "action": "edit",
+      "tokens": 90,
+      "at": "2026-10-19T05:33:49.429Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/ollama.ts",
+      "action": "edit",
+      "tokens": 856,
+      "at": "2026-10-19T05:34:24.043Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/ollama.ts",
+      "action": "edit",
+      "tokens": 230,
+      "at": "2026-10-19T05:34:24.615Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/ollama.ts",
+      "action": "edit",
+      "tokens": 85,
+      "at": "2026-10-19T05:34:25.266Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/ollama.ts",
+      "action": "edit",
+      "tokens": 296,
+      "at": "2026-10-19T05:34:25.770Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg2.txt",
+      "action": "create",
+      "tokens": 123,
+      "at": "2026-10-19T05:34:56.205Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 36,
+      "at": "2026-10-19T05:35:41.944Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 116,
+      "at": "2026-10-19T05:35:42.442Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 172,
+      "at": "2026-10-19T05:35:42.973Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 34,
+      "at": "2026-10-19T05:35:43.485Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 27,
+      "at": "2026-10-19T05:35:44.013Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 186,
+      "at": "2026-10-19T05:35:44.671Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 94,
+      "at": "2026-10-19T05:35:45.333Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-10-19T05:36:07.910Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts",
+      "action": "edit",
+      "tokens": 1512,
+      "at": "2026-10-19T05:36:08.513Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 23,
+      "at": "2026-10-19T05:36:18.358Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg3.txt",
+      "action": "create",
+      "tokens": 125,
+      "at": "2026-10-19T05:36:32.889Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 293,
+      "at": "2026-10-19T05:37:42.837Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 240,
+      "at": "2026-10-19T05:37:43.488Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 1351,
+      "at": "2026-10-19T05:37:44.064Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 144,
+      "at": "2026-10-19T05:37:45.013Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 376,
+      "at": "2026-10-19T05:37:45.646Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 50,
+      "at": "2026-10-19T05:38:12.087Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 32,
+      "at": "2026-10-19T05:38:16.121Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts",
+      "action": "edit",
+      "tokens": 60,
+      "at": "2026-10-19T05:38:36.486Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg4.txt",
+      "action": "create",
+      "tokens": 152,
+      "at": "2026-10-19T05:38:57.536Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/cli/commands/init-provider.ts",
+      "action": "edit",
+      "tokens": 44,
+      "at": "2026-10-19T05:39:36.978Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/cli/commands/init-provider.ts",
+      "action": "edit",
+      "tokens": 26,
+      "at": "2026-10-19T05:39:37.523Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/src/cli/commands/init-provider.ts",
+      "action": "edit",
+      "tokens": 72,
+      "at": "2026-10-19T05:39:38.132Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/tests/init-provider.test.ts",
+      "action": "edit",
+      "tokens": 264,
+      "at": "2026-10-19T05:39:38.842Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/docs/EXTENSIONS.md",
+      "action": "edit",
+      "tokens": 189,
+      "at": "2026-10-19T05:40:08.283Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg5.txt",
+      "action": "create",
+      "tokens": 94,
+      "at": "2026-10-19T05:40:41.577Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a75165c8b59546616/.planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/261018-wax-SUMMARY.md",
+      "action": "create",
+      "tokens": 2124,
+      "at": "2026-10-19T05:43:20.075Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg6.txt",
+      "action": "create",
+      "tokens": 12,
+      "at": "2026-10-19T05:43:27.026Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/wolf_wax.py",
+      "action": "create",
+      "tokens": 937,
+      "at": "2026-10-19T05:45:27.558Z"
     }
   ],
   "edit_counts": {
@@ -636,11 +1029,31 @@
     "tests/daemon-bootstrap.test.ts": 1,
     "tests/client-result.test.ts": 1,
     "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg-wr11.txt": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/wolf_iter2.py": 1
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/wolf_iter2.py": 1,
+    ".planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/COVERAGE.md": 1,
+    ".planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/261018-wax-PLAN.md": 2,
+    ".claude/worktrees/agent-a75165c8b59546616/src/providers/structured-output.ts": 3,
+    ".claude/worktrees/agent-a75165c8b59546616/src/providers/claude.ts": 3,
+    ".claude/worktrees/agent-a75165c8b59546616/tests/structured-output.test.ts": 1,
+    ".claude/worktrees/agent-a75165c8b59546616/tests/ollama-provider.test.ts": 8,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg1.txt": 1,
+    ".claude/worktrees/agent-a75165c8b59546616/src/providers/ollama.ts": 4,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg2.txt": 1,
+    ".claude/worktrees/agent-a75165c8b59546616/src/providers/openai.ts": 10,
+    ".claude/worktrees/agent-a75165c8b59546616/tests/openai-provider.test.ts": 8,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg3.txt": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg4.txt": 1,
+    ".claude/worktrees/agent-a75165c8b59546616/src/cli/commands/init-provider.ts": 3,
+    ".claude/worktrees/agent-a75165c8b59546616/tests/init-provider.test.ts": 1,
+    ".claude/worktrees/agent-a75165c8b59546616/docs/EXTENSIONS.md": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg5.txt": 1,
+    ".claude/worktrees/agent-a75165c8b59546616/.planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/261018-wax-SUMMARY.md": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/msg6.txt": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/wolf_wax.py": 1
   },
-  "anatomy_hits": 19,
-  "anatomy_misses": 8,
-  "repeated_reads_warned": 18,
+  "anatomy_hits": 32,
+  "anatomy_misses": 10,
+  "repeated_reads_warned": 21,
   "cerebrum_warnings": 0,
-  "stop_count": 16
+  "stop_count": 19
 }

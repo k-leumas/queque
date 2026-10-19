@@ -149,6 +149,9 @@
 - [2026-10-18] `finalCandidateListWithoutProse` reads only text after the last `</think>` and drops an unclosed `<think>` to the end (`stripThinking`, WR-09).
 - [2026-10-18] `QQ_CONFIG_FILE`: empty = unset, relative resolves against home (IN-14). Contrast `QQ_PROVIDER_FILE`, where relative = invalid pin.
 - [2026-10-18] Vitest 4: `vi.mock('node:fs', ...)` reaches src modules but not the test file's own `node:fs` import; put a `vi.hoisted` spy in the factory and drive it.
+- [2026-10-18] Ollama and OpenAI share `candidatesWithCutOffRetry` (structured-output.ts): Ollama sends think:false, array `format` schema, num_predict 16000, num_ctx 20480 (fixed: changing num_ctx reloads the model); OpenAI sends max_completion_tokens 16000, reasoning_effort low, strict `{candidates}` json_schema. One silent retry on the same requestSignal (25 s budget never grows); on retry failure the first turn's closed candidates are returned. Claude untouched. Both providers are labelled beta.
+- [2026-10-18] A test that expects a retry must give each fetch call a fresh Response (`mockResolvedValueOnce` per call or `mockImplementation(async () => ...)`) — a body can be read once.
+- [2026-10-18] OpenAI `reasoning_effort` fallback keys only on HTTP 400 + `error.param === 'reasoning_effort'`, remembered per model in-process (`resetOpenAiEffortCache()` for tests), never reads `error.message`.
 
 ## Do-Not-Repeat
 - [2026-10-12] Do not fail closed on one bad enum value (the WR-07 check for `stop_reason === 'max_tokens'` only): a `refusal` or `pause_turn` fragment still reached the prose fallback (WR-01-r2, T-09.1-14). Use an allow list of the known-good values (end_turn, stop_sequence) so refusal, pause_turn, null and future values fail closed.
@@ -189,8 +192,12 @@
 - [2026-10-17] Do not end an error-mapping function with the most specific copy as the fall-through (claude-default made isAuthFailure dead code). The fall-through must be neutral.
 - [2026-10-17] Do not join API paths with `new URL('/api/x', base)`: it drops the base's path prefix. Ensure trailing `/` and join `api/x` relatively.
 - [2026-10-18] The harness secret-file guard blocks any Bash command whose text contains the literal dotenv file name (commit messages, test -e). Write commit messages to a scratchpad file and use `git commit -F`; write scripts with the Write tool; never probe the developer's env files.
+- [2026-10-18] A TS `export const X = 'low'` widens to `string` inside an array literal; annotate the array (`readonly (Effort | undefined)[]`).
+- [2026-10-18] In the worktree harness, Bash commands combining git with `$(...)`, heredocs or long chains are refused as too complex; run git commands alone, edit files with Edit/Write.
 
 ## Decision Log
+
+- [2026-10-18] Cut-off prevention for Ollama/OpenAI (user decision, quick 261018-wax): prevent (schema + 16k ceiling parity with Claude + thinking off/low) + one silent retry; truncation check kept as hidden safety net; Claude out of scope; Ollama/OpenAI marked beta.
 
 - [2026-10-17] provider.json schema = versioned-union (user choice, 08-03 Task 1): `{version:1, provider, ...}` strict zod union, no secrets at rest; unknown keys (apiKey) fail closed.
 - [2026-10-12] Phase 09.1 CR-02 (text directly followed by Enter/Tab in ONE stdin read stays filter text, Ink 7 paste rule) accepted by the user as a known limitation: predates 09.1, needs keys typed before Ink attaches, Backspace recovers. Override in 09.1-VERIFICATION.md; disposition deferred; CandidateSelect pendingInput comment and ROADMAP 09.1-10 line state the exception.
