@@ -62,7 +62,7 @@ If `claude` is not on your `PATH` at all, the message starts with `QueQue: No AI
 **Anthropic API key.** QueQue looks for `ANTHROPIC_API_KEY` in this order:
 
 1. **Environment variable**: `export ANTHROPIC_API_KEY="sk-ant-..."` in `~/.zshrc`, above the QueQue source line.
-2. **`.env.local` file**: a line `ANTHROPIC_API_KEY=sk-ant-...` in `~/.env.local`. QueQue looks for it in your home directory and the directories above it, never in the directory you run `??` from, so a `.env.local` inside a project is not used. The background daemon reads the file once, when it starts.
+2. **`.env.local` file**: a line `ANTHROPIC_API_KEY=sk-ant-...` in `~/.env.local`. QueQue reads only `~/.env.local` itself: never the directory you run `??` from and never a directory above your home directory, so a `.env.local` inside a project (or in `/tmp`) is not used. The background daemon reads the file once, when it starts.
 
 An empty or whitespace-only value counts as unset.
 

@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 function findUp(startDir: string, filename: string): string | null {
   let current = startDir;
@@ -69,12 +69,30 @@ export function usableSecret(value: string | null | undefined): string | undefin
 }
 
 /**
- * The value of `key` in the nearest `.env.local` at or above `startDir`, or null.
+ * The env file to read for `startDir`: exactly `~/.env.local` when `startDir` is the home
+ * directory (IN-16), else the nearest `.env.local` at or above `startDir`.
+ *
+ * Above `~` there is no legitimate key file, and with HOME under `/tmp` (CI, sandboxes) the
+ * walk would reach a world-writable `/tmp/.env.local` that another user could fill with
+ * their own ANTHROPIC_API_KEY, OPENAI_API_KEY or QQ_MODEL and so receive the user's query.
+ */
+function envFileFor(startDir: string): string | null {
+  if (resolve(startDir) === resolve(homedir())) {
+    const homeFile = join(homedir(), '.env.local');
+    return existsSync(homeFile) ? homeFile : null;
+  }
+  return findUp(startDir, '.env.local');
+}
+
+/**
+ * The value of `key` in `~/.env.local` (the default), or for an explicit other `startDir`
+ * in the nearest `.env.local` at or above it; null when there is none.
  *
  * `startDir` defaults to the home directory (WR-10), the same file the daemon reads
  * (WR-08), so the client's in-process fallback and the daemon never disagree and a
  * project's own `.env.local` in the shell's cwd is never used for keys or settings. It is
- * never the module's own path: in a Homebrew install that is the Cellar bundle.
+ * never the module's own path: in a Homebrew install that is the Cellar bundle. From the
+ * home directory the lookup never climbs above it (IN-16, see envFileFor).
  */
 export function readEnvValueFromDotEnvLocal(key: string, startDir = homedir()): string | null {
   const cacheKey = `${key}\0${startDir}`;
@@ -82,7 +100,7 @@ export function readEnvValueFromDotEnvLocal(key: string, startDir = homedir()): 
     return envCache.get(cacheKey) ?? null;
   }
 
-  const envPath = findUp(startDir, '.env.local');
+  const envPath = envFileFor(startDir);
   if (!envPath) {
     envCache.set(cacheKey, null);
     return null;

@@ -80,4 +80,37 @@ describe('readEnvValueFromDotEnvLocal', () => {
       expect(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY')).toBeNull();
     });
   });
+
+  // IN-16: with HOME under /tmp, a walk above ~ reached a world-writable /tmp/.env.local.
+  describe('never reads a key file above the home directory (IN-16)', () => {
+    afterEach(() => {
+      vi.unstubAllEnvs();
+    });
+
+    function homeUnderPlantedFile(): string {
+      const root = mkdtempSync(join(tmpdir(), 'qq-env-above-'));
+      writeFileSync(join(root, '.env.local'), 'OPENAI_API_KEY=planted-value\n');
+      const home = join(root, 'home', 'user');
+      mkdirSync(home, { recursive: true });
+      vi.stubEnv('HOME', home);
+      return home;
+    }
+
+    it('ignores a .env.local above ~ by default', () => {
+      homeUnderPlantedFile();
+      expect(readEnvValueFromDotEnvLocal('OPENAI_API_KEY')).toBeNull();
+    });
+
+    it('ignores a .env.local above ~ when the home directory is passed explicitly', () => {
+      const home = homeUnderPlantedFile();
+      expect(readEnvValueFromDotEnvLocal('OPENAI_API_KEY', home)).toBeNull();
+      expect(readEnvValueFromDotEnvLocal('OPENAI_API_KEY', `${home}/`)).toBeNull();
+    });
+
+    it('still reads ~/.env.local itself', () => {
+      const home = homeUnderPlantedFile();
+      writeFileSync(join(home, '.env.local'), 'OPENAI_API_KEY=home-value\n');
+      expect(readEnvValueFromDotEnvLocal('OPENAI_API_KEY')).toBe('home-value');
+    });
+  });
 });

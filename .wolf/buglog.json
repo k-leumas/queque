@@ -6415,6 +6415,55 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:44:20Z"
+    },
+    {
+      "id": "bug-391",
+      "timestamp": "2026-10-19T08:45:17.425Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/shared/env-file.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 15→33 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:45:17.425Z"
+    },
+    {
+      "id": "bug-392",
+      "timestamp": "2026-10-19T08:45:26.143Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had `??`",
+      "fix": "Changed to `~/.env.local`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:45:26.143Z"
+    },
+    {
+      "id": "bug-393",
+      "timestamp": "2026-10-19T08:46:17Z",
+      "error_message": "The ~/.env.local lookup also checked every directory above home (/Users, /, or a world-writable /tmp when HOME is under /tmp), so a planted file could supply API keys or QQ_MODEL (review IN-16)",
+      "file": "src/shared/env-file.ts",
+      "root_cause": "readEnvValueFromDotEnvLocal used findUp(homedir()) for the default, which walks to the filesystem root",
+      "fix": "envFileFor reads exactly join(homedir(), '.env.local') when startDir resolves to the home directory (default and init-provider's explicit homedir()); findUp stays only for an explicit other startDir; README line updated",
+      "tags": [
+        "env",
+        "secrets",
+        "security",
+        "review-IN-16"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-19T08:46:17Z"
     }
   ]
 }

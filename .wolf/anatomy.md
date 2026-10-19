@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:44:16.031Z
-> Files: 592 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:46:14.373Z
+> Files: 594 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -45,9 +45,11 @@
 
 - `addbug.py` (~222 tok)
 - `bug-in15.json` (~178 tok)
+- `bug-in16.json` (~197 tok)
 - `bug-wr13.json` (~206 tok)
 - `bug-wr14.json` (~246 tok)
 - `bug-wr15.json` (~197 tok)
+- `msg.txt` (~71 tok)
 - `probe.test.ts` — Declares show (~794 tok)
 
 ## ../../../../tmp/gsd-0911-rev.YNlKgV/
@@ -186,7 +188,7 @@
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~499 tok)
-- `README.md` — Project documentation: install (`qq init zsh && source ~/.zshrc`, Node 24), Authentication (claude -p on Claude Code `/login` when no key; non-empty ANTHROPIC_API_KEY wins, no cross-fallback; QQ_MODEL SDK-only, default claude-sonnet-5; daemon restart via `pkill -f 'daemon --socket /tmp/qq-'` + `qq daemon --ensure`), Usage (streaming rows, empty FILTER, Esc cancels, ⚠ warn-only, installed-tool awareness ⓘ + Tab install form, QQ_TOOL_AWARENESS=0), Zellij, Privacy (what leaves incl. platform/shell/catalog tool names; debug log path), config.json table incl. `effort` (quick-261017-4kt) (~2200 tok)
+- `README.md` — Project documentation (~3010 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. (~600 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
@@ -1147,7 +1149,7 @@
 
 - `command-words.ts` — Hand lexer (`lexHand`: quotes, escapes, `\`-newline continuations removed, heredoc bodies skipped up to the delimiter line, substitutions, redirs, placeholders, comments) + `commandWords` classifier (WRAPPERS with short+long value options, PRECOMMAND_OPTIONS for `exec`/`command`, quoted wrapper operands with whitespace recursed as command strings, explicit lookup-only mode for `command -v|-V` and LOOKUP_BUILTINS type/which/whence/where, reserved words, builtins) + safe `extractCommandWords` (Phase 9, D-03). (~4666 tok)
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
-- `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~668 tok)
+- `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~1050 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — `~/.config/qq/config.json` loader (`QQ_CONFIG_FILE` override), cached per process (`resetQqConfigCache()` for tests): built-in + user sensitive path patterns; `EFFORT_LEVELS`, `Effort`, `DEFAULT_EFFORT = 'low'`, `resolveEffort()`; the `effort` key is lenient (trim, lowercase, enum, `.optional().catch(undefined)`, then `?? 'low'`) so a bad value never drops the file (09.1-02). (~1430 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
@@ -1189,7 +1191,7 @@
 - `daemon-bootstrap.test.ts` — ensureDaemon keep/replace/spawn cases incl. pongs lacking `fetchCandidates`, `installedTools` or `streamCandidates` (replace), all three (keep); server pong advertises three flags (09.1-03). (~2330 tok)
 - `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s), abort after fetch-accepted reaches the adapter signal via socket close, no fallback after abort; request decoding (WR-01: request split inside a 3-byte char decodes intact; 270 KB/90k-unit request is refused); raw-socket and scripted-listener helpers; streaming (D-05/D-14: `candidate` rows only for `stream: true`, `candidate dropped` after close) and no-re-query-after-rows (D-16) cases (09.1-03); daemon shutdown (WR-03: in-flight fetch aborted and its refill spawns nothing; idle child retired, pool off, immediate exit) (~6504 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
-- `env-file.test.ts` — Declares root (~862 tok)
+- `env-file.test.ts` — root: projectWithEnvLocal, homeUnderPlantedFile (~1365 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)

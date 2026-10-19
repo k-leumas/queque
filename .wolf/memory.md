@@ -3161,3 +3161,10 @@
 | 02:43 | Edited tests/ollama-provider.test.ts | expanded (+11 lines) | ~143 |
 | 02:44 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in15.json | — | ~178 |
 | 02:44 | IN-15: shared UNSAFE_LINE_CHARS (Cc+Cf) for Ollama oneLine and pin baseUrl | src/providers/provider.ts, ollama.ts, provider-pin.ts, tests | fixed, 3 new tests | ~2500 |
+| 02:45 | Edited src/shared/env-file.ts | added 1 condition(s) | ~448 |
+| 02:45 | Edited src/shared/env-file.ts | inline fix | ~15 |
+| 02:45 | Edited tests/env-file.test.ts | modified homeUnderPlantedFile() | ~417 |
+| 02:45 | Edited README.md | "??" → "~/.env.local" | ~51 |
+| 02:46 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt | — | ~76 |
+| 02:46 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in16.json | — | ~197 |
+| 02:46 | IN-16: env key file read only from ~ itself, never above home | src/shared/env-file.ts, tests/env-file.test.ts, README.md | fixed, 3 new tests | ~2000 |
