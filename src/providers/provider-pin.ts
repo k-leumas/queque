@@ -5,7 +5,7 @@ import { dirname, isAbsolute, join } from 'node:path';
 import { z } from 'zod';
 import { getProviderAdapter } from '../registry/provider-backends.js';
 import { appendDebugLog } from '../shared/debug-log.js';
-import type { LLMAdapter } from './provider.js';
+import { type LLMAdapter, UNSAFE_LINE_CHARS } from './provider.js';
 import { resolveClaudeDefaultAdapter } from './resolver.js';
 
 // Phase 8 provider pin (D-02, D-14, D-15). `~/.config/qq/provider.json` is the only runtime
@@ -27,12 +27,17 @@ const modelName = z
   .regex(/^[^\p{Cc}]+$/u, { message: 'model must not contain control characters' });
 
 // IN-10: the picker prints the stored string verbatim, so control characters are rejected
-// like in `model` (the URL parser would only percent-encode them in its own copy). A URL
-// with a username or password can never work (fetch rejects credentials in the URL), so
-// it is rejected here instead of being printed in full and reported as "not answering".
+// like in `model` (the URL parser would only percent-encode them in its own copy). IN-15:
+// format characters (a U+202E bidi override) are rejected too (UNSAFE_LINE_CHARS), since
+// they can reorder what the terminal shows. A URL with a username or password can never
+// work (fetch rejects credentials in the URL), so it is rejected here instead of being
+// printed in full and reported as "not answering".
 const httpUrl = z
   .string()
-  .regex(/^[^\p{Cc}]+$/u, { message: 'baseUrl must not contain control characters' })
+  .min(1)
+  .refine((value) => !UNSAFE_LINE_CHARS.test(value), {
+    message: 'baseUrl must not contain control or format characters',
+  })
   .refine(
     (value) => {
       try {

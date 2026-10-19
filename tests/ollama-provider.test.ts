@@ -465,6 +465,17 @@ describe('Ollama failure mapping (no Claude fallback)', () => {
     expect(error.message).not.toMatch(/[\p{Cc}]/u);
   });
 
+  it('replaces bidi and format characters in a remote error field (IN-15)', async () => {
+    const detail = 'model ‮gnp.exe‬ is ⁦busy⁩​ now﻿';
+    fetchStub.mockResolvedValue(new Response(JSON.stringify({ error: detail }), { status: 500 }));
+
+    const error = await failure();
+
+    expect(error.message).toContain('HTTP 500');
+    expect(error.message).toContain('gnp.exe');
+    expect(error.message).not.toMatch(/[\p{Cc}\p{Cf}]/u);
+  });
+
   it.each([
     ['no message.content', JSON.stringify({ model: 'gemma4', done: true })],
     ['a non-string content', JSON.stringify({ message: { role: 'assistant', content: 42 } })],

@@ -202,6 +202,15 @@ describe('loadProviderPin()', () => {
       'a baseUrl with a username only',
       '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"https://user@gpu.lan"}',
     ],
+    // IN-15: format characters can reorder what the picker prints.
+    [
+      'a baseUrl with a U+202E bidi override',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"http://gpu.lan/\\u202Elmth.x"}',
+    ],
+    [
+      'a baseUrl with a zero-width space',
+      '{"version":1,"provider":"ollama","model":"gemma4","baseUrl":"http://gpu\\u200B.lan:11434"}',
+    ],
   ])('reports %s as invalid', (_name, content) => {
     writePin(content);
     const state = loadProviderPin();

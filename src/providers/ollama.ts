@@ -11,6 +11,7 @@ import {
   abortError,
   type FetchOptions,
   type LLMAdapter,
+  replaceUnsafeLineChars,
   stripTerminalControls,
 } from './provider.js';
 import { loadProviderPin, OLLAMA_DEFAULT_BASE_URL } from './provider-pin.js';
@@ -63,15 +64,13 @@ function errorName(error: unknown): string | undefined {
 }
 
 /**
- * One line, capped: the FIFO error is a single shell line. Control bytes (C0, DEL, C1)
- * become spaces first, so a remote server's `error` text cannot carry terminal escape
- * sequences to the widget's `print -r` (WR-04).
+ * One line, capped: the FIFO error is a single shell line. Control bytes (C0, DEL, C1) and
+ * format characters (bidi overrides, IN-15) become spaces first, so a remote server's
+ * `error` text cannot carry terminal escape sequences (WR-04) or reorder the line on the
+ * widget's `print -r`.
  */
 function oneLine(text: string): string {
-  const flat = text
-    .replace(/[\p{Cc}]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const flat = replaceUnsafeLineChars(text).replace(/\s+/g, ' ').trim();
   return flat.length > MAX_ERROR_DETAIL ? `${flat.slice(0, MAX_ERROR_DETAIL)}…` : flat;
 }
 

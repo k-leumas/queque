@@ -53,6 +53,21 @@ export const UNPARSEABLE_RESPONSE_MESSAGE = 'QueQue: response held no command ca
 const UNSAFE_TEXT_CHARS = /[^\P{Cc}\t\n]|\p{Cf}/gu;
 
 /**
+ * Characters that must never reach a one-line terminal string (an error line or a printed
+ * setting): every control byte (C0 including tab and newline, DEL, C1) and every format
+ * character (`\p{Cf}`, such as the U+202E bidi override), which can reorder what the
+ * terminal shows (IN-15). Not global, so `.test()` keeps no state.
+ */
+export const UNSAFE_LINE_CHARS = /[\p{Cc}\p{Cf}]/u;
+
+const UNSAFE_LINE_CHARS_GLOBAL = new RegExp(UNSAFE_LINE_CHARS.source, 'gu');
+
+/** `text` with every UNSAFE_LINE_CHARS character replaced by a space (IN-15). */
+export function replaceUnsafeLineChars(text: string): string {
+  return text.replace(UNSAFE_LINE_CHARS_GLOBAL, ' ');
+}
+
+/**
  * One candidate without UNSAFE_TEXT_CHARS (WR-04, IN-12), or null when its command is empty
  * afterwards. Tab and newline are kept; the command is trimmed.
  */

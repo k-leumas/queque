@@ -3152,3 +3152,12 @@
 | 02:42 | Edited docs/EXTENSIONS.md | inline fix | ~30 |
 | 02:42 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr15.json | — | ~197 |
 | 02:42 | WR-15: Ollama num_predict 2048 / num_ctx 8192 (was 16000/20480), sized to the 25s budget | src/providers/ollama.ts, src/providers/structured-output.ts, docs/EXTENSIONS.md, tests/ollama-provider.test.ts | fixed, 2 new tests | ~2500 |
+| 02:43 | Edited src/providers/provider.ts | modified replaceUnsafeLineChars() | ~208 |
+| 02:43 | Edited src/providers/ollama.ts | modified oneLine() | ~119 |
+| 02:43 | Edited src/providers/ollama.ts | 4→5 lines | ~42 |
+| 02:43 | Edited src/providers/provider-pin.ts | 7→12 lines | ~192 |
+| 02:43 | Edited src/providers/provider-pin.ts | inline fix | ~20 |
+| 02:43 | Edited tests/provider-pin.test.ts | expanded (+9 lines) | ~167 |
+| 02:43 | Edited tests/ollama-provider.test.ts | expanded (+11 lines) | ~143 |
+| 02:44 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in15.json | — | ~178 |
+| 02:44 | IN-15: shared UNSAFE_LINE_CHARS (Cc+Cf) for Ollama oneLine and pin baseUrl | src/providers/provider.ts, ollama.ts, provider-pin.ts, tests | fixed, 3 new tests | ~2500 |
