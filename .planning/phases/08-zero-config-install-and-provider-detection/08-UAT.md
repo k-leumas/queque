@@ -3,7 +3,7 @@ status: partial
 phase: 08-zero-config-install-and-provider-detection
 source: [08-VERIFICATION.md]
 started: 2026-10-18T02:50:00Z
-updated: 2026-10-19T07:30:21.662Z
+updated: 2026-10-19T07:31:50.178Z
 ---
 
 ## Current Test
@@ -28,7 +28,9 @@ note: "User wish: i wish there was a way to see the logs and see communication w
 
 ### 4. Live OpenAI pin (08-04 human-check): export OPENAI_API_KEY in ~/.zshrc before the queque source line, open a new terminal, run `qq init provider`, pick 2, then trigger ??
 expected: Candidates come from api.openai.com, and the debug log shows provider openai source pin. A bad key gives the static HTTP 401 copy with no key fragment.
-result: skipped
+result: blocked
+blocked_by: third-party
+reason: "Test it later — needs a real OPENAI_API_KEY"
 
 ### 5. Logged-out Claude hint (08-06 human-check): `claude /logout`, no ANTHROPIC_API_KEY, no provider.json, trigger ?? in zsh
 expected: One QueQue line above the prompt naming `claude /login`, ANTHROPIC_API_KEY, and `qq init provider`. The typed query is restored in the buffer. If the real logged-out stdout does not match AUTH_FAILURE_RE, the neutral WR-01 copy appears instead, without the picker hint.
@@ -52,8 +54,8 @@ total: 8
 passed: 7
 issues: 0
 pending: 0
-skipped: 1
-blocked: 0
+skipped: 0
+blocked: 1
 
 ## Gaps
 
