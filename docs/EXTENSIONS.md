@@ -7,7 +7,7 @@ QueQue is built around registries so new shells, providers, context sources, and
 | Registry | Register | Resolve | Default built-in |
 |----------|----------|---------|------------------|
 | Context providers | `registerContextProvider()` | `listContextProviders()` | `git-context`, `filesystem-context` |
-| Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (SDK), `claude-cli` (Claude default composite), `ollama`, `openai` |
+| Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (SDK), `claude-cli` (Claude default composite), `ollama` (beta), `openai` (beta) |
 | Shell adapters | `registerShellAdapter()` | `listShellAdapters()` | `zsh` |
 | Storage hooks | `registerStorageHook()` | `listStorageHooks()` | `noop` (no persistence) |
 
@@ -18,7 +18,7 @@ Built-ins wire up in `src/registry/bootstrap.ts`. Production code should resolve
 The rule is: the pin, otherwise the Claude default. Both the daemon's `fetch-candidates` handler and the in-process fallback (used when the daemon is down) call `resolveProviderAdapter()` from `src/providers/provider-pin.ts`:
 
 - **No `provider.json`, or a `claude` pin**: the Claude default, registered as `claude-cli`. It uses the Anthropic SDK first when `ANTHROPIC_API_KEY` is usable (environment, then `~/.env.local`). Otherwise it runs `claude -p` on the user's Claude Code `/login`.
-- **An `openai` or `ollama` pin**: only that backend (`openai` or `ollama`) runs.
+- **An `openai` or `ollama` pin (beta)**: only that backend (`openai` or `ollama`) runs.
 - **An invalid or unreadable `provider.json`**: a hard error naming the file and `qq init provider`. It never falls back to Claude, so a prompt meant for a local model is never sent to a hosted provider.
 - **No fallthrough.** When the selected backend fails, `??` shows that backend's one-line error. QueQue never retries with another vendor.
 - **Re-read on every `??`.** The pin is read again for each request, so an edit applies on the next `??` without a daemon restart.
@@ -38,6 +38,8 @@ The pin lives at `~/.config/qq/provider.json` (override with `QQ_PROVIDER_FILE`)
 ```
 
 For OpenAI, `model` is optional (default `gpt-5.5`), and there is no `baseUrl` field, so a pin cannot send the key to another host. For Ollama, `model` is required and `baseUrl` is optional (default `http://localhost:11434`, http or https only). A path in `baseUrl` is kept, so a reverse-proxied `https://gpu.lan/ollama` is called at `https://gpu.lan/ollama/api/chat`.
+
+Both beta backends ask for a structured, capped answer with little thinking. Ollama gets `think: false`, a `format` JSON schema for the candidate array, and `options` with `num_predict` 16000 and `num_ctx` 20480. OpenAI gets a strict `json_schema` response format whose root is `{ "candidates": [...] }`, `max_completion_tokens` 16000 and `reasoning_effort` `low` (sent without it when the model rejects that value). A reply that is cut off is retried once, silently, by the same provider inside the same 25 s budget; only a second cut-off shows the "cut off" error. A cut-off fragment never becomes a command.
 
 `qq init provider` is the only way to write the pin interactively. It asks once on `/dev/tty` (Claude, OpenAI, Ollama), writes the file atomically with mode 0600, and restarts the daemon so it picks up a newly exported key. It pins OpenAI only when `OPENAI_API_KEY` is already usable. For Ollama, it lists your installed models. The `??` path never opens the picker. When the Claude default cannot answer (no `claude`, logged out, no key), the error text points at `qq init provider`.
 

@@ -148,6 +148,26 @@ describe('qq init provider picker', () => {
     expect(output).toContain('QueQue provider setup');
   });
 
+  it('menu labels OpenAI and Ollama as beta with the hints in one column', async () => {
+    const { output } = await runPicker(['']);
+    const lines = output.split('\n');
+    const row = (prefix: string) => lines.find((line) => line.includes(prefix)) ?? '';
+    const claudeRow = row('1. Claude');
+    const openaiRow = row('2. OpenAI (beta)');
+    const ollamaRow = row('3. Ollama (beta)');
+
+    expect(output).toContain('2. OpenAI (beta)');
+    expect(output).toContain('3. Ollama (beta)');
+    expect(claudeRow).not.toContain('(beta)');
+    const hintColumns = [
+      claudeRow.indexOf(PROVIDER_MENU[0].hint),
+      openaiRow.indexOf(PROVIDER_MENU[1].hint),
+      ollamaRow.indexOf(PROVIDER_MENU[2].hint),
+    ];
+    expect(hintColumns[0]).toBeGreaterThan(0);
+    expect(new Set(hintColumns).size).toBe(1);
+  });
+
   it('Enter selects Claude and writes a 0600 pin', async () => {
     const { code, output } = await runPicker(['']);
 

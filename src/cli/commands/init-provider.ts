@@ -32,13 +32,16 @@ export const PROVIDER_MENU = [
     label: 'Claude',
     hint: 'Claude Code (`claude /login`) or ANTHROPIC_API_KEY',
   },
-  { id: 'openai', label: 'OpenAI', hint: 'uses OPENAI_API_KEY' },
-  { id: 'ollama', label: 'Ollama', hint: 'local models on this machine' },
+  { id: 'openai', label: 'OpenAI (beta)', hint: 'uses OPENAI_API_KEY' },
+  { id: 'ollama', label: 'Ollama (beta)', hint: 'local models on this machine' },
 ] as const satisfies readonly {
   id: ProviderPin['provider'];
   label: string;
   hint: string;
 }[];
+
+/** Every menu label is padded to the longest one, so the hints start in one column. */
+const MENU_LABEL_WIDTH = Math.max(...PROVIDER_MENU.map((entry) => entry.label.length));
 
 /** The only URL the picker ever opens, and only after an explicit y. */
 export const OLLAMA_DOWNLOAD_URL = 'https://ollama.com/download';
@@ -310,7 +313,7 @@ async function pickAndSave(prompter: Prompter, deps: PickerDeps): Promise<number
   describeCurrent(prompter, current);
   const kept = keptPinFields(current);
   PROVIDER_MENU.forEach((entry, index) => {
-    prompter.say(`  ${index + 1}. ${entry.label.padEnd(7)} ${entry.hint}`);
+    prompter.say(`  ${index + 1}. ${entry.label.padEnd(MENU_LABEL_WIDTH)} ${entry.hint}`);
   });
 
   const choice = await prompter.choose(
