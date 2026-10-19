@@ -346,3 +346,11 @@ Plans:
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 999.2: Follow-up — Phase 08 deferred UAT follow-up: Test 3 (BACKLOG)
+
+**Goal:** Resolve the UAT checkpoint deferred during Phase 08 verification
+**Source phase:** 08
+**Deferred at:** 2026-10-19 during /gsd-verify-work 08 session completion
+**Follow-ups:**
+- [ ] Test 3: i wish there was a way to see the logs and see communication with ollama (deferred 2026-10-19)
