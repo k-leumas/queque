@@ -1,412 +1,294 @@
 ---
 phase: 08-zero-config-install-and-provider-detection
-reviewed: 2026-10-17T00:00:00Z
+reviewed: 2026-10-19T00:00:00Z
 depth: standard
-iteration: 2
-diff_base: 29d34f5
-files_reviewed: 20
+iteration: 3
+diff_base: 3eb8bfb
+files_reviewed: 27
 files_reviewed_list:
-  - src/cli/commands/daemon.ts
+  - CONTRIBUTING.md
+  - README.md
+  - docs/EXTENSIONS.md
   - src/cli/commands/init-provider.ts
-  - src/contracts/ipc.ts
+  - src/client/run-foreground.ts
   - src/daemon/bootstrap.ts
-  - src/daemon/server.ts
+  - src/providers/claude-cli.ts
   - src/providers/claude-default.ts
   - src/providers/claude.ts
+  - src/providers/detect.ts
   - src/providers/ollama.ts
   - src/providers/openai.ts
   - src/providers/provider-pin.ts
   - src/providers/provider.ts
+  - src/providers/structured-output.ts
+  - src/shared/env-file.ts
+  - src/shared/qq-config.ts
   - tests/claude-cli-provider.test.ts
+  - tests/client-result.test.ts
   - tests/daemon-bootstrap.test.ts
+  - tests/env-file.test.ts
   - tests/init-provider.test.ts
   - tests/ollama-provider.test.ts
   - tests/openai-provider.test.ts
   - tests/provider-pin.test.ts
-  - docs/EXTENSIONS.md
-  - README.md
-  - CONTRIBUTING.md
+  - tests/qq-config.test.ts
+  - tests/structured-output.test.ts
 findings:
   critical: 0
-  warning: 4
-  info: 14
-  total: 18
+  warning: 3
+  info: 5
+  total: 8
 status: issues_found
 ---
 
-# Phase 8: Code Review Report (iteration 2, re-review of fixes 1321da8..cfe36ab)
+# Phase 8: Code Review Report (iteration 3, incremental diff 3eb8bfb..HEAD)
 
-**Reviewed:** 2026-10-17T00:00:00Z
+**Reviewed:** 2026-10-19T00:00:00Z
 **Depth:** standard
-**Files Reviewed:** 20
+**Files Reviewed:** 27
 **Status:** issues_found
 
-Iteration 1 of this report is in git history at 29d34f5. This iteration re-reviews the nine
-fix commits (CR-01, WR-01..WR-08) and re-checks IN-01..IN-08 against the current code.
+Iteration 2 of this report is in git history at 3eb8bfb. This iteration reviews quick task
+261018-wax and the WR-09..WR-12 and IN-01..IN-14 fix commits.
 
 ## Narrative Findings (AI reviewer)
 
 ## Summary
 
-I traced each fix into its callers and callees: `candidate-stream.ts` (scanner and strict
-parse), `env-file.ts` (`findUp`, the per-process cache), `fetch-client.ts` (the in-process
-fallback), `run-foreground.ts` and `main.ts` (the global `uncaughtException` handler),
-`socket-path.ts`, and `qq-config.ts`. I checked two edge cases with a scratch script against
-the real modules: `finalCandidateListWithoutProse` with an orphan `</think>` and with a cut-off
-`<think>`, and `ollamaApiUrl` with a query string. I also checked Node's `spawn` with a cwd
-that does not exist.
+I read every in-scope file in full. I traced the new retry path through its callers and
+callees: `structured-output.ts`, `claude.ts` (`stripThinking`,
+`strictCandidateListWithoutProse`, `finalCandidateListWithoutProse`), `provider.ts`
+(`stripTerminalControls`), `fetch-client.ts` (the in-process fallback), and the bootstrap
+spawn and replace path. I ran the 10 in-scope test files: 331 tests pass. I also ran a
+scratch probe against the real modules to check the parsing edge cases (results are cited
+below).
 
-### Resolved since iteration 1
+### Resolved since iteration 2
 
-All nine in-scope findings are fixed as described in 08-REVIEW-FIX.md:
+All 18 iteration-2 findings are fixed as described:
 
-- **CR-01:** the pong now carries `providerPin`, and `pingDaemonFetchCap` requires it, so a
-  v0.6.0 daemon is replaced.
-- **WR-01:** `D13_MESSAGE` now appears only when `isAuthFailure` matches; every other failure
-  gets the neutral copy.
-- **WR-02:** a re-run keeps the saved `baseUrl` and OpenAI `model`, and the picker probes the
-  saved URL.
-- **WR-03:** an empty `QQ_PROVIDER_FILE` counts as unset, and a relative one is an invalid pin.
-- **WR-04:** control bytes are removed from Ollama error text and from non-Claude candidates,
-  and the pin `model` rejects them.
-- **WR-05:** the prose fallback no longer runs for Ollama or OpenAI.
-- **WR-06:** the path prefix in `baseUrl` is kept, and a 404 that is not about the model names
-  the URL.
-- **WR-07:** an IPC `shutdown` runs first, and `lsof` is only the fallback.
-- **WR-08:** the daemon is spawned with `cwd: homedir()`.
+- **WR-09:** `stripThinking` keeps only the text after the last `</think>` and drops an
+  unclosed `<think>`.
+- **WR-10:** `readEnvValueFromDotEnvLocal` now starts at `homedir()` by default.
+- **WR-11:** the error copy and the docs now say `~/.env.local`. A grep found no bare
+  `.env.local` left in user-facing text.
+- **WR-12:** `daemonCwd()` falls back to `/`, the child has an `'error'` listener, and
+  `run-foreground` catches an `ensureDaemon` failure.
+- **IN-01..IN-14** are fixed. IN-10 and IN-12 leave a small gap (IN-15).
 
-I found no race in the new `shutdown` wiring. The `await startDaemonServer` continuation runs
-as a microtask before any socket `data` event, so `onShutdownRequest` is set before a request
-can arrive.
+I checked the new `ensureDaemon` catch for a vendor fallthrough. The only errors it now
+swallows are "did not start" and the unsafe-path guard. The socket path always comes from
+`socketPathForUid`, so the guard cannot fire here. After either error,
+`fetchCandidatesForUi` runs `resolveProviderAdapter()`, which honors the pin. I found no
+path that sends an Ollama or OpenAI pin's prompt to Claude.
 
-None of IN-01..IN-08 was in the fix scope, and all eight still apply. They are carried forward
-below with their original IDs and updated line numbers.
+The retry stays inside the 25 s budget. Every request shares one
+`AbortSignal.timeout(...)` combined with the user signal. That holds for both Ollama
+calls and for every step of the OpenAI effort ladder (at most 5 POSTs). A user abort
+always wins. No error path reads `error.message` or the key, so I found no secret leakage.
 
-Several fixes leave gaps or add new ones:
+Three problems need attention before release:
 
-- **WR-05:** a draft array from an unfinished `<think>` block can still become a command
-  (WR-09).
-- **WR-08:** the daemon is fixed, but three gaps remain:
-  - The in-process fallback still prefers a project's `.env.local` (WR-10).
-  - Every runtime error message still points users at a bare `.env.local`, which the daemon
-    now ignores (WR-11).
-  - The fixed cwd turns a missing home directory into a crash on every `??` (WR-12).
+- The WR-09 fix breaks any answer that mentions a think tag (WR-13).
+- The OpenAI request now hard-fails on models without strict structured output (WR-14).
+- The fixed Ollama `num_ctx` changes memory use for every Ollama user (WR-15).
 
 ## Warnings
 
-### WR-09: A draft candidate from an unclosed `<think>` block or an orphan `</think>` becomes the command
+### WR-13: Any candidate that mentions `<think>` or `</think>` breaks the whole Ollama or OpenAI answer
 
-**File:** `src/providers/claude.ts:532`, `:551-560`
+**File:** `src/providers/claude.ts:205-209`, `:217-219`, `:254-260`
 
-**Issue:** `THINK_BLOCK_RE = /<think>[\s\S]*?<\/think>/gi` removes only complete pairs. Then
-`finalCandidateListWithoutProse` returns the closed objects of the first `[ {` array in what
-is left. Two common shapes from local reasoning models leave thinking text in place:
+**Issue:** `stripThinking` runs on the raw text before any JSON parse. It does not check
+whether the tag is inside a JSON string value:
 
-- **Cut-off thinking** (`done_reason` / `finish_reason` other than `stop`). There is no
-  `</think>`, so the whole thinking text survives. Any draft array in it is returned as the
-  answer. Before this fix that case threw `TRUNCATED_RESPONSE_MESSAGE` only when no object had
-  closed. Now a closed draft object wins.
-- **Orphan `</think>`.** Some chat templates put `<think>` in the prompt, so the model's output
-  starts inside the thinking and has only the closing tag. The regex removes nothing, and the
-  first array is the draft, not the final answer after `</think>`.
+- A `<think>` anywhere in the text, with no `</think>` after it, deletes everything from
+  the tag to the end of the text.
+- A `</think>` anywhere in the text throws away everything before it.
 
-Checked against the real module:
+Both adapters now ask for grammar-constrained or strict-schema JSON. So a tag can only
+appear inside a `command` or `explanation` string, and that is exactly where the strip
+does damage. Checked against the real module:
 
 ```
-finalCandidateListWithoutProse('Draft: [{"command":"rm -rf ~/build",...}] no wait, safer.\n</think>\n[{"command":"ls build",...}]', true)
-  -> [{"command":"rm -rf ~/build","explanation":"draft"}]
-finalCandidateListWithoutProse('<think>Maybe [{"command":"git reset --hard",...}] hmm, but that loses', false)
-  -> [{"command":"git reset --hard","explanation":"draft"}]
+finalCandidateListWithoutProse('{"candidates":[{"command":"sed -i \'s/<think>//g\' out.txt","explanation":"Remove think tags"}]}', true)
+  -> THROW QueQue: response held no command candidates
+finalCandidateListWithoutProse('[{"command":"grep -c \'</think>\' run.log","explanation":"count"},{"command":"ls","explanation":"x"}]', true)
+  -> THROW QueQue: response held no command candidates
+finalCandidateListWithoutProse('{"candidates":[{"command":"ls","explanation":"no <think> here"},{"command":"pwd","explanation":"ok"}]}', true)
+  -> THROW QueQue: response held no command candidates
 ```
 
-The user is shown a command the model had already rejected, sometimes a destructive one.
-WR-05 was meant to stop exactly this kind of non-answer text from becoming a command. The only
-think-block test (`tests/ollama-provider.test.ts:455`) uses a complete pair.
+The user sees "Ollama/OpenAI returned an unexpected response" for a valid answer, every
+time, for any query about think tags or LLM output cleanup. That is a likely query for
+people who run local reasoning models. On the cut-off path, the same strip also discards
+closed candidates that came before the tag.
 
-**Fix:** Keep only the text after the last `</think>`, and drop an unclosed `<think>` through
-to the end of the text:
+**Fix:** Try the strict parse on the raw text first. A complete JSON document cannot hold
+an unquoted think block. Strip only when that parse fails. For the closed-object scan, scan
+the raw text when it already starts as JSON:
 
 ```ts
-function stripThinking(text: string): string {
-  const close = text.toLowerCase().lastIndexOf('</think>');
-  const afterClose = close === -1 ? text : text.slice(close + '</think>'.length);
-  return afterClose.replace(/<think>[\s\S]*?(?:<\/think>|$)/gi, ' ');
+function strictListOrWrapped(text: string): CandidateList | undefined {
+  const bare = parseStrictCandidateList(text);
+  if (bare) return bare;
+  let parsed: unknown;
+  try { parsed = JSON.parse(stripCodeFence(text)); } catch { return undefined; }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) return undefined;
+  const list = candidateListSchema.safeParse((parsed as { candidates?: unknown }).candidates);
+  return list.success ? list.data : undefined;
 }
-// const answer = stripThinking(text);
+
+export function strictCandidateListWithoutProse(text: string): CandidateList | undefined {
+  return strictListOrWrapped(text) ?? strictListOrWrapped(stripThinking(text));
+}
+
+// finalCandidateListWithoutProse:
+const fenced = stripCodeFence(text);
+const answer = /^(\{\s*"candidates"\s*:\s*)?\[\s*\{/.test(fenced) ? fenced : stripThinking(text);
 ```
 
-Add tests for the orphan-close case and the truncated-open case. The truncated one must
-throw `TRUNCATED_RESPONSE_MESSAGE`.
+Add the three probe cases above as tests, plus a cut-off variant
+(`{"candidates":[{"command":"echo <think>","explanation":"a"},{"comm`, which must return
+the first row).
 
-### WR-10: The in-process fallback still reads keys from the shell's directory, so a project's `.env.local` key is used whenever the daemon is down
+### WR-14: The strict `json_schema` request has no fallback, so a pinned OpenAI model without structured outputs fails on every `??`
 
-**File:** `src/providers/openai.ts:38-43`, `src/providers/claude-default.ts:71-76`,
-`src/providers/claude.ts:96`, `:218`, `:301`, `src/daemon/fetch-client.ts:201`
+**File:** `src/providers/openai.ts:227-241`, `:276-283`, `:142-145`
 
-**Issue:** WR-08 fixed the key source for the daemon only. `fetchCandidatesForUi` falls back to
-`resolveProviderAdapter().fetchCandidates()` inside the foreground client. Its cwd is the
-shell's cwd. Every adapter there calls `readEnvValueFromDotEnvLocal(key)` with the default
-`startDir = process.cwd()`. `findUp` returns the nearest `.env.local`, so a project's file
-takes precedence over `~/.env.local`. The fallback runs after a daemon crash, after a
-`restartDaemon` timeout, or while a replacement daemon is still starting. On that path the
-privacy problem WR-08 described still happens: a project or employer `OPENAI_API_KEY` or
-`ANTHROPIC_API_KEY` is used silently. The user's query, cwd and git metadata then go to that
-account. `QQ_MODEL` and `QQ_FORCE_SELECTOR` also differ between the two paths, so one `??`
-can behave differently from the next.
+**Issue:** Every request now carries
+`response_format: { type: 'json_schema', strict: true, ... }`. A rejected
+`reasoning_effort` gets a graceful fallback. A rejected `response_format` does not. Models
+that a user can pin through `"model"` in provider.json and that do not accept strict
+`json_schema` worked before this change. They now get an HTTP 400 on every request.
+Examples are `gpt-4-turbo`, `gpt-3.5-turbo`, the `o1-mini`/`o1-preview` family, and any
+schema keyword the endpoint refuses.
 
-The docs disagree with each other. CONTRIBUTING.md:118 says a repo `.env.local` "reaches only
-the in-process fallback". README.md:65 says only "a `.env.local` inside a project directory is
-not used by the daemon" and does not mention that the fallback uses it.
+That 400 reaches the `default` branch of `statusFailure`:
+`QueQue: OpenAI request failed (HTTP 400, code ...).` The message names neither the model
+nor the fix, and has no `qq init provider` hint. 08-UAT.md also marks the OpenAI pin as
+blocked on a real key. The strict request body, including `minLength`, `minItems` and
+`maxItems` under `strict: true`, has never been accepted by the live endpoint. If any part
+of it is refused, OpenAI is broken for every user on release day, and the tests (all
+mocked) cannot show it.
 
-**Fix:** Give the shared helper the same fixed start directory the daemon uses, so the daemon
-and the fallback read the same file:
+**Fix:** Handle `response_format` the same way as `reasoning_effort`. Read `error.param`.
+On a 400 for `response_format`, resend without it. The no-prose final-list rule is already
+the safety net. Remember the model for the life of the process:
 
 ```ts
-// src/shared/env-file.ts
-export function readEnvValueFromDotEnvLocal(key: string, startDir = homedir()): string | null
+rejectsResponseFormat: body?.error?.param === 'response_format',
+// in postChat:
+if (response.status === 400 && rejectsResponseFormat && useSchema) {
+  modelsRejectingSchema.add(model);
+  return undefined; // caller resends with useSchema = false
+}
 ```
 
-Then drop the explicit `homedir()` in `init-provider.ts:192`. Also update `detect.ts:64`,
-which assumes `process.cwd()`. Tests that rely on a cwd `.env.local` must pass `startDir`.
+At minimum, map a 400 whose `param` is `response_format` to copy that names the model, for
+example: "OpenAI model 'x' does not support structured output. Set "model" in
+~/.config/qq/provider.json, or run `qq init provider`." Run one live smoke request with a
+real key before tagging the release.
 
-### WR-11: Runtime error copy and docs still say `.env.local`, which the daemon no longer reads from the project directory
+### WR-15: A fixed `num_ctx` of 20480 on every Ollama request changes memory use and forces model reloads for every Ollama user
 
-**File:** `src/providers/claude-default.ts:17`, `:20`, `:30`; `src/providers/openai.ts:155`;
-`src/providers/claude.ts:303`; `README.md:57`, `:69`, `:98`; `docs/EXTENSIONS.md:20`, `:114`
+**File:** `src/providers/ollama.ts:28-36`, `:186`
 
-**Issue:** WR-08 changed only `OPENAI_KEY_MISSING` in the picker to say `~/.env.local`. These
-`??` errors still say "set ANTHROPIC_API_KEY in the environment or .env.local" or "Export it
-(or add it to .env.local)":
+**Issue:** Before this change, QueQue sent no `options`, so the server's default context
+applied (2048-4096, or the user's `OLLAMA_CONTEXT_LENGTH`). Now every request forces
+`num_ctx: 20480`, sized for `num_predict: 16000` output tokens. This has two costs:
 
-- the D13 message
-- the ENOENT message
-- the timeout message
-- the OpenAI missing-key message
+- **Memory.** On an 8B model, a 20k-token KV cache is about 2.5 GB more than the default.
+  On the 8-16 GB machines common for local Ollama, the model can spill to CPU or swap. Then
+  every `??` ends in "Ollama did not answer within 25s".
+- **Reloads.** Ollama reloads a model whenever `num_ctx` differs from the loaded instance.
+  The code comment says so, but it only considers QueQue's own requests. Every switch
+  between `ollama run`, Open WebUI or another client and `??` now pays a full model load,
+  and that load can use up the 25 s budget by itself.
 
-A user who follows that advice in a project directory creates `./.env.local`. The daemon
-(cwd `~`) never sees it, so every `??` keeps failing with the same message. Because of WR-10,
-it can also work once while the daemon is down and then fail again. README lines 57, 69 and
-98 and EXTENSIONS lines 20 and 114 also say a bare `.env.local`.
+The large ceiling also buys nothing. No local model can produce 16000 tokens inside a 25 s
+budget, so `done_reason: "length"` at that cap is unreachable and the timeout always comes
+first.
 
-**Fix:** Change every message and doc mention to `~/.env.local`, for example:
-
-```ts
-const D13_MESSAGE =
-  'QueQue: Claude is not authenticated. Run `claude /login`, or set ANTHROPIC_API_KEY in the environment or ~/.env.local. To use OpenAI or Ollama instead, run `qq init provider`.';
-```
-
-Update the README sample at line 57 to match the new copy. Add a test that no copy in
-`claude-default.ts` or `openai.ts` contains ` .env.local` without the `~/`.
-
-### WR-12: `cwd: homedir()` crashes the client on every `??` when the home directory does not exist
-
-**File:** `src/daemon/bootstrap.ts:270-276`
-
-**Issue:** `spawnDaemon` now passes `cwd: homedir()` and attaches no `'error'` listener to the
-child. When `$HOME` names a directory that does not exist, `spawn` does not throw. It emits
-`'error'` asynchronously with the misleading message `spawn /path/to/node ENOENT`. This happens
-for some service accounts, containers with `HOME=/nonexistent`, and sandboxes. The
-`try`/`catch` around `ensureDaemon` cannot catch that event, so it reaches `main.ts:50`
-(`uncaughtException`). That handler writes `{"kind":"cancel"}` and exits 1. Before WR-08 the
-cwd was inherited and always existed, so this setup worked, through the daemon or the
-in-process fallback. Now every `??` and every `qq daemon --ensure` prewarm dies, and the
-in-process fallback never runs. I confirmed this with Node 24: a spawn with
-`cwd: '/nonexistent-dir-xyz'` gives `Unhandled 'error' event ... spawn .../node ENOENT`.
-
-**Fix:** Fall back to a directory that exists, and never leave the child without an error
-listener:
-
-```ts
-const home = homedir();
-const cwd = home && fs.existsSync(home) ? home : '/';
-const child = spawn(qqBin, [qqScript, 'daemon', '--socket', socketPath], {
-  cwd,
-  detached: true,
-  stdio: 'ignore',
-});
-child.on('error', (error) => {
-  void appendDebugLog('daemon', 'spawn failed', { code: (error as NodeJS.ErrnoException).code });
-});
-child.unref();
-```
-
-`waitForSocket` then times out and `ensureDaemon` throws a normal error, which the client
-handles with the in-process fallback.
+**Fix:** Size the options to what the budget can use. Example: `num_predict` 2048 (the
+whole answer is a few hundred tokens with `think: false`), and `num_ctx` of about 8192,
+enough for the ~4.5k-token prompt plus that output. Or omit `num_ctx` unless the user sets
+it, for example through an optional pin field. Update EXTENSIONS.md:42 to match.
 
 ## Info
 
-### IN-01: The "Bound lazily" comment is wrong (carried forward)
+### IN-15: Remote Ollama error text and the pin `baseUrl` still allow bidi and format characters
 
-**File:** `src/cli/commands/init-provider.ts:88-94` (imports at `:8-9`)
+**File:** `src/providers/ollama.ts:64-70`; `src/providers/provider-pin.ts:33-46`
 
-**Issue:** This is unchanged. `restartDaemon` and `listOllamaModels` are static top-level
-imports, so `daemon/bootstrap.ts` and `providers/ollama.ts` are evaluated on every `qq` run.
-The wrappers delay only the calls.
+**Issue:** IN-12 added `\p{Cf}` to `UNSAFE_TEXT_CHARS` for candidates. Two other places
+still filter `\p{Cc}` only:
 
-**Fix:** Correct the comment, or use `await import()` inside the wrappers.
+- Ollama's `oneLine`, which handles a remote server's `error` text that reaches the
+  widget's `print -r`.
+- The `httpUrl` regex, which checks the `baseUrl` that the picker prints verbatim.
 
-### IN-02: `describeIssues` echoes key names from the file with no length cap or escaping (carried forward)
+A U+202E in either can still reorder what the terminal shows.
 
-**File:** `src/providers/provider-pin.ts:95-103`
+**Fix:** Export one character class from `provider.ts` and reuse it in both places:
+replace with a space in `oneLine`, and reject in `httpUrl`.
 
-**Issue:** This is unchanged. Unknown key names come from the file and flow into the
-fetch-error message, the daemon debug log (`server.ts:182`) and the terminal, with no cap and
-no control-character filtering.
+### IN-16: `.env.local` is still searched above the home directory
 
-**Fix:** Cap the joined reason, for example at 120 characters, and replace `\p{Cc}`. Or report
-`unknown key(s)` with only a count.
+**File:** `src/shared/env-file.ts:5-21`, `:79-85`; `README.md:65`
 
-### IN-03: If `chmodSync` fails after the rename, the picker says "No changes made" although the new pin is live (carried forward)
+**Issue:** `findUp(homedir(), '.env.local')` also checks `/Users/.env.local` and
+`/.env.local`. With `HOME` under `/tmp` (CI, sandboxes, some containers) it also checks a
+world-writable `/tmp/.env.local`. A file there can supply `ANTHROPIC_API_KEY`,
+`OPENAI_API_KEY` or `QQ_MODEL`, and the user's query and context would then go to another
+person's account. No legitimate setup needs a key file above `~`.
 
-**File:** `src/providers/provider-pin.ts:163-172`
+**Fix:** For the default, read exactly `join(homedir(), '.env.local')` and keep `findUp`
+only for an explicit `startDir`. Update README.md:65 ("and the directories above it").
 
-**Issue:** This is unchanged. The `chmodSync(target, 0o600)` on line 165 is redundant, because
-the temp file is created with `mode: 0o600, flag: 'wx'`. If it throws after the rename, the
-caller reports failure even though the new pin is already in place.
+### IN-17: A retry that runs out of time, or an OpenAI `content_filter` finish, shows the wrong message
 
-**Fix:** Drop the `chmodSync`, or move it before the rename.
+**File:** `src/providers/structured-output.ts:92-99`; `src/providers/ollama.ts:90-94`;
+`src/providers/openai.ts:308`
 
-### IN-04: The log and error text contradict the "never the base URL" claim (carried forward)
+**Issue:** The two messages are wrong in different ways:
 
-**File:** `src/providers/ollama.ts:126-128` (docstring), `:84`, `:88`, `:191`;
-`src/daemon/server.ts:182`
+- **Timeout during the retry.** The retry runs on what is left of the shared signal. If
+  the first turn was cut off late and nothing closed, the retry's `TimeoutError` comes up
+  as "Ollama did not answer within 25s (the model may still be loading)" or "OpenAI did
+  not answer within 25s". The real problem is a cut-off answer.
+- **`content_filter`.** OpenAI's `finish_reason: 'content_filter'` counts as a cut-off. It
+  is retried silently and then shown as "response was cut off", not as a declined query.
 
-**Issue:** This is unchanged, and WR-06 added another case. The new HTTP 404 message on line
-191 includes `origin`, and the daemon logs every fetch-error `message`. The docstring still
-says debug lines never carry the base URL.
+**Fix:** In `candidatesWithCutOffRetry`, when the retry fails with no closed candidates
+and the error is not an abort, throw `TRUNCATED_RESPONSE_MESSAGE`. Map `content_filter`
+to the existing "OpenAI declined this query" copy, with no retry.
 
-**Fix:** Make the docstring match what is actually logged, or drop `message` from
-`replied fetch-error`.
+### IN-18: The OpenAI retry ladder does not remember rejected low efforts
 
-### IN-05: An invalid header value for the OpenAI key is reported as "could not reach api.openai.com" (carried forward)
+**File:** `src/providers/openai.ts:345-350`
 
-**File:** `src/providers/openai.ts:120-124`
+**Issue:** Only a rejected `low` is cached (`modelsRejectingDefaultEffort`). A model that
+accepts `low` but rejects `none` and `minimal` (the o-series) pays two extra 400 round
+trips, out of the shared 25 s, on every cut-off.
 
-**Issue:** This is unchanged. A key with an embedded newline or a non-Latin-1 character makes
-undici throw `TypeError` before any I/O. That error is mapped to a connectivity message.
+**Fix:** Cache the first accepted retry effort per model, or the rejected ones.
 
-**Fix:** Check the key against `/^[\x21-\x7e]+$/` before the request and report
-"OPENAI_API_KEY contains invalid characters".
+### IN-19: A `~` in `QQ_CONFIG_FILE` silently drops the user's privacy patterns
 
-### IN-06: The README still describes streaming and cancellation as Claude-only (carried forward)
+**File:** `src/shared/qq-config.ts:100-106`
 
-**File:** `README.md:120`, `:122`
+**Issue:** A quoted `QQ_CONFIG_FILE='~/qq.json'` is relative, so it resolves to
+`$HOME/~/qq.json`. `readConfigFile` treats the missing file as `{}`, so the user's extra
+`sensitivePathPatterns` are silently ignored. That is the failure IN-14 set out to close.
+`QQ_PROVIDER_FILE`, by contrast, rejects a relative value loudly.
 
-**Issue:** This is unchanged. "Rows stream in as Claude answers" and "It stops the request to
-Claude" are wrong for an OpenAI or Ollama pin.
-
-**Fix:** Say "as the provider answers", and note that only Claude streams rows today.
-
-### IN-07: Auth failures on the API-key path never get the `qq init provider` pointer (carried forward)
-
-**File:** `src/providers/claude-default.ts:107-113`
-
-**Issue:** This is unchanged. The SDK branch returns `fetchSdkCandidates(...)` directly, so a
-401 or 403 for a bad `ANTHROPIC_API_KEY` reaches the user as the raw SDK error.
-
-**Fix:** Map SDK `APIError.status` 401/403 to a static line that names the key and `qq init
-provider`. Pass AbortError through unchanged.
-
-### IN-08: A plain-`http` `baseUrl` is accepted for any host (carried forward)
-
-**File:** `src/providers/provider-pin.ts:29-39`; `README.md:152`
-
-**Issue:** This is unchanged. For a non-loopback host, the context crosses the network in
-cleartext, and the README privacy section does not say so.
-
-**Fix:** Document it, or require `https:` unless the host is loopback.
-
-### IN-09: The picker gives no way back from a saved remote `baseUrl`, and gives local-install advice when that remote is down
-
-**File:** `src/cli/commands/init-provider.ts:226-229`, `:337-338`
-
-**Issue:** WR-02 keeps `ollamaBaseUrl` on every Ollama re-pick, so the picker can no longer
-pin the default localhost server. The user has to edit provider.json by hand. If the remote
-server is down, `explainOllamaDown` says "Install it from https://ollama.com/download, start it
-with `ollama serve`" and offers to open the download page. Neither step helps with a remote
-host. The README (line 84) still describes only the local case.
-
-**Fix:** When `baseUrl` is set and unreachable, say "Check that the Ollama server at <url> is
-running, or remove "baseUrl" from provider.json to use this machine", and skip the
-download-page prompt.
-
-### IN-10: The picker prints the raw `baseUrl`, which the schema does not check for control characters or credentials
-
-**File:** `src/cli/commands/init-provider.ts:226`, `:353`; `src/providers/provider-pin.ts:29-39`
-
-**Issue:** WR-02 added two places that print the stored `baseUrl` string verbatim to /dev/tty.
-`httpUrl` only checks that `new URL(value)` parses. The WHATWG parser percent-encodes an ESC in
-the path, but the stored raw string keeps it. WR-04 applied the no-`\p{Cc}` rule to `model` but
-not to `baseUrl`. A `http://user:pass@host` URL is also accepted and then printed in full,
-although `fetch` rejects URLs with credentials. That URL can never work, and the picker
-reports it as "not answering".
-
-**Fix:** In `httpUrl`, reject `\p{Cc}`, `username` and `password`. Or print
-`new URL(baseUrl).origin + pathname` instead of the raw string.
-
-### IN-11: `ollamaApiUrl` drops the path prefix when `baseUrl` has a query string or fragment
-
-**File:** `src/providers/ollama.ts:97-100`
-
-**Issue:** The trailing `/` is appended to the whole string, so it ends up inside the query or
-fragment. The relative join then resolves against the parent of the last path segment.
-Checked: `ollamaApiUrl('http://h/ollama?x=1', 'api/chat')` and
-`ollamaApiUrl('http://h/ollama#f', 'api/chat')` both give `http://h/api/chat`. The WR-06 bug
-is back for those inputs, and the schema allows them.
-
-**Fix:** Build the URL from parts:
-
-```ts
-const url = new URL(baseUrl);
-url.pathname = `${url.pathname.replace(/\/+$/, '')}/${path}`;
-url.search = '';
-url.hash = '';
-return url;
-```
-
-Or reject `search` and `hash` in `httpUrl`.
-
-### IN-12: `stripTerminalControls` leaves bidi and format characters, and the Claude paths are not sanitized at all
-
-**File:** `src/providers/provider.ts:41`, `:51-61`; `src/providers/claude.ts:154-172`
-
-**Issue:** The filter removes only `\p{Cc}`. Format characters (`\p{Cf}`) are kept: U+202E
-RIGHT-TO-LEFT OVERRIDE, U+2066..U+2069 isolates, and zero-width characters. They can make a
-command look different from what will run, both in the Ink list and in the zsh buffer. The
-threat model is the same as WR-04: a remote or plain-http Ollama. Claude candidates go through
-no filter at all, and a JSON `\u001b` from prompt-injected context (file or branch names)
-would reach Ink as a raw ESC.
-
-**Fix:** Remove `[\p{Cc}\p{Cf}]` except tab and newline, and apply `stripTerminalControls` in
-the Claude final-list and streamed-row paths too.
-
-### IN-13: When every command is empty after the filter, `stripTerminalControls` returns an `echo ""` placeholder row instead of the adapters' "unexpected response" error
-
-**File:** `src/providers/provider.ts:59-61`
-
-**Issue:** WR-05 changed Ollama and OpenAI so that an unusable answer raises "returned an
-unexpected response" and never shows as a candidate. An answer whose commands contain only
-control bytes now shows a selectable `echo ""` row labelled "unexpected response format".
-That is the old parseCandidates behavior.
-
-**Fix:** Throw `UNPARSEABLE_RESPONSE_MESSAGE` when `cleaned` is empty. The adapters already map
-it to their own error copy.
-
-### IN-14: `QQ_CONFIG_FILE` still has the WR-03 bug, and WR-08 made a relative value resolve differently in the daemon
-
-**File:** `src/shared/qq-config.ts:95`
-
-**Issue:** `process.env.QQ_CONFIG_FILE ?? join(...)` has the same `??` problem WR-03 fixed for
-`QQ_PROVIDER_FILE`. An exported empty value reads `''` and silently falls back to the
-defaults, which can drop a user's extra privacy redaction patterns. The daemon now always runs
-in `~`. A relative value therefore resolves to different files in the daemon and in the
-foreground client.
-
-**Fix:** Apply the same rule as `providerPinPath()`: trim, treat empty as unset, and reject or
-resolve a non-absolute path explicitly.
+**Fix:** Expand a leading `~/` to `homedir()`, or reject non-absolute values the same way
+as `providerPinPath()`. Then log a debug line when an explicit override names a missing
+file.
 
 ---
 
-_Reviewed: 2026-10-17T00:00:00Z_
+_Reviewed: 2026-10-19T00:00:00Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_
