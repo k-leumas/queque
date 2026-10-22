@@ -6679,6 +6679,121 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-19T08:52:13Z"
+    },
+    {
+      "id": "bug-407",
+      "timestamp": "2026-10-20T18:55:02.743Z",
+      "error_message": "Incorrect value in code",
+      "file": "README.md",
+      "root_cause": "Had `claude-sonnet-5`",
+      "fix": "Changed to `~/.env.local`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-10-20T18:55:47.578Z"
+    },
+    {
+      "id": "bug-408",
+      "timestamp": "2026-10-20T18:55:30.537Z",
+      "error_message": "Significant refactor of ",
+      "file": "README.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→7 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-20T18:55:30.537Z"
+    },
+    {
+      "id": "bug-409",
+      "timestamp": "2026-10-20T18:56:00.904Z",
+      "error_message": "Wrong reference: etc should be chmod",
+      "file": "README.md",
+      "root_cause": "Used \"etc\" instead of \"chmod\"",
+      "fix": "Changed etc → chmod",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-20T18:56:00.904Z"
+    },
+    {
+      "id": "bug-410",
+      "timestamp": "2026-10-22T02:56:39.687Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md",
+      "root_cause": "Had \"$(grep -c '",
+      "fix": "Changed to 'https://github.com/k-leumas/queque/compare/v0.6.1",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-10-22T02:56:43.988Z"
+    },
+    {
+      "id": "bug-411",
+      "timestamp": "2026-10-22T02:57:50.640Z",
+      "error_message": "Missing await",
+      "file": "tests/semantic-release-user-notes.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-22T02:57:50.640Z"
+    },
+    {
+      "id": "bug-412",
+      "timestamp": "2026-10-22T02:58:14.683Z",
+      "error_message": "Wrong return value",
+      "file": "scripts/semantic-release-user-notes.ts",
+      "root_cause": "Was returning: url.replace(/^git\\+/, '').replace(/\\.git$/, '');",
+      "fix": "Now returns: value.replace(/\\.git$/, '').replace(/\\/$/, '');",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-22T02:58:14.683Z"
+    },
+    {
+      "id": "bug-413",
+      "timestamp": "2026-10-22T02:59:07.000Z",
+      "error_message": "changelog compare and commit links carried the CI x-access-token user info (https://x-access-token:[secure]@github.com/...)",
+      "file": "scripts/semantic-release-user-notes.ts",
+      "root_cause": "normalizeRepositoryUrl only stripped git+ and .git, so the authenticated CI repositoryUrl flowed into compareUrl and commit links",
+      "fix": "normalizeRepositoryUrl now strips user info and converts ssh/scp forms to https; rewrote the 78 existing CHANGELOG.md links",
+      "tags": [
+        "release",
+        "changelog",
+        "semantic-release",
+        "security"
+      ],
+      "related_bugs": [
+        "bug-412"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-22T02:59:07.000Z"
     }
   ]
 }

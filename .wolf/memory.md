@@ -3197,3 +3197,32 @@
 | 02:54 | Created .planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW-FIX.md | — | ~3237 |
 | 02:56 | Phase 08 review-fix iter 3 (--all): 8/8 fixed (afd9920..8d49761), suite 1071/1071, disposition 0/35 open | 08-REVIEW-FIX.md, 08-REVIEW-DISPOSITION.md | 865661c, 3d742c5 | ~25k |
 | 02:56 | Session end: 65 writes across 30 files (08-VERIFICATION.md, probe.test.ts, 08-REVIEW.md, claude.ts, ollama-provider.test.ts) | 15 reads | ~68306 tok |
+| 06:31 | Session end: 65 writes across 30 files (08-VERIFICATION.md, probe.test.ts, 08-REVIEW.md, claude.ts, ollama-provider.test.ts) | 16 reads | ~68306 tok |
+| 08:22 | Session end: 65 writes across 30 files (08-VERIFICATION.md, probe.test.ts, 08-REVIEW.md, claude.ts, ollama-provider.test.ts) | 16 reads | ~68306 tok |
+| 08:23 | Session end: 65 writes across 30 files (08-VERIFICATION.md, probe.test.ts, 08-REVIEW.md, claude.ts, ollama-provider.test.ts) | 16 reads | ~68306 tok |
+| 12:55 | Edited README.md | inline fix | ~34 |
+| 12:55 | Edited README.md | 1→3 lines | ~172 |
+| 12:55 | Edited README.md | 3→3 lines | ~61 |
+| 12:55 | Edited README.md | 3→7 lines | ~433 |
+| 12:55 | Edited README.md | modified names() | ~120 |
+| 12:55 | Edited README.md | 2→2 lines | ~62 |
+| 12:55 | Edited README.md | inline fix | ~86 |
+| 12:55 | Edited README.md | 2→2 lines | ~105 |
+| 12:56 | Edited README.md | inline fix | ~59 |
+| 12:56 | README synced to code: catalog steering + privacy, 25s/cut-off retry, prewarm, QQ_MODEL in .env.local, git root in context, QQ_ALLOW_FILE_READ inert, QQ_CONFIG_FILE resolution, pattern skip rule (left unstaged for review) | README.md | unstaged | ~15k |
+| 12:56 | Session end: 74 writes across 30 files (08-VERIFICATION.md, probe.test.ts, 08-REVIEW.md, claude.ts, ollama-provider.test.ts) | 17 reads | ~72529 tok |
+
+## Session: 2026-10-22 20:45
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 20:55 | Created .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md | — | ~4055 |
+| 20:56 | Edited .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md | inline fix | ~62 |
+| 20:56 | Edited .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md | inline fix | ~120 |
+| 20:56 | Edited .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md | "git show --stat HEAD" → "git show --stat " | ~60 |
+| 20:56 | Edited .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md | "git log --oneline -2" → "git log --oneline -- scri" | ~32 |
+| 20:57 | Session end: 5 writes across 1 files (261021-sya-PLAN.md) | 1 reads | ~8545 tok |
+| 20:57 | Edited tests/semantic-release-user-notes.test.ts | expanded (+19 lines) | ~238 |
+| 20:57 | Edited tests/semantic-release-user-notes.test.ts | expanded (+19 lines) | ~203 |
+| 20:58 | Edited scripts/semantic-release-user-notes.ts | added 4 condition(s) | ~214 |
+| 20:59 | quick 261021-sya: normalizeRepositoryUrl strips credentials/ssh forms; rewrote 78 CHANGELOG.md x-access-token links | scripts/semantic-release-user-notes.ts, tests/semantic-release-user-notes.test.ts, CHANGELOG.md | done, 30 tests pass | ~3000 |

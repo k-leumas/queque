@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-19T08:54:27.365Z
-> Files: 597 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-22T02:58:14.657Z
+> Files: 598 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -191,7 +191,7 @@
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest (~499 tok)
-- `README.md` — Project documentation (~3010 tok)
+- `README.md` — Project documentation (~3537 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. (~600 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
@@ -1026,6 +1026,10 @@
 - `261017-5q6-PLAN.md` — Quick plan: replace the stale `>>` init redirect with `qq init zsh && source ~/.zshrc` in src/cli/main.ts help, shell/zsh/queque.zsh qq-not-found zle message, release.yaml + homebrew.yml caveats (tracer); caveats auth-first with `claude /login`; CONTRIBUTING.md key optional / QQ_MODEL `claude-sonnet-5` / debug log default; python yaml + ruby caveats render gate (~6700 tok)
 - `COVERAGE.md` — api-coverage gate declaration: no external API integration (docs/help wording only) (~64 tok)
 
+## .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/
+
+- `261021-sya-PLAN.md` — Declares normalizeRepositoryUrl (~3906 tok)
+
 ## .planning/research/
 
 - `ARCHITECTURE.md` — Architecture Research: QueQue (~667 tok)
@@ -1073,7 +1077,7 @@
 
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
 - `docker-homebrew-smoke-runner.sh` (~491 tok)
-- `semantic-release-user-notes.ts` — semantic-release generateNotes/prepare: LLM highlights from the changeset since the last tag plus collapsed commit details; strips `## [Unreleased]` before the changelog plugin prepends. (~1400 tok)
+- `semantic-release-user-notes.ts` — semantic-release plugin that writes user-facing changelog notes. (~4122 tok)
 - `smoke-homebrew-docker.sh` (~953 tok)
 - `strip-cursor-coauthor-from-msg.sh` — Removes Cursor co-author trailer lines from a git commit message file or stdin. (~114 tok)
 
@@ -1209,7 +1213,7 @@
 - `qq-config.test.ts` — parsed: writeConfig (~1793 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
-- `semantic-release-user-notes.test.ts` — grouping, formatting, highlight JSON parse, generateNotes fallbacks, Unreleased strip. (~900 tok)
+- `semantic-release-user-notes.test.ts` — Declares repo; covers commit parsing, notes formatting, generateNotes (incl. CI credential URL) and normalizeRepositoryUrl cases (userinfo, git+, ssh, scp, trailing slash). (~3500 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d); adapters (b) model-call markers include `'messages.stream('` (09.1-04) (~2580 tok)
 - `structured-output.test.ts` — ModelTurn: turn, timeout, fired (~1991 tok)
