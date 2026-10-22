@@ -173,6 +173,25 @@ describe('helpers', () => {
     expect(normalizeRepositoryUrl('git+https://github.com/k-leumas/queque.git')).toBe(repo);
   });
 
+  it.each([
+    'https://x-access-token:[secure]@github.com/k-leumas/queque',
+    'https://x-access-token:ghs_abc123@github.com/k-leumas/queque.git',
+    'https://someone@github.com/k-leumas/queque',
+    'git+https://user:pw@github.com/k-leumas/queque.git',
+    'git@github.com:k-leumas/queque.git',
+    'ssh://git@github.com/k-leumas/queque.git',
+    'ssh://git@github.com:22/k-leumas/queque.git',
+    'git+ssh://git@github.com/k-leumas/queque.git',
+    'https://github.com/k-leumas/queque/',
+    repo,
+  ])('normalizes %s to the public https URL', (input) => {
+    expect(normalizeRepositoryUrl(input)).toBe(repo);
+  });
+
+  it('keeps an empty repository URL empty', () => {
+    expect(normalizeRepositoryUrl('')).toBe('');
+  });
+
   it('formats a UTC ISO date', () => {
     expect(isoDate(new Date('2026-10-12T20:54:02.803Z'))).toBe('2026-10-12');
   });
@@ -222,6 +241,25 @@ describe('generateNotes', () => {
     expect(notes).toContain('stream rows as they arrive');
     expect(notes).not.toContain('- ');
     expect(baseContext.logger.warn).toHaveBeenCalled();
+  });
+
+  it('drops CI credentials from compare and commit links', async () => {
+    vi.stubEnv('ANTHROPIC_API_KEY', '');
+    const notes = await generateNotes(
+      {},
+      {
+        ...baseContext,
+        options: {
+          repositoryUrl: 'https://x-access-token:ghs_abc123@github.com/k-leumas/queque.git',
+        },
+      },
+    );
+    expect(notes).toContain(
+      '# [0.6.0](https://github.com/k-leumas/queque/compare/v0.5.0...v0.6.0)',
+    );
+    expect(notes).toContain('https://github.com/k-leumas/queque/commit/1111111aaaa');
+    expect(notes).not.toContain('x-access-token');
+    expect(notes).not.toContain('@github.com');
   });
 
   it('inserts LLM highlights above the commit details', async () => {

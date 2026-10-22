@@ -293,9 +293,24 @@ export function stripUnreleasedSection(markdown: string): string {
     .replace(/\n{3,}/g, '\n\n');
 }
 
-/** Strips git+ and .git from a repository URL. */
+/** Returns a public https base URL: git+, user info and credentials, ssh/scp forms, .git and a trailing slash removed. */
 export function normalizeRepositoryUrl(url: string): string {
-  return url.replace(/^git\+/, '').replace(/\.git$/, '');
+  let value = url.trim().replace(/^git\+/, '');
+  if (!value.includes('://')) {
+    const scp = /^[^@\s/]+@([^:\s/]+):(.+)$/.exec(value);
+    if (scp) {
+      value = `https://${scp[1]}/${scp[2]}`;
+    }
+  }
+  const converted = /^(?:ssh|git):\/\//i.test(value);
+  if (converted) {
+    value = value.replace(/^(?:ssh|git):\/\//i, 'https://');
+  }
+  value = value.replace(/^([a-z][a-z0-9+.-]*:\/\/)[^/]*@/i, '$1');
+  if (converted) {
+    value = value.replace(/^(https:\/\/[^/:]+):\d+(?=\/|$)/, '$1');
+  }
+  return value.replace(/\.git$/, '').replace(/\/$/, '');
 }
 
 /** Formats a Date as YYYY-MM-DD. */
