@@ -5,10 +5,10 @@ current_phase: 08
 current_phase_name: Zero-Config Install and Provider Detection
 status: executing
 stopped_at: Phase 09.1 complete, ready to plan Phase 7
-last_updated: "2026-10-19T07:36:08.882Z"
+last_updated: "2026-10-22T03:00:36.783Z"
 last_activity: 2026-10-19
 last_activity_desc: Phase 08 execution resumed (wave continue)
-state_head: e90217efff72450f17a6f65837b89a806e73c184
+state_head: 6b3e986a6d57e49db8e80c4e049442b611ef2fec
 progress:
   total_phases: 12
   completed_phases: 8
@@ -169,10 +169,11 @@ None yet.
 | 261017-4kt | Update README to match current functionality (Claude Code /login auth, key precedence, init fix, tool awareness, privacy) | 2026-10-17 | 3d0cb0a | [261017-4kt-update-the-readme-to-match-the-current-f](./quick/261017-4kt-update-the-readme-to-match-the-current-f/) |
 | 261017-5q6 | Fix stale qq init command and auth guidance in help, zsh widget, Homebrew caveats, CONTRIBUTING.md | 2026-10-17 | c4583bf | [261017-5q6-fix-the-stale-init-command-in-homebrew-y](./quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/) |
 | 261018-wax | Prevent Ollama and OpenAI cut-off answers (schema, 16k ceiling, one retry) and label them beta | 2026-10-18 | b37ee48 | [261018-wax-prevent-ollama-and-openai-cut-off-answer](./quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/) |
+| 261021-sya | Strip x-access-token credentials from changelog repository links (script + 78 existing CHANGELOG links) | 2026-10-21 | 6b3e986 | [261021-sya-fix-changelog-links-leaking-x-access-tok](./quick/261021-sya-fix-changelog-links-leaking-x-access-tok/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-18 - Completed quick task 261018-wax: Prevent Ollama and OpenAI cut-off answers and label them beta
+Last activity: 2026-10-21 - Completed quick task 261021-sya: strip credentials from changelog repository links
 
 Last session: 2026-10-12T21:58:47.187Z
 Stopped at: Phase 09.1 complete, ready to plan Phase 7
