@@ -1,3 +1,16 @@
+## [0.7.1](https://github.com/k-leumas/queque/compare/v0.7.0...v0.7.1) (2026-10-27)
+
+### Bug Fixes
+
+- Fixed changelog links that could accidentally include embedded repository credentials, so shared release notes are now clean and safe to click.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **release:** strip credentials from changelog repository links ([bac2fc6](https://github.com/k-leumas/queque/commit/bac2fc61e72d909fabab6a3f1176a31b3ab07908))
+
+</details>
+
 # [0.7.0](https://github.com/k-leumas/queque/compare/v0.6.1...v0.7.0) (2026-10-19)
 
 ### Features
