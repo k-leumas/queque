@@ -68,7 +68,7 @@ An empty or whitespace-only value counts as unset.
 
 **Which route wins.** A non-empty `ANTHROPIC_API_KEY` always wins: QueQue calls Claude through the Anthropic SDK and never runs `claude -p`. There is no automatic fallback in either direction. If the API-key request fails, QueQue shows that error instead of trying your Claude Code login, and a failed `claude -p` run never falls back to a key. To switch to your Claude Code login, remove the key from your environment and `~/.env.local`, then restart the daemon.
 
-`QQ_MODEL` picks the model on the API-key route only. The default is `claude-sonnet-5`.
+`QQ_MODEL` (in your environment or `~/.env.local`) picks the model on the API-key route only. The default is `claude-sonnet-5`.
 
 ### OpenAI or Ollama (beta)
 
@@ -85,6 +85,8 @@ It asks one question (Claude, OpenAI or Ollama), saves your answer to `~/.config
 
 Your choice sticks. If the chosen provider fails, `??` shows that provider's error; QueQue never switches to a different provider on its own. Run `qq init provider` again to switch, including back to Claude.
 
+Every provider gets 25 seconds per `??`. If an OpenAI or Ollama answer is cut off before a full command, QueQue asks the same provider once more within those same 25 seconds. If the second try also falls short, you get the commands that did arrive, or a "cut off" message when none did. When an OpenAI model rejects one of QueQue's request settings, QueQue re-sends without it and remembers that for the model until the daemon restarts.
+
 `provider.json` is plain JSON you can edit by hand, and QueQue reads it again on every `??`:
 
 ```json
@@ -95,7 +97,7 @@ Add `"model"` to an OpenAI pin to change the model, or `"baseUrl"` to an Ollama 
 
 ### After changing your key or settings
 
-A background daemon answers `??` for every terminal. It starts with your first interactive shell (and again on the next `??` if it is not running) and inherits that shell's environment. It reads `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `QQ_MODEL`, `~/.env.local` and `~/.config/qq/config.json` once, when it starts. `provider.json` is the exception: it is read on every `??`.
+A background daemon answers `??` for every terminal. It starts with your first interactive shell (and again on the next `??` if it is not running) and inherits that shell's environment. It reads `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `QQ_MODEL`, `~/.env.local` and `~/.config/qq/config.json` once, when it starts. `provider.json` is the exception: it is read on every `??`. On the Claude Code login route, the daemon also keeps one idle `claude -p` process ready, so the next `??` skips Claude Code's start-up.
 
 - `qq init provider` restarts the daemon for you, so running it after exporting a new key is enough.
 
@@ -125,9 +127,13 @@ A command that matches a destructive pattern (`rm`, `sudo` and similar) is marke
 
 ### Installed-tool awareness
 
-QueQue checks each suggestion against the commands zsh can find on your machine. A row that needs a tool zsh cannot find gets `ⓘ` before its explanation, and the legend reads `ⓘ not installed`. The row stays selectable. When QueQue knows how to install that tool with brew, apt, dnf or pacman, the legend adds `tab prepends the install command`: press `Tab` (or `Shift+Tab`) on the row to switch it to the install form, and again to switch back. The install form is inserted like any other command, never run.
+On every `??`, zsh refreshes its list of the commands it can find (`rehash`), so a tool you installed a moment ago in the same shell counts. QueQue uses that list in two ways.
 
-Set `QQ_TOOL_AWARENESS=0` in your shell to turn this off.
+**It tells the provider which well-known tools you have.** QueQue ships a fixed catalog of 196 public command-line tool names that have common alternatives, such as `rg`, `fd`, `bat`, `jq` and `kubectl`. The request includes only the catalog tools you have installed, with instructions to prefer them, to make at least one suggestion that uses only installed tools, and never to suggest install steps. The catalog mostly leaves out basic utilities such as `ls`, `grep` and `find`; the provider is told those are present. Nothing outside the catalog is sent: the rest of your `PATH`, your shell functions and your aliases stay on your machine. The catalog is checked twice, once before the request leaves the client and again just before the prompt is built, so a name that is not in it never reaches a provider.
+
+**It marks suggestions that need a missing tool.** This check runs locally, against the full list. A row that needs a tool zsh cannot find gets `ⓘ` before its explanation, and the legend reads `ⓘ not installed`. The row stays selectable. When QueQue knows how to install that tool with brew, apt, dnf or pacman, the legend adds `tab prepends the install command`: press `Tab` (or `Shift+Tab`) on the row to switch it to the install form, and again to switch back. The install form is inserted like any other command, never run.
+
+Set `QQ_TOOL_AWARENESS=0` in your shell to turn off both: no tool names are sent and no rows are marked.
 
 ### Inside Zellij
 
@@ -145,20 +151,20 @@ QueQue is **insertion-only**: it writes commands into your shell buffer — you 
 
 - Your query text and current working directory
 - Your OS platform name (for example `darwin` or `linux`) and shell name (`zsh`)
-- Git metadata (branch, dirty flag, changed file *names* — not file contents)
+- Git metadata (repository root path, branch, dirty flag, changed file *names* — not file contents)
 - Parsed filename hints from your query (no disk reads)
-- The names of installed tools that appear in QueQue's public tool catalog. Your full `PATH` inventory, functions and aliases stay on your machine. `QQ_TOOL_AWARENESS=0` stops even the catalog names.
+- The names of installed tools that appear in QueQue's public catalog of 196 well-known tools (see [Installed-tool awareness](#installed-tool-awareness)). The rest of your `PATH`, your function names and your alias names stay on your machine. `QQ_TOOL_AWARENESS=0` stops even the catalog names.
 
 **With Ollama**, the same context goes only to your Ollama server (`http://localhost:11434` by default, or the `baseUrl` in `provider.json`). With the default setting, nothing leaves your machine. A `baseUrl` that starts with `http://` and names another machine sends that context across the network unencrypted; for a remote server, use an `https://` URL (for example behind a reverse proxy).
 
 **What QueQue never sends:**
 
-- File contents (unless you explicitly opt in later with `QQ_ALLOW_FILE_READ=1`)
-- Paths matching sensitive patterns (`.env`, credentials, `.pem`, `id_rsa`, etc.) are stripped from git context
+- File contents. `QQ_ALLOW_FILE_READ=1` is reserved for a future opt-in and reads nothing today.
+- Paths matching sensitive patterns (`.env`, credentials, `.pem`, `id_rsa`, `.ssh/`, `.aws/`, `secret`) are stripped from git context
 
 **Debug logging:** The client and daemon append short diagnostics to `/tmp/qq-<uid>-debug.log`, or to the file named by `QQ_DEBUG_LOG_FILE`. Shell buffer and query text are redacted unless `QQ_DEBUG_VERBOSE=1`. The zsh widget adds its own lines only when `QQ_DEBUG_LOG_FILE` is set. The log stays on your machine.
 
-**User config:** Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` to add extra sensitive path patterns, log redaction keys, or destructive-command warnings. Built-in defaults always apply — your patterns are merged on top. Override the file path with `QQ_CONFIG_FILE`. Malformed `config.json` is ignored with a warning; QueQue falls back to built-in defaults (fail-closed).
+**User config:** Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` to add extra sensitive path patterns, log redaction keys, or destructive-command warnings. Built-in defaults always apply — your patterns are merged on top. Override the file path with `QQ_CONFIG_FILE`: a leading `~/` means your home directory, and a relative path is resolved against your home directory. Malformed `config.json` is ignored with a warning; QueQue falls back to built-in defaults (fail-closed).
 
 See [docs/EXTENSIONS.md](docs/EXTENSIONS.md) for the expansion path (local learning, multi-provider, plugins).
 
@@ -168,12 +174,12 @@ Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/confi
 
 | Field | Type | Purpose |
 |-------|------|---------|
-| `effort` | `"low" \| "medium" \| "high" \| "xhigh" \| "max"` | Claude effort for `claude -p` (`--effort`) and for the API-key SDK path, which sends it as `output_config.effort`. The SDK path omits it when `QQ_MODEL` names a model without effort support (Haiku 4.5, Sonnet 4.5 or older); a level that a `QQ_MODEL` model does not support (for example `xhigh` on Opus 4.5) is your responsibility. Default `low`. Trimmed and case-insensitive; invalid values fall back to `low` without affecting the rest of the file. Takes effect after a [daemon restart](#after-changing-your-key-or-settings), because the daemon reads config.json once. |
-| `privacy.sensitivePathPatterns` | `string[]` | Extra regex patterns merged onto built-in defaults (`.env`, credentials, keys, etc.). Built-in patterns are never removed. |
+| `effort` | `"low" \| "medium" \| "high" \| "xhigh" \| "max"` | Claude effort for `claude -p` (`--effort`) and for the API-key SDK path, which sends it as `output_config.effort`. The SDK path omits it when `QQ_MODEL` names a model without effort support (Haiku 4.5, Sonnet 4.5 or older); a level that a `QQ_MODEL` model does not support (for example `xhigh` on Opus 4.5) is your responsibility. Default `low`. Trimmed and case-insensitive; invalid values fall back to `low` without affecting the rest of the file. Takes effect after a [daemon restart](#after-changing-your-key-or-settings), because the daemon reads config.json once. OpenAI and Ollama ignore it. |
+| `privacy.sensitivePathPatterns` | `string[]` | Extra regex patterns merged onto built-in defaults (`.env`, credentials, keys, etc.). Built-in patterns are never removed. An invalid pattern, or one longer than 256 characters, is skipped. |
 | `privacy.redactLogKeys` | `string[]` | Extra JSON keys to redact in debug logs (merged with defaults: `lbuffer`, `rbuffer`, `queryText`, `request`). |
 | `privacy.allowFileRead` | `boolean` | Opt-in gate for future file-content context. Env `QQ_ALLOW_FILE_READ=1` overrides this. No file reads in v1. |
 | `privacy.useGitignore` | `boolean` | Reserved for future gitignore-based filtering. Ignored today. |
-| `safety.destructiveCommandPatterns` | `string[]` | Extra warn-only UI patterns merged onto built-in defaults (`rm`, `sudo`, etc.). |
+| `safety.destructiveCommandPatterns` | `string[]` | Extra warn-only UI patterns merged onto built-in defaults (`rm`, `sudo`, `chmod -R`, writes to `/dev/`, `curl` or `wget` piped to `sh`). The same skip rule applies. |
 
 See [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) for architecture.
 

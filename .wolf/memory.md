@@ -3226,3 +3226,6 @@
 | 20:57 | Edited tests/semantic-release-user-notes.test.ts | expanded (+19 lines) | ~203 |
 | 20:58 | Edited scripts/semantic-release-user-notes.ts | added 4 condition(s) | ~214 |
 | 20:59 | quick 261021-sya: normalizeRepositoryUrl strips credentials/ssh forms; rewrote 78 CHANGELOG.md x-access-token links | scripts/semantic-release-user-notes.ts, tests/semantic-release-user-notes.test.ts, CHANGELOG.md | done, 30 tests pass | ~3000 |
+| 21:00 | Created .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-SUMMARY.md | — | ~990 |
+| 21:01 | Session end: 9 writes across 4 files (261021-sya-PLAN.md, semantic-release-user-notes.test.ts, semantic-release-user-notes.ts, 261021-sya-SUMMARY.md) | 1 reads | ~10260 tok |
+| 17:02 | Session end: 9 writes across 4 files (261021-sya-PLAN.md, semantic-release-user-notes.test.ts, semantic-release-user-notes.ts, 261021-sya-SUMMARY.md) | 1 reads | ~10260 tok |

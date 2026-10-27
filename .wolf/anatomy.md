@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-22T02:58:14.657Z
-> Files: 598 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-22T03:00:11.311Z
+> Files: 599 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -1029,6 +1029,7 @@
 ## .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/
 
 - `261021-sya-PLAN.md` — Declares normalizeRepositoryUrl (~3906 tok)
+- `261021-sya-SUMMARY.md` — Quick 261021-sya Plan 01: Fix Changelog Links Leaking x-access-token Summary (~928 tok)
 
 ## .planning/research/
 

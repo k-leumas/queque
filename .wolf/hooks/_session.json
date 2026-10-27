@@ -1,510 +1,78 @@
 {
-  "session_id": "session-2026-10-19-0118",
-  "started": "2026-10-19T07:18:38.299Z",
+  "session_id": "session-2026-10-22-2045",
+  "started": "2026-10-22T02:45:27.071Z",
   "files_read": {
-    "/Users/samuel/.claude/gsd-core/workflows/execute-phase.md": {
-      "count": 2,
-      "tokens": 0,
-      "first_read": "2026-10-19T07:35:29.675Z"
-    },
-    "/Users/samuel/.claude/projects/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/tool-results/b2ur9djzh.txt": {
+    "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md": {
       "count": 1,
-      "tokens": 0,
-      "first_read": "2026-10-19T07:49:07.725Z"
-    },
-    "/Users/samuel/.claude/gsd-core/workflows/code-review.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-10-19T08:20:58.394Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW.md": {
-      "count": 2,
-      "tokens": 3419,
-      "first_read": "2026-10-19T08:21:41.382Z"
-    },
-    "/Users/samuel/.claude/gsd-core/workflows/code-review-fix.md": {
-      "count": 1,
-      "tokens": 0,
-      "first_read": "2026-10-19T08:34:56.747Z"
-    },
-    "/Users/samuel/dev/tui-llm/.planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW-FIX.md": {
-      "count": 1,
-      "tokens": 5743,
-      "first_read": "2026-10-19T08:35:38.879Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/claude.ts": {
-      "count": 1,
-      "tokens": 2650,
-      "first_read": "2026-10-19T08:35:55.695Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/openai.ts": {
-      "count": 3,
-      "tokens": 4712,
-      "first_read": "2026-10-19T08:35:56.118Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/structured-output.ts": {
-      "count": 1,
-      "tokens": 900,
-      "first_read": "2026-10-19T08:35:56.707Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/ollama.ts": {
-      "count": 1,
-      "tokens": 1800,
-      "first_read": "2026-10-19T08:36:00.667Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/provider-pin.ts": {
-      "count": 1,
-      "tokens": 1300,
-      "first_read": "2026-10-19T08:36:01.350Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts": {
-      "count": 4,
-      "tokens": 9439,
-      "first_read": "2026-10-19T08:36:13.477Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/candidate-stream.ts": {
-      "count": 1,
-      "tokens": 900,
-      "first_read": "2026-10-19T08:36:28.663Z"
-    },
-    "/Users/samuel/dev/tui-llm/tests/openai-provider.test.ts": {
-      "count": 3,
-      "tokens": 9207,
-      "first_read": "2026-10-19T08:39:06.138Z"
-    },
-    "/Users/samuel/dev/tui-llm/src/providers/provider.ts": {
-      "count": 1,
-      "tokens": 470,
-      "first_read": "2026-10-19T08:42:51.143Z"
+      "tokens": 3906,
+      "first_read": "2026-10-22T02:57:26.012Z"
     }
   },
   "files_written": [
     {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/08-zero-config-install-and-provider-detection/08-VERIFICATION.md",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md",
       "action": "create",
-      "tokens": 7700,
-      "at": "2026-10-19T07:53:31.561Z"
+      "tokens": 4345,
+      "at": "2026-10-22T02:55:49.254Z"
     },
     {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/probe.test.ts",
-      "action": "create",
-      "tokens": 794,
-      "at": "2026-10-19T08:24:30.498Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW.md",
-      "action": "create",
-      "tokens": 3907,
-      "at": "2026-10-19T08:30:25.508Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/claude.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md",
       "action": "edit",
-      "tokens": 848,
-      "at": "2026-10-19T08:37:05.921Z"
+      "tokens": 67,
+      "at": "2026-10-22T02:56:13.971Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/claude.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md",
       "action": "edit",
-      "tokens": 101,
-      "at": "2026-10-19T08:37:06.336Z"
+      "tokens": 129,
+      "at": "2026-10-22T02:56:39.682Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/claude.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md",
       "action": "edit",
-      "tokens": 44,
-      "at": "2026-10-19T08:37:06.957Z"
+      "tokens": 64,
+      "at": "2026-10-22T02:56:41.620Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 670,
-      "at": "2026-10-19T08:37:21.207Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/addbug.py",
-      "action": "create",
-      "tokens": 228,
-      "at": "2026-10-19T08:38:19.614Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/addbug.py",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-10-19T08:38:26.887Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr13.json",
-      "action": "create",
-      "tokens": 206,
-      "at": "2026-10-19T08:38:30.061Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 140,
-      "at": "2026-10-19T08:39:59.543Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 299,
-      "at": "2026-10-19T08:40:00.041Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 117,
-      "at": "2026-10-19T08:40:00.437Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 201,
-      "at": "2026-10-19T08:40:00.884Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 218,
-      "at": "2026-10-19T08:40:01.287Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/openai-provider.test.ts",
-      "action": "edit",
-      "tokens": 959,
-      "at": "2026-10-19T08:40:18.782Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr14.json",
-      "action": "create",
-      "tokens": 246,
-      "at": "2026-10-19T08:40:40.593Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/ollama.ts",
-      "action": "edit",
-      "tokens": 251,
-      "at": "2026-10-19T08:41:19.362Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/ollama.ts",
-      "action": "edit",
-      "tokens": 14,
-      "at": "2026-10-19T08:41:19.833Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/structured-output.ts",
-      "action": "edit",
-      "tokens": 77,
-      "at": "2026-10-19T08:41:20.330Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 30,
-      "at": "2026-10-19T08:41:32.967Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 21,
-      "at": "2026-10-19T08:41:33.362Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 365,
-      "at": "2026-10-19T08:41:54.404Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 126,
-      "at": "2026-10-19T08:42:07.411Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/docs/EXTENSIONS.md",
-      "action": "edit",
-      "tokens": 123,
-      "at": "2026-10-19T08:42:07.789Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/docs/EXTENSIONS.md",
-      "action": "edit",
-      "tokens": 32,
-      "at": "2026-10-19T08:42:19.004Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr15.json",
-      "action": "create",
-      "tokens": 197,
-      "at": "2026-10-19T08:42:34.267Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/provider.ts",
-      "action": "edit",
-      "tokens": 208,
-      "at": "2026-10-19T08:43:29.087Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/ollama.ts",
-      "action": "edit",
-      "tokens": 119,
-      "at": "2026-10-19T08:43:29.552Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/ollama.ts",
-      "action": "edit",
-      "tokens": 42,
-      "at": "2026-10-19T08:43:30.282Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/provider-pin.ts",
-      "action": "edit",
-      "tokens": 192,
-      "at": "2026-10-19T08:43:30.928Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/provider-pin.ts",
-      "action": "edit",
-      "tokens": 20,
-      "at": "2026-10-19T08:43:31.425Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/provider-pin.test.ts",
-      "action": "edit",
-      "tokens": 167,
-      "at": "2026-10-19T08:43:49.257Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 143,
-      "at": "2026-10-19T08:43:49.719Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in15.json",
-      "action": "create",
-      "tokens": 178,
-      "at": "2026-10-19T08:44:16.050Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/env-file.ts",
-      "action": "edit",
-      "tokens": 448,
-      "at": "2026-10-19T08:45:17.420Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/env-file.ts",
-      "action": "edit",
-      "tokens": 15,
-      "at": "2026-10-19T08:45:17.903Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/env-file.test.ts",
-      "action": "edit",
-      "tokens": 417,
-      "at": "2026-10-19T08:45:18.371Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/README.md",
-      "action": "edit",
-      "tokens": 55,
-      "at": "2026-10-19T08:45:26.139Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt",
-      "action": "create",
-      "tokens": 82,
-      "at": "2026-10-19T08:46:10.733Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in16.json",
-      "action": "create",
-      "tokens": 197,
-      "at": "2026-10-19T08:46:14.397Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/structured-output.ts",
-      "action": "edit",
-      "tokens": 203,
-      "at": "2026-10-19T08:47:08.454Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/structured-output.ts",
-      "action": "edit",
-      "tokens": 84,
-      "at": "2026-10-19T08:47:08.874Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/ollama.ts",
-      "action": "edit",
-      "tokens": 27,
-      "at": "2026-10-19T08:47:09.277Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md",
       "action": "edit",
       "tokens": 34,
-      "at": "2026-10-19T08:47:09.780Z"
+      "at": "2026-10-22T02:56:43.984Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/semantic-release-user-notes.test.ts",
       "action": "edit",
-      "tokens": 132,
-      "at": "2026-10-19T08:47:10.181Z"
+      "tokens": 238,
+      "at": "2026-10-22T02:57:48.948Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
+      "file": "/Users/samuel/dev/tui-llm/tests/semantic-release-user-notes.test.ts",
       "action": "edit",
-      "tokens": 96,
-      "at": "2026-10-19T08:47:10.582Z"
+      "tokens": 203,
+      "at": "2026-10-22T02:57:50.632Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/structured-output.test.ts",
+      "file": "/Users/samuel/dev/tui-llm/scripts/semantic-release-user-notes.ts",
       "action": "edit",
-      "tokens": 377,
-      "at": "2026-10-19T08:47:36.216Z"
+      "tokens": 214,
+      "at": "2026-10-22T02:58:14.678Z"
     },
     {
-      "file": "/Users/samuel/dev/tui-llm/tests/openai-provider.test.ts",
-      "action": "edit",
-      "tokens": 389,
-      "at": "2026-10-19T08:47:36.616Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 276,
-      "at": "2026-10-19T08:47:46.833Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/openai-provider.test.ts",
-      "action": "edit",
-      "tokens": 89,
-      "at": "2026-10-19T08:48:10.014Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/ollama-provider.test.ts",
-      "action": "edit",
-      "tokens": 80,
-      "at": "2026-10-19T08:49:05.468Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in17.json",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-SUMMARY.md",
       "action": "create",
-      "tokens": 249,
-      "at": "2026-10-19T08:49:23.916Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt",
-      "action": "create",
-      "tokens": 73,
-      "at": "2026-10-19T08:49:26.090Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 265,
-      "at": "2026-10-19T08:50:08.559Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 48,
-      "at": "2026-10-19T08:50:09.005Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/providers/openai.ts",
-      "action": "edit",
-      "tokens": 142,
-      "at": "2026-10-19T08:50:09.430Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/openai-provider.test.ts",
-      "action": "edit",
-      "tokens": 451,
-      "at": "2026-10-19T08:50:29.118Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in18.json",
-      "action": "create",
-      "tokens": 185,
-      "at": "2026-10-19T08:50:44.068Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt",
-      "action": "create",
-      "tokens": 77,
-      "at": "2026-10-19T08:50:46.322Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/src/shared/qq-config.ts",
-      "action": "edit",
-      "tokens": 222,
-      "at": "2026-10-19T08:51:52.411Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/tests/qq-config.test.ts",
-      "action": "edit",
-      "tokens": 317,
-      "at": "2026-10-19T08:51:52.807Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in19.json",
-      "action": "create",
-      "tokens": 211,
-      "at": "2026-10-19T08:52:07.220Z"
-    },
-    {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt",
-      "action": "create",
-      "tokens": 59,
-      "at": "2026-10-19T08:52:09.623Z"
-    },
-    {
-      "file": "/Users/samuel/dev/tui-llm/.planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW-FIX.md",
-      "action": "create",
-      "tokens": 3468,
-      "at": "2026-10-19T08:54:27.382Z"
+      "tokens": 1060,
+      "at": "2026-10-22T03:00:11.352Z"
     }
   ],
   "edit_counts": {
-    ".planning/phases/08-zero-config-install-and-provider-detection/08-VERIFICATION.md": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/probe.test.ts": 1,
-    ".planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW.md": 1,
-    "src/providers/claude.ts": 3,
-    "tests/ollama-provider.test.ts": 8,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/addbug.py": 2,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr13.json": 1,
-    "src/providers/openai.ts": 11,
-    "tests/openai-provider.test.ts": 4,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr14.json": 1,
-    "src/providers/ollama.ts": 5,
-    "src/providers/structured-output.ts": 3,
-    "docs/EXTENSIONS.md": 2,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-wr15.json": 1,
-    "src/providers/provider.ts": 1,
-    "src/providers/provider-pin.ts": 2,
-    "tests/provider-pin.test.ts": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in15.json": 1,
-    "src/shared/env-file.ts": 2,
-    "tests/env-file.test.ts": 1,
-    "README.md": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/msg.txt": 4,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in16.json": 1,
-    "tests/structured-output.test.ts": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in17.json": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in18.json": 1,
-    "src/shared/qq-config.ts": 1,
-    "tests/qq-config.test.ts": 1,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/bug-in19.json": 1,
-    ".planning/phases/08-zero-config-install-and-provider-detection/08-REVIEW-FIX.md": 1
+    ".planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-PLAN.md": 5,
+    "tests/semantic-release-user-notes.test.ts": 2,
+    "scripts/semantic-release-user-notes.ts": 1,
+    ".planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/261021-sya-SUMMARY.md": 1
   },
-  "anatomy_hits": 11,
-  "anatomy_misses": 4,
-  "repeated_reads_warned": 9,
+  "anatomy_hits": 1,
+  "anatomy_misses": 0,
+  "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 10
+  "stop_count": 6
 }
