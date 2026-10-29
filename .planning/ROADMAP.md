@@ -371,7 +371,7 @@ Plans:
 **Estimate:** ~3–3.5 days.
 **Requirements**: TBD
 **Depends on:** Phase 9
-**Plans:** 4/13 plans executed
+**Plans:** 6/13 plans executed
 
 Plans:
 **Wave 1**
@@ -381,8 +381,8 @@ Plans:
 - [x] 10-04-PLAN.md — Telemetry allow-list contract, uncached consent state with env kill switches, EU host and empty key baked at build time (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 10-05-PLAN.md — `ci.yml` (doc-only filter, checks, `ci-ok` gate) and reusable `distro.yml` (six-distro vitest and smoke); smoke asserts doctor exit 0 (wave 2)
-- [ ] 10-06-PLAN.md — Daemon telemetry buffer and `/batch` sender, telemetry IPC kinds, bounded shutdown flush, error kinds on `fetch-error` (wave 2)
+- [x] 10-05-PLAN.md — `ci.yml` (doc-only filter, checks, `ci-ok` gate) and reusable `distro.yml` (six-distro vitest and smoke); smoke asserts doctor exit 0 (wave 2)
+- [x] 10-06-PLAN.md — Daemon telemetry buffer and `/batch` sender, telemetry IPC kinds, bounded shutdown flush, error kinds on `fetch-error` (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 10-07-PLAN.md — Auto-revert PR on smoke failure (last green tree restore, one PR per branch, diagnostics body, GITHUB_TOKEN) (wave 3)
