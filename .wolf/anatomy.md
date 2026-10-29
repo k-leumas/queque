@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T22:44:02.351Z
-> Files: 534 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T23:48:48.011Z
+> Files: 536 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -84,6 +84,10 @@
 - `red1-msg.txt` (~85 tok)
 - `red2-msg.txt` (~76 tok)
 - `summary-msg.txt` (~13 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/p10-12-drill/
+
+- `commit-msg.txt` (~61 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/
 
@@ -266,6 +270,10 @@
 ## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
 - `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~4329 tok)
+
+## .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~6996 tok)
 
 ## .github/workflows/
 
@@ -677,7 +685,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — QueQue ZLE widget + shell result contract: `??` trigger, qq lookup, instant first frame (quick 261011-jbh: `_qq_instant_frame`, `_qq_inline_instant_frame_bytes`, `_qq_paint_inline_instant_frame` before mktemp, `_qq_write_pane_instant_frame` + `QQ_PANE_PAINT_SCRIPT` `/bin/sh` pane wrapper, `QQ_INSTANT_FRAME=0` kill switch, inline clear on non-zero client exit), session dir, request.json, `_qq_write_tool_handoff`, Zellij FIFO pane / inline foreground client, `_qq_apply_result_str`. Phase 10 Defect 3: `mktemp -d ... 2>/dev/null` + empty/non-dir guard → clear the instant frame, restore buffers, `zle -M "queque: cannot create a temp dir in /tmp"`, return 0 before request.json (10-02). 10-10: export QQ_ZSH_VERSION="$ZSH_VERSION" after the tool handoff, before the Zellij/inline launch. (~4840 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~5619 tok)
 
 ## src/
 
@@ -841,7 +849,7 @@
 - `tool-awareness.test.ts` — Characterization tests for missing-tool semantics, installer choice, package aliases, install forms/wrapping/blocked plans and annotateCandidates (incl. CR-02: no install form for a wrapper option value such as `sudo --user root`). (~3573 tok)
 - `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — argv, height cap, trailing cursor row mapping (QQ_PANE_HEIGHT=24: 15→18, 21→24, 22→24, min 6), pane-id format, dedupe, outside-Zellij no-op; fake Zellij applies heights in completion order: slower stale action lands last, coalescing to the newest, equal-height drop, ENOENT error release, RESIZE_SETTLE_TIMEOUT_MS kill release, every child unref'd. (~1900 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`): trigger capture, result application, tool handoff (ERR-trap safety, placement, shape guard, 25 ms timing), and `instant frame` z1-z10 (rows, sanitising, truncation, reserve drift guard vs inlineScrollReserve, kill switch, pane file + `/bin/sh` wrapper, placement; `runZshArgs` passes user text as positional params). Phase 10: mktemp failure (Defect 3: shadowed mktemp, stubbed zle, client marker) (10-02); QQ_ZSH_VERSION export static placement check (10-10). (~7917 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~14186 tok)
 
 ## tests/fixtures/
 
