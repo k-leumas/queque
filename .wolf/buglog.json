@@ -6826,6 +6826,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T02:07:28.874Z"
+    },
+    {
+      "id": "bug-416",
+      "timestamp": "2026-10-29T17:20:20.703Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/ROADMAP.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 5→17 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T17:20:20.703Z"
+    },
+    {
+      "id": "bug-417",
+      "timestamp": "2026-10-29T17:25:10.009Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 14→21 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T17:25:10.009Z"
+    },
+    {
+      "id": "bug-418",
+      "timestamp": "2026-10-29T17:26:44.359Z",
+      "error_message": "Wrong reference: artifacts should be D",
+      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-13-PLAN.md",
+      "root_cause": "Used \"artifacts\" instead of \"D\"",
+      "fix": "Changed artifacts → D",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T17:26:44.359Z"
     }
   ]
 }

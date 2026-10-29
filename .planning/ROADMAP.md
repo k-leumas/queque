@@ -371,7 +371,30 @@ Plans:
 **Estimate:** ~3–3.5 days.
 **Requirements**: TBD
 **Depends on:** Phase 9
-**Plans:** 0 plans
+**Plans:** 13 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 10 to break down)
+**Wave 1**
+- [ ] 10-01-PLAN.md — Tracer: one accepted `??` in alpine:3.24 from a `pnpm pack` install through a real zsh PTY (fake `claude` only); busybox lsof fix proven on Alpine; Esc, no-XDG and C-locale passes on alpine and debian; D-16 skip (wave 1)
+- [ ] 10-02-PLAN.md — D-04 stale-prewarm simulation (stopped, stale, killed children) and the widget `mktemp` guard (wave 1)
+- [ ] 10-03-PLAN.md — `qq doctor [--json]`: ✓/⚠/✗ checklist, exit 1 only for hard blockers incl. jq and zsh < 5.0 (wave 1)
+- [ ] 10-04-PLAN.md — Telemetry allow-list contract, uncached consent state with env kill switches, EU host and empty key baked at build time (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 10-05-PLAN.md — `ci.yml` (doc-only filter, checks, `ci-ok` gate) and reusable `distro.yml` (six-distro vitest and smoke); smoke asserts doctor exit 0 (wave 2)
+- [ ] 10-06-PLAN.md — Daemon telemetry buffer and `/batch` sender, telemetry IPC kinds, bounded shutdown flush, error kinds on `fetch-error` (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 10-07-PLAN.md — Auto-revert PR on smoke failure (last green tree restore, one PR per branch, diagnostics body, GITHUB_TOKEN) (wave 3)
+- [ ] 10-08-PLAN.md — Nightly `:latest` matrices and the single live SDK contract job (wave 3)
+- [ ] 10-09-PLAN.md — `qq telemetry status|on|off|show` and the doctor telemetry row (wave 3)
+- [ ] 10-10-PLAN.md — Client outcome, error and environment events, gated client-side, with an end-to-end leak test (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 10-11-PLAN.md — One-time default-No consent prompt after the first accepted `??` (PTY smoke pass); phase gate and OpenWolf records (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 10-12-PLAN.md — Human gates: Actions may create PRs, green six-distro run on GitHub, revert drill, `ci-ok` required (wave 5)
+
+**Wave 6** *(blocked on Wave 5 completion)*
+- [ ] 10-13-PLAN.md — Human gates: PostHog EU project, decision to bake the key (one-way), $ip/GeoIP absence check (wave 6)
