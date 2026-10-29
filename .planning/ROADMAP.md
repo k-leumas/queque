@@ -371,7 +371,7 @@ Plans:
 **Estimate:** ~3–3.5 days.
 **Requirements**: TBD
 **Depends on:** Phase 9
-**Plans:** 10/13 plans executed
+**Plans:** 11/13 plans executed
 
 Plans:
 **Wave 1**
@@ -391,7 +391,7 @@ Plans:
 - [x] 10-10-PLAN.md — Client outcome, error and environment events, gated client-side, with an end-to-end leak test (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 10-11-PLAN.md — One-time default-No consent prompt after the first accepted `??` (PTY smoke pass); phase gate and OpenWolf records (wave 4)
+- [x] 10-11-PLAN.md — One-time default-No consent prompt after the first accepted `??` (PTY smoke pass); phase gate and OpenWolf records (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 10-12-PLAN.md — Human gates: Actions may create PRs, green six-distro run on GitHub, revert drill, `ci-ok` required (wave 5)
