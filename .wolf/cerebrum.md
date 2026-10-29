@@ -224,6 +224,7 @@
 - [2026-10-29] Do not log a stub's argv with `jq -n '$ARGS.positional' --args "$@"`: jq still parses later `--flags` (`--paginate`) as its own options. Encode each argument with `printf '%s' "$a" | jq -Rs .` and slurp (bug-458).
 - [2026-10-29] In `shutdownDaemon`, call `telemetry.flush()` synchronously (try/catch for a sync throw); wrapping it in `Promise.resolve().then(...)` starts it after `server.close()`. To bound a test on the `server.close` callback, use `vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })` and wait on `server.once('close')`, not `vi.waitFor` (it advances fake timers itself).
 - [2026-10-29] When curating .wolf/buglog.json, compute the next id from the max BEFORE dropping hook entries: numbering after the drop reused dropped ids (bug-430..437) and had to be redone (10-11).
+- [2026-10-29] Any test that spawns git must not inherit GIT_DIR / GIT_WORK_TREE / GIT_INDEX_FILE / GIT_COMMON_DIR etc.: git hooks (lefthook pre-push) run from a linked worktree export them, and `...process.env` then aims fixture `git init --bare`/`commit`/`branch` at the real repo (set core.bare=true on the shared .git/config). tests/setup/scrub-git-env.ts (vitest setupFiles) strips them; keep new vitest configs wired to it.
 
 ## Decision Log
 
