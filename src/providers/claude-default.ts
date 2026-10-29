@@ -76,7 +76,8 @@ function exitCodeDetail(error: unknown): boolean {
   return code !== 0 && code !== null && code !== undefined;
 }
 
-function lookupApiKey(): string | undefined {
+/** The usable ANTHROPIC_API_KEY (env first, then ~/.env.local): set means the SDK path. */
+export function lookupApiKey(): string | undefined {
   return (
     usableSecret(process.env.ANTHROPIC_API_KEY) ??
     usableSecret(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY'))
