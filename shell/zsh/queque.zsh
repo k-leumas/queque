@@ -102,6 +102,15 @@ _qq_instant_frame() {
   if [[ "${QQ_INSTANT_FRAME:-}" == 0 ]]; then
     return 0
   fi
+  # Outside a UTF-8 locale (glibc images default to C) zsh counts and slices bytes, so the
+  # header came out short (› and … are 3 bytes) and a typed multibyte character could be cut
+  # in half. Count characters in a UTF-8 locale for this function only; if none exists the
+  # assignment is a no-op and the old byte arithmetic stays.
+  local probe='›'
+  if (( ${#probe} != 1 )); then
+    local LC_ALL=C.UTF-8
+    (( ${#probe} == 1 )) || LC_ALL=en_US.UTF-8
+  fi
   local lbuffer="${1//[[:cntrl:]]/}"
   local columns="${2:-}"
   if [[ "$columns" != <1-> ]] || (( columns > QQ_MODAL_MAX_COLUMNS )); then
