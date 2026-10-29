@@ -1,6 +1,7 @@
 import type * as net from 'node:net';
 import { ensureDaemon } from '../../daemon/bootstrap.js';
 import { startDaemonServer } from '../../daemon/server.js';
+import type { TelemetryBuffer } from '../../daemon/telemetry-buffer.js';
 import { disablePrewarm, enablePrewarm } from '../../providers/claude-prewarm.js';
 import { SIGKILL_GRACE_MS } from '../../providers/claude-process.js';
 import { appendDebugLog } from '../../shared/debug-log.js';
@@ -28,6 +29,8 @@ export interface DaemonShutdownOptions {
   exit?: () => void;
   /** How long to stay alive after ending in-flight connections (SIGTERM → SIGKILL grace). */
   graceMs?: number;
+  /** The telemetry buffer to stop and flush before the server closes (phase 10, D-07). */
+  telemetry?: Pick<TelemetryBuffer, 'flush' | 'stop'>;
 }
 
 /**
