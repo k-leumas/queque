@@ -29,6 +29,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "commitlint": "commitlint --edit",
+    "smoke:distro": "scripts/smoke-distro.sh",
     "prepare": "[ -d .git ] && lefthook install || true"
   },
   "dependencies": {
