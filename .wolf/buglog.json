@@ -7044,6 +7044,86 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T22:34:15Z"
+    },
+    {
+      "id": "bug-427",
+      "timestamp": "2026-10-29T23:40:51.736Z",
+      "error_message": "Null/undefined access in ",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T23:40:51.736Z"
+    },
+    {
+      "id": "bug-428",
+      "timestamp": "2026-10-29T23:47:17.962Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→6 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T23:47:17.962Z"
+    },
+    {
+      "id": "bug-429",
+      "timestamp": "2026-10-29T23:47:32.585Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: - Drill (parallel track): `0db4004` `test: break the ?? bind",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-29T23:48:08.505Z"
+    },
+    {
+      "id": "bug-430",
+      "timestamp": "2026-10-29T23:48:00.011Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T23:48:00.011Z"
+    },
+    {
+      "id": "bug-431",
+      "timestamp": "2026-10-29T23:48:16.705Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",
+      "root_cause": "Had `/gsd-plan-phase 10 --gaps`",
+      "fix": "Changed to `shell/zsh/queque.zsh`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T23:48:16.705Z"
     }
   ]
 }
