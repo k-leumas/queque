@@ -64,12 +64,22 @@ if [[ -z "$IMAGE" ]]; then
   exit 2
 fi
 
+# D-16: skip with a warning only locally; a CI leg must never pass by skipping.
+if ! docker info >/dev/null 2>&1; then
+  if [[ -n "${CI:-}" ]]; then
+    echo "error: Docker is not available" >&2
+    exit 1
+  fi
+  echo "warning: Docker is not available; skipping distro smoke" >&2
+  exit 0
+fi
+
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SLUG="${IMAGE//[:\/]/-}"
 OUT_DIR="${OUT_DIR:-${QQ_SMOKE_OUT:-${TMPDIR:-/tmp}/qq-smoke-$SLUG}}"
 mkdir -p "$OUT_DIR"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
-rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR/qq-debug.log"
+rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR"/{qq-debug.log,image.txt,df.txt,zshrc.txt}
 
 cd "$ROOT_DIR"
 
@@ -95,7 +105,7 @@ if [[ $rc -eq 0 ]]; then
   echo "smoke-distro: PASS $IMAGE"
 else
   echo "smoke-distro: FAIL $IMAGE (exit $rc)"
-  for log in "$OUT_DIR"/pty-*.log; do
+  for log in "$OUT_DIR/pty-default.log" "$OUT_DIR/pty-c-locale.log"; do
     [[ -f "$log" ]] || continue
     echo "--- last 40 lines of $(basename "$log") ---"
     tail -n 40 "$log"
