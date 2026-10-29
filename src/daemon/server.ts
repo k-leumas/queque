@@ -1,20 +1,16 @@
 import * as net from 'node:net';
 import { commandCandidateSchema } from '../contracts/candidates.js';
 import { ipcRequestSchema } from '../contracts/ipc.js';
-import type { ErrorKind } from '../contracts/telemetry.js';
-import { errorKindOf } from '../providers/error-kind.js';
 import { resolveProviderAdapter } from '../providers/provider-pin.js';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { appendDebugLog } from '../shared/debug-log.js';
-import type { TelemetryBuffer } from './telemetry-buffer.js';
 
 /**
  * Starts the daemon Unix-socket server.
  *
  * Handles newline-delimited JSON IPC messages. Supported requests:
  *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true,
- *                                   streamCandidates: true, providerPin: true} plus the
- *                                   `telemetry` flag (informational, never a replace trigger)
+ *                                   streamCandidates: true, providerPin: true}
  *   {kind: 'ensure-session'}    → {kind: 'session-ready', socketPath}
  *   {kind: 'run-query'}         → {kind: 'query-accepted', requestId}
  *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'}, then {kind: 'candidate'} × N when the
@@ -24,11 +20,6 @@ import type { TelemetryBuffer } from './telemetry-buffer.js';
  *   {kind: 'shutdown'}          → {kind: 'shutdown-accepted'}, then `onShutdown()` (WR-07); ignored
  *                                   when no `onShutdown` was given. Shutting down ends in-flight
  *                                   fetches of other terminals (their `??` shows the error copy)
- *   {kind: 'telemetry-event'}   → no reply (fire-and-forget); the event goes to the telemetry
- *                                   buffer, which gates and re-validates it (phase 10, D-07)
- *   {kind: 'telemetry-show'}    → {kind: 'telemetry-buffer', pending, lastSent} (D-12); both
- *                                   null when no buffer was given
- *   {kind: 'telemetry-reset'}   → the buffer is cleared, then the same `telemetry-buffer` reply
  *
  * The server is intentionally free of Ink, React, and /dev/tty assumptions —
  * it runs fully in the background without a TTY. LLM fetch lives here so the
@@ -41,8 +32,6 @@ import type { TelemetryBuffer } from './telemetry-buffer.js';
 export interface DaemonServerOptions {
   /** Runs after a `shutdown` request was acknowledged (the daemon command's shutdown). */
   onShutdown?: () => void;
-  /** The daemon's telemetry buffer (phase 10, D-07). */
-  telemetry?: TelemetryBuffer;
 }
 
 export function startDaemonServer(
@@ -111,29 +100,8 @@ export function startDaemonServer(
                 installedTools: true,
                 streamCandidates: true,
                 providerPin: true,
-                telemetry: true,
               });
               void appendDebugLog('daemon', 'replied pong');
-              break;
-            }
-            case 'telemetry-event': {
-              // Fire-and-forget: the client has already ended its socket. The buffer logs
-              // counts and reasons only, never the event.
-              options.telemetry?.enqueue(req.event);
-              break;
-            }
-            case 'telemetry-show':
-            case 'telemetry-reset': {
-              const { telemetry } = options;
-              if (req.kind === 'telemetry-reset') {
-                telemetry?.reset();
-              }
-              const snapshot = telemetry?.snapshot() ?? { pending: null, lastSent: null };
-              writeJson({ kind: 'telemetry-buffer', ...snapshot });
-              void appendDebugLog('daemon', 'replied telemetry-buffer', {
-                pending: snapshot.pending !== null,
-                lastSent: snapshot.lastSent !== null,
-              });
               break;
             }
             case 'shutdown': {
@@ -185,14 +153,10 @@ export function startDaemonServer(
                   : undefined;
               // Resolution throws (an invalid provider pin) stay inside the chain so they
               // become fetch-error. The pin is re-read on every fetch (D-15).
-              // `resolved` tells a resolution failure (an invalid pin) from a provider failure,
-              // whose kind comes from the error object (D-10), never from its message.
-              let resolved = false;
               void Promise.resolve()
                 .then(() => {
                   bootstrapBuiltins();
                   const adapter = resolveProviderAdapter();
-                  resolved = true;
                   return adapter.fetchCandidates(envelope, {
                     signal: connectionAbort.signal,
                     onCandidate,
@@ -214,9 +178,8 @@ export function startDaemonServer(
                     return;
                   }
                   const message = error instanceof Error ? error.message : String(error);
-                  const errorKind: ErrorKind = resolved ? errorKindOf(error) : 'pin_invalid';
-                  writeJson({ kind: 'fetch-error', message, errorKind });
-                  void appendDebugLog('daemon', 'replied fetch-error', { message, errorKind });
+                  writeJson({ kind: 'fetch-error', message });
+                  void appendDebugLog('daemon', 'replied fetch-error', { message });
                 });
               break;
             }

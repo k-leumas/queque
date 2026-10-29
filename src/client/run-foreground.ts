@@ -11,19 +11,12 @@ import {
   strictInstalledToolsChunkSchema,
 } from '../contracts/request.js';
 import { shellRequestSchema } from '../contracts/shell.js';
-import type { ErrorKind } from '../contracts/telemetry.js';
 import { ensureDaemon } from '../daemon/bootstrap.js';
 import { fetchCandidatesForUi } from '../daemon/fetch-client.js';
 import { classifyIntent } from '../intent/router.js';
-import { errorKindOf } from '../providers/error-kind.js';
 import { isAbortError } from '../providers/provider.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
-import {
-  markTelemetryAsked,
-  readTelemetryState,
-  telemetryBlockedBy,
-} from '../shared/telemetry-config.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
@@ -36,8 +29,6 @@ import {
   PANE_SURFACE_CLEAR,
 } from './instant-frame.js';
 import { writeShellResult } from './result-writer.js';
-import { askTelemetryConsent, shouldAskTelemetryConsent } from './telemetry-consent.js';
-import { type QueryOutcomeRecord, reportClientTelemetry } from './telemetry-events.js';
 import { readToolHandoff } from './tool-handoff.js';
 import { syncZellijFloatingPaneHeight } from './zellij-pane-resize.js';
 
@@ -173,13 +164,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
     // Ensure the daemon is reachable before we do anything interactive. A daemon that cannot
     // start (WR-12: e.g. a spawn failure) must not end the `??`: fetchCandidatesForUi then
     // cannot reach the socket and runs the provider in-process instead.
-    // Telemetry (10-10, D-10): failures that do not end the query, as ErrorKind enums only.
-    const telemetryErrors: ErrorKind[] = [];
     try {
       await ensureDaemon(socketPath);
       void appendDebugLog('client', 'daemon ensured', { socketPath });
     } catch (error) {
-      telemetryErrors.push('socket_failed');
       void appendDebugLog('client', 'daemon ensure failed', {
         message: error instanceof Error ? error.message : String(error),
       });
@@ -206,303 +194,251 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       let ttyWriteStream: tty.WriteStream | undefined;
       // Instant-frame takeover (quick 261011-jbh, LD-1), reachable from the catch paths.
       let takeover: InstantFrameTakeover | undefined;
-      // Telemetry (10-10, D-10): how this `??` ended and how many rows were on screen. Set
-      // next to each result write; reported in the finally below, after the result.
-      let outcome: QueryOutcomeRecord | undefined;
-      let shownCount = 0;
       try {
-        try {
-          // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
-          // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
-          // D-05: The Ink spinner lives inside the component. The zsh widget's instant frame
-          // (header + loading row, painted before Node starts) only covers the time before this
-          // process runs (LD-1 amends D-05 for that interval); the takeover below hands the
-          // surface to Ink's first frame.
+        // D-07: Open modal before fetchCandidates resolves — spinner shows immediately.
+        // D-03: No single-candidate fast-accept bypass — all paths go through the modal.
+        // D-05: The Ink spinner lives inside the component. The zsh widget's instant frame
+        // (header + loading row, painted before Node starts) only covers the time before this
+        // process runs (LD-1 amends D-05 for that interval); the takeover below hands the
+        // surface to Ink's first frame.
 
-          // Try to create TTY streams from /dev/tty for Ink.
-          // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
-          // Falls back to process.stdin/stdout if /dev/tty was unavailable (e.g. tests).
+        // Try to create TTY streams from /dev/tty for Ink.
+        // This works in all contexts (ZSH widget, zellij run pane, plain terminal).
+        // Falls back to process.stdin/stdout if /dev/tty was unavailable (e.g. tests).
+        if (ttyHandle) {
+          try {
+            ttyReadStream = new tty.ReadStream(ttyHandle.fd);
+            ttyWriteStream = new tty.WriteStream(ttyHandle.fd);
+          } catch {
+            // Synthetic fd (e.g. tests) — Ink will use process.stdin/stdout
+          }
+        }
+
+        // If TTY streams couldn't be created, or raw mode isn't supported,
+        // the TUI can't accept input. Write a visible error and exit early —
+        // avoids the silent cancel from the isRawModeSupported guard.
+        if (!ttyReadStream || !ttyWriteStream) {
+          const msg = '\r\nqueque: could not open terminal for interactive input\r\n';
           if (ttyHandle) {
             try {
-              ttyReadStream = new tty.ReadStream(ttyHandle.fd);
-              ttyWriteStream = new tty.WriteStream(ttyHandle.fd);
-            } catch {
-              // Synthetic fd (e.g. tests) — Ink will use process.stdin/stdout
-            }
+              await ttyHandle.write(msg);
+            } catch {}
           }
+          await writeShellResult(resultFile, { kind: 'error', message: msg.trim() });
+          return;
+        }
 
-          // If TTY streams couldn't be created, or raw mode isn't supported,
-          // the TUI can't accept input. Write a visible error and exit early —
-          // avoids the silent cancel from the isRawModeSupported guard.
-          if (!ttyReadStream || !ttyWriteStream) {
-            const msg = '\r\nqueque: could not open terminal for interactive input\r\n';
-            if (ttyHandle) {
-              try {
-                await ttyHandle.write(msg);
-              } catch {}
-            }
-            await writeShellResult(resultFile, { kind: 'error', message: msg.trim() });
-            outcome = { outcome: 'error', candidateCount: 0, errorKind: 'tty_unavailable' };
-            return;
-          }
+        // Take the instant frame's surface over in Ink's first visible write. Inline: write the
+        // scroll reserve first. It is byte-identical to the widget's (so it moves nothing after
+        // the widget's paint) and ends with this process's own cursor save on the reserve top,
+        // which every inline clear restores — never a stale save. Zellij: the floating pane
+        // starts clean, so the clear is absolute (home + erase below).
+        if (inZellij) {
+          takeover = armInstantFrameTakeover(ttyWriteStream, PANE_SURFACE_CLEAR);
+        } else {
+          ttyWriteStream.write(inlineScrollReserve(MODAL_VIEWPORT_LINES));
+          takeover = armInstantFrameTakeover(ttyWriteStream, INLINE_SURFACE_CLEAR);
+        }
 
-          // Take the instant frame's surface over in Ink's first visible write. Inline: write the
-          // scroll reserve first. It is byte-identical to the widget's (so it moves nothing after
-          // the widget's paint) and ends with this process's own cursor save on the reserve top,
-          // which every inline clear restores — never a stale save. Zellij: the floating pane
-          // starts clean, so the clear is absolute (home + erase below).
-          if (inZellij) {
-            takeover = armInstantFrameTakeover(ttyWriteStream, PANE_SURFACE_CLEAR);
-          } else {
-            ttyWriteStream.write(inlineScrollReserve(MODAL_VIEWPORT_LINES));
-            takeover = armInstantFrameTakeover(ttyWriteStream, INLINE_SURFACE_CLEAR);
-          }
-
-          try {
-            ttyReadStream.setRawMode(true);
-            ttyReadStream.setRawMode(false);
-          } catch {
-            const msg =
-              '\r\nqueque: terminal does not support interactive mode\r\nRun ?? from an interactive ZSH session.\r\n';
-            ttyWriteStream.write(msg);
-            await writeShellResult(resultFile, {
-              kind: 'error',
-              message:
-                'queque: terminal does not support interactive mode — run ?? from an interactive shell',
-            });
-            outcome = { outcome: 'error', candidateCount: 0, errorKind: 'tty_unavailable' };
-            return;
-          }
-
-          const decision = classifyIntent({
-            ...request,
-            intent: 'unknown' as const,
-            confidence: 0,
+        try {
+          ttyReadStream.setRawMode(true);
+          ttyReadStream.setRawMode(false);
+        } catch {
+          const msg =
+            '\r\nqueque: terminal does not support interactive mode\r\nRun ?? from an interactive ZSH session.\r\n';
+          ttyWriteStream.write(msg);
+          await writeShellResult(resultFile, {
+            kind: 'error',
+            message:
+              'queque: terminal does not support interactive mode — run ?? from an interactive shell',
           });
-          void appendDebugLog('client', 'intent classified', {
-            intent: decision.intent,
-            signals: decision.signals,
-          });
+          return;
+        }
 
-          const normalized: NormalizedRequest = {
-            ...request,
-            intent: decision.intent,
-            confidence: decision.confidence,
-          };
-          const envelope = withInstalledToolsChunk(await gatherContext(normalized), toolInventory);
-          void appendDebugLog('client', 'context gathered', {
-            extraCount: envelope.extras.length,
-          });
+        const decision = classifyIntent({ ...request, intent: 'unknown' as const, confidence: 0 });
+        void appendDebugLog('client', 'intent classified', {
+          intent: decision.intent,
+          signals: decision.signals,
+        });
 
-          // The inline reserve (MODAL_VIEWPORT_LINES, see modal-layout.ts) was written above, with
-          // the takeover: only that many lines of previous terminal content scroll up and the rest
-          // stays visible above the TUI. Its cursor save is restored in clearScrollReserve, so
-          // cleanup always erases from the right position regardless of where Ink leaves the
-          // cursor after unmount. Skipped in Zellij: the floating pane starts with a clean screen.
+        const normalized: NormalizedRequest = {
+          ...request,
+          intent: decision.intent,
+          confidence: decision.confidence,
+        };
+        const envelope = withInstalledToolsChunk(await gatherContext(normalized), toolInventory);
+        void appendDebugLog('client', 'context gathered', {
+          extraCount: envelope.extras.length,
+        });
 
-          await new Promise<void>((resolve) => {
-            let unmount: ((skipClear?: boolean) => void) | undefined;
-            let resolved = false;
-            // D-07/D-13/D-15: Esc, Enter and signals abort the in-flight fetch. That destroys
-            // the daemon socket, and the daemon aborts the provider call on `close`.
-            const fetchAbort = new AbortController();
+        // The inline reserve (MODAL_VIEWPORT_LINES, see modal-layout.ts) was written above, with
+        // the takeover: only that many lines of previous terminal content scroll up and the rest
+        // stays visible above the TUI. Its cursor save is restored in clearScrollReserve, so
+        // cleanup always erases from the right position regardless of where Ink leaves the
+        // cursor after unmount. Skipped in Zellij: the floating pane starts with a clean screen.
 
-            // Rows streamed so far (09.1 D-05), in the order the provider reported them.
-            const streamed: CommandCandidate[] = [];
+        await new Promise<void>((resolve) => {
+          let unmount: ((skipClear?: boolean) => void) | undefined;
+          let resolved = false;
+          // D-07/D-13/D-15: Esc, Enter and signals abort the in-flight fetch. That destroys
+          // the daemon socket, and the daemon aborts the provider call on `close`.
+          const fetchAbort = new AbortController();
 
-            // Build initial element with null candidates (D-06 loading state)
-            const buildCandidateElement = (
-              candidates: Parameters<typeof CandidateSelect>[0]['candidates'],
-              errorState?: boolean,
-              listState: CandidateListState = 'complete',
-            ) =>
-              React.createElement(CandidateSelect, {
-                candidates,
-                initialQuery: request.lbuffer,
-                error: errorState,
-                listState,
-                onSelect: async (command: string, explanation: string) => {
-                  if (resolved) return;
-                  resolved = true;
-                  outcome = { outcome: 'accepted', candidateCount: shownCount };
-                  fetchAbort.abort();
-                  const { lbuffer, rbuffer } = buildShellBuffers(command, explanation);
-                  await writeShellResult(resultFile, {
-                    kind: 'replace-buffer',
-                    lbuffer,
-                    rbuffer,
-                    query: request.lbuffer,
-                  });
-                  unmount?.();
-                },
-                onCancel: async () => {
-                  if (resolved) return;
-                  resolved = true;
-                  outcome = { outcome: 'escaped', candidateCount: shownCount };
-                  fetchAbort.abort();
-                  await writeShellResult(resultFile, { kind: 'cancel' });
-                  unmount?.();
-                },
-                onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined,
-              });
+          // Rows streamed so far (09.1 D-05), in the order the provider reported them.
+          const streamed: CommandCandidate[] = [];
 
-            // Force interactive:true so Ink uses cursor-repositioning mode regardless of
-            // CI env vars (is-in-ci checks process.env.CI which many devtools set) and
-            // regardless of whether isTTY is correctly reported on a manually-constructed
-            // tty.WriteStream. We already confirmed /dev/tty opens, so it is a real terminal.
-            const renderOptions =
-              ttyReadStream && ttyWriteStream
-                ? { stdin: ttyReadStream, stdout: ttyWriteStream, interactive: true }
-                : { interactive: true };
-
-            const app = render(buildCandidateElement(null), renderOptions);
-
-            // Restore cursor to the saved position (top of reserved area) then clear
-            // to end of screen. This works regardless of where Ink left the cursor.
-            const clearScrollReserve = () => {
-              if (ttyWriteStream && !inZellij) {
-                try {
-                  ttyWriteStream.write(INLINE_SURFACE_CLEAR);
-                } catch {
-                  // TTY may already be gone (e.g. SIGHUP fired because terminal closed)
-                }
-              }
-            };
-
-            const cleanupOnSignal = () => {
-              fetchAbort.abort();
-              app.unmount();
-              clearScrollReserve();
-              process.exit(0);
-            };
-            process.once('SIGHUP', cleanupOnSignal);
-            process.once('SIGTERM', cleanupOnSignal);
-
-            unmount = (skipClear = false) => {
-              process.off('SIGHUP', cleanupOnSignal);
-              process.off('SIGTERM', cleanupOnSignal);
-              app.unmount();
-              if (!skipClear) clearScrollReserve();
-              resolve();
-            };
-
-            // D-05 (client half): each streamed row is shown as soon as it arrives, below the
-            // rows before it, with the spinner under them ('arriving'). annotateCandidates stays
-            // synchronous on the Ink thread: at most MAX_STREAMED_CANDIDATES rows against the
-            // inventory already in memory, never re-read per arrival.
-            const onCandidate = (candidate: CommandCandidate) => {
-              // D-14: a row that arrives after Esc or Enter is neither rendered nor kept.
-              if (resolved) return;
-              streamed.push(candidate);
-              shownCount = streamed.length;
-              if (streamed.length === 1) {
-                void appendDebugLog('client', 'first candidate received');
-              }
-              app.rerender(
-                buildCandidateElement(
-                  annotateCandidates([...streamed], toolInventory),
-                  undefined,
-                  'arriving',
-                ),
-              );
-            };
-
-            // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
-            fetchCandidatesForUi(socketPath, envelope, { signal: fetchAbort.signal, onCandidate })
-              .then((candidates) => {
-                // D-14: once a result is written, nothing the provider produced is shown.
+          // Build initial element with null candidates (D-06 loading state)
+          const buildCandidateElement = (
+            candidates: Parameters<typeof CandidateSelect>[0]['candidates'],
+            errorState?: boolean,
+            listState: CandidateListState = 'complete',
+          ) =>
+            React.createElement(CandidateSelect, {
+              candidates,
+              initialQuery: request.lbuffer,
+              error: errorState,
+              listState,
+              onSelect: async (command: string, explanation: string) => {
                 if (resolved) return;
-                const displayCandidates = annotateCandidates(candidates, toolInventory);
-                shownCount = displayCandidates.length;
-                void appendDebugLog('client', 'candidates received', {
-                  count: candidates.length,
-                  streamed: streamed.length,
-                  flagged: displayCandidates.filter((c) => c.missingTools !== undefined).length,
-                });
-                app.rerender(buildCandidateElement(displayCandidates, undefined, 'complete'));
-              })
-              .catch(async (err) => {
-                if (isAbortError(err)) {
-                  void appendDebugLog('client', 'fetch aborted');
-                  return;
-                }
-                const message = err instanceof Error ? err.message : String(err);
-                void appendDebugLog('client', 'llm request failed', { message });
-                if (resolved) return;
-                // D-16: rows already on screen stay selectable under a dim "list may be
-                // incomplete" note; the user picks one or presses Esc through the normal
-                // onSelect/onCancel path. The error view shows only when no row arrived.
-                if (streamed.length > 0) {
-                  // Not the outcome: the user still ends the query with Enter or Esc.
-                  telemetryErrors.push(errorKindOf(err));
-                  void appendDebugLog('client', 'llm request failed after rows', {
-                    count: streamed.length,
-                  });
-                  app.rerender(
-                    buildCandidateElement(
-                      annotateCandidates([...streamed], toolInventory),
-                      undefined,
-                      'partial',
-                    ),
-                  );
-                  return;
-                }
                 resolved = true;
-                outcome = { outcome: 'error', candidateCount: 0, errorKind: errorKindOf(err) };
-                // Clears the instant frame only if Ink never drew (a no-op after its first frame,
-                // so the skipClear behaviour below is unchanged).
-                takeover?.clearNow();
-                const errorMsg = formatFifoError(message);
-                await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
-                // skipClear=true: don't restore cursor to ZLE's saved start position —
-                // doing so would cause zle reset-prompt to draw the next prompt right
-                // over the error line that ZSH is about to print.
-                unmount?.(true);
-              });
-          });
-
-          void appendDebugLog('client', 'wrote llm result', { resultFile });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : String(error);
-          void appendDebugLog('client', 'llm request failed', { message });
-          // A failure before Ink's first frame leaves the instant frame on screen: clear it.
-          takeover?.clearNow();
-          const errorMsg = formatFifoError(message);
-          await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
-          outcome = { outcome: 'error', candidateCount: 0, errorKind: errorKindOf(error) };
-        }
-      } finally {
-        // Every path above has written its result and Ink has unmounted; the tty handle is
-        // still open (the outer finally closes it).
-        // D-09: one-time consent ask after the first accepted `??`, on /dev/tty only. The
-        // accepted buffer is already in the result file and the inline reserve is cleared;
-        // the prompt erases its own line before the widget redraws. Never asked after Esc
-        // or an error, a second time, without a tty, or under DO_NOT_TRACK/QQ_TELEMETRY=0/CI.
-        if (outcome?.outcome === 'accepted' && ttyReadStream && ttyWriteStream) {
-          const ask = shouldAskTelemetryConsent({
-            outcome: outcome.outcome,
-            state: readTelemetryState(),
-            blockedBy: telemetryBlockedBy(),
-            hasTty: true,
-          });
-          if (ask) {
-            const answer = await askTelemetryConsent({
-              input: ttyReadStream,
-              output: ttyWriteStream,
+                fetchAbort.abort();
+                const { lbuffer, rbuffer } = buildShellBuffers(command, explanation);
+                await writeShellResult(resultFile, {
+                  kind: 'replace-buffer',
+                  lbuffer,
+                  rbuffer,
+                  query: request.lbuffer,
+                });
+                unmount?.();
+              },
+              onCancel: async () => {
+                if (resolved) return;
+                resolved = true;
+                fetchAbort.abort();
+                await writeShellResult(resultFile, { kind: 'cancel' });
+                unmount?.();
+              },
+              onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined,
             });
-            try {
-              markTelemetryAsked(answer);
-              await appendDebugLog('client', 'consent saved', { enabled: answer });
-            } catch (error) {
-              // No message text: it carries the config path.
-              await appendDebugLog('client', 'consent not saved', {
-                error: error instanceof Error ? error.name : 'unknown',
-              });
+
+          // Force interactive:true so Ink uses cursor-repositioning mode regardless of
+          // CI env vars (is-in-ci checks process.env.CI which many devtools set) and
+          // regardless of whether isTTY is correctly reported on a manually-constructed
+          // tty.WriteStream. We already confirmed /dev/tty opens, so it is a real terminal.
+          const renderOptions =
+            ttyReadStream && ttyWriteStream
+              ? { stdin: ttyReadStream, stdout: ttyWriteStream, interactive: true }
+              : { interactive: true };
+
+          const app = render(buildCandidateElement(null), renderOptions);
+
+          // Restore cursor to the saved position (top of reserved area) then clear
+          // to end of screen. This works regardless of where Ink left the cursor.
+          const clearScrollReserve = () => {
+            if (ttyWriteStream && !inZellij) {
+              try {
+                ttyWriteStream.write(INLINE_SURFACE_CLEAR);
+              } catch {
+                // TTY may already be gone (e.g. SIGHUP fired because terminal closed)
+              }
             }
-          }
-        }
-        // Gated on the client's own env and config, capped at 250 ms, never throws.
-        await reportClientTelemetry({ socketPath, record: outcome, errors: telemetryErrors });
+          };
+
+          const cleanupOnSignal = () => {
+            fetchAbort.abort();
+            app.unmount();
+            clearScrollReserve();
+            process.exit(0);
+          };
+          process.once('SIGHUP', cleanupOnSignal);
+          process.once('SIGTERM', cleanupOnSignal);
+
+          unmount = (skipClear = false) => {
+            process.off('SIGHUP', cleanupOnSignal);
+            process.off('SIGTERM', cleanupOnSignal);
+            app.unmount();
+            if (!skipClear) clearScrollReserve();
+            resolve();
+          };
+
+          // D-05 (client half): each streamed row is shown as soon as it arrives, below the
+          // rows before it, with the spinner under them ('arriving'). annotateCandidates stays
+          // synchronous on the Ink thread: at most MAX_STREAMED_CANDIDATES rows against the
+          // inventory already in memory, never re-read per arrival.
+          const onCandidate = (candidate: CommandCandidate) => {
+            // D-14: a row that arrives after Esc or Enter is neither rendered nor kept.
+            if (resolved) return;
+            streamed.push(candidate);
+            if (streamed.length === 1) {
+              void appendDebugLog('client', 'first candidate received');
+            }
+            app.rerender(
+              buildCandidateElement(
+                annotateCandidates([...streamed], toolInventory),
+                undefined,
+                'arriving',
+              ),
+            );
+          };
+
+          // D-07: fetch candidates concurrently — rerender() pushes them into the live modal.
+          fetchCandidatesForUi(socketPath, envelope, { signal: fetchAbort.signal, onCandidate })
+            .then((candidates) => {
+              // D-14: once a result is written, nothing the provider produced is shown.
+              if (resolved) return;
+              const displayCandidates = annotateCandidates(candidates, toolInventory);
+              void appendDebugLog('client', 'candidates received', {
+                count: candidates.length,
+                streamed: streamed.length,
+                flagged: displayCandidates.filter((c) => c.missingTools !== undefined).length,
+              });
+              app.rerender(buildCandidateElement(displayCandidates, undefined, 'complete'));
+            })
+            .catch(async (err) => {
+              if (isAbortError(err)) {
+                void appendDebugLog('client', 'fetch aborted');
+                return;
+              }
+              const message = err instanceof Error ? err.message : String(err);
+              void appendDebugLog('client', 'llm request failed', { message });
+              if (resolved) return;
+              // D-16: rows already on screen stay selectable under a dim "list may be
+              // incomplete" note; the user picks one or presses Esc through the normal
+              // onSelect/onCancel path. The error view shows only when no row arrived.
+              if (streamed.length > 0) {
+                void appendDebugLog('client', 'llm request failed after rows', {
+                  count: streamed.length,
+                });
+                app.rerender(
+                  buildCandidateElement(
+                    annotateCandidates([...streamed], toolInventory),
+                    undefined,
+                    'partial',
+                  ),
+                );
+                return;
+              }
+              resolved = true;
+              // Clears the instant frame only if Ink never drew (a no-op after its first frame,
+              // so the skipClear behaviour below is unchanged).
+              takeover?.clearNow();
+              const errorMsg = formatFifoError(message);
+              await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
+              // skipClear=true: don't restore cursor to ZLE's saved start position —
+              // doing so would cause zle reset-prompt to draw the next prompt right
+              // over the error line that ZSH is about to print.
+              unmount?.(true);
+            });
+        });
+
+        void appendDebugLog('client', 'wrote llm result', { resultFile });
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        void appendDebugLog('client', 'llm request failed', { message });
+        // A failure before Ink's first frame leaves the instant frame on screen: clear it.
+        takeover?.clearNow();
+        const errorMsg = formatFifoError(message);
+        await writeShellResult(resultFile, { kind: 'error', message: errorMsg });
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });

@@ -369,20 +369,7 @@ qq-question-widget() {
   # Create a private session directory (CR-006 fix).
   # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on temp paths.
   local tmpdir req_file
-  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX 2>/dev/null)
-  # Phase 10 Defect 3: a full or unwritable /tmp leaves tmpdir empty, and every path
-  # below would then be at the filesystem root (/request.json, the tool handoff). Stop
-  # before any write: clear the instant frame, keep the typed line, say why.
-  if [[ -z "$tmpdir" || ! -d "$tmpdir" ]]; then
-    if [[ "$QQ_INSTANT_FRAME_PAINTED" == 1 ]]; then
-      print -rn -- $'\e8\e[J' 2>/dev/null || true
-    fi
-    LBUFFER="$QQ_LBUFFER"
-    RBUFFER="$QQ_RBUFFER"
-    _qq_log "mktemp -d failed; session dir not created"
-    zle -M "queque: cannot create a temp dir in /tmp"
-    return 0
-  fi
+  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX)
   chmod 700 "$tmpdir"
   req_file="$tmpdir/request.json"
   _qq_log "tmpdir=${tmpdir}"
@@ -409,11 +396,6 @@ qq-question-widget() {
 JSON
   _qq_write_tool_handoff "$tmpdir"
   _qq_log "tool handoff written"
-
-  # Phase 10 telemetry: $ZSH_VERSION is not exported, so the client cannot read it. Export
-  # it like QQ_RESULT_FILE: both the inline child and the Zellij pane inherit it, and the
-  # client reports major.minor only (and only with telemetry on).
-  export QQ_ZSH_VERSION="$ZSH_VERSION"
 
   if [[ -n "$ZELLIJ" ]]; then
     # ---- Zellij path: FIFO + floating pane ----
@@ -493,8 +475,8 @@ JSON
 # commands even though the file is otherwise safe to source.
 if [[ -o interactive ]]; then
   zle -N qq-question-widget
-  bindkey -M emacs '~' qq-question-widget
-  bindkey -M viins '~' qq-question-widget
+  bindkey -M emacs '?' qq-question-widget
+  bindkey -M viins '?' qq-question-widget
 
   # Warm the daemon once per interactive shell so the first `??` pays less
   # startup cost.

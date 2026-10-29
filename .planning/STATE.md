@@ -1,18 +1,18 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 10
-current_phase_name: Linux distro CI harness and anonymous telemetry
+current_phase: 08
+current_phase_name: Zero-Config Install and Provider Detection
 status: executing
-stopped_at: Phase 10 context gathered
-last_updated: "2026-10-29T19:30:41.118Z"
-last_activity: 2026-10-29
-last_activity_desc: Phase 10 execution started
-state_head: a7bdf0bdb7a48125c349d0d7fb60fa7a2f2e04ca
+stopped_at: Phase 09.1 complete, ready to plan Phase 7
+last_updated: "2026-10-22T03:00:36.783Z"
+last_activity: 2026-10-19
+last_activity_desc: Phase 08 execution resumed (wave continue)
+state_head: 6b3e986a6d57e49db8e80c4e049442b611ef2fec
 progress:
-  total_phases: 13
+  total_phases: 12
   completed_phases: 8
-  total_plans: 56
+  total_plans: 43
   completed_plans: 43
 milestone_name: milestone
 ---
@@ -24,15 +24,15 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-11)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 10 — Linux distro CI harness and anonymous telemetry
+**Current focus:** Phase 08 — Zero-Config Install and Provider Detection
 
 ## Current Position
 
-Phase: 10 (Linux distro CI harness and anonymous telemetry) — EXECUTING
-Plan: 1 of 13
+Phase: 08 (Zero-Config Install and Provider Detection) — EXECUTING
+Plan: 1 of 6
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
-Status: Executing Phase 10
-Last activity: 2026-10-29 — Phase 10 execution started
+Status: Executing Phase 08
+Last activity: 2026-10-19 — Phase 08 execution resumed (wave continue)
 
 Progress: [███████░░░] 73%
 
@@ -86,7 +86,6 @@ Progress: [███████░░░] 73%
 - Phase 9 added (2026-10-07): Installed-Only Command Awareness — zsh $commands handoff, installed∩catalog prompt steering, flag candidates using missing tools (from spikes 001–003).
 - Phase 8 scope expanded (2026-07-31): 08-01 must fix macOS Keychain detection gap — prototype `detectProvider()` only checks credentials file, missing `/login` sessions on darwin.
 - Phase 09.1 inserted after Phase 9: Provider Latency and Cancellation: effort low, stream-json, early first candidate, prewarmed claude -p, Esc aborts the model call (from debug llm-response-latency-profile) (URGENT)
-- Phase 10 added (2026-10-28): Linux distro CI harness and anonymous telemetry — PR CI + distro container matrix, smoke-distro.sh PTY smoke, filtered pre-push smoke, `qq doctor`, opt-in allow-listed PostHog telemetry.
 
 ### Decisions
 
@@ -176,6 +175,6 @@ None yet.
 
 Last activity: 2026-10-21 - Completed quick task 261021-sya: strip credentials from changelog repository links
 
-Last session: 2026-10-29T01:15:02.475Z
-Stopped at: Phase 10 context gathered
-Resume file: .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-CONTEXT.md
+Last session: 2026-10-12T21:58:47.187Z
+Stopped at: Phase 09.1 complete, ready to plan Phase 7
+Resume file: None
