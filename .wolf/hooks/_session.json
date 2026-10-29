@@ -13,7 +13,7 @@
       "first_read": "2026-10-29T19:32:08.128Z"
     },
     "/Users/samuel/.claude/gsd-core/workflows/execute-plan.md": {
-      "count": 6,
+      "count": 7,
       "tokens": 0,
       "first_read": "2026-10-29T19:32:16.680Z"
     },
@@ -23,12 +23,12 @@
       "first_read": "2026-10-29T19:32:17.231Z"
     },
     "/Users/samuel/.claude/gsd-core/references/worktree-path-safety.md": {
-      "count": 9,
+      "count": 10,
       "tokens": 0,
       "first_read": "2026-10-29T19:32:17.368Z"
     },
     "/Users/samuel/.claude/gsd-core/templates/summary.md": {
-      "count": 5,
+      "count": 6,
       "tokens": 0,
       "first_read": "2026-10-29T19:32:23.071Z"
     },
@@ -266,6 +266,11 @@
       "count": 1,
       "tokens": 5039,
       "first_read": "2026-10-29T22:09:34.808Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-PLAN.md": {
+      "count": 1,
+      "tokens": 5039,
+      "first_read": "2026-10-29T22:36:28.324Z"
     }
   },
   "files_written": [
@@ -1768,6 +1773,18 @@
       "action": "edit",
       "tokens": 26,
       "at": "2026-10-29T22:32:13.683Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",
+      "action": "create",
+      "tokens": 4948,
+      "at": "2026-10-29T22:43:20.783Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/commit-msg.txt",
+      "action": "create",
+      "tokens": 110,
+      "at": "2026-10-29T22:44:02.368Z"
     }
   ],
   "edit_counts": {
@@ -1903,11 +1920,13 @@
     "tests/git-env-isolation.test.ts": 1,
     "tests/setup/scrub-git-env.ts": 1,
     "vitest.config.ts": 1,
-    "vitest.live.config.ts": 1
+    "vitest.live.config.ts": 1,
+    ".claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/commit-msg.txt": 1
   },
-  "anatomy_hits": 27,
+  "anatomy_hits": 28,
   "anatomy_misses": 24,
-  "repeated_reads_warned": 34,
+  "repeated_reads_warned": 37,
   "cerebrum_warnings": 0,
-  "stop_count": 24
+  "stop_count": 26
 }

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T22:32:13.661Z
-> Files: 532 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T22:44:02.351Z
+> Files: 534 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -72,6 +72,10 @@
 - `plan-10-09-msg-red1.txt` (~98 tok)
 - `plan-10-09-msg-red2.txt` (~108 tok)
 - `plan-10-09-msg-summary.txt` (~17 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/
+
+- `commit-msg.txt` (~97 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/agent-10-10-a4306/
 
@@ -258,6 +262,10 @@
 - `candidate-command-check.md` — Candidate Command Check (flag suggestions that use missing tools) (~1016 tok)
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
+
+## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~4329 tok)
 
 ## .github/workflows/
 
