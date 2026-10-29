@@ -964,11 +964,12 @@ const INSTANT_FRAME_LBUFFER = 'show me how to use z3';
 function runZshArgs(
   script: string,
   args: readonly string[],
+  env: NodeJS.ProcessEnv = {},
 ): { stdout: string; stderr: string; status: number } {
   const result = spawnSync('zsh', ['-f', '-c', `source "$0"\n${script}`, widgetPath, ...args], {
     encoding: 'utf8',
     timeout: 5000,
-    env: { ...process.env, PATH: process.env.PATH },
+    env: { ...process.env, PATH: process.env.PATH, ...env },
   });
   return {
     stdout: result.stdout ?? '',
@@ -1027,6 +1028,24 @@ describe('instant frame', () => {
     // Non-numeric or zero columns fall back to 80 (content width 78).
     expect([...header('wide')]).toHaveLength(1 + 78);
     expect([...header('0')]).toHaveLength(1 + 78);
+  });
+
+  it('z4b: truncation counts characters, not bytes, in the C locale (glibc images default to C)', () => {
+    const C_LOCALE = { LC_ALL: 'C', LC_CTYPE: 'C', LANG: 'C' };
+    const header = (lbuffer: string, columns: string): string =>
+      frameRows(
+        runZshArgs(
+          '_qq_instant_frame "$1" "$2"; print -rn -- "$REPLY"',
+          [lbuffer, columns],
+          C_LOCALE,
+        ).stdout,
+      )[0] ?? '';
+    expect([...header('a'.repeat(200), '78')]).toHaveLength(1 + 76);
+    // A typed multibyte character is never cut in half (that would print U+FFFD garbage).
+    const accented = header('é'.repeat(200), '40');
+    expect([...accented]).toHaveLength(1 + 38);
+    expect(accented.endsWith('é…')).toBe(true);
+    expect(accented).not.toContain('�');
   });
 
   it('z5: the inline bytes start with the client reserve, byte for byte (drift guard)', () => {
