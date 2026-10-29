@@ -1,0 +1,104 @@
+# Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand.
+# Push and pull_request runs are deliberately not deduped: a pull_request run whose heavy
+# jobs were skipped could otherwise report a premature green `ci-ok` for the head SHA.
+# There is no workflow-level path filter (it would leave required checks Pending); the
+# `changes` job decides instead, and `ci-ok` is the only check to require on main.
+# D-01: no repository secret and no base-repository-context PR trigger; only the fake
+# `claude` is used.
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Did anything besides docs and planning change?
+        id: filter
+        env:
+          QQ_CHANGES_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+        run: node scripts/ci/code-changed.mjs
+
+  checks:
+    needs: changes
+    # `!= 'false'` rather than `== 'true'`: an empty output (the filter wrote nothing)
+    # runs everything, the same fail-open rule as the script itself.
+    if: needs.changes.outputs.code != 'false'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      LEFTHOOK: '0'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install shell test dependencies
+        run: sudo apt-get update && sudo apt-get install -y zsh jq
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test:run
+
+      - name: Build
+        run: pnpm build
+
+  distro:
+    needs: changes
+    if: needs.changes.outputs.code != 'false'
+    uses: ./.github/workflows/distro.yml
+    with:
+      images: '["ubuntu:22.04","ubuntu:24.04","debian:13","fedora:44","archlinux:latest","alpine:3.24"]'
+
+  # The single required check: fails when any needed job failed or was cancelled, passes
+  # when they succeeded or were skipped (doc-only changes).
+  ci-ok:
+    if: always()
+    needs: [changes, checks, distro]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: All required jobs succeeded or were skipped
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "results: $RESULTS"
+          case " $RESULTS " in
+            *" failure "* | *" cancelled "*) exit 1 ;;
+          esac
+
+  # Plan 07 adds the `auto-revert` job here, after ci-ok.

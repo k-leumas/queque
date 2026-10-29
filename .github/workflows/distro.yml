@@ -1,0 +1,78 @@
+# Reusable distro matrices (D-14, D-16). Called by ci.yml with the PR image pins and by
+# nightly.yml with the :latest set. Both legs run the repo's own scripts, so a local
+# `pnpm test:distro IMAGE` or `pnpm smoke:distro IMAGE` reproduces a red leg exactly.
+# Only the fake `claude` is used (D-01): no repository secret is referenced here.
+name: Distro
+
+on:
+  workflow_call:
+    inputs:
+      images:
+        description: JSON array of Docker images, e.g. '["alpine:3.24","debian:13"]'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  test-distro:
+    name: test-distro (${{ matrix.image }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Vitest suite inside the image
+        env:
+          IMAGE: ${{ matrix.image }}
+        run: scripts/ci/test-in-distro.sh "$IMAGE"
+
+  smoke:
+    name: smoke (${{ matrix.image }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      LEFTHOOK: '0'
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ${{ fromJSON(inputs.images) }}
+    steps:
+      # First, so the upload step always has a unique name even when a later step fails.
+      - name: Artifact name
+        id: slug
+        env:
+          IMAGE: ${{ matrix.image }}
+        run: |
+          slug=$(printf '%s' "$IMAGE" | tr ':/' '--')
+          echo "slug=$slug" >>"$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: zsh round trip and qq doctor inside the image
+        env:
+          IMAGE: ${{ matrix.image }}
+        run: scripts/smoke-distro.sh "$IMAGE" --out "$RUNNER_TEMP/smoke-out"
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-${{ steps.slug.outputs.slug }}
+          path: ${{ runner.temp }}/smoke-out
+          if-no-files-found: warn
+          retention-days: 14
