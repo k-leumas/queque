@@ -1,7 +1,11 @@
 import type * as net from 'node:net';
 import { ensureDaemon } from '../../daemon/bootstrap.js';
 import { startDaemonServer } from '../../daemon/server.js';
-import type { TelemetryBuffer } from '../../daemon/telemetry-buffer.js';
+import {
+  createTelemetryBuffer,
+  TELEMETRY_SHUTDOWN_WAIT_MS,
+  type TelemetryBuffer,
+} from '../../daemon/telemetry-buffer.js';
 import { disablePrewarm, enablePrewarm } from '../../providers/claude-prewarm.js';
 import { SIGKILL_GRACE_MS } from '../../providers/claude-process.js';
 import { appendDebugLog } from '../../shared/debug-log.js';
@@ -34,6 +38,35 @@ export interface DaemonShutdownOptions {
 }
 
 /**
+ * Stops the telemetry timer and starts the final flush. Resolves when the flush settled
+ * (either way) or after TELEMETRY_SHUTDOWN_WAIT_MS, whichever comes first; never rejects.
+ */
+function startFinalFlush(telemetry: DaemonShutdownOptions['telemetry']): Promise<void> {
+  if (!telemetry) {
+    return Promise.resolve();
+  }
+  telemetry.stop();
+  // Called synchronously, so the send starts before server.close(); a synchronous throw is
+  // treated like a rejected flush.
+  let flush: Promise<unknown>;
+  try {
+    flush = telemetry.flush().catch(() => undefined);
+  } catch {
+    flush = Promise.resolve();
+  }
+  // Promise.race of the flush and a TELEMETRY_SHUTDOWN_WAIT_MS delay, with the delay cleared
+  // when the flush wins so no timer outlives it.
+  return new Promise<void>((resolve) => {
+    const timer = setTimeout(resolve, TELEMETRY_SHUTDOWN_WAIT_MS);
+    timer.unref?.();
+    void flush.then(() => {
+      clearTimeout(timer);
+      resolve();
+    });
+  });
+}
+
+/**
  * Stops the daemon without leaving `claude` children behind (review WR-03).
  *
  * 1. disablePrewarm() retires the idle child (stdin EOF, SIGKILL backstop) AND turns the
@@ -44,6 +77,10 @@ export interface DaemonShutdownOptions {
  *    still alive. server.close() alone would wait for those connections instead.
  * 3. After the server closed, the process stays up for `graceMs` when connections were
  *    ended, so terminateChild's unref'd SIGKILL backstop can still fire, then exits.
+ *
+ * Telemetry (phase 10, D-07): the flush interval stops and the final flush starts before the
+ * server closes. Exit waits for that flush, but never more than TELEMETRY_SHUTDOWN_WAIT_MS;
+ * a failed or slow send is dropped like any other.
  */
 export function shutdownDaemon(
   server: net.Server,
@@ -53,13 +90,16 @@ export function shutdownDaemon(
   const exit = options.exit ?? (() => process.exit(0));
   const graceMs = options.graceMs ?? SIGKILL_GRACE_MS + 100;
   disablePrewarm();
+  const finalFlush = startFinalFlush(options.telemetry);
   const inFlight = connections.size;
   server.close(() => {
-    if (inFlight === 0) {
-      exit();
-      return;
-    }
-    setTimeout(exit, graceMs);
+    void finalFlush.then(() => {
+      if (inFlight === 0) {
+        exit();
+        return;
+      }
+      setTimeout(exit, graceMs);
+    });
   });
   for (const socket of connections) {
     socket.destroy();
@@ -87,7 +127,14 @@ export async function daemonCommand(options: DaemonCommandOptions): Promise<void
   // Start the server and block indefinitely. A `shutdown` IPC request (restartDaemon,
   // WR-07) runs the same shutdown as SIGTERM; it is wired once `shutdown` exists below.
   let onShutdownRequest = (): void => undefined;
-  const server = await startDaemonServer(sock, { onShutdown: () => onShutdownRequest() });
+  // Anonymous telemetry (D-07): memory only, flushed every 60 s, at 20 events and on shutdown.
+  // Without a baked key nothing is ever buffered or sent (D-22).
+  const telemetry = createTelemetryBuffer();
+  telemetry.start();
+  const server = await startDaemonServer(sock, {
+    onShutdown: () => onShutdownRequest(),
+    telemetry,
+  });
   const connections = trackConnections(server);
   void appendDebugLog('daemon', 'server started', { socket: sock });
 
@@ -100,7 +147,7 @@ export async function daemonCommand(options: DaemonCommandOptions): Promise<void
   const shutdown = () => {
     void appendDebugLog('daemon', 'shutdown', { socket: sock, inFlight: connections.size });
     // If the daemon dies outright instead, an idle child gets stdin EOF and exits by itself.
-    shutdownDaemon(server, connections);
+    shutdownDaemon(server, connections, { telemetry });
   };
 
   onShutdownRequest = shutdown;
