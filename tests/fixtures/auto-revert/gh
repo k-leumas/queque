@@ -10,7 +10,11 @@
 # An `api` call with `--jq EXPR` pipes the fixture through the real `jq -r EXPR`, like gh.
 set -euo pipefail
 
-jq -cn '$ARGS.positional' --args "$@" >>"$GH_LOG"
+# Each argument is encoded on its own: `jq --args` would still parse `--paginate` and the
+# like as jq options.
+for arg in "$@"; do
+  printf '%s' "$arg" | jq -Rs .
+done | jq -sc . >>"$GH_LOG"
 
 copy_body_file() {
   while [ $# -gt 0 ]; do

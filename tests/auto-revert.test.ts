@@ -178,7 +178,8 @@ function slug(image: string): string {
   return image.replace(/[:/]/g, '-');
 }
 
-function writeArtifacts(f: Fixture, image: string, lineWidth = 0): void {
+/** Smoke artifacts for IMAGE; `extraLogs` more PTY logs push the body past its cap. */
+function writeArtifacts(f: Fixture, image: string, lineWidth = 0, extraLogs = 0): void {
   const dir = join(f.artifacts, `smoke-${slug(image)}`);
   mkdirSync(dir, { recursive: true });
   const pad = lineWidth > 0 ? ` ${'x'.repeat(lineWidth)}` : '';
@@ -192,6 +193,9 @@ function writeArtifacts(f: Fixture, image: string, lineWidth = 0): void {
     'pty-default.log': `${lines.join('\r\n')}\r\n${ESC}[31mRED-MARK${ESC}[0m${ESC}]0;title\u0007\r\n`,
     'qq-debug.log': `debug-mark ${image}${pad}\n`,
   });
+  for (let i = 1; i <= extraLogs; i++) {
+    writeFiles(dir, { [`pty-extra-${i}.log`]: `${lines.join('\n')}\n` });
+  }
 }
 
 interface RunResult {
@@ -273,7 +277,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const f = makeFixture();
       const result = run(f);
       expect(result.stderr).not.toMatch(/unbound variable|command not found/);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
 
       expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
       const files = git(f.remote, [
@@ -321,7 +325,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const f = makeFixture();
       writeFileSync(join(f.fixtures, 'pr-list.txt'), '7\n');
       const result = run(f);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(prCalls(f, 'create').length).toBe(0);
       expect(prCalls(f, 'edit').filter((argv) => argv[2] === '7').length).toBe(1);
       const comments = prCalls(f, 'comment').filter((argv) => argv[2] === '7');
@@ -352,7 +356,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
         ],
       });
       const result = run(f);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(
         ghCalls(f).some((argv) => argv[0] === 'api' && argv[1].includes('/runs/150/jobs')),
       ).toBe(true);
@@ -373,7 +377,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       });
       writeJson(f, 'jobs-101.json', { jobs: [smokeJob('alpine:3.24', 'success')] });
       const result = run(f);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(
         ghCalls(f).some((argv) => argv[0] === 'api' && argv[1].includes(`head_sha=${f.sha.g}`)),
       ).toBe(true);
@@ -389,7 +393,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const f = makeFixture();
       writeJson(f, 'branch-runs.json', { workflow_runs: [] });
       const result = run(f, { BEFORE_SHA: f.sha.g });
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
       expect(body(f)).toMatch(/before/i);
     },
@@ -402,7 +406,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const f = makeFixture();
       writeJson(f, 'branch-runs.json', { workflow_runs: [] });
       const result = run(f, { BEFORE_SHA: ZERO_SHA });
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       // main was merged into feat/x, so the merge base is main's tip M1.
       expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.m1));
       expect(body(f)).toMatch(/merge base/i);
@@ -421,7 +425,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
         ],
       });
       const result = run(f);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(result.stdout).toContain('no smoke failure in this run; nothing to revert');
       expect(prCalls(f).length).toBe(0);
       expect(remoteHasBranch(f, 'auto-revert/feat-x')).toBe(false);
@@ -434,7 +438,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
     () => {
       const f = makeFixture();
       const result = run(f, { BRANCH: 'auto-revert/feat-x' });
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(ghCalls(f).length).toBe(0);
     },
     TEST_TIMEOUT_MS,
@@ -446,7 +450,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const f = makeFixture();
       writeJson(f, 'branch-runs.json', { workflow_runs: [] });
       const result = run(f, { BRANCH: 'main', HEAD_SHA: f.sha.m1, BEFORE_SHA: ZERO_SHA });
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(result.stdout).toContain('::warning::');
       expect(prCalls(f).length).toBe(0);
       expect(remoteHasBranch(f, 'auto-revert/main')).toBe(false);
@@ -459,7 +463,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
     () => {
       const f = makeFixture();
       const result = run(f, { BRANCH: 'feat/x..y' });
-      expect(result.status).toBe(1);
+      expect(result.status, result.stderr).toBe(1);
       expect(ghCalls(f).length).toBe(0);
     },
     TEST_TIMEOUT_MS,
@@ -472,7 +476,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       // A valid ref name, so the script runs end to end with it.
       const branch = `feat/${SHELL_SYNTAX}`;
       const result = run(f, { BRANCH: branch });
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       expect(existsSync(join(f.work, 'pwned'))).toBe(false);
       expect(existsSync(join(f.root, 'pwned'))).toBe(false);
       expect(remoteHasBranch(f, `auto-revert/feat-${SHELL_SYNTAX}`)).toBe(true);
@@ -488,7 +492,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
     () => {
       const f = makeFixture({ touchWorkflow: true });
       const result = run(f);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       const ref = 'refs/heads/auto-revert/feat-x';
       expect(git(f.remote, ['show', `${ref}:.github/workflows/ci.yml`])).toBe(
         git(f.work, ['show', `${f.sha.h}:.github/workflows/ci.yml`]),
@@ -515,10 +519,10 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       ];
       writeJson(f, 'jobs-200.json', { jobs: images.map((image) => smokeJob(image, 'failure')) });
       for (const image of images) {
-        writeArtifacts(f, image, 400);
+        writeArtifacts(f, image, 400, 6);
       }
       const result = run(f);
-      expect(result.status).toBe(0);
+      expect(result.status, result.stderr).toBe(0);
       const text = body(f);
       expect(text.length).toBeLessThanOrEqual(60_000);
       expect(text).toMatch(/truncated/i);
