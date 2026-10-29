@@ -497,6 +497,31 @@ function checkNode(deps: DoctorDeps): DoctorCheck {
   return ok('node', `Node ${version}`);
 }
 
+/**
+ * Telemetry state (D-18): always ok, never a blocker. Names a blocking variable, never its
+ * value, and never the install id.
+ */
+function checkTelemetry(deps: DoctorDeps): DoctorCheck {
+  let status: TelemetryStatus;
+  try {
+    status = deps.telemetryStatus();
+  } catch {
+    return ok('telemetry', 'telemetry state could not be read (treated as off)');
+  }
+  if (status.blockedBy !== null) {
+    return ok('telemetry', `telemetry off (${status.blockedBy} is set)`);
+  }
+  if (!status.state.enabled || status.state.installId === undefined) {
+    return ok('telemetry', status.state.asked ? 'telemetry off' : 'telemetry off (not asked yet)');
+  }
+  return ok(
+    'telemetry',
+    status.keyPresent
+      ? 'telemetry on'
+      : 'telemetry on (no project key in this build: nothing is sent)',
+  );
+}
+
 function reportPlatform(platform: NodeJS.Platform): DoctorPlatform {
   return platform === 'darwin' || platform === 'linux' ? platform : 'other';
 }
@@ -527,6 +552,7 @@ export async function runDoctorChecks(
     checkLocale(deps),
     provider,
     checkNode(deps),
+    checkTelemetry(deps),
   ];
   return doctorReportSchema.parse({
     version: 1,
