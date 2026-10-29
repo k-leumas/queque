@@ -69,10 +69,23 @@ const effortSchema = z
   .optional()
   .catch(undefined);
 
+/**
+ * The anonymous telemetry consent block (phase 10, D-06, D-09). It is read and written
+ * only by src/shared/telemetry-config.ts, uncached; the cached loader below ignores it.
+ */
+export const telemetryConfigSchema = z.object({
+  enabled: z.boolean().optional(),
+  asked: z.boolean().optional(),
+  installId: z.uuid().optional(),
+});
+
 export const qqConfigFileSchema = z.object({
   effort: effortSchema,
   privacy: privacyConfigSchema,
   safety: safetyConfigSchema,
+  // A malformed telemetry block becomes undefined instead of failing the whole file, which
+  // would also drop the privacy, safety and effort keys (same lenient rule as effort).
+  telemetry: telemetryConfigSchema.optional().catch(undefined),
 });
 
 export type QqConfigFile = z.infer<typeof qqConfigFileSchema>;
