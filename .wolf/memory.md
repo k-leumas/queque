@@ -3586,3 +3586,5 @@
 | 16:32 | Edited vitest.config.ts | 2→3 lines | ~33 |
 | 16:32 | Edited vitest.live.config.ts | 1→2 lines | ~26 |
 | 16:34 | 10-12 drill blocked: pre-push tests inherited GIT_DIR and damaged repo (core.bare=true); repaired, fixed via vitest setup scrub + regression test | tests/setup/scrub-git-env.ts, tests/git-env-isolation.test.ts | 1459/1459 green | ~8k |
+| 16:37 | 10-12 Task 2: pushed 9401eba to ci/phase-10-verify (pre-push green, repo intact) | ci/phase-10-verify | run https://github.com/k-leumas/queque/actions/runs/40967340170 | ~1k |
+| 16:41 | 10-12 verify run FAILED: 6/6 smoke green, test-distro red on fedora:44, debian:13, ubuntu:24.04, ubuntu:22.04 (zsh-widget z4: 75 vs 77 chars, likely non-UTF-8 locale); auto-revert no-op; drill skipped, gap recorded | tests/zsh-widget.test.ts | gap -> /gsd-plan-phase 10 --gaps | ~3k |
