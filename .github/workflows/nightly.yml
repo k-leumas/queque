@@ -1,0 +1,64 @@
+# Nightly safety net (phase 10, D-01 to D-03). Provider or distro drift shows up within a day
+# without blocking merges: nothing here is a required check (only ci-ok on ci.yml is), and a
+# red run opens no issue (read-only token, no issue step).
+#
+# Only the schedule and manual dispatch: no push or pull request trigger of any kind, so PR and
+# fork code never runs where the ANTHROPIC_API_KEY secret is available. The `live` job is also
+# guarded to this repository, because scheduled runs on forks have no secret.
+name: Nightly
+
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly
+  cancel-in-progress: true
+
+jobs:
+  # The PR matrices against :latest images, which picks up new releases (Ubuntu 26.04 and so
+  # on) automatically. Fake `claude` only; distro.yml references no secret.
+  distro:
+    uses: ./.github/workflows/distro.yml
+    with:
+      images: '["ubuntu:latest","debian:latest","fedora:latest","archlinux:latest","alpine:latest"]'
+
+  # The phase's only real-model job: one SDK-path request against the built daemon,
+  # contract-level assertions only (tests/live/sdk-contract.live.ts, D-02).
+  live:
+    if: github.repository == 'k-leumas/queque'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      LEFTHOOK: '0'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      - name: Require the API key secret
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY secret is missing"
+            exit 1
+          fi
+
+      - name: Live SDK contract test
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: pnpm test:live
