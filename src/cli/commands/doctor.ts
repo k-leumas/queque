@@ -14,6 +14,7 @@ import {
   type DoctorCheck,
   type DoctorPlatform,
   type DoctorReport,
+  doctorExitCode,
   doctorReportSchema,
 } from '../../contracts/doctor.js';
 import { pingDaemonFetchCap } from '../../daemon/bootstrap.js';
@@ -514,4 +515,37 @@ export async function runDoctorChecks(
     platform: reportPlatform(deps.platform),
     checks,
   });
+}
+
+const STATUS_MARKS: Record<DoctorCheck['status'], string> = { ok: '✓', warn: '⚠', fail: '✗' };
+
+/**
+ * Human checklist (D-18): one line per check with ✓, ⚠ or ✗ and the summary; warn and fail
+ * lines end with ` — fix: HINT`. The last line counts the problems (warn plus fail).
+ */
+export function formatDoctorReport(report: DoctorReport): string {
+  const lines = report.checks.map((check) => {
+    const line = `${STATUS_MARKS[check.status]} ${check.summary}`;
+    return check.status !== 'ok' && check.hint ? `${line} — fix: ${check.hint}` : line;
+  });
+  const problems = report.checks.filter((check) => check.status !== 'ok').length;
+  lines.push(
+    problems === 0
+      ? 'qq doctor: no problems found'
+      : `qq doctor: ${problems} problem${problems === 1 ? '' : 's'} found`,
+  );
+  return `${lines.join('\n')}\n`;
+}
+
+/**
+ * `qq doctor [--json]`: prints the checklist or the JSON report to stdout and sets the exit
+ * code (1 only for hard blockers). Sets `process.exitCode`, never `process.exit`, so the
+ * output flushes before the process ends.
+ */
+export async function doctorCommand(options: { json?: boolean }, deps?: DoctorDeps): Promise<void> {
+  const report = await runDoctorChecks(deps ?? defaultDoctorDeps());
+  process.stdout.write(
+    options.json ? `${JSON.stringify(report, null, 2)}\n` : formatDoctorReport(report),
+  );
+  process.exitCode = doctorExitCode(report);
 }
