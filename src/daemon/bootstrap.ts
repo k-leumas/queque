@@ -191,7 +191,7 @@ async function waitForSocket(
  * ignores `-t <path>` and lists every open file of every process as
  * `PID<TAB>/bin/busybox<TAB>FD<TAB>TARGET`; parsing that as pids made replaceStaleListener
  * signal every process in the container, PID 1 included (Phase 10 Defect 1). Any other
- * shape returns `[]` and logs `lsof output ignored`.
+ * shape returns `[]` and writes a debug line saying the output was ignored.
  * Exported for the Defect 1 regression test (tests/lsof-busybox.test.ts).
  */
 export function parseLsofPidList(output: string, selfPid: number): number[] {
