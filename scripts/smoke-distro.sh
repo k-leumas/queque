@@ -105,7 +105,7 @@ if [[ $rc -eq 0 ]]; then
   echo "smoke-distro: PASS $IMAGE"
 else
   echo "smoke-distro: FAIL $IMAGE (exit $rc)"
-  for log in "$OUT_DIR/pty-default.log" "$OUT_DIR/pty-c-locale.log"; do
+  for log in "$OUT_DIR/pty-default.log" "$OUT_DIR/pty-c-locale.log" "$OUT_DIR/pty-consent.log"; do
     [[ -f "$log" ]] || continue
     echo "--- last 40 lines of $(basename "$log") ---"
     tail -n 40 "$log"

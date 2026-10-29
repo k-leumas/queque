@@ -10,10 +10,10 @@
 # the Ink TUI are the real installed product.
 #
 # Runs `qq doctor` as the smoke user (D-17: with only `claude` faked the image must
-# have no hard blocker), then the expect passes `default` then `c-locale`, and stops
-# at the first failure.
+# have no hard blocker), then the expect passes `default`, `c-locale` and `consent`,
+# and stops at the first failure.
 # Artifacts in /out: image.txt, doctor.json, doctor.txt, pty-default.log,
-# pty-c-locale.log, qq-debug.log; on any failure also df.txt (`df -h /tmp`; a full disk
+# pty-c-locale.log, pty-consent.log, qq-debug.log; on any failure also df.txt (`df -h /tmp`; a full disk
 # broke the widget in research) and zshrc.txt (the smoke user's ~/.zshrc). doctor.json
 # and doctor.txt are written on every path that gets as far as the smoke user, failures
 # included, because the auto-revert PR body quotes them (D-15).
@@ -21,7 +21,8 @@
 # Exit codes: 30 deps, 31 package install, 32 user, 33 `qq init zsh`;
 #   exit 34 when `qq doctor --json` exits non-zero (a hard blocker on this image);
 #   exit 35 when doctor.json is not a version 1 report with at least 11 checks;
-# otherwise the exit code of scripts/smoke-distro.exp (10-16, 19).
+#   exit 36 when the consent pass's `n` is not saved (asked, disabled, no install id);
+# otherwise the exit code of scripts/smoke-distro.exp (10-19).
 set -u
 
 SMOKE_USER=qq
@@ -89,8 +90,10 @@ collect_doctor() {
 
 # The exports go ABOVE the QueQue source line that `qq init zsh` appends: the widget
 # prewarms the daemon while ~/.zshrc loads, and the daemon keeps the env it started with.
-# QQ_TELEMETRY=0 keeps the telemetry consent prompt out of the PTY (research Pitfall 10).
-as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' 'export QQ_TELEMETRY=0' >.zshrc" ||
+# QQ_TELEMETRY=0 keeps the telemetry consent prompt out of the default and c-locale PTY
+# passes (research Pitfall 10); the consent pass sets QQ_SMOKE_CONSENT=1 to leave it unset.
+# The telemetry line is single-quoted so zsh evaluates it, not this runner.
+as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' '[ -n \"\${QQ_SMOKE_CONSENT:-}\" ] || export QQ_TELEMETRY=0' >.zshrc" ||
   fail 33
 as_user "qq init zsh" || fail 33
 grep -q 'queque\.zsh' "$SMOKE_HOME/.zshrc" || {
@@ -110,7 +113,14 @@ jq -e '.version == 1 and (.checks | length) >= 11' /out/doctor.json >/dev/null |
   fail 35
 }
 
-for pass in default c-locale; do
+for pass in default c-locale consent; do
   as_user "expect /opt/qq-scripts/smoke-distro.exp $pass" || fail $?
 done
+
+# The consent pass answered `n`: asked once and saved as a no, with no install id (D-06).
+as_user "jq -e '.telemetry.asked == true and .telemetry.enabled == false and (.telemetry | has(\"installId\") | not)' $SMOKE_HOME/.config/qq/config.json >/dev/null" || {
+  echo "smoke-distro-runner: the consent answer was not saved as a no in ~/.config/qq/config.json" >&2
+  cat "$SMOKE_HOME/.config/qq/config.json" >&2 2>/dev/null
+  fail 36
+}
 exit 0
