@@ -5,6 +5,7 @@ import { clientCommand } from './commands/client.js';
 import { daemonCommand } from './commands/daemon.js';
 import { doctorCommand } from './commands/doctor.js';
 import { dispatchInit } from './commands/init-provider.js';
+import { telemetryCommand } from './commands/telemetry.js';
 
 type ClientOptions = {
   requestFile?: string;
@@ -108,6 +109,12 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
     .option('--json', 'Print the report as JSON')
     .action(async (options: { json?: boolean }) => {
       await doctorCommand({ json: options.json });
+    });
+
+  cli
+    .command('telemetry [action]', 'Anonymous usage and error counts: status, on, off or show')
+    .action(async (action?: string) => {
+      await telemetryCommand(action);
     });
 
   cli
