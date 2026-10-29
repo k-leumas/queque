@@ -519,6 +519,7 @@ describe('daemon server', () => {
       installedTools: true,
       streamCandidates: true,
       providerPin: true,
+      telemetry: true,
     });
   });
 });

@@ -11,7 +11,8 @@ import type { TelemetryBuffer } from './telemetry-buffer.js';
  *
  * Handles newline-delimited JSON IPC messages. Supported requests:
  *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true,
- *                                   streamCandidates: true, providerPin: true}
+ *                                   streamCandidates: true, providerPin: true} plus the
+ *                                   `telemetry` flag (informational, never a replace trigger)
  *   {kind: 'ensure-session'}    → {kind: 'session-ready', socketPath}
  *   {kind: 'run-query'}         → {kind: 'query-accepted', requestId}
  *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'}, then {kind: 'candidate'} × N when the
@@ -21,6 +22,11 @@ import type { TelemetryBuffer } from './telemetry-buffer.js';
  *   {kind: 'shutdown'}          → {kind: 'shutdown-accepted'}, then `onShutdown()` (WR-07); ignored
  *                                   when no `onShutdown` was given. Shutting down ends in-flight
  *                                   fetches of other terminals (their `??` shows the error copy)
+ *   {kind: 'telemetry-event'}   → no reply (fire-and-forget); the event goes to the telemetry
+ *                                   buffer, which gates and re-validates it (phase 10, D-07)
+ *   {kind: 'telemetry-show'}    → {kind: 'telemetry-buffer', pending, lastSent} (D-12); both
+ *                                   null when no buffer was given
+ *   {kind: 'telemetry-reset'}   → the buffer is cleared, then the same `telemetry-buffer` reply
  *
  * The server is intentionally free of Ink, React, and /dev/tty assumptions —
  * it runs fully in the background without a TTY. LLM fetch lives here so the
@@ -103,8 +109,29 @@ export function startDaemonServer(
                 installedTools: true,
                 streamCandidates: true,
                 providerPin: true,
+                telemetry: true,
               });
               void appendDebugLog('daemon', 'replied pong');
+              break;
+            }
+            case 'telemetry-event': {
+              // Fire-and-forget: the client has already ended its socket. The buffer logs
+              // counts and reasons only, never the event.
+              options.telemetry?.enqueue(req.event);
+              break;
+            }
+            case 'telemetry-show':
+            case 'telemetry-reset': {
+              const { telemetry } = options;
+              if (req.kind === 'telemetry-reset') {
+                telemetry?.reset();
+              }
+              const snapshot = telemetry?.snapshot() ?? { pending: null, lastSent: null };
+              writeJson({ kind: 'telemetry-buffer', ...snapshot });
+              void appendDebugLog('daemon', 'replied telemetry-buffer', {
+                pending: snapshot.pending !== null,
+                lastSent: snapshot.lastSent !== null,
+              });
               break;
             }
             case 'shutdown': {

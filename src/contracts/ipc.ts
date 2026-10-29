@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { candidateListSchema, commandCandidateSchema } from './candidates.js';
 import { contextEnvelopeSchema } from './request.js';
 import { shellRequestSchema } from './shell.js';
+import { clientTelemetryEventSchema, ERROR_KINDS } from './telemetry.js';
 
 /**
  * IPC request — sent from the foreground client to the daemon over a Unix socket.
@@ -31,6 +32,21 @@ export const ipcRequestSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('shutdown'),
   }),
+  // One anonymous telemetry event for the daemon buffer (phase 10, D-07). Fire-and-forget:
+  // the daemon never replies. Old daemons ignore the unknown kind and keep running. The
+  // event schema is strict, so an event with any field outside the allow list is ignored.
+  z.object({
+    kind: z.literal('telemetry-event'),
+    event: clientTelemetryEventSchema,
+  }),
+  // `qq telemetry show` (D-12): replied with `telemetry-buffer`.
+  z.object({
+    kind: z.literal('telemetry-show'),
+  }),
+  // `qq telemetry off`: drops the buffer and the last sent body; replied with `telemetry-buffer`.
+  z.object({
+    kind: z.literal('telemetry-reset'),
+  }),
 ]);
 
 export type IpcRequest = z.infer<typeof ipcRequestSchema>;
@@ -50,6 +66,10 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
     // A routing change, not an envelope shape change: a daemon without it sends every
     // prompt to Claude even when the user pinned a local provider.
     providerPin: z.literal(true).optional(),
+    // Daemon buffers `telemetry-event` and answers `telemetry-show`/`telemetry-reset` (phase
+    // 10). Informational only: ensureDaemon never replaces a daemon for lacking it, because
+    // telemetry is optional and replacement goes through replaceStaleListener.
+    telemetry: z.literal(true).optional(),
   }),
   z.object({
     kind: z.literal('session-ready'),
@@ -75,10 +95,21 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('fetch-error'),
     message: z.string(),
+    // What failed, as an enum classified where the error object exists (phase 10, D-10), so
+    // the client reports errors without reading message text. Optional for old daemons; an
+    // unknown value from a newer daemon is filtered to undefined, not a rejected reply.
+    errorKind: z.enum(ERROR_KINDS).optional().catch(undefined),
   }),
   // Sent before the daemon closes its server for a `shutdown` request (WR-07).
   z.object({
     kind: z.literal('shutdown-accepted'),
+  }),
+  // Reply to `telemetry-show` and `telemetry-reset` (D-12): `pending` is byte for byte the
+  // body the next flush would send, `lastSent` the last body sent (memory only).
+  z.object({
+    kind: z.literal('telemetry-buffer'),
+    pending: z.string().nullable(),
+    lastSent: z.string().nullable(),
   }),
 ]);
 
