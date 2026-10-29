@@ -24,6 +24,7 @@
     "dev:restart": "node scripts/restart-dev-server.mjs",
     "test": "vitest --passWithNoTests",
     "test:run": "vitest run --passWithNoTests",
+    "test:live": "vitest run --config vitest.live.config.ts",
     "typecheck": "tsc --noEmit",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
