@@ -4,6 +4,7 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { fetchCandidates as fetchSdkCandidates, TRUNCATED_RESPONSE_MESSAGE } from './claude.js';
 import { fetchClaudeCliCandidates } from './claude-cli.js';
+import { withErrorKind } from './error-kind.js';
 import { type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 
 const TOTAL_BUDGET_MS = 25_000;
@@ -87,18 +88,18 @@ export function lookupApiKey(): string | undefined {
 function hardError(error: unknown): Error {
   // WR-01-r2: a cut-off answer shows the same copy as the SDK path, never the D13 login copy.
   if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {
-    return error;
+    return withErrorKind(error, 'response_truncated');
   }
   if (isEnoent(error)) {
-    return new Error(ENOENT_MESSAGE);
+    return withErrorKind(new Error(ENOENT_MESSAGE), 'provider_missing');
   }
   if (isTimeoutOrKilled(error)) {
-    return new Error(TIMEOUT_MESSAGE);
+    return withErrorKind(new Error(TIMEOUT_MESSAGE), 'provider_timeout');
   }
   if (isAuthFailure(error)) {
-    return new Error(D13_MESSAGE);
+    return withErrorKind(new Error(D13_MESSAGE), 'auth_missing');
   }
-  return new Error(CLI_FAILED_MESSAGE);
+  return withErrorKind(new Error(CLI_FAILED_MESSAGE), 'provider_failed');
 }
 
 /**
@@ -111,10 +112,10 @@ function sdkError(error: unknown): unknown {
   }
   const status = errorField(error, 'status');
   if (status === 401) {
-    return new Error(SDK_KEY_REJECTED_MESSAGE);
+    return withErrorKind(new Error(SDK_KEY_REJECTED_MESSAGE), 'key_rejected');
   }
   if (status === 403) {
-    return new Error(SDK_KEY_REFUSED_MESSAGE);
+    return withErrorKind(new Error(SDK_KEY_REFUSED_MESSAGE), 'key_refused');
   }
   return error;
 }
