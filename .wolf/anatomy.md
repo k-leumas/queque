@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T01:14:41.437Z
-> Files: 602 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T02:07:28.849Z
+> Files: 603 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -913,6 +913,7 @@
 - `10-CONTEXT.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Context (~2564 tok)
 - `10-DISCUSS-CHECKPOINT.json` (~360 tok)
 - `10-DISCUSSION-LOG.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Discussion Log (~825 tok)
+- `10-RESEARCH.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Research (~21719 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 

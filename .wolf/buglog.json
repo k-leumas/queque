@@ -6794,6 +6794,38 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-22T02:59:07.000Z"
+    },
+    {
+      "id": "bug-414",
+      "timestamp": "2026-10-29T02:07:21.715Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T02:07:21.715Z"
+    },
+    {
+      "id": "bug-415",
+      "timestamp": "2026-10-29T02:07:28.874Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md",
+      "root_cause": "Had `\\r`",
+      "fix": "Changed to `-re {QQSMOKE[%#] tldr z3  # }`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T02:07:28.874Z"
     }
   ]
 }
