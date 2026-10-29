@@ -1,6 +1,8 @@
 import * as net from 'node:net';
 import { commandCandidateSchema } from '../contracts/candidates.js';
 import { ipcRequestSchema } from '../contracts/ipc.js';
+import type { ErrorKind } from '../contracts/telemetry.js';
+import { errorKindOf } from '../providers/error-kind.js';
 import { resolveProviderAdapter } from '../providers/provider-pin.js';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { appendDebugLog } from '../shared/debug-log.js';
@@ -183,10 +185,14 @@ export function startDaemonServer(
                   : undefined;
               // Resolution throws (an invalid provider pin) stay inside the chain so they
               // become fetch-error. The pin is re-read on every fetch (D-15).
+              // `resolved` tells a resolution failure (an invalid pin) from a provider failure,
+              // whose kind comes from the error object (D-10), never from its message.
+              let resolved = false;
               void Promise.resolve()
                 .then(() => {
                   bootstrapBuiltins();
                   const adapter = resolveProviderAdapter();
+                  resolved = true;
                   return adapter.fetchCandidates(envelope, {
                     signal: connectionAbort.signal,
                     onCandidate,
@@ -208,8 +214,9 @@ export function startDaemonServer(
                     return;
                   }
                   const message = error instanceof Error ? error.message : String(error);
-                  writeJson({ kind: 'fetch-error', message });
-                  void appendDebugLog('daemon', 'replied fetch-error', { message });
+                  const errorKind: ErrorKind = resolved ? errorKindOf(error) : 'pin_invalid';
+                  writeJson({ kind: 'fetch-error', message, errorKind });
+                  void appendDebugLog('daemon', 'replied fetch-error', { message, errorKind });
                 });
               break;
             }
