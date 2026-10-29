@@ -1,12 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   type DoctorDeps,
   defaultDoctorDeps,
+  doctorCommand,
+  formatDoctorReport,
   parseZshBindings,
   runDoctorChecks,
 } from '../src/cli/commands/doctor.js';
 import {
   DOCTOR_CHECK_IDS,
+  type DoctorCheck,
   type DoctorCheckId,
   type DoctorReport,
   doctorExitCode,
@@ -375,5 +378,95 @@ describe('defaultDoctorDeps (real machine, read-only)', () => {
     expect(deps.which('node')).not.toBeNull();
     expect(deps.which('definitely-not-a-qq-binary')).toBeNull();
     expect(deps.probeTmp()).toBe(true);
+  });
+});
+
+describe('formatDoctorReport', () => {
+  const zshOk: DoctorCheck = { id: 'zsh', status: 'ok', summary: 'zsh 5.9' };
+  const jqFail: DoctorCheck = {
+    id: 'jq',
+    status: 'fail',
+    summary: 'jq not found on PATH',
+    hint: 'install jq',
+  };
+  const termWarn: DoctorCheck = {
+    id: 'term',
+    status: 'warn',
+    summary: 'TERM is dumb',
+    hint: 'set TERM',
+  };
+  const report: DoctorReport = {
+    version: 1,
+    ok: false,
+    qqVersion: '0.7.0',
+    platform: 'linux',
+    checks: [zshOk, jqFail, termWarn],
+  };
+
+  it('prints one marked line per check and a hint suffix on warn and fail lines', () => {
+    const lines = formatDoctorReport(report).trimEnd().split('\n');
+    expect(lines).toEqual([
+      '✓ zsh 5.9',
+      '✗ jq not found on PATH — fix: install jq',
+      '⚠ TERM is dumb — fix: set TERM',
+      'qq doctor: 2 problems found',
+    ]);
+  });
+
+  it('says no problems found when every check is ok', () => {
+    const clean = { ...report, ok: true, checks: [zshOk] };
+    expect(formatDoctorReport(clean)).toBe('✓ zsh 5.9\nqq doctor: no problems found\n');
+  });
+
+  it('uses the singular for one problem', () => {
+    const one = { ...report, checks: [zshOk, termWarn] };
+    expect(formatDoctorReport(one)).toContain('qq doctor: 1 problem found');
+  });
+});
+
+describe('doctorCommand', () => {
+  afterEach(() => {
+    process.exitCode = undefined;
+    vi.restoreAllMocks();
+  });
+
+  function captureStdout(): () => string {
+    let out = '';
+    vi.spyOn(process.stdout, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      out += String(chunk);
+      return true;
+    });
+    return () => out;
+  }
+
+  it('prints the checklist and leaves exit code 0 on a healthy machine', async () => {
+    const output = captureStdout();
+    await doctorCommand({}, healthyDeps());
+    expect(output()).toContain('✓ zsh 5.9');
+    expect(output()).toContain('qq doctor: no problems found');
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('prints JSON that parses with doctorReportSchema for --json', async () => {
+    const output = captureStdout();
+    await doctorCommand({ json: true }, healthyDeps());
+    const parsed = doctorReportSchema.parse(JSON.parse(output()));
+    expect(parsed.checks).toHaveLength(DOCTOR_CHECK_IDS.length);
+    expect(output().endsWith('\n')).toBe(true);
+  });
+
+  it('sets exit code 1 for a hard blocker', async () => {
+    captureStdout();
+    await doctorCommand({}, healthyDeps({ probeTmp: () => false }));
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('keeps exit code 0 when only warnings are present', async () => {
+    captureStdout();
+    await doctorCommand(
+      { json: true },
+      healthyDeps({ detectProvider: async () => ({ kind: 'none', message: 'x' }) }),
+    );
+    expect(process.exitCode).toBe(0);
   });
 });
