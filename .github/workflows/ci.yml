@@ -101,4 +101,45 @@ jobs:
             *" failure "* | *" cancelled "*) exit 1 ;;
           esac
 
-  # Plan 07 adds the `auto-revert` job here, after ci-ok.
+  # D-15: when a smoke leg fails on a push, open (or update) one pull request that puts the
+  # branch back to its last green tree, with doctor.json and log tails in the body. Not in
+  # ci-ok's needs. Push only, so no forked-PR path reaches this write-scoped job; pushes to
+  # auto-revert/* never revert again, and GITHUB_TOKEN pushes start no new runs.
+  auto-revert:
+    needs: [changes, distro]
+    if: always() && github.event_name == 'push' && needs.distro.result == 'failure' && !startsWith(github.ref_name, 'auto-revert/')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    # D-21: the workflow's own token, least privilege; the workflow default stays read-only.
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: read
+    concurrency:
+      group: auto-revert-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      # Full history for the ancestry checks; credentials persist for the revert-branch push.
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      # Outside the work tree, so the tree restore never touches the downloaded logs.
+      - name: Download smoke artifacts
+        uses: actions/download-artifact@v8
+        continue-on-error: true
+        with:
+          pattern: smoke-*
+          path: ${{ runner.temp }}/smoke-artifacts
+
+      - name: Open or update the revert pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+          HEAD_SHA: ${{ github.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ARTIFACTS_DIR: ${{ runner.temp }}/smoke-artifacts
+        run: bash scripts/ci/auto-revert.sh

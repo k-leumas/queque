@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+# Test double for the GitHub CLI, used by tests/auto-revert.test.ts in place of the real
+# `gh` (an external API, not a dependency under test). It logs every call as one JSON array
+# of argv per line to $GH_LOG and answers from fixture files in $GH_FIXTURES:
+#   api .../actions/runs/ID/jobs...        -> jobs-ID.json          (else {"jobs":[]})
+#   api .../runs?head_sha=SHA...            -> sha-runs-SHA.json     (else {"workflow_runs":[]})
+#   api .../runs?branch=...                 -> branch-runs.json      (else {"workflow_runs":[]})
+#   pr list                                 -> pr-list.txt           (else nothing)
+#   pr create | pr edit | pr comment        -> log only; a --body-file is copied to $GH_LOG.body
+# An `api` call with `--jq EXPR` pipes the fixture through the real `jq -r EXPR`, like gh.
+set -euo pipefail
+
+# Each argument is encoded on its own: `jq --args` would still parse `--paginate` and the
+# like as jq options.
+for arg in "$@"; do
+  printf '%s' "$arg" | jq -Rs .
+done | jq -sc . >>"$GH_LOG"
+
+copy_body_file() {
+  while [ $# -gt 0 ]; do
+    if [ "$1" = "--body-file" ]; then
+      cat -- "$2" >"$GH_LOG.body"
+      return 0
+    fi
+    shift
+  done
+}
+
+case "${1:-} ${2:-}" in
+  "api "*)
+    path=$2
+    shift 2
+    expr=""
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --jq)
+          expr=$2
+          shift 2
+          ;;
+        *) shift ;;
+      esac
+    done
+    case "$path" in
+      */actions/runs/*/jobs*)
+        id=${path#*/actions/runs/}
+        id=${id%%/*}
+        file="$GH_FIXTURES/jobs-$id.json"
+        empty='{"jobs":[]}'
+        ;;
+      *runs\?*head_sha=*)
+        sha=${path#*head_sha=}
+        sha=${sha%%&*}
+        file="$GH_FIXTURES/sha-runs-$sha.json"
+        empty='{"workflow_runs":[]}'
+        ;;
+      *runs\?*branch=*)
+        file="$GH_FIXTURES/branch-runs.json"
+        empty='{"workflow_runs":[]}'
+        ;;
+      *)
+        echo "gh stub: unexpected api path: $path" >&2
+        exit 1
+        ;;
+    esac
+    if [ -f "$file" ]; then
+      out=$(cat -- "$file")
+    else
+      out=$empty
+    fi
+    if [ -n "$expr" ]; then
+      printf '%s\n' "$out" | jq -r "$expr"
+    else
+      printf '%s\n' "$out"
+    fi
+    ;;
+  "pr list")
+    if [ -f "$GH_FIXTURES/pr-list.txt" ]; then
+      cat -- "$GH_FIXTURES/pr-list.txt"
+    fi
+    ;;
+  "pr create" | "pr edit" | "pr comment")
+    copy_body_file "$@"
+    ;;
+  *)
+    echo "gh stub: unexpected call: $*" >&2
+    exit 1
+    ;;
+esac
