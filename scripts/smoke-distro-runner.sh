@@ -9,13 +9,19 @@
 # around the fixture, and zsh, the widget, `qq client`, the daemon, the socket and
 # the Ink TUI are the real installed product.
 #
-# Runs the expect passes `default` then `c-locale` and stops at the first failure.
-# Artifacts in /out: image.txt, pty-default.log, pty-c-locale.log, qq-debug.log; on any
-# failure also df.txt (`df -h /tmp`; a full disk broke the widget in research) and
-# zshrc.txt (the smoke user's ~/.zshrc).
+# Runs `qq doctor` as the smoke user (D-17: with only `claude` faked the image must
+# have no hard blocker), then the expect passes `default` then `c-locale`, and stops
+# at the first failure.
+# Artifacts in /out: image.txt, doctor.json, doctor.txt, pty-default.log,
+# pty-c-locale.log, qq-debug.log; on any failure also df.txt (`df -h /tmp`; a full disk
+# broke the widget in research) and zshrc.txt (the smoke user's ~/.zshrc). doctor.json
+# and doctor.txt are written on every path that gets as far as the smoke user, failures
+# included, because the auto-revert PR body quotes them (D-15).
 #
-# Exit codes: 30 deps, 31 package install, 32 user, 33 `qq init zsh`; otherwise the
-# exit code of scripts/smoke-distro.exp (10-16, 19).
+# Exit codes: 30 deps, 31 package install, 32 user, 33 `qq init zsh`;
+#   exit 34 when `qq doctor --json` exits non-zero (a hard blocker on this image);
+#   exit 35 when doctor.json is not a version 1 report with at least 11 checks;
+# otherwise the exit code of scripts/smoke-distro.exp (10-16, 19).
 set -u
 
 SMOKE_USER=qq
@@ -26,6 +32,9 @@ printf '%s\n' "${QQ_SMOKE_IMAGE:-unknown}" >/out/image.txt
 
 # Saves the failure artifacts, then exits with the given code.
 fail() {
+  if [ ! -f /out/doctor.json ] && command -v qq >/dev/null 2>&1 && id "$SMOKE_USER" >/dev/null 2>&1; then
+    collect_doctor
+  fi
   df -h /tmp >/out/df.txt 2>&1
   if [ -f "$SMOKE_HOME/.zshrc" ]; then
     cp "$SMOKE_HOME/.zshrc" /out/zshrc.txt
@@ -68,6 +77,16 @@ as_user() {
   su -s /bin/sh "$SMOKE_USER" -c "export HOME=$SMOKE_HOME PATH=$USER_PATH; cd $SMOKE_HOME; $1"
 }
 
+# Writes /out/doctor.json (exit status in DOCTOR_RC) and the human checklist
+# /out/doctor.txt, whose exit status is ignored: it is only kept for the artifact.
+DOCTOR_RC=
+collect_doctor() {
+  as_user "qq doctor --json >/out/doctor.json"
+  DOCTOR_RC=$?
+  as_user "qq doctor >/out/doctor.txt 2>&1"
+  return 0
+}
+
 # The exports go ABOVE the QueQue source line that `qq init zsh` appends: the widget
 # prewarms the daemon while ~/.zshrc loads, and the daemon keeps the env it started with.
 # QQ_TELEMETRY=0 keeps the telemetry consent prompt out of the PTY (research Pitfall 10).
@@ -79,6 +98,17 @@ grep -q 'queque\.zsh' "$SMOKE_HOME/.zshrc" || {
   fail 33
 }
 as_user "printf '%s\n' \"PS1='QQSMOKE%# '\" >>.zshrc" || fail 33
+
+collect_doctor
+if [ "$DOCTOR_RC" -ne 0 ]; then
+  echo "smoke-distro-runner: qq doctor --json exited $DOCTOR_RC (a hard blocker on this image):" >&2
+  cat /out/doctor.txt >&2
+  fail 34
+fi
+jq -e '.version == 1 and (.checks | length) >= 11' /out/doctor.json >/dev/null || {
+  echo "smoke-distro-runner: /out/doctor.json is not a version 1 doctor report" >&2
+  fail 35
+}
 
 for pass in default c-locale; do
   as_user "expect /opt/qq-scripts/smoke-distro.exp $pass" || fail $?
