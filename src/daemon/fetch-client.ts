@@ -2,6 +2,7 @@ import * as net from 'node:net';
 import type { CandidateList } from '../contracts/candidates.js';
 import { ipcResponseSchema } from '../contracts/ipc.js';
 import type { ContextEnvelope } from '../contracts/request.js';
+import { withErrorKind } from '../providers/error-kind.js';
 import { abortError, type FetchOptions } from '../providers/provider.js';
 import { resolveProviderAdapter } from '../providers/provider-pin.js';
 import { appendDebugLog } from '../shared/debug-log.js';
@@ -109,7 +110,11 @@ export function requestDaemonFetch(
       }
       if (response.data.kind === 'fetch-error') {
         accepted = true;
-        finish(new Error(response.data.message));
+        // Re-tag with the daemon's classification (D-10); an old daemon sends none, so
+        // errorKindOf reads it as `unknown`.
+        const error = new Error(response.data.message);
+        const { errorKind } = response.data;
+        finish(errorKind ? withErrorKind(error, errorKind) : error);
         return;
       }
       finish(new IpcTransportError('unexpected daemon fetch response'));
@@ -198,6 +203,16 @@ export async function fetchCandidatesForUi(
       throw error;
     }
     void appendDebugLog('client', 'daemon fetch fallback', { message: error.message });
-    return resolveProviderAdapter().fetchCandidates(envelope, options);
+    // Same kinds as the daemon: a resolution throw is an invalid pin, and the adapter's own
+    // errors arrive already tagged.
+    let adapter: ReturnType<typeof resolveProviderAdapter>;
+    try {
+      adapter = resolveProviderAdapter();
+    } catch (resolution) {
+      throw resolution instanceof Error
+        ? withErrorKind(resolution, 'pin_invalid')
+        : withErrorKind(new Error(String(resolution)), 'pin_invalid');
+    }
+    return adapter.fetchCandidates(envelope, options);
   }
 }
