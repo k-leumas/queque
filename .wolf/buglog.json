@@ -7019,6 +7019,113 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T19:47:21Z"
+    },
+    {
+      "id": "bug-428",
+      "timestamp": "2026-10-29T19:48:51.088Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-ae4881a9c313c4870/src/daemon/bootstrap.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:48:51.088Z"
+    },
+    {
+      "id": "bug-429",
+      "timestamp": "2026-10-29T19:52:45.470Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-ae4881a9c313c4870/scripts/smoke-distro.sh",
+      "root_cause": "Had \"$OUT_DIR/qq-debug.log\"",
+      "fix": "Changed to \"$OUT_DIR\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:52:45.470Z"
+    },
+    {
+      "id": "bug-430",
+      "timestamp": "2026-10-29T19:55:17.154Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ae4881a9c313c4870/scripts/smoke-distro.exp",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3→3 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "exp"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:55:17.154Z"
+    },
+    {
+      "id": "bug-431",
+      "timestamp": "2026-10-29T20:21:43.150Z",
+      "error_message": "Significant refactor of ",
+      "file": "tests/lsof-busybox.test.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 15→21 lines (2 removed) | Also: `printf '%s\\\\t/bin/busybox\\\\t%s\\\\t/dev/null\\\\n' ${; `printf '%s\\\\t/bin/busybox\\\\t%s\\\\tpipe:[4272030]\\\\",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-29T20:22:52.610Z"
+    },
+    {
+      "id": "bug-428",
+      "timestamp": "2026-10-29T20:24:54Z",
+      "error_message": "tests/lsof-busybox.test.ts > logs that the lsof output was ignored: expected appendDebugLog(\"daemon\",\"lsof output ignored\",{lines:2}); only \"replacing stale daemon\" was logged (full suite, load avg 12-37; passes alone)",
+      "file": "tests/lsof-busybox.test.ts",
+      "root_cause": "listenerPids runs lsof with a 1 s execFileSync timeout and returns [] silently when it trips. beforeEach wrote a brand-new fake lsof script per test; first exec of a new file on macOS is scanned by syspolicyd and took >1 s under load, so the parse never ran. The sibling alive test then passed vacuously",
+      "fix": "Write and warm up the fake lsof once in beforeAll (30 s timeout), pass the sacrificial pid via QQ_FAKE_LSOF_PID env, assert the ignored log line in both replaceStaleListener tests so a timed-out lsof cannot pass, retry: 2 as a backstop",
+      "tags": [
+        "test",
+        "flaky",
+        "lsof",
+        "macos",
+        "syspolicyd",
+        "load",
+        "phase-10"
+      ],
+      "related_bugs": [
+        "bug-206"
+      ],
+      "occurrences": 2,
+      "last_seen": "2026-10-29T20:24:54Z"
+    },
+    {
+      "id": "bug-429",
+      "timestamp": "2026-10-29T20:24:54Z",
+      "error_message": "tests/zsh-widget.test.ts > daemon prewarm > starts a background ensure call once in interactive shells / prewarms via qq on PATH when QQ_DEV_ROOT is unset: expected status 0, got 1 (full suite, load avg ~22)",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "Not fixed. Load flake: fails only under full-suite parallel load, 57/57 alone x3 and green in the previous full run. Code path untouched by phase 10 (10-02 changed only qq-question-widget mktemp handling)",
+      "fix": "None yet; watch for recurrence",
+      "tags": [
+        "test",
+        "flaky",
+        "zsh",
+        "prewarm",
+        "load"
+      ],
+      "related_bugs": [
+        "bug-206",
+        "bug-270"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:24:54Z"
     }
   ]
 }

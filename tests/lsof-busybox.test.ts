@@ -1,8 +1,8 @@
-import { type ChildProcess, spawn } from 'node:child_process';
+import { type ChildProcess, execFileSync, spawn } from 'node:child_process';
 import { chmodSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import * as path from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { parseLsofPidList, replaceStaleListener } from '../src/daemon/bootstrap.js';
 
 // Defect 1 (Phase 10): on Alpine, `lsof` is busybox, which ignores `-t <path>` and lists
@@ -50,35 +50,49 @@ describe('replaceStaleListener with busybox lsof', () => {
   let child: ChildProcess;
   const socketPath = `/tmp/qq-lsof-test-${process.pid}.sock`;
 
-  beforeEach(() => {
-    appendDebugLogMock.mockClear();
-    child = spawn('sleep', ['30'], { stdio: 'ignore' });
-    const spid = child.pid;
-    if (spid === undefined) throw new Error('sacrificial child did not start');
+  // The fake lsof is written and run once up front. The first exec of a new file is slow on
+  // macOS (syspolicyd scans it, see bug-206), and listenerPids only waits 1 s for lsof, so a
+  // fresh script per test timed out under full-suite load. The child pid comes in via env.
+  beforeAll(() => {
     fakeBinDir = mkdtempSync(path.join(tmpdir(), 'qq-fake-lsof-'));
     const fakeLsof = path.join(fakeBinDir, 'lsof');
     writeFileSync(
       fakeLsof,
       [
         '#!/bin/sh',
-        `printf '%s\\t/bin/busybox\\t%s\\t/dev/null\\n' ${spid} ${spid}`,
-        `printf '%s\\t/bin/busybox\\t%s\\tpipe:[4272030]\\n' ${spid} ${spid}`,
+        `printf '%s\\t/bin/busybox\\t%s\\t/dev/null\\n' "$QQ_FAKE_LSOF_PID" "$QQ_FAKE_LSOF_PID"`,
+        `printf '%s\\t/bin/busybox\\t%s\\tpipe:[4272030]\\n' "$QQ_FAKE_LSOF_PID" "$QQ_FAKE_LSOF_PID"`,
         '',
       ].join('\n'),
     );
     chmodSync(fakeLsof, 0o755);
+    execFileSync(fakeLsof, { stdio: 'ignore', timeout: 30_000 });
     savedPath = process.env.PATH;
     process.env.PATH = `${fakeBinDir}${path.delimiter}${savedPath ?? ''}`;
   });
 
-  afterEach(() => {
+  afterAll(() => {
     process.env.PATH = savedPath;
-    child.kill('SIGKILL');
+    delete process.env.QQ_FAKE_LSOF_PID;
     rmSync(fakeBinDir, { recursive: true, force: true });
+  });
+
+  beforeEach(() => {
+    appendDebugLogMock.mockClear();
+    child = spawn('sleep', ['30'], { stdio: 'ignore' });
+    const spid = child.pid;
+    if (spid === undefined) throw new Error('sacrificial child did not start');
+    process.env.QQ_FAKE_LSOF_PID = String(spid);
+  });
+
+  afterEach(() => {
+    child.kill('SIGKILL');
     rmSync(socketPath, { force: true });
   });
 
-  it('leaves the process named by busybox lsof lines alive', async () => {
+  // listenerPids returns [] when its 1 s lsof timeout trips, so both tests assert the
+  // "ignored" line (a timed-out lsof can never pass as a clean parse) and retry under load.
+  it('leaves the process named by busybox lsof lines alive', { retry: 2 }, async () => {
     await replaceStaleListener(socketPath);
     // Let a delivered signal surface as the child's exit before checking.
     await new Promise((resolve) => setTimeout(resolve, 150));
@@ -89,10 +103,13 @@ describe('replaceStaleListener with busybox lsof', () => {
     } catch {
       alive = false;
     }
+    expect(appendDebugLogMock).toHaveBeenCalledWith('daemon', 'lsof output ignored', {
+      lines: 2,
+    });
     expect(alive).toBe(true);
   });
 
-  it('logs that the lsof output was ignored', async () => {
+  it('logs that the lsof output was ignored', { retry: 2 }, async () => {
     await replaceStaleListener(socketPath);
     expect(appendDebugLogMock).toHaveBeenCalledWith('daemon', 'lsof output ignored', {
       lines: 2,

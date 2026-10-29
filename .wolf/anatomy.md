@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T19:47:13.832Z
-> Files: 662 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T20:22:54.461Z
+> Files: 667 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -43,23 +43,25 @@
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/
 
-- `make-red-record.mjs` — Declares output (~242 tok)
+- `make-red-record.mjs` — Declares output (~227 tok)
 - `mkrecord.mjs` — usage: node mkrecord.mjs <outFile> <stdoutFile> <codeFile> <command> <targetFile> <targetTest> <expe (~144 tok)
 - `msg-10-02-summary.txt` (~18 tok)
 - `msg-10-02-t1.txt` (~122 tok)
 - `msg-10-02-t2-green.txt` (~113 tok)
 - `msg-10-02-t2-red.txt` — Declares that (~82 tok)
-- `msg-green.txt` (~141 tok)
-- `msg-red.txt` (~98 tok)
+- `msg-green.txt` (~137 tok)
+- `msg-red.txt` (~117 tok)
 - `msg-sum.txt` (~34 tok)
 - `msg-t2.txt` (~101 tok)
 - `msg-task1.txt` (~158 tok)
+- `msg-task3.txt` (~160 tok)
 - `msg1.txt` (~75 tok)
 - `msg2.txt` (~73 tok)
 - `msg3.txt` (~95 tok)
 - `msg4.txt` (~106 tok)
 - `msg5.txt` (~81 tok)
 - `msg6.txt` (~92 tok)
+- `msg7.txt` (~32 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/
 
@@ -720,21 +722,26 @@
 
 ## .claude/worktrees/agent-ae4881a9c313c4870/
 
-- `package.json` — Node.js package manifest (~522 tok)
+- `package.json` — Node.js package manifest (~537 tok)
+
+## .claude/worktrees/agent-ae4881a9c313c4870/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-01-SUMMARY.md` — Phase 10 Plan 01: Distro Smoke Harness and Busybox lsof Fix Summary (~4888 tok)
 
 ## .claude/worktrees/agent-ae4881a9c313c4870/scripts/
 
-- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~690 tok)
-- `smoke-distro.exp` — PTY driver for scripts/smoke-distro-runner.sh. Usage: expect smoke-distro.exp PASS (~561 tok)
-- `smoke-distro.sh` (~722 tok)
+- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~847 tok)
+- `smoke-distro.exp` — PTY driver for scripts/smoke-distro-runner.sh. Usage: expect smoke-distro.exp PASS (~1062 tok)
+- `smoke-distro.sh` (~817 tok)
 
 ## .claude/worktrees/agent-ae4881a9c313c4870/scripts/ci/
 
 - `install-distro-deps.sh` — Installs what QueQue needs on a fresh Linux distro image: git, zsh, jq, expect, (~1234 tok)
+- `test-in-distro.sh` (~480 tok)
 
 ## .claude/worktrees/agent-ae4881a9c313c4870/src/daemon/
 
-- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~3792 tok)
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~3966 tok)
 
 ## .claude/worktrees/agent-ae4881a9c313c4870/tests/
 
@@ -1329,6 +1336,7 @@
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
+- `lsof-busybox.test.ts` — Defect 1 (Phase 10): on Alpine, `lsof` is busybox, which ignores `-t <path>` and lists (~1337 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
 - `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~9463 tok)
