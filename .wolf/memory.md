@@ -3590,3 +3590,5 @@
 | 16:42 | Session end: 250 writes across 114 files (prewarm-sleep.test.ts, doctor.ts, msg-10-02-t1.txt, doctor.test.ts, telemetry-contract.test.ts) | 54 reads | ~288450 tok |
 | 16:43 | Created .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md | — | ~4618 |
 | 16:44 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/commit-msg.txt | — | ~103 |
+| 16:37 | 10-12 Task 2: pushed 9401eba to ci/phase-10-verify (pre-push green, repo intact) | ci/phase-10-verify | run https://github.com/k-leumas/queque/actions/runs/40967340170 | ~1k |
+| 16:41 | 10-12 verify run FAILED: 6/6 smoke green, test-distro red on fedora:44, debian:13, ubuntu:24.04, ubuntu:22.04 (zsh-widget z4: 75 vs 77 chars, likely non-UTF-8 locale); auto-revert no-op; drill skipped, gap recorded | tests/zsh-widget.test.ts | gap -> /gsd-plan-phase 10 --gaps | ~3k |
