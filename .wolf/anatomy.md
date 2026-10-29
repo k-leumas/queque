@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T17:26:46.608Z
-> Files: 618 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T19:47:13.832Z
+> Files: 662 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -40,6 +40,26 @@
 - `verify2.sh` — Task 2 verify from the plan, run from the worktree root. (~346 tok)
 - `verify3.sh` — Task 3 verify from the plan (content checks), run from the worktree root. (~360 tok)
 - `wolf.py` — anatomy (~871 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/
+
+- `make-red-record.mjs` — Declares output (~242 tok)
+- `mkrecord.mjs` — usage: node mkrecord.mjs <outFile> <stdoutFile> <codeFile> <command> <targetFile> <targetTest> <expe (~144 tok)
+- `msg-10-02-summary.txt` (~18 tok)
+- `msg-10-02-t1.txt` (~122 tok)
+- `msg-10-02-t2-green.txt` (~113 tok)
+- `msg-10-02-t2-red.txt` — Declares that (~82 tok)
+- `msg-green.txt` (~141 tok)
+- `msg-red.txt` (~98 tok)
+- `msg-sum.txt` (~34 tok)
+- `msg-t2.txt` (~101 tok)
+- `msg-task1.txt` (~158 tok)
+- `msg1.txt` (~75 tok)
+- `msg2.txt` (~73 tok)
+- `msg3.txt` (~95 tok)
+- `msg4.txt` (~106 tok)
+- `msg5.txt` (~81 tok)
+- `msg6.txt` (~92 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/
 
@@ -298,6 +318,35 @@
 
 - `shell-contract.test.ts` — Declares validCancel (~648 tok)
 
+## .claude/worktrees/agent-a5ae9ba1581c27931/
+
+- `tsup.config.ts` — Declares version (~805 tok)
+- `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~175 tok)
+
+## .claude/worktrees/agent-a5ae9ba1581c27931/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-04-SUMMARY.md` — Phase 10 Plan 04: Telemetry foundation Summary (~3116 tok)
+
+## .claude/worktrees/agent-a5ae9ba1581c27931/src/
+
+- `env.d.ts` — Declares __QUEQUE_COMMIT__ (~52 tok)
+
+## .claude/worktrees/agent-a5ae9ba1581c27931/src/contracts/
+
+- `telemetry.ts` — Anonymous telemetry contract (phase 10, D-10, D-11). This file IS the allow list. (~1862 tok)
+
+## .claude/worktrees/agent-a5ae9ba1581c27931/src/shared/
+
+- `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~2066 tok)
+- `telemetry-config.ts` — Anonymous telemetry consent state (phase 10, D-06, D-09). (~2082 tok)
+- `telemetry-endpoint.ts` — Where anonymous telemetry goes (phase 10, D-05, D-08, D-22). (~464 tok)
+
+## .claude/worktrees/agent-a5ae9ba1581c27931/tests/
+
+- `telemetry-config.test.ts` — UUID_V4: seed, readJson (~2983 tok)
+- `telemetry-contract.test.ts` — Fields that must never be accepted: content, identity, location and timing (D-10, D-11). (~4114 tok)
+- `telemetry-endpoint.test.ts` — vitest.config.ts bakes an empty key and the discard-port host `http://127.0.0.1:9`, so a (~734 tok)
+
 ## .claude/worktrees/agent-a5c7276f6fe389a4e/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
 - `03-01-SUMMARY.md` — Dependency graph (~1389 tok)
@@ -522,6 +571,19 @@
 
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~4358 tok)
 
+## .claude/worktrees/agent-ac9812c4bf2c61ea2/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-02-SUMMARY.md` — Phase 10 Plan 02: Stale Prewarm Simulation and mktemp Guard Summary (~2662 tok)
+
+## .claude/worktrees/agent-ac9812c4bf2c61ea2/shell/zsh/
+
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~5419 tok)
+
+## .claude/worktrees/agent-ac9812c4bf2c61ea2/tests/
+
+- `prewarm-sleep.test.ts` — An executable `claude` on PATH that runs the fixture's `success` scenario. (~2177 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~13581 tok)
+
 ## .claude/worktrees/agent-aca72d47efd9f909e/src/client/
 
 - `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2352 tok)
@@ -655,6 +717,48 @@
 ## .claude/worktrees/agent-ae3ff4eb91307526b/tests/
 
 - `client-result.test.ts` — --------------------------------------------------------------------------- (~6651 tok)
+
+## .claude/worktrees/agent-ae4881a9c313c4870/
+
+- `package.json` — Node.js package manifest (~522 tok)
+
+## .claude/worktrees/agent-ae4881a9c313c4870/scripts/
+
+- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~690 tok)
+- `smoke-distro.exp` — PTY driver for scripts/smoke-distro-runner.sh. Usage: expect smoke-distro.exp PASS (~561 tok)
+- `smoke-distro.sh` (~722 tok)
+
+## .claude/worktrees/agent-ae4881a9c313c4870/scripts/ci/
+
+- `install-distro-deps.sh` — Installs what QueQue needs on a fresh Linux distro image: git, zsh, jq, expect, (~1234 tok)
+
+## .claude/worktrees/agent-ae4881a9c313c4870/src/daemon/
+
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~3792 tok)
+
+## .claude/worktrees/agent-ae4881a9c313c4870/tests/
+
+- `lsof-busybox.test.ts` — Defect 1 (Phase 10): on Alpine, `lsof` is busybox, which ignores `-t <path>` and lists (~1083 tok)
+
+## .claude/worktrees/agent-ae7eae29e6f46af10/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-03-SUMMARY.md` — Phase 10 Plan 03: qq doctor Summary (~2970 tok)
+
+## .claude/worktrees/agent-ae7eae29e6f46af10/src/cli/
+
+- `main.ts` — Exports main (~1420 tok)
+
+## .claude/worktrees/agent-ae7eae29e6f46af10/src/cli/commands/
+
+- `doctor.ts` — zsh below this version cannot run the widget: `zsh` fails (D-20). (~4996 tok)
+
+## .claude/worktrees/agent-ae7eae29e6f46af10/src/contracts/
+
+- `doctor.ts` — `qq doctor --json` contract (D-18). (~569 tok)
+
+## .claude/worktrees/agent-ae7eae29e6f46af10/tests/
+
+- `doctor.test.ts` — A machine where `??` works: every check is ✓. Each case overrides one dependency. (~4862 tok)
 
 ## .claude/worktrees/agent-ae9670272fd631ddb/
 
