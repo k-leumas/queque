@@ -49,6 +49,14 @@ vi.mock('../src/providers/provider-pin.js', () => ({
   OLLAMA_DEFAULT_BASE_URL: 'http://localhost:11434',
 }));
 
+// The client telemetry report (10-10) reads the config, os-release and the provider pin,
+// and the node:fs mock below has no readFileSync: mock the whole module and assert calls.
+const reportClientTelemetryMock = vi.hoisted(() => vi.fn().mockResolvedValue(undefined));
+
+vi.mock('../src/client/telemetry-events.js', () => ({
+  reportClientTelemetry: reportClientTelemetryMock,
+}));
+
 // ---------------------------------------------------------------------------
 // References to the real (un-mocked) fs/promises functions, captured before
 // the vi.mock factory runs. These are used inside the FIFO-path describe block
@@ -1181,5 +1189,249 @@ describe('buildShellBuffers — install form (09-04, Pitfall 6)', () => {
       lbuffer: 'brew install fd && fd ',
       rbuffer: 'pattern  # find files',
     });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 10 (10-10, D-10): every LLM-mode `??` reports one outcome after its result is
+// written, plus the failures that did not end the query.
+// ---------------------------------------------------------------------------
+
+describe('runForegroundClient: telemetry outcome', () => {
+  let tmpDir: string;
+  let requestFile: string;
+  let resultFile: string;
+  /** The result file's JSON at the moment each report ran, or null if none was written yet. */
+  let resultAtReport: unknown[];
+
+  type ReportInput = {
+    socketPath: string;
+    record?: { outcome: string; candidateCount: number; errorKind?: string };
+    errors: string[];
+  };
+  const reportCalls = () =>
+    reportClientTelemetryMock.mock.calls.map((call) => call[0] as ReportInput);
+
+  /** The elements passed to the rerenders of the given render call. */
+  type StreamedElement = {
+    props: {
+      candidates: Array<{ command: string; explanation: string }> | null;
+      listState?: string;
+      onSelect: (command: string, explanation: string) => Promise<void>;
+      onCancel: () => Promise<void>;
+    };
+  };
+  async function rerenderedElements(renderCallIndex: number): Promise<StreamedElement[]> {
+    const { render } = await import('ink');
+    const app = vi.mocked(render).mock.results[renderCallIndex]?.value as {
+      rerender: ReturnType<typeof vi.fn>;
+    };
+    return app.rerender.mock.calls.map((call) => call[0] as StreamedElement);
+  }
+
+  beforeEach(async () => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-fg-telemetry-'));
+    requestFile = path.join(tmpDir, 'request.json');
+    resultFile = path.join(tmpDir, 'result.json');
+    fs.writeFileSync(
+      requestFile,
+      `${JSON.stringify({
+        version: 1,
+        ttyPath: '/dev/tty',
+        cwd: '/home/user',
+        shellPid: 1234,
+        lbuffer: 'list files in src',
+        rbuffer: '',
+      })}\n`,
+    );
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    fetchCandidatesMock.mockReset();
+    resultAtReport = [];
+    reportClientTelemetryMock.mockReset();
+    reportClientTelemetryMock.mockImplementation(async () => {
+      resultAtReport.push(
+        fs.existsSync(resultFile) ? JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim()) : null,
+      );
+    });
+  });
+
+  afterEach(() => {
+    inkMock.autoSelect = true;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('Enter with 2 rows on screen reports accepted with 2, after the result is written', async () => {
+    fetchCandidatesMock.mockResolvedValue([
+      { command: 'git status', explanation: 'status' },
+      { command: 'git log', explanation: 'history' },
+    ]);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+    expect(reportCalls()[0]).toMatchObject({
+      socketPath: '/tmp/qq-test-999.sock',
+      record: { outcome: 'accepted', candidateCount: 2 },
+      errors: [],
+    });
+    expect(resultAtReport[0]).toMatchObject({ kind: 'replace-buffer', lbuffer: 'git status' });
+  });
+
+  it('Esc during thinking… reports escaped with 0', async () => {
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    await vi.waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalledTimes(1));
+    const loading = vi.mocked(render).mock.calls[renderCallIndex]?.[0] as unknown as {
+      props: { onCancel: () => Promise<void> };
+    };
+    await loading.props.onCancel();
+    await run;
+    // Let the aborted fetch's rejection run through the client's catch handler.
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+    expect(reportCalls()[0]?.record).toEqual({ outcome: 'escaped', candidateCount: 0 });
+    expect(reportCalls()[0]?.errors).toEqual([]);
+    expect(resultAtReport[0]).toEqual({ kind: 'cancel' });
+  });
+
+  it('Esc with 3 streamed rows reports escaped with 3', async () => {
+    inkMock.autoSelect = false;
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: FetchOptions) =>
+        new Promise((_resolve, reject) => {
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+          options?.onCandidate?.({ command: 'git log', explanation: 'history' });
+          options?.onCandidate?.({ command: 'git status', explanation: 'status' });
+          options?.onCandidate?.({ command: 'git diff', explanation: 'changes' });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    let elements: StreamedElement[] = [];
+    await vi.waitFor(async () => {
+      elements = await rerenderedElements(renderCallIndex);
+      expect(elements).toHaveLength(3);
+    });
+    await elements.at(-1)?.props.onCancel();
+    await run;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+
+    expect(reportCalls()).toHaveLength(1);
+    expect(reportCalls()[0]?.record).toEqual({ outcome: 'escaped', candidateCount: 3 });
+    expect(resultAtReport[0]).toEqual({ kind: 'cancel' });
+  });
+
+  it('a fetch error with no rows reports error with the kind from the error object', async () => {
+    const { withErrorKind } = await import('../src/providers/error-kind.js');
+    fetchCandidatesMock.mockRejectedValue(
+      withErrorKind(new Error('QueQue: the provider timed out'), 'provider_timeout'),
+    );
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(reportCalls()).toHaveLength(1);
+    expect(reportCalls()[0]?.record).toEqual({
+      outcome: 'error',
+      candidateCount: 0,
+      errorKind: 'provider_timeout',
+    });
+    expect(reportCalls()[0]?.errors).toEqual([]);
+    expect(resultAtReport[0]).toMatchObject({ kind: 'error' });
+  });
+
+  it('an untagged fetch error reports error_kind unknown, never the message', async () => {
+    fetchCandidatesMock.mockRejectedValue(new Error('ENOENT /home/alice/secret'));
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(reportCalls()[0]?.record).toEqual({
+      outcome: 'error',
+      candidateCount: 0,
+      errorKind: 'unknown',
+    });
+    expect(JSON.stringify(reportCalls()[0])).not.toContain('alice');
+  });
+
+  it('a provider failure after rows were shown is an error event; Enter still sets the outcome', async () => {
+    inkMock.autoSelect = false;
+    const { withErrorKind } = await import('../src/providers/error-kind.js');
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: FetchOptions) =>
+        new Promise((_resolve, reject) => {
+          options?.onCandidate?.({ command: 'git log', explanation: 'history' });
+          setTimeout(() => reject(withErrorKind(new Error('boom'), 'provider_failed')), 0);
+        }),
+    );
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    let last: StreamedElement | undefined;
+    await vi.waitFor(async () => {
+      last = (await rerenderedElements(renderCallIndex)).at(-1);
+      expect(last?.props.listState).toBe('partial');
+    });
+    expect(reportClientTelemetryMock).not.toHaveBeenCalled();
+    await last?.props.onSelect('git log', 'history');
+    await run;
+
+    expect(reportCalls()).toHaveLength(1);
+    expect(reportCalls()[0]?.errors).toEqual(['provider_failed']);
+    expect(reportCalls()[0]?.record).toEqual({ outcome: 'accepted', candidateCount: 1 });
+    expect(resultAtReport[0]).toMatchObject({ kind: 'replace-buffer', lbuffer: 'git log' });
+  });
+
+  it('a daemon that cannot start is a socket_failed error event', async () => {
+    const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+    vi.mocked(ensureDaemon).mockRejectedValueOnce(new Error('qq daemon did not start'));
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: '' }]);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(reportCalls()).toHaveLength(1);
+    expect(reportCalls()[0]?.errors).toEqual(['socket_failed']);
+    expect(reportCalls()[0]?.record).toEqual({ outcome: 'accepted', candidateCount: 1 });
+  });
+
+  it('an unavailable /dev/tty reports error tty_unavailable', async () => {
+    const fsp = await import('node:fs/promises');
+    vi.mocked(fsp.open).mockRejectedValueOnce(new Error('ENXIO: no such device'));
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(reportCalls()).toHaveLength(1);
+    expect(reportCalls()[0]?.record).toEqual({
+      outcome: 'error',
+      candidateCount: 0,
+      errorKind: 'tty_unavailable',
+    });
+    expect(resultAtReport[0]).toMatchObject({ kind: 'error' });
+    expect(fetchCandidatesMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    'cancel',
+    'replace-buffer-fixture',
+  ] as const)('the %s result mode never reports', async (resultMode) => {
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode });
+    expect(fs.existsSync(resultFile)).toBe(true);
+    expect(reportClientTelemetryMock).not.toHaveBeenCalled();
   });
 });
