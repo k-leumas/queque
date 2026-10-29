@@ -354,3 +354,24 @@ Plans:
 **Deferred at:** 2026-10-19 during /gsd-verify-work 08 session completion
 **Follow-ups:**
 - [ ] Test 3: i wish there was a way to see the logs and see communication with ollama (deferred 2026-10-19)
+
+### Phase 10: Linux distro CI harness and anonymous telemetry
+
+**Goal:** Catch environment breakage before it reaches main, make zsh support stable across the major Linux distros, and add opt-in, privacy-safe error/usage reporting.
+
+**Scope:**
+1. `ci.yml` on `pull_request`: `checks` job (lint, typecheck, `test:run`, build) + vitest-in-containers matrix (ubuntu 22.04/24.04, debian stable, fedora, arch, alpine — Node via `apk` on Alpine); nightly run against `:latest`; both required in branch protection.
+2. `scripts/smoke-distro.sh <image>`: generalise `smoke-homebrew-docker.sh`, install from `pnpm pack`, drive a real zsh PTY with `fake-claude-stream.mjs` as `claude` (shell, daemon, socket, TUI stay real). Assert `??` opens TUI, accept fills buffer, Esc restores, unset `$XDG_RUNTIME_DIR` works, C locale works. Added as `smoke` matrix job.
+3. lefthook pre-push: Ubuntu + Alpine smoke only when `shell/`, `src/client/`, `src/daemon/` or `src/cli/` changed.
+4. `qq doctor`: zsh version, TERM, locale, socket path length, conflicting widgets, provider detection; every smoke run asserts exit 0.
+5. Telemetry: opt-in at `qq init`, always off with `DO_NOT_TRACK` / `QQ_TELEMETRY=0` / `CI`; strict zod allow-list schema in `src/contracts/telemetry.ts` (never prompts, buffers, commands, paths, env); daemon batches and sends fire-and-forget to PostHog; `qq telemetry status|on|off|show`; vitest fails on any field outside the allow list.
+
+**Out of scope:** bash adapter (separate phase).
+**Open decisions (discuss-phase):** PostHog cloud vs self-hosted; whether any matrix run calls the live LLM.
+**Estimate:** ~3–3.5 days.
+**Requirements**: TBD
+**Depends on:** Phase 9
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 10 to break down)

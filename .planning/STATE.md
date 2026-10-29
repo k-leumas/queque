@@ -4,13 +4,13 @@ milestone: v1.0
 current_phase: 08
 current_phase_name: Zero-Config Install and Provider Detection
 status: executing
-stopped_at: Phase 09.1 complete, ready to plan Phase 7
-last_updated: "2026-10-22T03:00:36.783Z"
+stopped_at: Phase 10 context gathered
+last_updated: "2026-10-29T01:15:02.900Z"
 last_activity: 2026-10-19
 last_activity_desc: Phase 08 execution resumed (wave continue)
-state_head: 6b3e986a6d57e49db8e80c4e049442b611ef2fec
+state_head: 9b06ffd1581ba73cfaa2d50e93dc14229497cad1
 progress:
-  total_phases: 12
+  total_phases: 13
   completed_phases: 8
   total_plans: 43
   completed_plans: 43
@@ -86,6 +86,7 @@ Progress: [███████░░░] 73%
 - Phase 9 added (2026-10-07): Installed-Only Command Awareness — zsh $commands handoff, installed∩catalog prompt steering, flag candidates using missing tools (from spikes 001–003).
 - Phase 8 scope expanded (2026-07-31): 08-01 must fix macOS Keychain detection gap — prototype `detectProvider()` only checks credentials file, missing `/login` sessions on darwin.
 - Phase 09.1 inserted after Phase 9: Provider Latency and Cancellation: effort low, stream-json, early first candidate, prewarmed claude -p, Esc aborts the model call (from debug llm-response-latency-profile) (URGENT)
+- Phase 10 added (2026-10-28): Linux distro CI harness and anonymous telemetry — PR CI + distro container matrix, smoke-distro.sh PTY smoke, filtered pre-push smoke, `qq doctor`, opt-in allow-listed PostHog telemetry.
 
 ### Decisions
 
@@ -175,6 +176,6 @@ None yet.
 
 Last activity: 2026-10-21 - Completed quick task 261021-sya: strip credentials from changelog repository links
 
-Last session: 2026-10-12T21:58:47.187Z
-Stopped at: Phase 09.1 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-10-29T01:15:02.475Z
+Stopped at: Phase 10 context gathered
+Resume file: .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-CONTEXT.md

@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-22T03:00:11.311Z
-> Files: 599 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T01:14:41.437Z
+> Files: 602 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -907,6 +907,12 @@
 - `09.1-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2166 tok)
 - `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6435 tok)
 - `COVERAGE.md` — API Coverage — Anthropic Messages API (TS SDK 0.92.0) and Claude Code print mode (2.1.285) (~681 tok)
+
+## .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+
+- `10-CONTEXT.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Context (~2564 tok)
+- `10-DISCUSS-CHECKPOINT.json` (~360 tok)
+- `10-DISCUSSION-LOG.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Discussion Log (~825 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
