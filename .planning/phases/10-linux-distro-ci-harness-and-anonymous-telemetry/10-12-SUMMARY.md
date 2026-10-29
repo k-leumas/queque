@@ -11,7 +11,10 @@ provides:
   - "First real GitHub run of ci.yml on the phase head: six smoke legs green, four test-distro legs red on one zsh-widget test"
   - "D-21 repo setting confirmed (Actions may create PRs; default token read)"
   - "Observed proof that auto-revert ignores test-distro-only failures (no PR opened)"
-affects: [phase-10-gaps, ci, zsh-widget, instant-frame]
+  - "Live D-15 drill (run 40974964457): six smoke legs red, auto-revert job green, exactly one PR (#15) into ci/phase-10-revert-drill"
+  - "Observed that auto-revert's green base needs a fully successful run (status=success), not smoke-only, so the drill fell back to the merge base with main (489a67a) and the PR reverts 99 files"
+  - "Observed that smoke artifact upload fails with EACCES on qq-debug.log on 5 of 6 failing legs, so the PR body has diagnostics for ubuntu:24.04 only"
+affects: [phase-10-gaps, ci, zsh-widget, instant-frame, auto-revert, smoke-artifacts]
 
 actuals:
   tokens: 9000
@@ -34,6 +37,8 @@ key-files:
 key-decisions:
   - "Verify run red on test-distro, so the revert drill was skipped per plan; the fix goes through /gsd-plan-phase 10 --gaps"
   - "No code was patched in this plan even though the failure is a single, well-localised test"
+  - "User-approved parallel track: the drill ran from 9401eba while GAP-1 is fixed on main; the verify run is not repeated here"
+  - "No code was changed after the drill exposed GAP-3 and GAP-4; both are recorded for the gap plan"
 
 patterns-established:
   - "Run the full ci.yml on a ci/* scratch branch before relying on its gates"
@@ -61,9 +66,12 @@ coverage:
   - id: D3
     description: "D-15: smoke-breaking push opens exactly one auto-revert PR"
     requirement: P10-REVERT
-    verification: []
+    verification:
+      - kind: integration
+        ref: "https://github.com/k-leumas/queque/actions/runs/40974964457 -> https://github.com/k-leumas/queque/pull/15"
+        status: fail
     human_judgment: true
-    rationale: "Drill not run: the plan skips it when the verify run is red"
+    rationale: "Exactly one PR opened with failing distros, doctor JSON and a PTY log tail, but its base is the merge base with main (489a67a), not 9401eba, so the diff touches 99 files instead of only shell/zsh/queque.zsh (GAP-3); diagnostics exist for ubuntu:24.04 only (GAP-4)"
   - id: D4
     description: "D-03: ci-ok is the only required check on main"
     verification: []
@@ -72,12 +80,12 @@ coverage:
 
 duration: 9min
 completed: 2026-10-29
-status: checkpoint-pending  # Task 3 human-verify outstanding; reply expected: gaps
+status: checkpoint-pending  # Task 3 human-verify outstanding; reply expected: gaps (GAP-1 open, fix on main; GAP-2 not met; GAP-3, GAP-4 new)
 ---
 
 # Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary
 
-**First real run of ci.yml on phase head 9401eba: all six `smoke` legs pass, but `test-distro` fails on fedora:44, debian:13, ubuntu:24.04 and ubuntu:22.04. All four fail on the same test, `zsh-widget.test.ts` z4 (instant-frame header is 75 chars, expected 77). That points at zsh counting multibyte glyphs as bytes under a non-UTF-8 locale. The revert drill was skipped per plan, so Task 3 is pending with gaps.**
+**First real run of ci.yml on phase head 9401eba: all six `smoke` legs pass, but `test-distro` fails on fedora:44, debian:13, ubuntu:24.04 and ubuntu:22.04. All four fail on the same test, `zsh-widget.test.ts` z4 (instant-frame header is 75 chars, expected 77). That points at zsh counting multibyte glyphs as bytes under a non-UTF-8 locale. The revert drill then ran as a user-approved parallel track from 9401eba: all six smoke legs failed, the `auto-revert` job passed, and exactly one PR opened (#15). But the script chose the merge base with main (`489a67a`), not `9401eba`, because its green lookup needs a fully successful run. So the PR reverts 99 files instead of two lines, and five of the six legs uploaded no diagnostics (EACCES on `qq-debug.log`). Task 3 is pending with gaps.**
 
 **Status: checkpoint pending (Task 3, human-verify). The reply expected here is "gaps".**
 
@@ -106,15 +114,19 @@ status: checkpoint-pending  # Task 3 human-verify outstanding; reply expected: g
 |---|---|
 | Verify run URL | https://github.com/k-leumas/queque/actions/runs/40967340170 |
 | Verify SHA | 9401eba1e3bdb88bbe1778f72336b4f040f5785a |
-| Drill run URL | not run (skipped: verify red) |
-| Drill PR URL/number | none |
-| Base SHA chosen by auto-revert | n/a. No drill ran. In the verify run the script exited before base selection ("no smoke failure") |
-| Remote scratch branches now present | `ci/phase-10-verify` only |
-| Local drill branch / worktree | not created |
+| Drill SHA | `0db400431dfaa6f484ca485c729b29f5cdc3598a` (9401eba plus one commit, `test: break the ?? binding for the revert drill`) |
+| Drill run URL | https://github.com/k-leumas/queque/actions/runs/40974964457 (conclusion `failure`, 23:42:36Z to 23:44:54Z, about 2 min 20 s) |
+| Drill PR URL/number | https://github.com/k-leumas/queque/pull/15 (#15, `revert: smoke failed on ci/phase-10-revert-drill at 0db4004`, base `ci/phase-10-revert-drill`, head `auto-revert/ci-phase-10-revert-drill`, open; 1 PR for that head in any state) |
+| Base SHA chosen by auto-revert | `489a67a07afc386e53fad24c62f6ac1d91927b3e`, "the merge base with `main` (no green run was found, so this base is not verified green)". Expected `9401eba`; why it differs is GAP-3 |
+| Verify run (for comparison) | the script exited before base selection ("no smoke failure") |
+| Remote scratch branches now present | `ci/phase-10-verify` (9401eba), `ci/phase-10-revert-drill` (0db4004), `auto-revert/ci-phase-10-revert-drill` (created by CI) |
+| Local drill branch / worktree | local branch `ci/phase-10-revert-drill` kept at 0db4004 for Task 3 cleanup; drill worktree removed |
 
 ## Gaps
 
 ### GAP-1: `tests/zsh-widget.test.ts > instant frame > z4` fails on the four glibc images
+
+**Status: open. Being fixed on main in parallel by the orchestrator.** The drill run hit the same failure on the same four legs (test-distro fedora:44, debian:13, ubuntu:24.04, ubuntu:22.04 red; alpine:3.24 and archlinux:latest green), which is expected because the drill branch is 9401eba plus a zsh-only change.
 
 - **Jobs:** `distro / test-distro (fedora:44)` (job 123775167461), `distro / test-distro (debian:13)` (123775167596), `distro / test-distro (ubuntu:24.04)` (123775167633), `distro / test-distro (ubuntu:22.04)` (123775167662)
 - **Images:** fedora:44, debian:13, ubuntu:24.04, ubuntu:22.04. alpine:3.24 and archlinux:latest pass.
@@ -227,14 +239,47 @@ Cleaning up orphan processes
 
 `ci-ok` failed only because it aggregates the results: `RESULTS: success success failure` (changes, checks, distro).
 
-### GAP-2: the D-15 revert drill is still unproven
+### GAP-2: the D-15 revert drill: run, mechanism proven, acceptance not met
 
-This follows from GAP-1. The plan skips the drill when the verify run is red. Once GAP-1 is fixed, a later run has to repeat Task 2 (a green verify run first, then the `ci/phase-10-revert-drill` push).
+**Status: not resolved. The drill ran, but two acceptance criteria failed (GAP-3, GAP-4).**
+
+The drill ran on a user-approved parallel track while GAP-1 is fixed on main. The drill worktree came from `9401eba`, the two `bindkey -M emacs|viins '?' qq-question-widget` lines in `shell/zsh/queque.zsh` were rebound to `'~'`, and the commit `0db4004` went through the hooks unchanged (pre-commit typecheck and commitlint passed; pre-push typecheck, lint and affected tests passed in 65 s). It was pushed to `ci/phase-10-revert-drill`. The repo tripwire was clean before and after the push: `core.bare=false`, the drill branch was 9401eba plus exactly one commit, and this worktree's HEAD stayed at 6013430.
+
+What worked (drill run 40974964457):
+- `changes` and `checks` passed. `smoke` failed on **all six** legs; the debian:13 leg shows `smoke-distro.exp: timed out waiting for the candidate row tldr z3 (exit 11)`, which is the expected effect of the broken binding.
+- `ci-ok` failed, and `auto-revert` passed: `auto-revert: smoke failed on: archlinux:latest, fedora:44, ubuntu:22.04, debian:13, alpine:3.24, ubuntu:24.04`, then `pushed auto-revert/ci-phase-10-revert-drill`, then `opened a pull request`.
+- Exactly **one** PR, #15, from `auto-revert/ci-phase-10-revert-drill` into `ci/phase-10-revert-drill`, opened by the workflow token (D-21 works live). Its body lists all six failing `smoke (...)` jobs, the run URL, the chosen base and rule, the D-21 "Approve and run workflows" note, and for ubuntu:24.04 the `doctor.json` (whose `binding` check warns `? is bound to self-insert in the emacs keymap`, so doctor catches the break), plus `pty-default.log`, `qq-debug.log` and `df.txt` tails.
+- The PR restores the two bindkey lines (`shell/zsh/queque.zsh` is in the diff) and changes nothing under `.github/workflows` (that rule held).
+
+What failed:
+- The **diff is not limited to `shell/zsh/queque.zsh`**. It changes 99 files (+827 / -19246) because the base is `489a67a`, the merge base with `main`, not `9401eba` (GAP-3).
+- **Diagnostics are missing for five of the six distros** (`_No smoke artifacts were downloaded for this distro._` for archlinux, fedora, ubuntu:22.04, debian, alpine) (GAP-4).
+
+Do not merge #15: it would wipe 86 commits of phase 10 from the scratch branch. Close it in the Task 3 cleanup.
+
+### GAP-3: auto-revert's "green" base needs a fully successful run, not smoke-only
+
+- **Expected:** base `9401eba`, whose push run 40967340170 had all six smoke legs `success`.
+- **Chosen:** `489a67a07afc386e53fad24c62f6ac1d91927b3e` by the last-resort rule "the merge base with `main` (no green run was found, so this base is not verified green)". Origin `main` is at `d3db9b9`, and the merge base with the drill head is 489a67a, so 86 commits were reverted.
+- **Why (read from `scripts/ci/auto-revert.sh`; no code changed):** `green_runs()` lists runs with `...runs?<query>&event=push&status=success&per_page=20`. On the GitHub API, `status=success` filters on the run's overall **conclusion**. `smoke_passed` is only checked on runs that are already fully green. Run 40967340170 concluded `failure` (GAP-1 test-distro legs), so it is never returned. The lookup then falls through every rule: (1) the drill branch has no runs of its own; (2) none of the 30 first-parent ancestors of `0db4004^` has a fully green push run; (3) the before SHA is all zeros on a new branch; (4) the merge base with `origin/main` matches.
+- **So the orchestrator's assumption that "auto-revert's green definition is smoke-only" does not match the code.** It needs the whole run green *and* smoke passed. The 10-07 SUMMARY describes the green definition as "a successful push run whose smoke jobs passed", which is consistent with the code.
+- **Two options for the gap plan:** (a) keep the current definition and re-run the drill from a commit that has a fully green verify run (once GAP-1 lands, the ancestor rule should find it); or (b) if the intended design is smoke-only, change `green_runs` to list `status=completed` runs and rely on `smoke_passed`. Then add a fixture test where a run's conclusion is `failure` but smoke passed. Option (b) is a behaviour change to D-15 and needs a decision.
+
+### GAP-4: smoke artifact upload fails with EACCES on failing legs
+
+- **Symptom:** the drill run has one artifact, `smoke-ubuntu-24.04` (2408 bytes). The verify run 40967340170, where every smoke passed, has all six (6000-6228 bytes).
+- **Failure (debian:13 leg, job 123800682603, step `Upload smoke artifacts`):** `With the provided path, there will be 7 files uploaded`, then `##[error]An error has occurred while creating the zip file for upload` / `Error: EACCES: permission denied, open '/home/runner/work/_temp/smoke-out/qq-debug.log'`.
+- **Hypothesis (not verified):** on the failure path the runner leaves `qq-debug.log` in the mounted out dir owned by the container user or with a mode the runner user cannot read. The success path, and ubuntu:24.04's failure path, end up readable. The fix belongs in `scripts/smoke-distro.sh` or `smoke-distro-runner.sh`: normalise ownership and mode of the out dir on every exit path, for example with a trap. This is exactly the path D-15 diagnostics depend on.
+
+### Side observation (not a gap)
+
+The pre-push "test affected from base" step passed with both `??` bindings broken. The local hook does not catch a rebinding of `?`; the CI smoke does.
 
 ## Task Commits
 
 1. **Task 1: Allow GitHub Actions to create pull requests (D-21)**: human action, no commit
 2. **Task 2: Green six-distro run, then revert drill**: recorded as gaps; memory lines and this SUMMARY are in one `docs(10-12)` commit (hash is in the executor's return message)
+   - Drill (parallel track): `0db4004` `test: break the ?? binding for the revert drill`, on the scratch branch `ci/phase-10-revert-drill` only (not on the phase branch). The record of it is in a second `docs(10-12): record the revert drill` commit
 3. **Task 3: Review drill PR, make `ci-ok` required**: pending (checkpoint)
 
 ## Files Created/Modified
@@ -260,9 +305,13 @@ This follows from GAP-1. The plan skips the drill when the verify run is red. On
 
 **2. [Plan gap protocol] Drill skipped**: the verify run was red on test-distro (GAP-1). Per the objective, Task 2 step 2 (drill worktree, breaking commit, `ci/phase-10-revert-drill` push) was not run.
 
+### Drill continuation (user-approved parallel track)
+
+**3. [User-approved deviation] Drill run against a verify run that is not fully green.** The user approved running Task 2 steps 2-3 from 9401eba while the orchestrator fixes GAP-1 on main. The verify run was not repeated. The premise was that auto-revert treats a smoke-only pass as green. The drill showed that premise is wrong (GAP-3), and that is why the base came out as 489a67a. No code was changed; the drill commit went through all hooks with no fixes needed.
+
 ---
 
-**Total deviations:** 1 pre-existing bug fixed by the orchestrator, plus 1 planned skip.
+**Total deviations:** 1 pre-existing bug fixed by the orchestrator, 1 planned skip, and 1 user-approved parallel drill.
 **Impact on plan:** the plan halts at Task 3 with gaps; no scope creep.
 
 ## Issues Encountered
@@ -276,7 +325,8 @@ None beyond the Task 3 checkpoint.
 
 ## Next Phase Readiness
 
-- Blocked on GAP-1. Next step is `/gsd-plan-phase 10 --gaps`, then re-run plan 12 Task 2. Leave `ci/phase-10-verify` in place or delete it during Task 3 cleanup; a re-run pushes the new head to it anyway.
+- Blocked on GAP-1 (fix in progress on main), GAP-3 (decision: keep the fully-green definition and re-drill after a green verify, or switch to smoke-only) and GAP-4 (artifact permissions on the failure path). After those, re-run the verify push, then repeat the drill from the new green head and check that the PR diff is only `shell/zsh/queque.zsh`.
+- Task 3 cleanup now covers: close PR #15 with `--delete-branch` (removes `auto-revert/ci-phase-10-revert-drill`), delete the remote branches `ci/phase-10-revert-drill` and `ci/phase-10-verify`, and run `git branch -D ci/phase-10-revert-drill` locally. A re-drill can recreate them.
 - Positive signal: install-distro-deps.sh and the full PTY smoke (default, c-locale, consent passes plus doctor) work on all six images.
 
 ---
@@ -290,3 +340,12 @@ None beyond the Task 3 checkpoint.
 - Plan verify 2 (`gh pr list ... auto-revert/ci-phase-10-revert-drill ... length`): `0`, expected FAIL, drill skipped (GAP-2)
 - Remote heads: only `ci/phase-10-verify` at 9401eba; no drill branch
 - Repo tripwire after push: `core.bare=false`, HEAD unchanged at 9401eba
+
+### Drill addendum (parallel track, 2026-10-29T23:42Z)
+
+- Drill tripwire before and after the push: `core.bare=false` (read from the shared config through this worktree, since `git -C` on the main checkout is blocked by agent isolation). `rev-list --count 9401eba..ci/phase-10-revert-drill` = 1, and the remote ref equals `0db4004`.
+- Plan verify 2 (`gh pr list ... --head auto-revert/ci-phase-10-revert-drill --state open ... length`): `1`. PASS on count.
+- Acceptance "drill run shows failed smoke legs and a successful `auto-revert` job": PASS (6/6 smoke failed, auto-revert success).
+- Acceptance "`gh pr diff` lists only `shell/zsh/queque.zsh`": **FAIL**, 99 files (GAP-3).
+- Acceptance "SUMMARY records ... PR URL and the base SHA the script chose": PASS (`489a67a`).
+- Drill worktree removed; local branch `ci/phase-10-revert-drill` present at `0db4004`.
