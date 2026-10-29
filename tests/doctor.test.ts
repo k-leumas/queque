@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { type DoctorDeps, runDoctorChecks } from '../src/cli/commands/doctor.js';
+import {
+  type DoctorDeps,
+  defaultDoctorDeps,
+  parseZshBindings,
+  runDoctorChecks,
+} from '../src/cli/commands/doctor.js';
 import {
   DOCTOR_CHECK_IDS,
   type DoctorCheckId,
@@ -337,5 +342,38 @@ describe('runDoctorChecks: no leaks (T-10-07)', () => {
       expect(json).not.toContain('canary-pin-key');
       expect(json).not.toContain('canary-detect-message');
     }
+  });
+});
+
+describe('parseZshBindings', () => {
+  it('reads the widget after each marker and ignores other ~/.zshrc output', () => {
+    const out =
+      'welcome banner\n__qq_emacs__ "?" qq-question-widget\n__qq_viins__ "?" self-insert\n';
+    expect(parseZshBindings(out)).toEqual({ emacs: 'qq-question-widget', viins: 'self-insert' });
+  });
+
+  it('returns null widgets for marker lines without a binding', () => {
+    expect(parseZshBindings('__qq_emacs__ \n__qq_viins__ garbage\n')).toEqual({
+      emacs: null,
+      viins: null,
+    });
+  });
+
+  it('returns null when no marker line appeared', () => {
+    expect(parseZshBindings('"?" qq-question-widget\n')).toBeNull();
+  });
+});
+
+describe('defaultDoctorDeps (real machine, read-only)', () => {
+  it('reads the zsh version with stdin closed', async () => {
+    const version = await defaultDoctorDeps().zshVersion();
+    expect(version).toMatch(/^\d+\.\d+/);
+  });
+
+  it('finds node on PATH and probes /tmp', () => {
+    const deps = defaultDoctorDeps();
+    expect(deps.which('node')).not.toBeNull();
+    expect(deps.which('definitely-not-a-qq-binary')).toBeNull();
+    expect(deps.probeTmp()).toBe(true);
   });
 });
