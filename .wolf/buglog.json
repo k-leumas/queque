@@ -7025,6 +7025,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T21:25:00Z"
+    },
+    {
+      "id": "bug-461",
+      "timestamp": "2026-10-29T22:34:15Z",
+      "error_message": "pre-push (lefthook) from a linked worktree: tests/auto-revert.test.ts 13x \"git remote add origin ... remote origin already exists\", tests/code-changed.test.ts \"git branch main failed: a branch named main already exists\"; afterwards the main checkout reported core.bare=true and the worktree branch had 13 junk fixture commits",
+      "file": "tests/setup/scrub-git-env.ts",
+      "root_cause": "git exports GIT_DIR (and other repo-locating vars) into hook processes in a linked worktree; the fixture-repo test helpers spawn git with ...process.env, so git init --bare / commit / branch ran against the real repository instead of their temp dirs",
+      "fix": "vitest setupFiles tests/setup/scrub-git-env.ts deletes every `git rev-parse --local-env-vars` var (plus GIT_CONFIG_KEY_n/VALUE_n) from process.env in each worker (default and live configs); regression tests/git-env-isolation.test.ts runs both fixture suites in a child vitest with GIT_DIR on a sentinel repo and asserts the sentinel is unchanged (RED 8a1fb17, GREEN 801e6da). Repo repaired: core.bare=false, damaged agent worktree+branch removed",
+      "tags": [
+        "git",
+        "worktree",
+        "lefthook",
+        "pre-push",
+        "test-isolation",
+        "phase-10"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T22:34:15Z"
     }
   ]
 }

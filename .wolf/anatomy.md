@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T21:09:56.484Z
-> Files: 725 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T22:32:13.661Z
+> Files: 532 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -43,6 +43,7 @@
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/
 
+- `10-12-verify-tree.mjs` — Read-only: compare on-disk files against a `git ls-tree -r` listing by computing blob SHA-1s. (~278 tok)
 - `accept-t3.sh` (~215 tok)
 - `make-red-record.mjs` — Declares output (~227 tok)
 - `mkrecord.mjs` — Declares output (~95 tok)
@@ -233,8 +234,8 @@
 - `README.md` — Project documentation (~3537 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. Phase 10: `define` also bakes __QUEQUE_TELEMETRY_KEY__ (empty until plan 13, D-22) and __QUEQUE_TELEMETRY_HOST__ (`https://eu.i.posthog.com`, D-05). (~600 tok)
-- `vitest.config.ts` — Unit test config: `tests/**/*.test.ts(x)`; `define` bakes __QUEQUE_VERSION__/__QUEQUE_COMMIT__ plus an empty __QUEQUE_TELEMETRY_KEY__ and the discard-port host `http://127.0.0.1:9` for __QUEQUE_TELEMETRY_HOST__ (10-04). (~153 tok)
-- `vitest.live.config.ts` — Live-only vitest config: `tests/live/**/*.live.ts`, 60 s test / 30 s hook timeouts, base `define` reused; standalone (not mergeConfig, which concatenates `include`). Run with `pnpm test:live` (10-08). (~160 tok)
+- `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~190 tok)
+- `vitest.live.config.ts` — /*.test.ts`) never (~198 tok)
 
 ## .claude/
 
@@ -800,6 +801,7 @@
 - `env-file.test.ts` — root: projectWithEnvLocal, homeUnderPlantedFile (~1365 tok)
 - `environment-shape.test.ts` — Enum mapping, zsh/node parsing, null on an out-of-bound node, no env value leaks (10-10). (~946 tok)
 - `error-kind.test.ts` — withErrorKind/errorKindOf units; claude-default CLI/SDK mapping via importOriginal-spread mocks of claude.js and claude-cli.js; daemon fetch-error errorKind and pin_invalid; fetch-client re-tagging; the in-process fallback (10-06). (~2776 tok)
+- `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
@@ -846,3 +848,7 @@
 ## tests/live/
 
 - `sdk-contract.live.ts` — Nightly live SDK contract test, the only test that calls a real model: spawns the built daemon on `/tmp/qq-live-PID.sock` with a temp HOME and sends one streamed fetch-candidates; asserts schemas, LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08). (~2722 tok)
+
+## tests/setup/
+
+- `scrub-git-env.ts` — git exports these into hook processes (lefthook's pre-push runs this suite), most visibly (~292 tok)

@@ -3539,3 +3539,14 @@
 | 15:18 | 10-11 Task 1: D-09 consent gate + one-key /dev/tty prompt, default no (RED 0fa5e03, GREEN dde2ec4) | src/client/telemetry-consent.ts, tests/telemetry-consent.test.ts | 23 tests pass | ~3k |
 | 15:27 | 10-11 Task 2: consent ask after the first accepted ?? (after Ink unmount, before the report) + smoke consent pass + runner exit 36 (RED fdde4e6, GREEN d2c5adf) | src/client/run-foreground.ts, tests/client-result.test.ts, scripts/smoke-distro.exp, scripts/smoke-distro-runner.sh, scripts/smoke-distro.sh | alpine:3.24 smoke PASS, 3 passes | ~6k |
 | 15:32 | 10-11 Task 3: phase gate green (test:run 58 files / 1458 tests, typecheck, lint, build, alpine smoke PASS); applied 10-01..10-10 OpenWolf entries: buglog bug-453..460 (busybox lsof, jq, mktemp, expect prompt, scratchpad race, jq --args, it.each title, lost debug line), 35 phase-10 auto-detected entries dropped; anatomy: 161 ephemeral .claude/worktrees sections dropped, phase 10 lines added; cerebrum learnings + decision log; 09.1 stale-prewarm todo closed | .wolf/*, .planning/todos/ | committed with the todo move | ~12k |
+| 15:59 | Session end: 245 writes across 111 files (prewarm-sleep.test.ts, doctor.ts, msg-10-02-t1.txt, doctor.test.ts, telemetry-contract.test.ts) | 52 reads | ~276993 tok |
+| 16:00 | Session end: 245 writes across 111 files (prewarm-sleep.test.ts, doctor.ts, msg-10-02-t1.txt, doctor.test.ts, telemetry-contract.test.ts) | 52 reads | ~276993 tok |
+| 16:01 | Session end: 245 writes across 111 files (prewarm-sleep.test.ts, doctor.ts, msg-10-02-t1.txt, doctor.test.ts, telemetry-contract.test.ts) | 52 reads | ~276993 tok |
+| 16:04 | Session end: 245 writes across 111 files (prewarm-sleep.test.ts, doctor.ts, msg-10-02-t1.txt, doctor.test.ts, telemetry-contract.test.ts) | 52 reads | ~276993 tok |
+| 16:09 | Session end: 245 writes across 111 files (prewarm-sleep.test.ts, doctor.ts, msg-10-02-t1.txt, doctor.test.ts, telemetry-contract.test.ts) | 52 reads | ~276993 tok |
+| 16:12 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12-verify-tree.mjs | — | ~278 |
+| 16:31 | Created tests/git-env-isolation.test.ts | — | ~730 |
+| 16:32 | Created tests/setup/scrub-git-env.ts | — | ~292 |
+| 16:32 | Edited vitest.config.ts | 2→3 lines | ~33 |
+| 16:32 | Edited vitest.live.config.ts | 1→2 lines | ~26 |
+| 16:34 | 10-12 drill blocked: pre-push tests inherited GIT_DIR and damaged repo (core.bare=true); repaired, fixed via vitest setup scrub + regression test | tests/setup/scrub-git-env.ts, tests/git-env-isolation.test.ts | 1459/1459 green | ~8k |
