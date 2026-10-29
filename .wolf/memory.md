@@ -3609,3 +3609,5 @@
 | 17:48 | Edited .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md | modified 2() | ~250 |
 | 17:48 | Edited .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md | inline fix | ~38 |
 | 17:48 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/p10-12-drill/commit-msg.txt | — | ~66 |
+| 17:42 | 10-12 drill: pushed 0db4004 (9401eba + ?? rebound to ~) to ci/phase-10-revert-drill, hooks green, repo intact | shell/zsh/queque.zsh (drill branch only) | run https://github.com/k-leumas/queque/actions/runs/40974964457 | ~1k |
+| 17:48 | 10-12 drill result: 6/6 smoke red, auto-revert ok, exactly one PR https://github.com/k-leumas/queque/pull/15; base 489a67a (merge base with main) not 9401eba because green_runs needs status=success (GAP-3); 99-file diff; 5/6 smoke artifact uploads EACCES on qq-debug.log (GAP-4) | scripts/ci/auto-revert.sh, 10-12-SUMMARY.md | gaps recorded, no code changed | ~4k |
