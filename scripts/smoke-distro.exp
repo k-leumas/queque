@@ -1,0 +1,66 @@
+#!/usr/bin/expect -f
+# PTY driver for scripts/smoke-distro-runner.sh. Usage: expect smoke-distro.exp PASS
+#
+# Types `??` into a real interactive zsh (the installed ZLE widget, `qq client`, the
+# daemon and the Ink TUI) and proves the buffer state by EXECUTING it:
+#   accept: `list files??`, Enter on row 1, Enter again runs it (zsh reports tldr missing)
+# Every step after the TUI opens is anchored on the zsh prompt redraw (`QQSMOKE% ...`),
+# never on text the TUI itself printed: that raced and lost keystrokes in the research
+# prototype.
+#
+# Exit codes: 10 first prompt, 11 no candidate row, 12 accept redraw, 13 executed buffer,
+# 16 QueQue error text, 19 unknown pass.
+
+set pass [lindex $argv 0]
+set timeout 40
+# An idle prompt: zsh ends it with control sequences (ESC[K, bracketed paste ESC[?2004h),
+# so a bare `QQSMOKE% $` never matches.
+set prompt_idle {QQSMOKE[%#] (?:\x1b\[[0-9;?]*[A-Za-z])*$}
+log_user 1
+
+proc fail {code message} {
+  puts stderr "\nsmoke-distro.exp: $message (exit $code)"
+  exit $code
+}
+
+# Not a Tcl `switch`: its `default` pattern would swallow every pass name.
+if {$pass eq "default"} {
+  log_file -noappend /out/pty-$pass.log
+  spawn env -u XDG_RUNTIME_DIR TERM=xterm-256color zsh -i
+} else {
+  fail 19 "unknown pass: $pass"
+}
+
+expect {
+  -re $prompt_idle {}
+  timeout { fail 10 "timed out waiting for the first zsh prompt" }
+  eof { fail 10 "zsh exited before the first prompt" }
+}
+
+send -- "list files??"
+expect {
+  -re {(queque|QueQue): [^\r\n]*} { fail 16 "QueQue printed an error: $expect_out(0,string)" }
+  "tldr z3" {}
+  timeout { fail 11 "timed out waiting for the candidate row tldr z3" }
+  eof { fail 11 "zsh exited before the candidate row appeared" }
+}
+
+send -- "\r"
+expect {
+  -re {QQSMOKE[%#] tldr z3  # } {}
+  -re {(queque|QueQue): [^\r\n]*} { fail 16 "QueQue printed an error: $expect_out(0,string)" }
+  timeout { fail 12 "timed out waiting for the prompt redraw with the accepted command" }
+  eof { fail 12 "zsh exited before the accepted command reached the buffer" }
+}
+
+send -- "\r"
+expect {
+  "command not found: tldr" {}
+  timeout { fail 13 "the accepted buffer did not execute (zsh never reported tldr missing)" }
+  eof { fail 13 "zsh exited before the accepted buffer ran" }
+}
+
+expect -re $prompt_idle
+send -- "exit\r"
+expect eof
+exit 0
