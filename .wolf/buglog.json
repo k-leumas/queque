@@ -6874,6 +6874,151 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T17:26:44.359Z"
+    },
+    {
+      "id": "bug-419",
+      "timestamp": "2026-10-29T19:39:54.426Z",
+      "error_message": "Wrong return value",
+      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/src/contracts/doctor.ts",
+      "root_cause": "Was returning: 0;",
+      "fix": "Now returns: report.checks.some((check) => check.status === 'fa",
+      "tags": [
+        "auto-detected",
+        "return-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:39:54.427Z"
+    },
+    {
+      "id": "bug-420",
+      "timestamp": "2026-10-29T19:42:50.858Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/src/cli/commands/doctor.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:42:50.858Z"
+    },
+    {
+      "id": "bug-421",
+      "timestamp": "2026-10-29T19:42:58.236Z",
+      "error_message": "Function not marked async",
+      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/src/cli/main.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:42:58.236Z"
+    },
+    {
+      "id": "bug-422",
+      "timestamp": "2026-10-29T19:43:00.718Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-a5ae9ba1581c27931/src/shared/qq-config.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:43:00.718Z"
+    },
+    {
+      "id": "bug-423",
+      "timestamp": "2026-10-29T19:43:22.238Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/tests/doctor.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:43:22.238Z"
+    },
+    {
+      "id": "bug-424",
+      "timestamp": "2026-10-29T19:43:40.480Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/tests/doctor.test.ts",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 12→21 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:43:40.480Z"
+    },
+    {
+      "id": "bug-425",
+      "timestamp": "2026-10-29T19:43:40.957Z",
+      "error_message": "Wrong reference: report should be zshOk",
+      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/tests/doctor.test.ts",
+      "root_cause": "Used \"report\" instead of \"zshOk\"",
+      "fix": "Changed report → zshOk",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:43:40.958Z"
+    },
+    {
+      "id": "bug-426",
+      "timestamp": "2026-10-29T19:46:54.258Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ae4881a9c313c4870/src/daemon/bootstrap.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 15→27 lines (3 removed) | Also: * share the vitest process).; async function replaceStaleListener(",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-29T19:46:54.787Z"
+    },
+    {
+      "id": "bug-427",
+      "timestamp": "2026-10-29T19:47:21Z",
+      "error_message": "pnpm lint inside a .claude/worktrees/agent-* worktree: \"No files were processed\" / \"These paths were provided but ignored: .\"",
+      "file": "biome.json",
+      "root_cause": "files.includes used \"!!**/.claude\" (and **/ for .wolf/.gsd/.planning); biome matched it against the worktree root itself, which lives under .claude/worktrees/, so every file was excluded",
+      "fix": "Root-anchored the excludes: \"!!.wolf\", \"!!.claude\", \"!!.gsd\", \"!!.planning\". Main still checks the same 125 files and no .claude/ paths",
+      "tags": [
+        "biome",
+        "lint",
+        "worktree",
+        "config"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:47:21Z"
     }
   ]
 }
