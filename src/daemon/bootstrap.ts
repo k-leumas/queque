@@ -186,13 +186,24 @@ async function waitForSocket(
 
 /**
  * Parses `lsof -t` output into the pids to signal, never `selfPid`.
+ *
+ * Accepts the output only when every non-empty line is a bare pid. busybox `lsof` (Alpine)
+ * ignores `-t <path>` and lists every open file of every process as
+ * `PID<TAB>/bin/busybox<TAB>FD<TAB>TARGET`; parsing that as pids made replaceStaleListener
+ * signal every process in the container, PID 1 included (Phase 10 Defect 1). Any other
+ * shape returns `[]` and logs `lsof output ignored`.
  * Exported for the Defect 1 regression test (tests/lsof-busybox.test.ts).
  */
 export function parseLsofPidList(output: string, selfPid: number): number[] {
-  return output
-    .split(/\s+/)
-    .map((s) => Number.parseInt(s, 10))
-    .filter((n) => Number.isInteger(n) && n > 0 && n !== selfPid);
+  const lines = output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
+  if (!lines.every((line) => /^\d+$/.test(line))) {
+    void appendDebugLog('daemon', 'lsof output ignored', { lines: lines.length });
+    return [];
+  }
+  return lines.map(Number).filter((n) => n > 0 && n !== selfPid);
 }
 
 /**
