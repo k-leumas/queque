@@ -1175,3 +1175,50 @@ describe('instant frame', () => {
     );
   });
 });
+
+// ---------------------------------------------------------------------------
+// Phase 10 Defect 3: a failed `mktemp -d` (full or unwritable /tmp) must not turn the
+// session dir into `/`, so request.json and the tool handoff never land at the root.
+// ---------------------------------------------------------------------------
+
+describe('mktemp failure', () => {
+  it('restores the typed line, shows one message and never starts the client', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-mktemp-fail-'));
+    try {
+      const devRoot = join(dir, 'repo');
+      const cliDir = join(devRoot, 'dist', 'cli');
+      const marker = join(dir, 'client-started');
+      mkdirSync(cliDir, { recursive: true });
+      // Only a `client` launch writes the marker (the daemon prewarm never runs under -f -c).
+      writeFileSync(
+        join(cliDir, 'main.js'),
+        `if (process.argv.includes('client')) require('node:fs').writeFileSync(${JSON.stringify(marker)}, process.argv.join(' '));\n`,
+      );
+
+      // zsh functions shadow external commands and are inherited by $(...) subshells.
+      const script = [
+        'unset ZELLIJ',
+        'QQ_INSTANT_FRAME=0',
+        'QQ_DEV_ROOT="$3"',
+        'mktemp() { return 1 }',
+        'zle() { print -r -- "zle:$*" }',
+        'LBUFFER="$1"',
+        'RBUFFER="$2"',
+        'qq-question-widget',
+        'print -r -- "status=$?"',
+        'print -r -- "lbuffer=$LBUFFER"',
+        'print -r -- "rbuffer=$RBUFFER"',
+      ].join('\n');
+      const { stdout, stderr } = runZshArgs(script, ['echo hi?', ' | tail', devRoot]);
+
+      expect(existsSync(marker)).toBe(false);
+      expect(stdout).toContain('zle:-M queque: cannot create a temp dir in /tmp');
+      expect(stdout).toContain('status=0');
+      expect(stdout).toContain('lbuffer=echo hi\n');
+      expect(stdout).toContain('rbuffer= | tail\n');
+      expect(stderr).not.toContain('request.json');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

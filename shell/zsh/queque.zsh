@@ -369,7 +369,20 @@ qq-question-widget() {
   # Create a private session directory (CR-006 fix).
   # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on temp paths.
   local tmpdir req_file
-  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX)
+  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX 2>/dev/null)
+  # Phase 10 Defect 3: a full or unwritable /tmp leaves tmpdir empty, and every path
+  # below would then be at the filesystem root (/request.json, the tool handoff). Stop
+  # before any write: clear the instant frame, keep the typed line, say why.
+  if [[ -z "$tmpdir" || ! -d "$tmpdir" ]]; then
+    if [[ "$QQ_INSTANT_FRAME_PAINTED" == 1 ]]; then
+      print -rn -- $'\e8\e[J' 2>/dev/null || true
+    fi
+    LBUFFER="$QQ_LBUFFER"
+    RBUFFER="$QQ_RBUFFER"
+    _qq_log "mktemp -d failed; session dir not created"
+    zle -M "queque: cannot create a temp dir in /tmp"
+    return 0
+  fi
   chmod 700 "$tmpdir"
   req_file="$tmpdir/request.json"
   _qq_log "tmpdir=${tmpdir}"
