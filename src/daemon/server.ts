@@ -4,6 +4,7 @@ import { ipcRequestSchema } from '../contracts/ipc.js';
 import { resolveProviderAdapter } from '../providers/provider-pin.js';
 import { bootstrapBuiltins } from '../registry/bootstrap.js';
 import { appendDebugLog } from '../shared/debug-log.js';
+import type { TelemetryBuffer } from './telemetry-buffer.js';
 
 /**
  * Starts the daemon Unix-socket server.
@@ -32,6 +33,8 @@ import { appendDebugLog } from '../shared/debug-log.js';
 export interface DaemonServerOptions {
   /** Runs after a `shutdown` request was acknowledged (the daemon command's shutdown). */
   onShutdown?: () => void;
+  /** The daemon's telemetry buffer (phase 10, D-07). */
+  telemetry?: TelemetryBuffer;
 }
 
 export function startDaemonServer(
