@@ -371,7 +371,7 @@ Plans:
 **Estimate:** ~3–3.5 days.
 **Requirements**: TBD
 **Depends on:** Phase 9
-**Plans:** 6/13 plans executed
+**Plans:** 10/13 plans executed
 
 Plans:
 **Wave 1**
@@ -385,10 +385,10 @@ Plans:
 - [x] 10-06-PLAN.md — Daemon telemetry buffer and `/batch` sender, telemetry IPC kinds, bounded shutdown flush, error kinds on `fetch-error` (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 10-07-PLAN.md — Auto-revert PR on smoke failure (last green tree restore, one PR per branch, diagnostics body, GITHUB_TOKEN) (wave 3)
-- [ ] 10-08-PLAN.md — Nightly `:latest` matrices and the single live SDK contract job (wave 3)
-- [ ] 10-09-PLAN.md — `qq telemetry status|on|off|show` and the doctor telemetry row (wave 3)
-- [ ] 10-10-PLAN.md — Client outcome, error and environment events, gated client-side, with an end-to-end leak test (wave 3)
+- [x] 10-07-PLAN.md — Auto-revert PR on smoke failure (last green tree restore, one PR per branch, diagnostics body, GITHUB_TOKEN) (wave 3)
+- [x] 10-08-PLAN.md — Nightly `:latest` matrices and the single live SDK contract job (wave 3)
+- [x] 10-09-PLAN.md — `qq telemetry status|on|off|show` and the doctor telemetry row (wave 3)
+- [x] 10-10-PLAN.md — Client outcome, error and environment events, gated client-side, with an end-to-end leak test (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
 - [ ] 10-11-PLAN.md — One-time default-No consent prompt after the first accepted `??` (PTY smoke pass); phase gate and OpenWolf records (wave 4)
