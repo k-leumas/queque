@@ -56,7 +56,6 @@ export type DoctorReport = z.infer<typeof doctorReportSchema>;
  * Exit code for a report (D-17): 1 exactly when a check failed (a hard blocker that makes
  * `??` impossible), 0 otherwise. Warnings never change the exit code.
  */
-export function doctorExitCode(_report: DoctorReport): 0 | 1 {
-  // TDD RED stub: replaced in GREEN.
-  return 0;
+export function doctorExitCode(report: DoctorReport): 0 | 1 {
+  return report.checks.some((check) => check.status === 'fail') ? 1 : 0;
 }
