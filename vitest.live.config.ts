@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/live/**/*.live.ts'],
+    setupFiles: ['tests/setup/scrub-git-env.ts'],
     testTimeout: 60_000,
     hookTimeout: 30_000,
   },
