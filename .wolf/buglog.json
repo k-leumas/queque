@@ -7126,6 +7126,310 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-29T20:24:54Z"
+    },
+    {
+      "id": "bug-434",
+      "timestamp": "2026-10-29T20:30:42.518Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ac553f02e4bd0e888/scripts/smoke-distro-runner.sh",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 7→13 lines (6 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:30:42.518Z"
+    },
+    {
+      "id": "bug-435",
+      "timestamp": "2026-10-29T20:35:14.794Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/contracts/ipc.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:35:14.794Z"
+    },
+    {
+      "id": "bug-436",
+      "timestamp": "2026-10-29T20:35:26.257Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/server.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:35:26.257Z"
+    },
+    {
+      "id": "bug-437",
+      "timestamp": "2026-10-29T20:35:26.734Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/server.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:35:26.734Z"
+    },
+    {
+      "id": "bug-438",
+      "timestamp": "2026-10-29T20:35:50.073Z",
+      "error_message": "Missing error handling in startFinalFlush",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/cli/commands/daemon.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:35:50.073Z"
+    },
+    {
+      "id": "bug-439",
+      "timestamp": "2026-10-29T20:36:35.927Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/cli/commands/daemon.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 4→9 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:36:35.927Z"
+    },
+    {
+      "id": "bug-440",
+      "timestamp": "2026-10-29T20:39:59.219Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/server.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 3→4 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:39:59.219Z"
+    },
+    {
+      "id": "bug-441",
+      "timestamp": "2026-10-29T20:40:13.847Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/fetch-client.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:40:13.847Z"
+    },
+    {
+      "id": "bug-442",
+      "timestamp": "2026-10-29T20:40:14.691Z",
+      "error_message": "Missing error handling in unknown",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/fetch-client.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:40:14.691Z"
+    },
+    {
+      "id": "bug-443",
+      "timestamp": "2026-10-29T20:40:15.241Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/fetch-client.ts",
+      "root_cause": "Had '../providers/provider.js'",
+      "fix": "Changed to '../providers/error-kind.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:40:15.241Z"
+    },
+    {
+      "id": "bug-444",
+      "timestamp": "2026-10-29T20:58:18.774Z",
+      "error_message": "Function not marked async",
+      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/src/cli/main.ts",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:58:18.774Z"
+    },
+    {
+      "id": "bug-445",
+      "timestamp": "2026-10-29T21:00:51.809Z",
+      "error_message": "Missing await",
+      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/tests/doctor.test.ts",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:00:51.809Z"
+    },
+    {
+      "id": "bug-446",
+      "timestamp": "2026-10-29T21:00:59.431Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/tests/doctor.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:00:59.431Z"
+    },
+    {
+      "id": "bug-447",
+      "timestamp": "2026-10-29T21:01:10.995Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/src/cli/commands/doctor.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:01:10.995Z"
+    },
+    {
+      "id": "bug-448",
+      "timestamp": "2026-10-29T21:02:04.707Z",
+      "error_message": "Missing error handling in checkTelemetry",
+      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/src/cli/commands/doctor.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:02:04.707Z"
+    },
+    {
+      "id": "bug-449",
+      "timestamp": "2026-10-29T21:03:21.858Z",
+      "error_message": "Missing error handling in function",
+      "file": ".claude/worktrees/agent-a4306bef48ba4c3c1/tests/client-result.test.ts",
+      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:03:21.858Z"
+    },
+    {
+      "id": "bug-450",
+      "timestamp": "2026-10-29T21:05:13.688Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a356850a1a0e59bc3/scripts/ci/auto-revert.sh",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 9→14 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:05:13.688Z"
+    },
+    {
+      "id": "bug-451",
+      "timestamp": "2026-10-29T21:05:20.533Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a4306bef48ba4c3c1/src/client/run-foreground.ts",
+      "root_cause": "Had './tool-handoff.js'",
+      "fix": "Changed to './telemetry-events.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:05:20.533Z"
+    },
+    {
+      "id": "bug-452",
+      "timestamp": "2026-10-29T21:05:21.262Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a4306bef48ba4c3c1/src/client/run-foreground.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: outcome = { outcome: 'error', candidateCount: 0, errorKind: ",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-29T21:05:49.773Z"
     }
   ]
 }

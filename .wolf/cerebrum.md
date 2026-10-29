@@ -199,6 +199,9 @@
 - [2026-10-18] The harness secret-file guard blocks any Bash command whose text contains the literal dotenv file name (commit messages, test -e). Write commit messages to a scratchpad file and use `git commit -F`; write scripts with the Write tool; never probe the developer's env files.
 - [2026-10-18] A TS `export const X = 'low'` widens to `string` inside an array literal; annotate the array (`readonly (Effort | undefined)[]`).
 - [2026-10-18] In the worktree harness, Bash commands combining git with `$(...)`, heredocs or long chains are refused as too complex; run git commands alone, edit files with Edit/Write.
+- [2026-10-29] Parallel worktree executors share ONE session scratchpad dir: generic commit-message files (msg1.txt) get overwritten by sibling agents between write and `git commit -F`, so commits land with another plan's subject (hit 10-09 and 10-10 in phase 10 wave 3). Executors must use plan-prefixed files or a per-plan subdir; the orchestrator must check `git log base..branch` subjects carry `(NN-MM)` before merging.
+- [2026-10-29] `gsd_run query worktree.record-agent --files` stores the value verbatim as one array element; a comma-joined list becomes a single bogus path and cleanup-wave reports every file as scope_out_of_declared. Split it into a JSON array in the manifest (jq split) before cleanup-wave.
+- [2026-10-29] biome.json `files.includes` excludes must be root-anchored (`!!.claude`, not `!!**/.claude`): the `**/` form matches the worktree's own root under .claude/worktrees/ and biome processes no files there (bug-427).
 
 ## Decision Log
 
