@@ -1,3 +1,6 @@
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   type DoctorDeps,
@@ -37,6 +40,11 @@ function healthyDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
     pingDaemon: async () => 'yes',
     loadProviderPin: () => ({ kind: 'absent' }),
     detectProvider: async () => ({ kind: 'anthropic-key' }),
+    telemetryStatus: () => ({
+      blockedBy: null,
+      state: { enabled: false, asked: false },
+      keyPresent: false,
+    }),
     ...overrides,
   };
 }
@@ -47,9 +55,11 @@ function check(report: DoctorReport, id: DoctorCheckId) {
 }
 
 describe('runDoctorChecks: healthy machine', () => {
-  it('runs all eleven checks in id order, all ok, exit 0', async () => {
+  it('runs all twelve checks in id order with telemetry last, all ok, exit 0', async () => {
     const report = await runDoctorChecks(healthyDeps());
     expect(report.checks.map((c) => c.id)).toEqual([...DOCTOR_CHECK_IDS]);
+    expect(report.checks).toHaveLength(12);
+    expect(report.checks.at(-1)?.id).toBe('telemetry');
     expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
     expect(report.ok).toBe(true);
     expect(doctorExitCode(report)).toBe(0);
@@ -252,6 +262,98 @@ describe('runDoctorChecks: warnings keep exit 0 (D-17)', () => {
   });
 });
 
+const CANARY_INSTALL_ID = '0f0e0d0c-0b0a-4908-8706-050403020100';
+
+describe('runDoctorChecks: telemetry (D-18, never a blocker)', () => {
+  type TelemetryStatus = ReturnType<DoctorDeps['telemetryStatus']>;
+  const off = { enabled: false, asked: false };
+  const on = { enabled: true, asked: true, installId: CANARY_INSTALL_ID };
+
+  async function telemetryRow(status: TelemetryStatus) {
+    const report = await runDoctorChecks(healthyDeps({ telemetryStatus: () => status }));
+    return check(report, 'telemetry');
+  }
+
+  it('says off, not asked yet, for a fresh install', async () => {
+    const row = await telemetryRow({ blockedBy: null, state: off, keyPresent: false });
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('telemetry off (not asked yet)');
+  });
+
+  it('says plain off once the user declined', async () => {
+    const row = await telemetryRow({
+      blockedBy: null,
+      state: { enabled: false, asked: true },
+      keyPresent: true,
+    });
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('telemetry off');
+  });
+
+  it('names DO_NOT_TRACK when it blocks telemetry, even if the config says on', async () => {
+    const row = await telemetryRow({ blockedBy: 'DO_NOT_TRACK', state: on, keyPresent: true });
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('telemetry off (DO_NOT_TRACK is set)');
+  });
+
+  it('names QQ_TELEMETRY and CI by name only', async () => {
+    const qq = await telemetryRow({ blockedBy: 'QQ_TELEMETRY', state: off, keyPresent: true });
+    expect(qq.summary).toBe('telemetry off (QQ_TELEMETRY is set)');
+    const ci = await telemetryRow({ blockedBy: 'CI', state: on, keyPresent: true });
+    expect(ci.summary).toBe('telemetry off (CI is set)');
+  });
+
+  it('says on when enabled with a project key', async () => {
+    const row = await telemetryRow({ blockedBy: null, state: on, keyPresent: true });
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('telemetry on');
+  });
+
+  it('says nothing is sent when enabled in a build without a project key', async () => {
+    const row = await telemetryRow({ blockedBy: null, state: on, keyPresent: false });
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('telemetry on (no project key in this build: nothing is sent)');
+  });
+
+  it('treats enabled without an install id as off', async () => {
+    const row = await telemetryRow({
+      blockedBy: null,
+      state: { enabled: true, asked: true },
+      keyPresent: true,
+    });
+    expect(row.summary).toBe('telemetry off');
+  });
+
+  it('stays ok when the state cannot be read', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({
+        telemetryStatus: () => {
+          throw new Error('canary-telemetry-error');
+        },
+      }),
+    );
+    expect(check(report, 'telemetry').status).toBe('ok');
+    expect(JSON.stringify(report)).not.toContain('canary-telemetry-error');
+  });
+
+  it('never changes the exit code', async () => {
+    const healthy = await runDoctorChecks(
+      healthyDeps({
+        telemetryStatus: () => ({ blockedBy: 'CI', state: on, keyPresent: false }),
+      }),
+    );
+    expect(doctorExitCode(healthy)).toBe(0);
+    const blocked = await runDoctorChecks(
+      healthyDeps({
+        probeTmp: () => false,
+        telemetryStatus: () => ({ blockedBy: null, state: on, keyPresent: true }),
+      }),
+    );
+    expect(doctorExitCode(blocked)).toBe(1);
+    expect(check(blocked, 'telemetry').status).toBe('ok');
+  });
+});
+
 describe('runDoctorChecks: report contract', () => {
   it('gives every warn and fail line a one-line hint (D-18)', async () => {
     const report = await runDoctorChecks(
@@ -333,9 +435,33 @@ describe('runDoctorChecks: no leaks (T-10-07)', () => {
           detectProvider: async () => ({ kind: 'none', message: 'canary-detect-message' }),
         }),
       ),
+      runDoctorChecks(
+        healthyDeps({
+          env: { ...env, DO_NOT_TRACK: 'canary-dnt-value' },
+          homeDir: '/home/canary-user',
+          telemetryStatus: () => ({
+            blockedBy: 'DO_NOT_TRACK',
+            state: { enabled: true, asked: true, installId: CANARY_INSTALL_ID },
+            keyPresent: true,
+          }),
+        }),
+      ),
+      runDoctorChecks(
+        healthyDeps({
+          env,
+          homeDir: '/home/canary-user',
+          telemetryStatus: () => ({
+            blockedBy: null,
+            state: { enabled: true, asked: true, installId: CANARY_INSTALL_ID },
+            keyPresent: true,
+          }),
+        }),
+      ),
     ]);
     for (const report of reports) {
       const json = JSON.stringify(report);
+      expect(json).not.toContain(CANARY_INSTALL_ID);
+      expect(json).not.toContain('canary-dnt-value');
       expect(json).not.toContain('sk-ant-canary-123');
       expect(json).not.toContain('canary-value-xyz');
       expect(json).not.toContain('/home/canary-user');
@@ -378,6 +504,23 @@ describe('defaultDoctorDeps (real machine, read-only)', () => {
     expect(deps.which('node')).not.toBeNull();
     expect(deps.which('definitely-not-a-qq-binary')).toBeNull();
     expect(deps.probeTmp()).toBe(true);
+  });
+
+  it('reads the telemetry state from QQ_CONFIG_FILE and the gates from the environment', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-doctor-tel-'));
+    try {
+      vi.stubEnv('QQ_CONFIG_FILE', join(dir, 'config.json'));
+      vi.stubEnv('DO_NOT_TRACK', '1');
+      vi.stubEnv('QQ_TELEMETRY_KEY', '');
+      const status = defaultDoctorDeps().telemetryStatus();
+      expect(status.blockedBy).toBe('DO_NOT_TRACK');
+      expect(status.state).toEqual({ enabled: false, asked: false });
+      // vitest bakes an empty key (D-22), so the build has no project key.
+      expect(status.keyPresent).toBe(false);
+    } finally {
+      vi.unstubAllEnvs();
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 

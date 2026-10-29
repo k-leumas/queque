@@ -21,6 +21,13 @@ import { pingDaemonFetchCap } from '../../daemon/bootstrap.js';
 import { type DetectedProvider, detectProvider } from '../../providers/detect.js';
 import { loadProviderPin, type ProviderPinState } from '../../providers/provider-pin.js';
 import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
+import {
+  readTelemetryState,
+  type TelemetryBlockReason,
+  type TelemetryState,
+  telemetryBlockedBy,
+} from '../../shared/telemetry-config.js';
+import { resolveTelemetryEndpoint } from '../../shared/telemetry-endpoint.js';
 import { hasShellIntegration } from './init.js';
 
 /** zsh below this version cannot run the widget: `zsh` fails (D-20). */
@@ -65,6 +72,14 @@ export interface DoctorDeps {
   pingDaemon(path: string): Promise<'yes' | 'no' | 'unknown'>;
   loadProviderPin(): ProviderPinState;
   detectProvider(): Promise<DetectedProvider>;
+  /** Telemetry gate, consent state and whether this build has a project key (D-09, D-22). */
+  telemetryStatus(): TelemetryStatus;
+}
+
+export interface TelemetryStatus {
+  blockedBy: TelemetryBlockReason | null;
+  state: TelemetryState;
+  keyPresent: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -231,6 +246,11 @@ export function defaultDoctorDeps(): DoctorDeps {
     pingDaemon: pingDaemonFetchCap,
     loadProviderPin,
     detectProvider,
+    telemetryStatus: () => ({
+      blockedBy: telemetryBlockedBy(env),
+      state: readTelemetryState(),
+      keyPresent: resolveTelemetryEndpoint(env) !== null,
+    }),
   };
 }
 

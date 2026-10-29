@@ -21,6 +21,7 @@ export const DOCTOR_CHECK_IDS = [
   'locale',
   'provider',
   'node',
+  'telemetry',
 ] as const;
 
 export const DOCTOR_STATUSES = ['ok', 'warn', 'fail'] as const;
