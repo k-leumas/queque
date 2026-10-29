@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
+    setupFiles: ['tests/setup/scrub-git-env.ts'],
   },
   define: {
     __QUEQUE_COMMIT__: JSON.stringify('test-build'),
