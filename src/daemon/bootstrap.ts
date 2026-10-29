@@ -184,17 +184,40 @@ async function waitForSocket(
   return false;
 }
 
-function listenerPids(socketPath: string): number[] {
+/**
+ * Parses `lsof -t` output into the pids to signal, never `selfPid`.
+ *
+ * Accepts the output only when every non-empty line is a bare pid. busybox `lsof` (Alpine)
+ * ignores `-t <path>` and lists every open file of every process as
+ * `PID<TAB>/bin/busybox<TAB>FD<TAB>TARGET`; parsing that as pids made replaceStaleListener
+ * signal every process in the container, PID 1 included (Phase 10 Defect 1). Any other
+ * shape returns `[]` and writes a debug line saying the output was ignored.
+ * Exported for the Defect 1 regression test (tests/lsof-busybox.test.ts).
+ */
+export function parseLsofPidList(output: string, selfPid: number): number[] {
+  const lines = output
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
+  if (!lines.every((line) => /^\d+$/.test(line))) {
+    void appendDebugLog('daemon', 'lsof output ignored', { lines: lines.length });
+    return [];
+  }
+  return lines.map(Number).filter((n) => n > 0 && n !== selfPid);
+}
+
+/**
+ * The pids `lsof -t` reports for `socketPath`, or `[]` when lsof is missing or fails.
+ * Exported for the Defect 1 regression test (tests/lsof-busybox.test.ts).
+ */
+export function listenerPids(socketPath: string): number[] {
   try {
     const out = execFileSync('lsof', ['-t', socketPath], {
       encoding: 'utf8',
       timeout: 1000,
       stdio: ['ignore', 'pipe', 'ignore'],
     });
-    return out
-      .split(/\s+/)
-      .map((s) => Number.parseInt(s, 10))
-      .filter((n) => Number.isInteger(n) && n > 0 && n !== process.pid);
+    return parseLsofPidList(out, process.pid);
   } catch {
     return [];
   }
@@ -211,9 +234,10 @@ function sleep(ms: number): Promise<void> {
  * (missing on many minimal Linux systems) and lets it retire its `claude` children. Daemons
  * from before the `shutdown` request do not answer it; for them, and as a backstop, the
  * `lsof -t` listeners get SIGTERM then SIGKILL. Never signals the current pid (test servers
- * share the vitest process).
+ * share the vitest process). Exported for the Defect 1 regression test
+ * (tests/lsof-busybox.test.ts).
  */
-async function replaceStaleListener(socketPath: string): Promise<void> {
+export async function replaceStaleListener(socketPath: string): Promise<void> {
   void appendDebugLog('daemon', 'replacing stale daemon', { socketPath });
   if (await requestDaemonShutdown(socketPath)) {
     void appendDebugLog('daemon', 'daemon accepted shutdown', { socketPath });

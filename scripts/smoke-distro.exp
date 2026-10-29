@@ -1,0 +1,104 @@
+#!/usr/bin/expect -f
+# PTY driver for scripts/smoke-distro-runner.sh. Usage: expect smoke-distro.exp PASS
+#
+# Types `??` into a real interactive zsh (the installed ZLE widget, `qq client`, the
+# daemon and the Ink TUI) and proves the buffer state by EXECUTING it:
+#   accept: `list files??`, Enter on row 1, Enter again runs it (zsh reports tldr missing)
+#   Esc:    `print -r -- restored-$((6*7))??`, Esc, Enter prints restored-42; only the
+#           restored buffer can print 42, since the typed line holds `$((6*7))`
+# Every step after the TUI opens is anchored on the zsh prompt redraw (`QQSMOKE% ...`),
+# never on text the TUI itself printed: that raced and lost keystrokes in the research
+# prototype. Esc is sent only after a candidate row is on screen (Esc during the
+# pre-candidate `thinking…` leaves the client running).
+#
+# Passes:
+#   default    XDG_RUNTIME_DIR unset (the socket is /tmp/qq-UID.sock by design)
+#   c-locale   LANG=C LC_ALL=C; non-ASCII glyphs render as `?`, so assert behaviour only
+#
+# Exit codes: 10 first prompt, 11 no candidate row, 12 accept redraw, 13 executed buffer,
+# 14 Esc redraw, 15 restored buffer did not run, 16 QueQue error text, 19 unknown pass.
+
+set pass [lindex $argv 0]
+set timeout 40
+log_user 1
+# An idle prompt: zsh ends it with control sequences (ESC[K, bracketed paste ESC[?2004h,
+# and on Debian keypad transmit mode ESC[?1h ESC=), so a bare `QQSMOKE% $` never matches.
+set prompt_idle {QQSMOKE[%#] (?:\x1b\[[0-9;?]*[A-Za-z]|\x1b[=>])*$}
+set queque_error {(queque|QueQue): [^\r\n]*}
+
+proc fail {code message} {
+  puts stderr "\nsmoke-distro.exp: $message (exit $code)"
+  exit $code
+}
+
+# Waits for a candidate row after `??`, failing on QueQue error text.
+proc wait_for_candidate {} {
+  global queque_error
+  expect {
+    -re $queque_error { fail 16 "QueQue printed an error: $expect_out(0,string)" }
+    "tldr z3" {}
+    timeout { fail 11 "timed out waiting for the candidate row tldr z3" }
+    eof { fail 11 "zsh exited before the candidate row appeared" }
+  }
+}
+
+# Not a Tcl `switch`: its `default` pattern would swallow every pass name.
+if {$pass eq "default"} {
+  log_file -noappend /out/pty-$pass.log
+  spawn env -u XDG_RUNTIME_DIR TERM=xterm-256color zsh -i
+} elseif {$pass eq "c-locale"} {
+  log_file -noappend /out/pty-$pass.log
+  spawn env LANG=C LC_ALL=C TERM=xterm-256color zsh -i
+} else {
+  fail 19 "unknown pass: $pass"
+}
+
+expect {
+  -re $prompt_idle {}
+  timeout { fail 10 "timed out waiting for the first zsh prompt" }
+  eof { fail 10 "zsh exited before the first prompt" }
+}
+
+# Accept: Enter on row 1 fills the buffer.
+send -- "list files??"
+wait_for_candidate
+send -- "\r"
+expect {
+  -re {QQSMOKE[%#] tldr z3  # } {}
+  -re $queque_error { fail 16 "QueQue printed an error: $expect_out(0,string)" }
+  timeout { fail 12 "timed out waiting for the prompt redraw with the accepted command" }
+  eof { fail 12 "zsh exited before the accepted command reached the buffer" }
+}
+send -- "\r"
+expect {
+  "command not found: tldr" {}
+  timeout { fail 13 "the accepted buffer did not execute (zsh never reported tldr missing)" }
+  eof { fail 13 "zsh exited before the accepted buffer ran" }
+}
+
+# Esc: the typed line comes back unchanged.
+expect {
+  -re $prompt_idle {}
+  timeout { fail 14 "timed out waiting for the prompt after the accepted command ran" }
+  eof { fail 14 "zsh exited after the accepted command ran" }
+}
+send -- {print -r -- restored-$((6*7))??}
+wait_for_candidate
+send -- "\033"
+expect {
+  -re {QQSMOKE[%#] print -r -- restored-} {}
+  -re $queque_error { fail 16 "QueQue printed an error: $expect_out(0,string)" }
+  timeout { fail 14 "timed out waiting for the prompt redraw with the restored line" }
+  eof { fail 14 "zsh exited before the line was restored" }
+}
+send -- "\r"
+expect {
+  "restored-42" {}
+  timeout { fail 15 "the restored buffer did not run (no restored-42)" }
+  eof { fail 15 "zsh exited before the restored buffer ran" }
+}
+
+expect -re $prompt_idle
+send -- "exit\r"
+expect eof
+exit 0
