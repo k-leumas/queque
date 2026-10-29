@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T02:07:28.849Z
-> Files: 603 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T17:26:46.608Z
+> Files: 618 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -727,7 +727,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~6180 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~7270 tok)
 - `STATE.md` — Project State (~3580 tok)
 
 ## .planning/debug/
@@ -910,10 +910,25 @@
 
 ## .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
-- `10-CONTEXT.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Context (~2564 tok)
+- `10-01-PLAN.md` — Artifacts this phase produces (~8944 tok)
+- `10-02-PLAN.md` — Artifacts this phase produces (~3548 tok)
+- `10-03-PLAN.md` — Artifacts this phase produces (~5803 tok)
+- `10-04-PLAN.md` — Artifacts this phase produces (~7397 tok)
+- `10-05-PLAN.md` — Artifacts this phase produces (~6769 tok)
+- `10-06-PLAN.md` — Artifacts this phase produces (~8032 tok)
+- `10-07-PLAN.md` — Artifacts this phase produces (~4522 tok)
+- `10-08-PLAN.md` — Artifacts this phase produces (~3645 tok)
+- `10-09-PLAN.md` — Artifacts this phase produces (~3273 tok)
+- `10-10-PLAN.md` — Artifacts this phase produces (~4637 tok)
+- `10-11-PLAN.md` — Artifacts this phase produces (~6980 tok)
+- `10-12-PLAN.md` — Artifacts this phase produces (~5039 tok)
+- `10-13-PLAN.md` — Artifacts this phase produces (~5222 tok)
+- `10-CONTEXT.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Context (~2801 tok)
 - `10-DISCUSS-CHECKPOINT.json` (~360 tok)
 - `10-DISCUSSION-LOG.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Discussion Log (~825 tok)
-- `10-RESEARCH.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Research (~21719 tok)
+- `10-PATTERNS.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Pattern Map (~3292 tok)
+- `10-RESEARCH.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Research (~22000 tok)
+- `COVERAGE.md` — API Coverage — PostHog Cloud EU public capture API, and the GitHub REST API (via `gh` in CI) (~735 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 

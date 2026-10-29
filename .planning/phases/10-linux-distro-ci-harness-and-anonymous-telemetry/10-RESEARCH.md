@@ -764,20 +764,27 @@ it('pins the exact allow-list keys', () => {
 | A11 | Default `run` shell in Alpine container is `sh` | CI | Low; set `shell: sh` explicitly |
 | A12 | `crypto.randomUUID` gives an RFC 4122 v4 | Telemetry | Very low |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Should missing `jq` be a ✗ (exit 1) in `qq doctor`?**
+All five questions were resolved after research (CONTEXT.md D-19..D-22, 2026-10-28) or are carried by a planned human checkpoint. Each item keeps its original text and gains a resolution note.
+
+1. **Should missing `jq` be a ✗ (exit 1) in `qq doctor`?** (RESOLVED)
    - What we know: `??` cannot work without jq (verified). D-17's principle is "exit 1 only on hard blockers that make `??` impossible", but its enumerated list omits jq.
    - Recommendation: treat it as ✗ under the D-17 principle. The planner should confirm with the user, or carry it as a decision note. A longer-term alternative is removing the jq dependency from the widget (out of scope).
-2. **GITHUB_TOKEN (+ enable repo setting) or the existing `secrets.GH_TOKEN` PAT for revert PRs?**
+   - **Resolution:** D-19. Missing `jq` is a hard blocker (exit 1); smoke and CI images install jq. Implemented by plan 10-03.
+2. **GITHUB_TOKEN (+ enable repo setting) or the existing `secrets.GH_TOKEN` PAT for revert PRs?** (RESOLVED)
    - GITHUB_TOKEN: least privilege, but the revert PR's CI needs "Approve workflows to run".
    - PAT: CI runs automatically, and its push triggers CI on `auto-revert/*` (guarded).
    - Recommendation: GITHUB_TOKEN + setting toggle (human checkpoint).
-3. **zsh version floor for ✗ vs ⚠.**
+   - **Resolution:** D-21. `GITHUB_TOKEN` with least privilege, not the PAT. The job is plan 10-07; the "Allow GitHub Actions to create and approve pull requests" toggle is the plan 10-12 Task 1 human checkpoint.
+3. **zsh version floor for ✗ vs ⚠.** (RESOLVED)
    - Oldest tested is 5.8.1 (Ubuntu 22.04). No documented minimum exists in the repo.
    - Recommendation: ✗ below 5.0, ⚠ for 5.0–5.7 ("untested"), ✓ ≥ 5.8 [ASSUMED]. Confirm with the user.
-4. **PostHog project creation (human):** create the EU project, enable "Discard client IP data", confirm GeoIP enrichment is not stored for `$geoip_disable` events, and copy the `phc_` key into `tsup.config.ts`. Until then ship an empty key (sending disabled).
-5. **Branch protection (human):** add required status check `ci-ok` to `main`. The current protection has PR reviews but no status checks; `enforce_admins` is false [VERIFIED: gh api]. Admin direct pushes to main bypass checks, so the auto-revert PR is the safety net there.
+   - **Resolution:** D-20, confirmed by the user. Fail below 5.0, warn for 5.0–5.7, pass at 5.8 or later. Implemented by plan 10-03 (`ZSH_FAIL_BELOW`, `ZSH_WARN_BELOW`).
+4. **PostHog project creation (human):** create the EU project, enable "Discard client IP data", confirm GeoIP enrichment is not stored for `$geoip_disable` events, and copy the `phc_` key into `tsup.config.ts`. Until then ship an empty key (sending disabled). (RESOLVED)
+   - **Resolution:** D-22. Builds bake an empty key until the human acts (plan 10-04). Project setup, the bake decision and the IP/GeoIP check are the plan 10-13 human checkpoints.
+5. **Branch protection (human):** add required status check `ci-ok` to `main`. The current protection has PR reviews but no status checks; `enforce_admins` is false [VERIFIED: gh api]. Admin direct pushes to main bypass checks, so the auto-revert PR is the safety net there. (RESOLVED)
+   - **Resolution:** carried by a planned human step. Plan 10-12 Task 3 makes `ci-ok` the required check on `main` after the drill PR is reviewed. Plan 10-13 runs after it.
 
 ## Environment Availability
 
