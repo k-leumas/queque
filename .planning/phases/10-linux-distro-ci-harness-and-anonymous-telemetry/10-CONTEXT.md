@@ -52,6 +52,12 @@ Out of scope: bash adapter (separate phase).
 ### qq doctor
 - **D-17:** Exit 1 only on hard blockers that make `??` impossible: zsh missing/too old, socket path over the platform limit, no writable runtime dir/socket location. Missing provider, odd TERM, non-UTF-8 locale and conflicting widgets are warnings (exit 0) — so smoke runs with fake-claude pass and assert exit 0.
 - **D-18:** Output is a ✓/⚠/✗ human checklist with a one-line fix hint per item, plus `--json` with a stable shape (consumed by smoke and by D-15 revert PR bodies; pasteable into bug reports).
+- **D-19 (post-research, 2026-10-28):** Missing `jq` is a hard blocker in `qq doctor` (exit 1) — the zsh widget depends on it, so `??` is impossible without it. Smoke/CI images install jq.
+- **D-20 (post-research):** zsh version thresholds: fail (exit 1) below 5.0, warn 5.0–5.7, pass ≥ 5.8 (oldest CI-tested, Ubuntu 22.04).
+
+### Auto-revert & telemetry key (post-research)
+- **D-21:** Auto-revert PRs are opened with `GITHUB_TOKEN` (least privilege), not the `GH_TOKEN` PAT. Requires the human to enable "Allow GitHub Actions to create and approve pull requests" (human checkpoint); CI on the revert PR needs a manual approve/re-run.
+- **D-22:** No PostHog key exists yet. Builds bake an **empty** key, and an empty key means the sender never sends (no network call). A human checkpoint at the end of the phase: create the PostHog EU project, enable "Discard client IP data", supply the `phc_` key, and verify `$ip`/GeoIP absence in the event view.
 
 ### Claude's Discretion
 - Exact pinned image tags for PR runs vs `:latest` nightly, and Alpine Node install details.
