@@ -371,14 +371,14 @@ Plans:
 **Estimate:** ~3–3.5 days.
 **Requirements**: TBD
 **Depends on:** Phase 9
-**Plans:** 13 plans
+**Plans:** 4/13 plans executed
 
 Plans:
 **Wave 1**
-- [ ] 10-01-PLAN.md — Tracer: one accepted `??` in alpine:3.24 from a `pnpm pack` install through a real zsh PTY (fake `claude` only); busybox lsof fix proven on Alpine; Esc, no-XDG and C-locale passes on alpine and debian; D-16 skip (wave 1)
-- [ ] 10-02-PLAN.md — D-04 stale-prewarm simulation (stopped, stale, killed children) and the widget `mktemp` guard (wave 1)
-- [ ] 10-03-PLAN.md — `qq doctor [--json]`: ✓/⚠/✗ checklist, exit 1 only for hard blockers incl. jq and zsh < 5.0 (wave 1)
-- [ ] 10-04-PLAN.md — Telemetry allow-list contract, uncached consent state with env kill switches, EU host and empty key baked at build time (wave 1)
+- [x] 10-01-PLAN.md — Tracer: one accepted `??` in alpine:3.24 from a `pnpm pack` install through a real zsh PTY (fake `claude` only); busybox lsof fix proven on Alpine; Esc, no-XDG and C-locale passes on alpine and debian; D-16 skip (wave 1)
+- [x] 10-02-PLAN.md — D-04 stale-prewarm simulation (stopped, stale, killed children) and the widget `mktemp` guard (wave 1)
+- [x] 10-03-PLAN.md — `qq doctor [--json]`: ✓/⚠/✗ checklist, exit 1 only for hard blockers incl. jq and zsh < 5.0 (wave 1)
+- [x] 10-04-PLAN.md — Telemetry allow-list contract, uncached consent state with env kill switches, EU host and empty key baked at build time (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 10-05-PLAN.md — `ci.yml` (doc-only filter, checks, `ci-ok` gate) and reusable `distro.yml` (six-distro vitest and smoke); smoke asserts doctor exit 0 (wave 2)
