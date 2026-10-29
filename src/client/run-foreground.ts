@@ -19,6 +19,11 @@ import { errorKindOf } from '../providers/error-kind.js';
 import { isAbortError } from '../providers/provider.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import { socketPathForUid } from '../shared/socket-path.js';
+import {
+  markTelemetryAsked,
+  readTelemetryState,
+  telemetryBlockedBy,
+} from '../shared/telemetry-config.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
@@ -31,6 +36,7 @@ import {
   PANE_SURFACE_CLEAR,
 } from './instant-frame.js';
 import { writeShellResult } from './result-writer.js';
+import { askTelemetryConsent, shouldAskTelemetryConsent } from './telemetry-consent.js';
 import { type QueryOutcomeRecord, reportClientTelemetry } from './telemetry-events.js';
 import { readToolHandoff } from './tool-handoff.js';
 import { syncZellijFloatingPaneHeight } from './zellij-pane-resize.js';
@@ -467,8 +473,35 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         }
       } finally {
         // Every path above has written its result and Ink has unmounted; the tty handle is
-        // still open (the outer finally closes it). Gated on the client's own env and config,
-        // capped at 250 ms, never throws. Plan 11's consent prompt goes immediately above.
+        // still open (the outer finally closes it).
+        // D-09: one-time consent ask after the first accepted `??`, on /dev/tty only. The
+        // accepted buffer is already in the result file and the inline reserve is cleared;
+        // the prompt erases its own line before the widget redraws. Never asked after Esc
+        // or an error, a second time, without a tty, or under DO_NOT_TRACK/QQ_TELEMETRY=0/CI.
+        if (outcome?.outcome === 'accepted' && ttyReadStream && ttyWriteStream) {
+          const ask = shouldAskTelemetryConsent({
+            outcome: outcome.outcome,
+            state: readTelemetryState(),
+            blockedBy: telemetryBlockedBy(),
+            hasTty: true,
+          });
+          if (ask) {
+            const answer = await askTelemetryConsent({
+              input: ttyReadStream,
+              output: ttyWriteStream,
+            });
+            try {
+              markTelemetryAsked(answer);
+              await appendDebugLog('client', 'consent saved', { enabled: answer });
+            } catch (error) {
+              // No message text: it carries the config path.
+              await appendDebugLog('client', 'consent not saved', {
+                error: error instanceof Error ? error.name : 'unknown',
+              });
+            }
+          }
+        }
+        // Gated on the client's own env and config, capped at 250 ms, never throws.
         await reportClientTelemetry({ socketPath, record: outcome, errors: telemetryErrors });
       }
     } else {

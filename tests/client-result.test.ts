@@ -57,6 +57,27 @@ vi.mock('../src/client/telemetry-events.js', () => ({
   reportClientTelemetry: reportClientTelemetryMock,
 }));
 
+// The consent ask (10-11, D-09): the real gate (shouldAskTelemetryConsent) and the real env
+// gate (telemetryBlockedBy) run; the tty prompt and the config read/write are mocked, because
+// the node:fs mock below has no readFileSync and tests must never touch the real config.
+// Default state is asked: true, so tests outside the consent describe never see a prompt.
+const consentMock = vi.hoisted(() => ({
+  askTelemetryConsent: vi.fn().mockResolvedValue(false),
+  readTelemetryState: vi.fn(() => ({ enabled: false, asked: true })),
+  markTelemetryAsked: vi.fn(),
+}));
+
+vi.mock('../src/client/telemetry-consent.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../src/client/telemetry-consent.js')>()),
+  askTelemetryConsent: consentMock.askTelemetryConsent,
+}));
+
+vi.mock('../src/shared/telemetry-config.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../src/shared/telemetry-config.js')>()),
+  readTelemetryState: consentMock.readTelemetryState,
+  markTelemetryAsked: consentMock.markTelemetryAsked,
+}));
+
 // ---------------------------------------------------------------------------
 // References to the real (un-mocked) fs/promises functions, captured before
 // the vi.mock factory runs. These are used inside the FIFO-path describe block
@@ -1433,5 +1454,185 @@ describe('runForegroundClient: telemetry outcome', () => {
     await runForegroundClient({ requestFile, resultFile, resultMode });
     expect(fs.existsSync(resultFile)).toBe(true);
     expect(reportClientTelemetryMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('runForegroundClient: telemetry consent (D-09)', () => {
+  let tmpDir: string;
+  let requestFile: string;
+  let resultFile: string;
+  /** The result file's JSON at the moment the consent prompt ran. */
+  let resultAtAsk: unknown[];
+
+  type RenderOptions = { stdin?: unknown; stdout?: unknown };
+  type InkApp = { unmount: ReturnType<typeof vi.fn> };
+
+  beforeEach(async () => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-fg-consent-'));
+    requestFile = path.join(tmpDir, 'request.json');
+    resultFile = path.join(tmpDir, 'result.json');
+    fs.writeFileSync(
+      requestFile,
+      `${JSON.stringify({
+        version: 1,
+        ttyPath: '/dev/tty',
+        cwd: '/home/user',
+        shellPid: 1234,
+        lbuffer: 'list files',
+        rbuffer: '',
+      })}\n`,
+    );
+    // The env gates are read from the real process env: clear them so a CI run (CI=true)
+    // tests the same paths as a local one; individual cases set them again.
+    vi.stubEnv('CI', '');
+    vi.stubEnv('DO_NOT_TRACK', '');
+    vi.stubEnv('QQ_TELEMETRY', '');
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    fetchCandidatesMock.mockReset();
+    fetchCandidatesMock.mockResolvedValue([{ command: 'tldr z3', explanation: 'z3 examples' }]);
+    reportClientTelemetryMock.mockReset();
+    reportClientTelemetryMock.mockResolvedValue(undefined);
+    resultAtAsk = [];
+    consentMock.readTelemetryState.mockReset();
+    consentMock.readTelemetryState.mockReturnValue({ enabled: false, asked: false });
+    consentMock.markTelemetryAsked.mockReset();
+    consentMock.askTelemetryConsent.mockReset();
+    consentMock.askTelemetryConsent.mockImplementation(async () => {
+      resultAtAsk.push(
+        fs.existsSync(resultFile) ? JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim()) : null,
+      );
+      return false;
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    inkMock.autoSelect = true;
+    consentMock.readTelemetryState.mockReset();
+    consentMock.readTelemetryState.mockReturnValue({ enabled: false, asked: true });
+    consentMock.askTelemetryConsent.mockReset();
+    consentMock.askTelemetryConsent.mockResolvedValue(false);
+    consentMock.markTelemetryAsked.mockReset();
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('asks once on the tty streams after the result is written and Ink unmounted, then reports', async () => {
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+
+    expect(consentMock.askTelemetryConsent).toHaveBeenCalledTimes(1);
+    const options = vi.mocked(render).mock.calls[renderCallIndex]?.[1] as RenderOptions;
+    const io = consentMock.askTelemetryConsent.mock.calls[0]?.[0] as {
+      input: unknown;
+      output: unknown;
+    };
+    expect(io.input).toBe(options.stdin);
+    expect(io.output).toBe(options.stdout);
+    // The accepted command is already in the result file when the question shows.
+    expect(resultAtAsk[0]).toMatchObject({ kind: 'replace-buffer', lbuffer: 'tldr z3' });
+
+    const app = vi.mocked(render).mock.results[renderCallIndex]?.value as InkApp;
+    const unmountOrder = app.unmount.mock.invocationCallOrder[0] ?? Number.POSITIVE_INFINITY;
+    const askOrder = consentMock.askTelemetryConsent.mock.invocationCallOrder[0] ?? 0;
+    const markOrder = consentMock.markTelemetryAsked.mock.invocationCallOrder[0] ?? 0;
+    const reportOrder = reportClientTelemetryMock.mock.invocationCallOrder[0] ?? 0;
+    expect(unmountOrder).toBeLessThan(askOrder);
+    expect(askOrder).toBeLessThan(markOrder);
+    expect(markOrder).toBeLessThan(reportOrder);
+    expect(consentMock.markTelemetryAsked).toHaveBeenCalledTimes(1);
+    expect(consentMock.markTelemetryAsked).toHaveBeenCalledWith(false);
+  });
+
+  it('a yes is saved as yes', async () => {
+    consentMock.askTelemetryConsent.mockResolvedValue(true);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(consentMock.markTelemetryAsked).toHaveBeenCalledWith(true);
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('never asks after Esc', async () => {
+    inkMock.autoSelect = false;
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderCallIndex = vi.mocked(render).mock.calls.length;
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    await vi.waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalledTimes(1));
+    const loading = vi.mocked(render).mock.calls[renderCallIndex]?.[0] as unknown as {
+      props: { onCancel: () => Promise<void> };
+    };
+    await loading.props.onCancel();
+    await run;
+
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('never asks after an error outcome', async () => {
+    fetchCandidatesMock.mockRejectedValue(new Error('provider down'));
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
+  });
+
+  it('never asks a second time (asked: true)', async () => {
+    consentMock.readTelemetryState.mockReturnValue({ enabled: false, asked: true });
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['DO_NOT_TRACK', '1'],
+    ['CI', '1'],
+    ['QQ_TELEMETRY', '0'],
+  ])('never asks when %s=%s', async (name, value) => {
+    vi.stubEnv(name, value);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('a config write failure is logged and swallowed; the report still runs', async () => {
+    const { TelemetryConfigWriteError } = await import('../src/shared/telemetry-config.js');
+    consentMock.markTelemetryAsked.mockImplementation(() => {
+      throw new TelemetryConfigWriteError('/home/alice/.config/qq/config.json', 'EACCES');
+    });
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await expect(
+      runForegroundClient({ requestFile, resultFile, resultMode: 'llm' }),
+    ).resolves.toBeUndefined();
+    expect(consentMock.askTelemetryConsent).toHaveBeenCalledTimes(1);
+    expect(consentMock.markTelemetryAsked).toHaveBeenCalledTimes(1);
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toMatchObject({
+      kind: 'replace-buffer',
+      lbuffer: 'tldr z3',
+    });
+  });
+
+  it.each([
+    'cancel',
+    'replace-buffer-fixture',
+  ] as const)('the %s result mode never asks', async (resultMode) => {
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode });
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
   });
 });

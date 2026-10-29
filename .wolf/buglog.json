@@ -6796,38 +6796,6 @@
       "last_seen": "2026-10-22T02:59:07.000Z"
     },
     {
-      "id": "bug-414",
-      "timestamp": "2026-10-29T02:07:21.715Z",
-      "error_message": "Null/undefined access in ",
-      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md",
-      "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check)",
-      "tags": [
-        "auto-detected",
-        "null-safety",
-        "md"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T02:07:21.715Z"
-    },
-    {
-      "id": "bug-415",
-      "timestamp": "2026-10-29T02:07:28.874Z",
-      "error_message": "Incorrect value in code",
-      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md",
-      "root_cause": "Had `\\r`",
-      "fix": "Changed to `-re {QQSMOKE[%#] tldr z3  # }`",
-      "tags": [
-        "auto-detected",
-        "wrong-value",
-        "md"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T02:07:28.874Z"
-    },
-    {
       "id": "bug-416",
       "timestamp": "2026-10-29T17:20:20.703Z",
       "error_message": "Significant refactor of ",
@@ -6842,166 +6810,6 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T17:20:20.703Z"
-    },
-    {
-      "id": "bug-417",
-      "timestamp": "2026-10-29T17:25:10.009Z",
-      "error_message": "Significant refactor of ",
-      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md",
-      "root_cause": "6 lines replaced/restructured",
-      "fix": "Rewrote 14→21 lines (6 removed)",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "md"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T17:25:10.009Z"
-    },
-    {
-      "id": "bug-418",
-      "timestamp": "2026-10-29T17:26:44.359Z",
-      "error_message": "Wrong reference: artifacts should be D",
-      "file": ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-13-PLAN.md",
-      "root_cause": "Used \"artifacts\" instead of \"D\"",
-      "fix": "Changed artifacts → D",
-      "tags": [
-        "auto-detected",
-        "wrong-reference",
-        "md"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T17:26:44.359Z"
-    },
-    {
-      "id": "bug-419",
-      "timestamp": "2026-10-29T19:39:54.426Z",
-      "error_message": "Wrong return value",
-      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/src/contracts/doctor.ts",
-      "root_cause": "Was returning: 0;",
-      "fix": "Now returns: report.checks.some((check) => check.status === 'fa",
-      "tags": [
-        "auto-detected",
-        "return-value",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:39:54.427Z"
-    },
-    {
-      "id": "bug-420",
-      "timestamp": "2026-10-29T19:42:50.858Z",
-      "error_message": "Null/undefined access in ",
-      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/src/cli/commands/doctor.ts",
-      "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check)",
-      "tags": [
-        "auto-detected",
-        "null-safety",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:42:50.858Z"
-    },
-    {
-      "id": "bug-421",
-      "timestamp": "2026-10-29T19:42:58.236Z",
-      "error_message": "Function not marked async",
-      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/src/cli/main.ts",
-      "root_cause": "Function uses await but wasn't declared async",
-      "fix": "Added async modifier",
-      "tags": [
-        "auto-detected",
-        "async-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:42:58.236Z"
-    },
-    {
-      "id": "bug-422",
-      "timestamp": "2026-10-29T19:43:00.718Z",
-      "error_message": "Missing error handling in unknown",
-      "file": ".claude/worktrees/agent-a5ae9ba1581c27931/src/shared/qq-config.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
-      "fix": "Added try/catch block",
-      "tags": [
-        "auto-detected",
-        "error-handling",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:43:00.718Z"
-    },
-    {
-      "id": "bug-423",
-      "timestamp": "2026-10-29T19:43:22.238Z",
-      "error_message": "Missing await",
-      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/tests/doctor.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
-      "fix": "Added await to async call",
-      "tags": [
-        "auto-detected",
-        "async-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:43:22.238Z"
-    },
-    {
-      "id": "bug-424",
-      "timestamp": "2026-10-29T19:43:40.480Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/tests/doctor.test.ts",
-      "root_cause": "5 lines replaced/restructured",
-      "fix": "Rewrote 12→21 lines (5 removed)",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:43:40.480Z"
-    },
-    {
-      "id": "bug-425",
-      "timestamp": "2026-10-29T19:43:40.957Z",
-      "error_message": "Wrong reference: report should be zshOk",
-      "file": ".claude/worktrees/agent-ae7eae29e6f46af10/tests/doctor.test.ts",
-      "root_cause": "Used \"report\" instead of \"zshOk\"",
-      "fix": "Changed report → zshOk",
-      "tags": [
-        "auto-detected",
-        "wrong-reference",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:43:40.958Z"
-    },
-    {
-      "id": "bug-426",
-      "timestamp": "2026-10-29T19:46:54.258Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-ae4881a9c313c4870/src/daemon/bootstrap.ts",
-      "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 15→27 lines (3 removed) | Also: * share the vitest process).; async function replaceStaleListener(",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 2,
-      "last_seen": "2026-10-29T19:46:54.787Z"
     },
     {
       "id": "bug-427",
@@ -7019,70 +6827,6 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T19:47:21Z"
-    },
-    {
-      "id": "bug-428",
-      "timestamp": "2026-10-29T19:48:51.088Z",
-      "error_message": "Type error",
-      "file": ".claude/worktrees/agent-ae4881a9c313c4870/src/daemon/bootstrap.ts",
-      "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation",
-      "tags": [
-        "auto-detected",
-        "type-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:48:51.088Z"
-    },
-    {
-      "id": "bug-429",
-      "timestamp": "2026-10-29T19:52:45.470Z",
-      "error_message": "Incorrect value in code",
-      "file": ".claude/worktrees/agent-ae4881a9c313c4870/scripts/smoke-distro.sh",
-      "root_cause": "Had \"$OUT_DIR/qq-debug.log\"",
-      "fix": "Changed to \"$OUT_DIR\"",
-      "tags": [
-        "auto-detected",
-        "wrong-value",
-        "sh"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:52:45.470Z"
-    },
-    {
-      "id": "bug-430",
-      "timestamp": "2026-10-29T19:55:17.154Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-ae4881a9c313c4870/scripts/smoke-distro.exp",
-      "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 3→3 lines (3 removed)",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "exp"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T19:55:17.154Z"
-    },
-    {
-      "id": "bug-431",
-      "timestamp": "2026-10-29T20:21:43.150Z",
-      "error_message": "Significant refactor of ",
-      "file": "tests/lsof-busybox.test.ts",
-      "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 15→21 lines (2 removed) | Also: `printf '%s\\\\t/bin/busybox\\\\t%s\\\\t/dev/null\\\\n' ${; `printf '%s\\\\t/bin/busybox\\\\t%s\\\\tpipe:[4272030]\\\\",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 2,
-      "last_seen": "2026-10-29T20:22:52.610Z"
     },
     {
       "id": "bug-428",
@@ -7128,308 +6872,159 @@
       "last_seen": "2026-10-29T20:24:54Z"
     },
     {
-      "id": "bug-434",
-      "timestamp": "2026-10-29T20:30:42.518Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-ac553f02e4bd0e888/scripts/smoke-distro-runner.sh",
-      "root_cause": "6 lines replaced/restructured",
-      "fix": "Rewrote 7→13 lines (6 removed)",
+      "id": "bug-453",
+      "timestamp": "2026-10-29T19:50:00Z",
+      "error_message": "busybox lsof -t PATH lists every open file; replaceStaleListener signalled every pid (daemon-bootstrap.test.ts printed Terminated and killed the alpine container)",
+      "file": "src/daemon/bootstrap.ts",
+      "root_cause": "On Alpine, lsof is busybox: it ignores `-t <path>` and prints `PID\\t/bin/busybox\\tFD\\tTARGET` for every open file of every process. listenerPids split on whitespace and parseInt-ed every token, so replaceStaleListener SIGTERMed and SIGKILLed every pid, PID 1 included.",
+      "fix": "parseLsofPidList accepts the output only when every non-empty line is ^\\d+$; otherwise it returns [] and logs `lsof output ignored` {lines}. The IPC shutdown-first order and the SIGTERM/SIGKILL backstop are unchanged. Regression: tests/lsof-busybox.test.ts (sacrificial child) and pnpm test:distro alpine:3.24.",
       "tags": [
-        "auto-detected",
-        "refactor",
-        "sh"
+        "lsof",
+        "busybox",
+        "alpine",
+        "daemon",
+        "signal",
+        "linux",
+        "phase-10",
+        "defect-1"
+      ],
+      "related_bugs": [
+        "bug-428"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T19:50:00Z"
+    },
+    {
+      "id": "bug-454",
+      "timestamp": "2026-10-28T12:00:00Z",
+      "error_message": "jq is a silent hard runtime dependency of the zsh widget: without it 7 zsh-widget cases and 1 client-result case fail on any distro, and ?? cannot work",
+      "file": "scripts/ci/install-distro-deps.sh, src/cli/commands/doctor.ts",
+      "root_cause": "shell/zsh/queque.zsh builds request JSON and parses the result with jq, but nothing declared or checked it; release CI passed only because its runner apt-installs jq, and minimal distro images have none",
+      "fix": "install-distro-deps.sh installs jq in every CI and smoke image, and `qq doctor` reports a missing jq as a hard blocker (D-19: fail, exit 1, with the per-distro install hint)",
+      "tags": [
+        "jq",
+        "zsh",
+        "widget",
+        "dependency",
+        "doctor",
+        "linux",
+        "phase-10",
+        "defect-2"
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-10-29T20:30:42.518Z"
+      "last_seen": "2026-10-29T19:45:00Z"
     },
     {
-      "id": "bug-435",
-      "timestamp": "2026-10-29T20:35:14.794Z",
-      "error_message": "Missing error handling in unknown",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/contracts/ipc.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
-      "fix": "Added try/catch block",
+      "id": "bug-455",
+      "timestamp": "2026-10-29T19:42:00Z",
+      "error_message": "mktemp -d failed on a full /tmp; the widget wrote /request.json",
+      "file": "shell/zsh/queque.zsh",
+      "root_cause": "tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX) was unguarded; an empty tmpdir made req_file /request.json and the tool handoff target /, and the client then failed with ENOENT",
+      "fix": "silence mktemp stderr and, before chmod 700, return 0 on an empty or non-directory tmpdir: clear the instant frame if painted, restore LBUFFER/RBUFFER, zle -M 'queque: cannot create a temp dir in /tmp'",
       "tags": [
-        "auto-detected",
-        "error-handling",
-        "ts"
+        "zsh",
+        "widget",
+        "mktemp",
+        "tmp",
+        "linux",
+        "phase-10",
+        "defect-3"
       ],
       "related_bugs": [],
       "occurrences": 1,
-      "last_seen": "2026-10-29T20:35:14.794Z"
+      "last_seen": "2026-10-29T19:42:00Z"
     },
     {
-      "id": "bug-436",
-      "timestamp": "2026-10-29T20:35:26.257Z",
-      "error_message": "Type error",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/server.ts",
-      "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation",
+      "id": "bug-456",
+      "timestamp": "2026-10-29T19:45:00Z",
+      "error_message": "smoke-distro.exp: timed out waiting for the first zsh prompt (exit 10); on debian:13 exit 14 waiting for the prompt",
+      "file": "scripts/smoke-distro.exp",
+      "root_cause": "zsh ends the prompt with ESC[K ESC[?2004h (and on Debian ESC[?1h ESC= from /etc/zsh/zshrc smkx), so `QQSMOKE[%#] $` never matches",
+      "fix": "prompt_idle regex `QQSMOKE[%#] (?:\\x1b\\[[0-9;?]*[A-Za-z]|\\x1b[=>])*$`",
       "tags": [
-        "auto-detected",
-        "type-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:35:26.257Z"
-    },
-    {
-      "id": "bug-437",
-      "timestamp": "2026-10-29T20:35:26.734Z",
-      "error_message": "Null/undefined access in ",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/server.ts",
-      "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check)",
-      "tags": [
-        "auto-detected",
-        "null-safety",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:35:26.734Z"
-    },
-    {
-      "id": "bug-438",
-      "timestamp": "2026-10-29T20:35:50.073Z",
-      "error_message": "Missing error handling in startFinalFlush",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/cli/commands/daemon.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
-      "fix": "Added try/catch block",
-      "tags": [
-        "auto-detected",
-        "error-handling",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:35:50.073Z"
-    },
-    {
-      "id": "bug-439",
-      "timestamp": "2026-10-29T20:36:35.927Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/cli/commands/daemon.ts",
-      "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 4→9 lines (3 removed)",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:36:35.927Z"
-    },
-    {
-      "id": "bug-440",
-      "timestamp": "2026-10-29T20:39:59.219Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/server.ts",
-      "root_cause": "2 lines replaced/restructured",
-      "fix": "Rewrote 3→4 lines (2 removed)",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:39:59.219Z"
-    },
-    {
-      "id": "bug-441",
-      "timestamp": "2026-10-29T20:40:13.847Z",
-      "error_message": "Type error",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/fetch-client.ts",
-      "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation",
-      "tags": [
-        "auto-detected",
-        "type-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:40:13.847Z"
-    },
-    {
-      "id": "bug-442",
-      "timestamp": "2026-10-29T20:40:14.691Z",
-      "error_message": "Missing error handling in unknown",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/fetch-client.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
-      "fix": "Added try/catch block",
-      "tags": [
-        "auto-detected",
-        "error-handling",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:40:14.691Z"
-    },
-    {
-      "id": "bug-443",
-      "timestamp": "2026-10-29T20:40:15.241Z",
-      "error_message": "Incorrect value in code",
-      "file": ".claude/worktrees/agent-a1829366c18d03d77/src/daemon/fetch-client.ts",
-      "root_cause": "Had '../providers/provider.js'",
-      "fix": "Changed to '../providers/error-kind.js'",
-      "tags": [
-        "auto-detected",
-        "wrong-value",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:40:15.241Z"
-    },
-    {
-      "id": "bug-444",
-      "timestamp": "2026-10-29T20:58:18.774Z",
-      "error_message": "Function not marked async",
-      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/src/cli/main.ts",
-      "root_cause": "Function uses await but wasn't declared async",
-      "fix": "Added async modifier",
-      "tags": [
-        "auto-detected",
-        "async-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T20:58:18.774Z"
-    },
-    {
-      "id": "bug-445",
-      "timestamp": "2026-10-29T21:00:51.809Z",
-      "error_message": "Missing await",
-      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/tests/doctor.test.ts",
-      "root_cause": "Async call without await — returned Promise instead of value",
-      "fix": "Added await to async call",
-      "tags": [
-        "auto-detected",
-        "async-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:00:51.809Z"
-    },
-    {
-      "id": "bug-446",
-      "timestamp": "2026-10-29T21:00:59.431Z",
-      "error_message": "Type error",
-      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/tests/doctor.test.ts",
-      "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation",
-      "tags": [
-        "auto-detected",
-        "type-fix",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:00:59.431Z"
-    },
-    {
-      "id": "bug-447",
-      "timestamp": "2026-10-29T21:01:10.995Z",
-      "error_message": "Null/undefined access in ",
-      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/src/cli/commands/doctor.ts",
-      "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check)",
-      "tags": [
-        "auto-detected",
-        "null-safety",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:01:10.995Z"
-    },
-    {
-      "id": "bug-448",
-      "timestamp": "2026-10-29T21:02:04.707Z",
-      "error_message": "Missing error handling in checkTelemetry",
-      "file": ".claude/worktrees/agent-ac536c4d7fd953b39/src/cli/commands/doctor.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
-      "fix": "Added try/catch block",
-      "tags": [
-        "auto-detected",
-        "error-handling",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:02:04.707Z"
-    },
-    {
-      "id": "bug-449",
-      "timestamp": "2026-10-29T21:03:21.858Z",
-      "error_message": "Missing error handling in function",
-      "file": ".claude/worktrees/agent-a4306bef48ba4c3c1/tests/client-result.test.ts",
-      "root_cause": "Code path had no error handling — exceptions would propagate uncaught",
-      "fix": "Added try/catch block",
-      "tags": [
-        "auto-detected",
-        "error-handling",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:03:21.858Z"
-    },
-    {
-      "id": "bug-450",
-      "timestamp": "2026-10-29T21:05:13.688Z",
-      "error_message": "Significant refactor of ",
-      "file": ".claude/worktrees/agent-a356850a1a0e59bc3/scripts/ci/auto-revert.sh",
-      "root_cause": "3 lines replaced/restructured",
-      "fix": "Rewrote 9→14 lines (3 removed)",
-      "tags": [
-        "auto-detected",
-        "refactor",
-        "sh"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:05:13.688Z"
-    },
-    {
-      "id": "bug-451",
-      "timestamp": "2026-10-29T21:05:20.533Z",
-      "error_message": "Incorrect value in code",
-      "file": ".claude/worktrees/agent-a4306bef48ba4c3c1/src/client/run-foreground.ts",
-      "root_cause": "Had './tool-handoff.js'",
-      "fix": "Changed to './telemetry-events.js'",
-      "tags": [
-        "auto-detected",
-        "wrong-value",
-        "ts"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-10-29T21:05:20.533Z"
-    },
-    {
-      "id": "bug-452",
-      "timestamp": "2026-10-29T21:05:21.262Z",
-      "error_message": "Type error",
-      "file": ".claude/worktrees/agent-a4306bef48ba4c3c1/src/client/run-foreground.ts",
-      "root_cause": "Missing or incorrect type annotation",
-      "fix": "Added type assertion/annotation | Also: outcome = { outcome: 'error', candidateCount: 0, errorKind: ",
-      "tags": [
-        "auto-detected",
-        "type-fix",
-        "ts"
+        "expect",
+        "zsh",
+        "prompt",
+        "smoke",
+        "debian",
+        "phase-10"
       ],
       "related_bugs": [],
       "occurrences": 2,
-      "last_seen": "2026-10-29T21:05:49.773Z"
+      "last_seen": "2026-10-29T19:56:00Z"
+    },
+    {
+      "id": "bug-457",
+      "timestamp": "2026-10-29T21:00:00Z",
+      "error_message": "RED commits landed with another plan's message (10-10 got \"test(10-07): add failing tests for the smoke auto-revert script\", 10-09 got a test(10-08) subject)",
+      "file": "(git metadata) 10-10 commit 29c4292 amended to 8840634; 10-09 RED commit amended",
+      "root_cause": "parallel wave-3 worktree agents share one session scratchpad; another agent overwrote a generic scratchpad/msg1.txt between Write and git commit -F",
+      "fix": "amend with a message file in an agent-unique scratchpad subdirectory or plan-prefixed name; check git log -1 after each commit; the orchestrator checks that base..branch subjects carry (NN-MM) before merging",
+      "tags": [
+        "gsd",
+        "worktree",
+        "parallel",
+        "scratchpad",
+        "commit-message",
+        "phase-10"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-10-29T21:00:00Z"
+    },
+    {
+      "id": "bug-458",
+      "timestamp": "2026-10-29T20:50:00Z",
+      "error_message": "jq: Unknown option --paginate (tests/fixtures/auto-revert/gh test double)",
+      "file": "tests/fixtures/auto-revert/gh",
+      "root_cause": "the gh double logged its argv with `jq -n '$ARGS.positional' --args \"$@\"`, but jq keeps parsing later --flags (gh's --paginate) as its own options",
+      "fix": "encode each argument with `printf '%s' \"$a\" | jq -Rs .` and slurp the lines with `jq -sc .`",
+      "tags": [
+        "jq",
+        "test-double",
+        "gh",
+        "auto-revert",
+        "phase-10"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:50:00Z"
+    },
+    {
+      "id": "bug-459",
+      "timestamp": "2026-10-29T20:40:00Z",
+      "error_message": "it.each test titles showed an Error object instead of the intended error kind (`%s → %s` in tests/error-kind.test.ts)",
+      "file": "tests/error-kind.test.ts",
+      "root_cause": "vitest formats the placeholders left to right over the row, so the second %s printed the second column (an Error), not the kind",
+      "fix": "use a single %s label column first in each row",
+      "tags": [
+        "vitest",
+        "it.each",
+        "test-title",
+        "phase-10"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T20:40:00Z"
+    },
+    {
+      "id": "bug-460",
+      "timestamp": "2026-10-29T21:25:00Z",
+      "error_message": "alpine smoke consent pass: config.json held the no, but qq-debug.log had no `consent saved` line",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "the consent log lines used `void appendDebugLog(...)`; main.ts calls process.exit right after runForegroundClient returns, so the async append was lost",
+      "fix": "await appendDebugLog for the consent saved/not saved lines (appendDebugLog never throws, so the shell result is unaffected)",
+      "tags": [
+        "debug-log",
+        "process-exit",
+        "telemetry",
+        "consent",
+        "phase-10"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-29T21:25:00Z"
     }
   ]
 }
