@@ -1177,6 +1177,33 @@ describe('instant frame', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Phase 10 (10-10): the client reports zsh major.minor in its environment shape, but
+// `$ZSH_VERSION` is not exported. The widget exports it once, before both launches.
+// ---------------------------------------------------------------------------
+
+describe('QQ_ZSH_VERSION export', () => {
+  it('exports the zsh version after the session dir and before both client launches', () => {
+    const body = questionWidgetBody();
+    const exportLine = 'export QQ_ZSH_VERSION="$ZSH_VERSION"';
+    const exported = body.indexOf(exportLine);
+    expect(exported).toBeGreaterThan(0);
+    expect(body.indexOf(exportLine, exported + 1)).toBe(-1);
+
+    const sessionGuard = body.indexOf('zle -M "queque: cannot create a temp dir in /tmp"');
+    const zellijBranch = body.indexOf('if [[ -n "$ZELLIJ" ]]; then');
+    const zellijLaunch = body.search(/^\s+zellij run --floating/m);
+    const inlineLaunch = body.indexOf(
+      'client --request-file "$req_file" --result-file "$result_file"',
+    );
+    expect(sessionGuard).toBeGreaterThan(0);
+    expect(exported).toBeGreaterThan(sessionGuard);
+    expect(zellijBranch).toBeGreaterThan(exported);
+    expect(zellijLaunch).toBeGreaterThan(exported);
+    expect(inlineLaunch).toBeGreaterThan(exported);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Phase 10 Defect 3: a failed `mktemp -d` (full or unwritable /tmp) must not turn the
 // session dir into `/`, so request.json and the tool handoff never land at the root.
 // ---------------------------------------------------------------------------

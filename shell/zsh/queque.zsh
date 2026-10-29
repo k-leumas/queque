@@ -410,6 +410,11 @@ JSON
   _qq_write_tool_handoff "$tmpdir"
   _qq_log "tool handoff written"
 
+  # Phase 10 telemetry: $ZSH_VERSION is not exported, so the client cannot read it. Export
+  # it like QQ_RESULT_FILE: both the inline child and the Zellij pane inherit it, and the
+  # client reports major.minor only (and only with telemetry on).
+  export QQ_ZSH_VERSION="$ZSH_VERSION"
+
   if [[ -n "$ZELLIJ" ]]; then
     # ---- Zellij path: FIFO + floating pane ----
     local fifo_path="$tmpdir/result.fifo"
