@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T16:40:40.977Z
-> Files: 555 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T17:12:54.398Z
+> Files: 557 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -641,7 +641,11 @@
 
 ## .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/
 
-- `261030-en8-PLAN.md` — /*.test.ts`. tsconfig includes tests. There is no YAML parser dependency, so extract `images:` with  (~4947 tok)
+- `261030-en8-PLAN.md` — /*.test.ts`. tsconfig includes tests. There is no YAML parser dependency, so extract `images:` with (~4947 tok)
+
+## .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/
+
+- `261030-fdr-PLAN.md` — Quick plan: minimal README (H1, badges, pitch, gif, Install, Choose a provider, Usage, More) with detail moved verbatim to docs/INSTALL, PROVIDERS, USAGE, PRIVACY (+ telemetry), CONFIGURATION; README links docs via absolute GitHub blob URLs (npm ships README alone); tests/docs-links.test.ts guards links/anchors; check-readme-moved.mjs proves no old line lost vs b45f6db (~8700 tok)
 
 ## .planning/research/
 

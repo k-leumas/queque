@@ -3712,3 +3712,7 @@
 | 10:47 | Session end: 16 writes across 12 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 3 reads | ~32297 tok |
 | 10:52 | closed auto-revert PR #17 unmerged (debian:13 flake on a5bc52e), deleted auto-revert/main-88d050b1 | github | done | ~300 |
 | 10:53 | Session end: 16 writes across 12 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 3 reads | ~32297 tok |
+| 11:04 | Session end: 16 writes across 12 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 3 reads | ~32297 tok |
+| 11:07 | Session end: 16 writes across 12 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 3 reads | ~32297 tok |
+| 11:12 | Created .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md | — | ~9264 |
+| 11:12 | Edited .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md | "https://github.com/k-leum" → "#anchor" | ~78 |
