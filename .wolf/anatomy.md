@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:20:18.932Z
-> Files: 553 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:21:28.966Z
+> Files: 554 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -511,6 +511,7 @@
 - `10-DISCUSSION-LOG.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Discussion Log (~825 tok)
 - `10-PATTERNS.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Pattern Map (~3292 tok)
 - `10-RESEARCH.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Research (~22000 tok)
+- `10-REVIEW-FIX.md` — Phase 10: Code Review Fix Report (~1991 tok)
 - `10-REVIEW.md` — Phase 10: Code Review Report (~3965 tok)
 - `10-VERIFICATION.md` — Phase 10: Linux distro CI harness and anonymous telemetry Verification Report (~6316 tok)
 - `COVERAGE.md` — API Coverage — PostHog Cloud EU public capture API, and the GitHub REST API (via `gh` in CI) (~735 tok)

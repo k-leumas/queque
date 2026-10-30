@@ -3644,3 +3644,6 @@
 | 07:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr06.json | — | ~225 |
 | 07:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr06.txt | — | ~102 |
 | 07:20 | 10-REVIEW-FIX WR-06: smoke-distro clears stale doctor.json/doctor.txt (host script + runner) | scripts/smoke-distro.sh, scripts/smoke-distro-runner.sh | fixed, bash -n + shellcheck ok | ~1500 |
+| 07:21 | Created .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW-FIX.md | — | ~2123 |
+| 07:21 | 10-REVIEW-FIX session: 7/7 in-scope findings fixed (f4daecd..a1eba67), REVIEW-FIX.md written (not committed); cerebrum +2 Do-Not-Repeat | .planning/phases/10-*/10-REVIEW-FIX.md, .wolf/cerebrum.md | done, 247 tests pass | ~2000 |
+| 07:22 | committed phase 10 code review fix report | .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW-FIX.md | 7/7 fixed | ~500 |
