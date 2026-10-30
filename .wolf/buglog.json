@@ -7350,6 +7350,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:20:23.000Z"
+    },
+    {
+      "id": "bug-471",
+      "timestamp": "2026-10-30T16:23:38Z",
+      "error_message": "Release workflow 'Homebrew install smoke' exit 13: 'QueQue returned an error after candidate fetch' right after 'QueQue: send anonymous usage and error counts (no commands, prompts or paths)? [y/N]' (run 41072733118)",
+      "file": "scripts/docker-homebrew-smoke-runner.sh",
+      "root_cause": "Phase 10 added a one-time telemetry consent question after the first accepted ??; the Homebrew smoke's expect treats any 'QueQue:' line as an error, and unlike scripts/smoke-distro-runner.sh it never set QQ_TELEMETRY=0",
+      "fix": "Export QQ_TELEMETRY=0 in the smoke user's ~/.zshrc (same opt-out as the distro smoke)",
+      "tags": [
+        "ci",
+        "release",
+        "homebrew",
+        "smoke",
+        "telemetry",
+        "consent",
+        "expect"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T16:23:38Z"
     }
   ]
 }

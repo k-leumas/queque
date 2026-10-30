@@ -3683,3 +3683,6 @@
 | 10:14 | phase 10 UAT 4/4 pass; added P10-* IDs to REQUIREMENTS.md, marked ZSHX-01 done, filled ROADMAP phase 10 requirements | .planning/REQUIREMENTS.md, .planning/ROADMAP.md, 10-UAT.md | done | ~3k |
 | 10:20 | Created .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW.md | — | ~3401 |
 | 10:20 | phase 10 re-review after fixes: 0 critical, 1 warning (symlink into read-only store), 12 info; regression gate pass (flakes re-ran 95/95) | .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW.md | advisory | ~2k |
+| 10:21 | Session end: 1 writes across 1 files (10-REVIEW.md) | 0 reads | ~3644 tok |
+| 10:23 | Edited scripts/docker-homebrew-smoke-runner.sh | 2→6 lines | ~92 |
+| 10:23 | fixed Release Homebrew smoke exit 13 (consent prompt read as error): QQ_TELEMETRY=0 in smoke zshrc | scripts/docker-homebrew-smoke-runner.sh | fixed, not run locally (needs real API key) | ~3k |

@@ -18,7 +18,11 @@ if ! grep -F 'source "/home/linuxbrew/.linuxbrew/share/queque/queque.zsh"' "$HOM
   cat "$HOME/.zshrc" >&2
   exit 20
 fi
+# QQ_TELEMETRY=0 keeps the one-time telemetry consent question out of this run: it prints
+# "QueQue: send anonymous usage..." after the first accepted ??, which the expect script below
+# reads as an error (exit 13). Same opt-out as scripts/smoke-distro-runner.sh.
 cat >> "$HOME/.zshrc" <<ZSHRC
+export QQ_TELEMETRY=0
 export QQ_FORCE_SELECTOR=1
 export QQ_DEBUG_LOG_FILE='${QQ_DEBUG_LOG_FILE}'
 export PATH='/home/linuxbrew/.linuxbrew/bin:${PATH}'

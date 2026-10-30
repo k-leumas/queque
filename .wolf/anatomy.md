@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T16:20:21.206Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T16:23:19.386Z
 > Files: 554 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -685,7 +685,7 @@
 ## scripts/
 
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
-- `docker-homebrew-smoke-runner.sh` (~491 tok)
+- `docker-homebrew-smoke-runner.sh` (~567 tok)
 - `semantic-release-user-notes.ts` — semantic-release plugin that writes user-facing changelog notes. (~4122 tok)
 - `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~1494 tok)
 - `smoke-distro.exp` — Expect PTY driver, `smoke-distro.exp PASS`: passes default (XDG_RUNTIME_DIR unset), c-locale (LANG=C) and consent (QQ_SMOKE_CONSENT=1: first accept shows `[y/N]`, `n`, buffer executes, second accept never asks). Accept (`command not found: tldr`) and Esc (`restored-42`) anchored on the `QQSMOKE%` prompt redraw; idle-prompt regex allows zsh trailing escapes. Exits 10-16, 17 no consent question, 18 asked twice, 19 unknown pass (10-01, 10-11). (~1705 tok)
