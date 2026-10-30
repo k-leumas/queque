@@ -1,236 +1,166 @@
 ---
 phase: 10-linux-distro-ci-harness-and-anonymous-telemetry
-reviewed: 2026-10-29T00:00:00Z
+reviewed: 2026-10-30T15:00:00Z
 depth: standard
-files_reviewed: 61
+iteration: 2
+files_reviewed: 14
 files_reviewed_list:
   - .github/workflows/ci.yml
-  - .github/workflows/distro.yml
-  - .github/workflows/nightly.yml
-  - biome.json
-  - package.json
   - scripts/ci/auto-revert.sh
   - scripts/ci/code-changed.mjs
-  - scripts/ci/install-distro-deps.sh
-  - scripts/ci/test-in-distro.sh
   - scripts/smoke-distro-runner.sh
-  - scripts/smoke-distro.exp
   - scripts/smoke-distro.sh
-  - shell/zsh/queque.zsh
-  - src/cli/commands/daemon.ts
   - src/cli/commands/doctor.ts
-  - src/cli/commands/telemetry.ts
-  - src/cli/main.ts
   - src/client/run-foreground.ts
-  - src/client/telemetry-consent.ts
-  - src/client/telemetry-events.ts
-  - src/contracts/doctor.ts
-  - src/contracts/ipc.ts
-  - src/contracts/telemetry.ts
   - src/daemon/bootstrap.ts
-  - src/daemon/fetch-client.ts
-  - src/daemon/server.ts
-  - src/daemon/telemetry-buffer.ts
-  - src/env.d.ts
-  - src/providers/claude-default.ts
-  - src/providers/error-kind.ts
-  - src/providers/provider-kind.ts
-  - src/shared/environment-shape.ts
-  - src/shared/qq-config.ts
   - src/shared/telemetry-config.ts
-  - src/shared/telemetry-endpoint.ts
   - tests/auto-revert.test.ts
   - tests/client-result.test.ts
   - tests/code-changed.test.ts
-  - tests/daemon-bootstrap.test.ts
   - tests/doctor.test.ts
-  - tests/environment-shape.test.ts
-  - tests/error-kind.test.ts
-  - tests/fixtures/auto-revert/gh
-  - tests/git-env-isolation.test.ts
-  - tests/live/sdk-contract.live.ts
-  - tests/lsof-busybox.test.ts
-  - tests/prewarm-sleep.test.ts
-  - tests/setup/scrub-git-env.ts
-  - tests/telemetry-buffer.test.ts
-  - tests/telemetry-cli.test.ts
   - tests/telemetry-config.test.ts
-  - tests/telemetry-consent.test.ts
-  - tests/telemetry-contract.test.ts
-  - tests/telemetry-endpoint.test.ts
-  - tests/telemetry-events.test.ts
-  - tests/telemetry-ipc.test.ts
-  - tests/zsh-widget.test.ts
-  - tsconfig.json
-  - tsup.config.ts
-  - vitest.config.ts
-  - vitest.live.config.ts
 findings:
-  critical: 1
-  warning: 6
-  info: 7
-  total: 14
+  critical: 0
+  warning: 1
+  info: 12
+  total: 13
 status: issues_found
 ---
 
-# Phase 10: Code Review Report
+# Phase 10: Code Review Report (re-review after the fix run)
 
-**Reviewed:** 2026-10-29
+**Reviewed:** 2026-10-30T15:00:00Z
 **Depth:** standard
-**Files Reviewed:** 61
+**Files Reviewed:** 14
 **Status:** issues_found
 
 ## Narrative Findings (AI reviewer)
 
 ## Summary
 
-I reviewed the phase 10 diff (`489a67a..HEAD`): the CI harness (ci/distro/nightly workflows, the auto-revert script, the path filter, the distro install, test and smoke scripts), `qq doctor`, the telemetry stack (contract, consent, config, endpoint, client events, daemon buffer, IPC wiring) and the widget changes. For the large existing files I looked only at the phase 10 hunks. Tests were checked for reliability only.
+This re-review covers the 14 files the fix run changed (`git diff 3ce3a1d HEAD`), which address CR-01 and WR-01..WR-06 (see 10-REVIEW-FIX.md). I checked each fix against the original finding. I also traced the helpers the fixes call: `readRawConfig`, `tryConnect`/`pingDaemonFetchCap`/`ensureDaemon`, `resolveBaseRef`, the telemetry CLI error path and the smoke runner's `fail()`/`collect_doctor`.
 
-The telemetry allow-list contract is strict and well enforced, and the daemon buffer's gating, dedupe and single-flight flush are correct. The empty key and the whole-run definition of a "green" auto-revert base are user decisions, so they are not reported here.
+**How each original finding stands:**
+- **CR-01 (fixed).** `telemetryStateWritable` runs the same `readRawConfig` checks as the write. It also checks the directory the write will use, and it never throws. The client calls it only after `shouldAskTelemetryConsent` passes, so a normal `??` pays nothing extra. A failed write such as ENOSPC can still lead to a repeat ask; the fix report already says so.
+- **WR-01 (fixed).** The fix skips the ask in Zellij. One edge remains, IN-08: the client and the widget detect Zellij differently.
+- **WR-02 (fixed).** A symlinked `config.json` now keeps its link. Side effect: a link into a read-only store (home-manager) now makes `qq telemetry on|off` fail with a raw errno message. Before the fix, those commands worked by replacing the link. See WR-01 below.
+- **WR-03 (fixed).** Doctor now tells "nothing listening" apart from "a listener that accepts connections but never answers". The default probe is the `tryConnect` that ensureDaemon itself uses.
+- **WR-04 (fixed).** Pushes now diff against the merge base with `origin/main`, and an empty range runs everything. With `fetch-depth: 0`, `origin/main` is present. Side effect: docs-only pushes to main now run the full matrix and can trigger auto-revert. See IN-11.
+- **WR-05 (fixed).** The head branch name now ends with a short hash of the exact branch name, and the PR lookup filters on `--base`. Revert PRs opened under the old name are orphaned. See IN-12.
+- **WR-06 (fixed).** Both the wrapper and the runner clear stale doctor files, so `fail()` can no longer report an old run's doctor output.
 
-The main defect is in the consent flow. When the config file cannot be updated, the one-time question is asked again after every accepted `??`, and each answer is thrown away. Other problems:
-- In Zellij the question appears after the shell already has its result, so it can take the user's next keystroke.
-- The consent write replaces a symlinked `config.json` with a regular file.
-- `qq doctor` reports a stuck daemon as "not running" with an ok status.
-- Push runs pick their diff base in a way that can report a false green `ci-ok`.
-- Two branch names can map to the same auto-revert branch.
+I found no regressions in the tests. The new tests skip the read-only directory cases when run as root and clean up their chmods in `afterEach`. Before testing a push, the code-changed tests remove the base variables (`QQ_CHANGES_BASE`, `QQ_BASE_REF`, `GITHUB_BASE_REF`).
 
-## Critical Issues
-
-### CR-01: Consent question is asked again after every accepted `??` when the config file cannot be updated
-
-**File:** `src/client/run-foreground.ts:481-503`, `src/shared/telemetry-config.ts:86-108`, `src/shared/telemetry-config.ts:111-135`
-**Issue:** `readTelemetryState()` treats an unreadable file, invalid JSON or a non-object file as the defaults (`asked: false`). `markTelemetryAsked()` → `writeTelemetryState()` → `readRawConfig()` refuses to write in those same cases: it throws `TelemetryConfigWriteError` for invalid JSON, a non-object or an unreadable file. A failed `mkdirSync`/`writeFileSync` (EACCES, ENOSPC) also throws. `run-foreground.ts` catches the throw and only writes a debug line. Nothing records that the user was asked, so `shouldAskTelemetryConsent` passes again on the next accepted `??`.
-
-Users with a hand-edited `config.json` that has a syntax error, or with a read-only `~/.config/qq`, get the `[y/N]` question after every accepted command. In the inline path each ask blocks the shell for up to 30 s. A `y` is silently dropped every time. This breaks D-09's "asked once ever" and adds a stall to the `??` loop, where latency is the product constraint.
-**Fix:** Do not ask when the answer cannot be saved. Expose a probe that runs the same checks as `readRawConfig` and gate the ask on it:
-```ts
-// telemetry-config.ts
-export function telemetryStateWritable(path: string = defaultConfigPath()): boolean {
-  try {
-    readRawConfig(path);            // throws for invalid JSON / non-object / unreadable
-    accessSync(dirname(path), constants.W_OK); // or: the dir is missing but its parent is writable
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-// run-foreground.ts
-const ask = shouldAskTelemetryConsent({ ... }) && telemetryStateWritable();
-```
-Add a regression test with an invalid-JSON config: two accepted queries should produce at most one `askTelemetryConsent` call (ideally zero).
+IN-01..IN-07 from the previous review were out of the fix scope and are all still present, so they are carried forward. IN-04 is now easier to hit (see WR-01).
 
 ## Warnings
 
-### WR-01: In Zellij, the consent question appears after the widget has returned and can take the next keystroke
+### WR-01: With a config.json linked into a read-only store, `qq telemetry on|off` now fails with a raw errno message
 
-**File:** `src/client/run-foreground.ts:481`, `shell/zsh/queque.zsh:461-470`
-**Issue:** In the Zellij path the widget blocks only on the FIFO read (`IFS= read -r -t 30 result < "$fifo_path"`). `writeShellResult` completes that read before the `finally` block runs the consent ask. So the widget applies the buffer, cleans up the session dir and redraws the prompt while the floating `qq` pane is still open and focused, showing the `[y/N]` question. The user's next keystroke, meant for the restored command line, goes to the pane. It is swallowed and recorded as a permanent "no" (any key other than `y` means no). The ask condition has no `inZellij` guard, and the smoke harness has no Zellij pass that would catch this.
-**Fix:** Either skip the ask in Zellij (`&& !inZellij`) until there is a design for it, or, for the Zellij path only, ask before the FIFO result is written so the widget is still blocked:
+**File:** `src/shared/telemetry-config.ts:234-247`, `src/cli/commands/telemetry.ts:228-234`, `src/cli/main.ts:139-143`
+**Issue:** The WR-02 fix resolves the link and writes the temp file next to the target (`writeTarget` → `realpathSync`). The fix report names home-manager as a target scenario, and there `~/.config/qq/config.json` resolves into `/nix/store`, which is read-only. `telemetryStateWritable` correctly reports false, so the `??` path never asks. But `qq telemetry on` and `qq telemetry off` still call `writeTelemetryState`. Its `mkdirSync`/`writeFileSync(temp, …, 'wx')` then throws a raw `EACCES`/`EROFS`. That error is not a `TelemetryConfigWriteError` (this is IN-04), so `telemetryCommand`'s catch rethrows it. `main().catch` then prints something like `EACCES: permission denied, open '/nix/store/…-config.json.1234.ab12cd34.tmp'`, with none of the documented "cannot update … No changes made." wording and no hint that the file is managed elsewhere.
+
+Before the fix, the same commands succeeded, because the rename replaced the link. For the opt-out (`qq telemetry off`), the user now gets an unexplained crash message. That only matters when the managed file itself enables telemetry, but there it is the privacy-relevant path. The fix moved a working case into IN-04's unhandled path.
+**Fix:** Wrap the write block in `TelemetryConfigWriteError`, and name the read-only target when the target differs from `path`:
 ```ts
-if (outcome?.outcome === 'accepted' && !inZellij && ttyReadStream && ttyWriteStream) {
-```
-
-### WR-02: The consent write replaces a symlinked `config.json` with a regular file
-
-**File:** `src/shared/telemetry-config.ts:151-156`
-**Issue:** `writeTelemetryState` writes `${path}.<pid>.<rand>.tmp` next to `path` and then calls `renameSync(temp, path)`. If `~/.config/qq/config.json` is a symlink (common with dotfile managers such as stow, chezmoi or home-manager), the rename replaces the link, not its target. From then on the user's dotfile repo is detached from the live config without any notice. Before phase 10 nothing wrote this file automatically. Now the first accepted `??` writes it through the consent ask, without the user running a command. The comment says a planted symlink at the temp name fails, but the target itself is not protected.
-**Fix:** Resolve the real target before building the temp path, so the temp file and the rename stay in the target's directory:
-```ts
-let target = path;
-try { target = realpathSync(path); } catch { /* ENOENT: write a new file at path */ }
-mkdirSync(dirname(target), { recursive: true, mode: 0o700 });
+const target = writeTarget(path);
+try {
+  mkdirSync(dirname(target), { recursive: true, mode: 0o700 });
+} catch (error) {
+  throw new TelemetryConfigWriteError(path, `cannot create ${dirname(target)} (${(error as NodeJS.ErrnoException).code ?? 'error'})`);
+}
 const temp = `${target}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
-// ... writeFileSync(temp, ...), renameSync(temp, target)
-```
-
-### WR-03: `qq doctor` reports a stuck daemon as "not running" with an ok status
-
-**File:** `src/cli/commands/doctor.ts:367-385` (with `src/daemon/bootstrap.ts:59-100` `pingDaemonFetchCap`)
-**Issue:** `pingDaemonFetchCap` returns `'unknown'` in three cases: the socket does not connect, the ping times out on a socket that connects, and the reply is not a valid `pong`. `checkDaemon` maps every `'unknown'` to `ok('daemon', 'daemon not running; starts on the next ??')`. A daemon that accepts connections but never answers is exactly the case where `??` stalls: `ensureDaemon` keeps it because `cap !== 'no'`. Doctor then reports that case as healthy and "not running", which misdirects the user. The doctor JSON is also quoted in auto-revert PR bodies, so the diagnostics there are wrong too.
-**Fix:** Tell "no listener" apart from "listener that does not answer". For example, call `tryConnect`/`canConnect` first, or return a fourth state from the probe:
-```ts
-if (state === 'unknown' && (await deps.socketConnectable(deps.socketPath))) {
-  return warn('daemon', 'daemon is not answering', 'run `qq daemon --ensure` (it replaces the listener) or kill it');
+try {
+  writeFileSync(temp, …, { mode: 0o600, flag: 'wx' });
+  chmodSync(temp, 0o600);
+  renameSync(temp, target);
+} catch (error) {
+  try { unlinkSync(temp); } catch {}
+  const code = (error as NodeJS.ErrnoException).code ?? 'write failed';
+  throw new TelemetryConfigWriteError(
+    path,
+    target === path ? `cannot write (${code})` : `it links to ${target}, which cannot be written (${code}); change it where it is managed, or set QQ_TELEMETRY=0`,
+  );
 }
 ```
-
-### WR-04: Push runs diff against `github.event.before`, so a doc-only push after an untested code push reports a green `ci-ok`
-
-**File:** `.github/workflows/ci.yml:41`, `.github/workflows/ci.yml:19-21`, `scripts/ci/code-changed.mjs:33-41`
-**Issue:** For push events, `QQ_CHANGES_BASE` is the push's `before` SHA. Feature branches use `cancel-in-progress: true`. Take push A (code), whose run is cancelled by push B (docs only), or push A whose run failed, followed by B. B's run computes `A...B`, sees only doc paths, writes `code=false`, skips `checks` and `distro`, and `ci-ok` passes on B. That green `ci-ok` sits on a head whose code changes were never tested in any push run. On `main` (no cancellation) the same happens after a red push: one docs commit turns `ci-ok` green on a broken `main`. The PR run uses `base.sha`, so it is not affected, but its `ci-ok` check run and the push run's `ci-ok` share the head SHA. The header comment already names this premature-green risk for the opposite direction.
-**Fix:** For push events, use the merge base with the default branch (the script's fallback), not `before`. Or use the head of the last successful push run of `ci.yml` on that branch (the same query `auto-revert.sh` uses):
-```yaml
-QQ_CHANGES_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
-```
-For `main`, an empty base falls back to `resolveBaseRef()` and should run everything when HEAD is `main` itself.
-
-### WR-05: Different branches can map to the same auto-revert branch and overwrite each other's revert PR
-
-**File:** `scripts/ci/auto-revert.sh:216`, `scripts/ci/auto-revert.sh:339-351`
-**Issue:** `HEAD_BRANCH="auto-revert/${BRANCH//\//-}"` maps `feat/x` and `feat-x` (or `a/b-c` and `a-b/c`) to the same `auto-revert/feat-x`. A smoke failure on the second branch force-pushes its revert commit over the first one's. `gh pr list --head "$HEAD_BRANCH"` then finds the open PR whose base is the first branch, and `gh pr edit` rewrites its title and body. That PR now proposes merging the second branch's history into the first branch.
-**Fix:** Use an unambiguous head name and check the base before editing:
-```bash
-HEAD_BRANCH="auto-revert/${BRANCH//\//-}-$(printf '%s' "$BRANCH" | sha256sum | cut -c1-8)"
-existing=$(gh pr list --repo "$REPO" --head "$HEAD_BRANCH" --base "$BRANCH" --state open --json number --jq '.[0].number // empty')
-```
-
-### WR-06: Stale `doctor.json`/`doctor.txt` from an earlier local run survive and are reported as current
-
-**File:** `scripts/smoke-distro.sh:82`, `scripts/smoke-distro-runner.sh:41-44`
-**Issue:** `smoke-distro.sh` reuses `${TMPDIR:-/tmp}/qq-smoke-SLUG` (or `$QQ_SMOKE_OUT`) and deletes only `pty-*.log`, `qq-debug.log`, `image.txt`, `df.txt` and `zshrc.txt`. `doctor.json` and `doctor.txt` stay. In the runner, `fail()` collects doctor only when `/out/doctor.json` does not exist. So a failure at exit 30-33 (deps, package install, user, `qq init zsh`) on a rerun keeps the previous run's doctor report next to the new logs, and debugging a red leg locally starts from the wrong report. CI uses a fresh `$RUNNER_TEMP/smoke-out`, so CI is not affected. Local reproduction, the documented way to debug a red leg, is.
-**Fix:**
-```bash
-rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR"/{qq-debug.log,image.txt,df.txt,zshrc.txt,doctor.json,doctor.txt}
-```
+Add a test: a link into a `0o500` directory makes `setTelemetryEnabled(false, link)` throw `TelemetryConfigWriteError`, and the link is left unchanged.
 
 ## Info
 
-### IN-01: Consenting users send events to the daemon even when the build has no project key
+### IN-01: Consenting users send events to the daemon even when the build has no project key (carried forward)
 
 **File:** `src/client/telemetry-events.ts:137-161`
-**Issue:** `reportClientTelemetry` checks only `effectiveTelemetry()` (env plus consent). With the empty key every build ships today, the daemon drops every event at `gate()` (`no-endpoint`). Each `??` still pays for building the events, connecting to the socket, and waiting for the daemon to close the socket (capped at 250 ms) before the client exits.
-**Fix:** Also return early when `resolveTelemetryEndpoint(input.env ?? process.env) === null`. The daemon's gate stays the source of truth.
+**Issue:** `reportClientTelemetry` checks only `effectiveTelemetry()` (env plus consent). Every build ships today with an empty key, so the daemon drops every event at `gate()` (`no-endpoint`). Each `??` still builds the events, connects to the socket, and waits (capped at 250 ms) before the client exits.
+**Fix:** Also return early when `resolveTelemetryEndpoint(input.env ?? process.env) === null`.
 
-### IN-02: The mktemp-failure exit skips `zle reset-prompt` after the instant frame scrolled the reserve
+### IN-02: The mktemp-failure exit skips `zle reset-prompt` after the instant frame scrolled the reserve (carried forward)
 
-**File:** `shell/zsh/queque.zsh:381-393`
-**Issue:** The new early return erases the frame with `\e8\e[J` and calls `zle -M`, but unlike the normal exit (`zle reset-prompt; zle -R`) it does not redraw. When the reserve scrolled the screen, ZLE's idea of where the prompt is goes stale.
-**Fix:** Call `zle reset-prompt` before `zle -M` when `QQ_INSTANT_FRAME_PAINTED == 1`.
+**File:** `shell/zsh/queque.zsh:385-393`
+**Issue:** The early return erases the frame (`\e8\e[J`) and calls `zle -M`, but it never redraws the prompt. When the reserve scrolled the screen, ZLE's saved prompt position is stale.
+**Fix:** When `QQ_INSTANT_FRAME_PAINTED == 1`, call `zle reset-prompt` before `zle -M`.
 
-### IN-03: `QQ_ZSH_VERSION` stays exported in the user's interactive shell
+### IN-03: `QQ_ZSH_VERSION` stays exported in the user's interactive shell (carried forward)
 
 **File:** `shell/zsh/queque.zsh:425`
-**Issue:** `export` inside the widget changes the interactive shell itself, so every later command the user runs inherits `QQ_ZSH_VERSION`.
-**Fix:** In the inline path, pass it only to the client: `QQ_ZSH_VERSION="$ZSH_VERSION" "${qq_cmd[@]}" client ...`. Keep the export only where the Zellij pane needs it.
+**Issue:** The `export` inside the widget changes the interactive shell itself, so every later command the user runs inherits the variable.
+**Fix:** Pass it only to the client in the inline path (`QQ_ZSH_VERSION="$ZSH_VERSION" "${qq_cmd[@]}" client …`). Keep the export only for the Zellij pane.
 
-### IN-04: Only read and parse failures become `TelemetryConfigWriteError`
+### IN-04: Only read and parse failures become `TelemetryConfigWriteError` (carried forward; now easier to hit, see WR-01)
 
-**File:** `src/shared/telemetry-config.ts:151-164`, `src/cli/commands/telemetry.ts:228-234`
-**Issue:** `mkdirSync`/`writeFileSync`/`renameSync` failures (EACCES, ENOSPC) are rethrown raw. `qq telemetry on|off` then prints a bare errno message through `main().catch` instead of the documented "cannot update … No changes made." copy.
-**Fix:** Wrap the write block's error: `throw new TelemetryConfigWriteError(path, (error as NodeJS.ErrnoException).code ?? 'write failed')`.
+**File:** `src/shared/telemetry-config.ts:235-247`, `src/cli/commands/telemetry.ts:228-234`
+**Issue:** `mkdirSync`/`writeFileSync`/`renameSync` failures are rethrown raw, so `qq telemetry on|off` prints a bare errno message. WR-01 above describes a common setup that now reaches this path.
+**Fix:** The `TelemetryConfigWriteError` wrapping in WR-01's fix.
 
-### IN-05: The `socket_failed` error kind can almost never be delivered
+### IN-05: The `socket_failed` error kind can almost never be delivered (carried forward)
 
-**File:** `src/client/run-foreground.ts:182`, `src/client/telemetry-events.ts:95-130`
-**Issue:** `socket_failed` is recorded only when `ensureDaemon` fails, and the event is then sent to the same daemon socket. It reaches the buffer only if the daemon happens to come up later, so this enum value carries almost no signal.
+**File:** `src/client/run-foreground.ts:183`, `src/client/telemetry-events.ts:95-130`
+**Issue:** `socket_failed` is recorded only when `ensureDaemon` fails, and the event is then sent to that same daemon socket.
 **Fix:** Document it as best-effort, or drop it from the client.
 
-### IN-06: A host override with a query or fragment produces a broken batch URL
+### IN-06: A host override with a query or fragment produces a broken batch URL (carried forward)
 
 **File:** `src/shared/telemetry-endpoint.ts:44`, `src/daemon/telemetry-buffer.ts:80`
 **Issue:** `QQ_TELEMETRY_HOST=https://h/p?x=1` gives `https://h/p?x=1/batch/`.
-**Fix:** Reject hosts where `url.search !== '' || url.hash !== ''`, or build the result from `url.origin + url.pathname`.
+**Fix:** Reject hosts where `url.search !== '' || url.hash !== ''`.
 
-### IN-07: Wall-clock latency assertions can be flaky under load
+### IN-07: Wall-clock latency assertions can be flaky under load (carried forward)
 
-**File:** `tests/telemetry-events.test.ts:319-337`
-**Issue:** `toBeLessThan(300)` and `toBeLessThan(TELEMETRY_CLIENT_SEND_MS + 250)` measure real time around socket I/O. cerebrum already records budgets near 200 ms flaking under the serial full suite and in the lefthook pre-push run.
-**Fix:** Widen the upper bounds (for example 1000 ms), or assert only the lower bound plus "resolved, never rejected".
+**File:** `tests/telemetry-events.test.ts:325`, `tests/telemetry-events.test.ts:337`
+**Issue:** `toBeLessThan(300)` and `toBeLessThan(TELEMETRY_CLIENT_SEND_MS + 250)` measure real time around socket I/O.
+**Fix:** Widen the upper bounds (for example 1000 ms), or assert only the lower bound and that the call resolved.
+
+### IN-08: The client and the widget detect Zellij differently, and the consent skip now depends on that check
+
+**File:** `src/client/run-foreground.ts:140`, `src/client/run-foreground.ts:488`, `shell/zsh/queque.zsh:373`, `shell/zsh/queque.zsh:427`
+**Issue:** The widget picks the Zellij path with `[[ -n "$ZELLIJ" ]]`, but the client uses `process.env.ZELLIJ !== undefined`. If `ZELLIJ` is exported but empty, the widget takes the inline path while the client acts as if it runs in Zellij. The new `!inZellij` guard then skips the consent question on an inline run, where asking is safe. The same flag already drives the other Zellij branches (lines 255, 347, 364); that mismatch predates this fix.
+**Fix:** `const inZellij = (process.env.ZELLIJ ?? '') !== '';`
+
+### IN-09: A chain of dangling links is followed only one hop, so an intermediate link is replaced
+
+**File:** `src/shared/telemetry-config.ts:156-170`
+**Issue:** If `realpathSync` fails, `writeTarget` follows one `readlink` hop. When `config.json` points to a link that is itself dangling (`a -> b -> missing`), the result is `b`, and `renameSync(temp, b)` replaces link `b` with a regular file. That is the WR-02 behaviour, one level down. This is rare: it needs a two-level link chain whose final target does not exist yet.
+**Fix:** Loop `lstat`/`readlink` up to a small bound (for example 8 hops, matching ELOOP semantics). If the loop ends on a link, return `path` or throw.
+
+### IN-10: The doctor hint `lsof -t <socket>` gives wrong output on Alpine (busybox lsof)
+
+**File:** `src/cli/commands/doctor.ts:397-401`
+**Issue:** The new warn hint tells the user to find the holder with `lsof -t <socket>`. busybox `lsof` on Alpine, one of the smoke distros, ignores its arguments and lists every open file. `bootstrap.ts:190-205` (`parseLsofPidList`, Defect 1) already guards against this. A user who runs `kill $(lsof -t …)` there gets garbage.
+**Fix:** Phrase the hint without depending on lsof's output format (for example "stop the qq daemon process (`pkill -f 'qq daemon'`)"), or name both forms.
+
+### IN-11: Docs-only pushes to main now run the full distro matrix and can trigger auto-revert
+
+**File:** `.github/workflows/ci.yml:45`, `scripts/ci/code-changed.mjs:52-53`
+**Issue:** On main, the merge base with `origin/main` is HEAD, so every push to main now gives `code=true`. That includes docs-only and `.planning/` pushes. The full 6-image smoke now runs for those pushes too. Because `auto-revert` gates on `needs.distro.result == 'failure'`, a flaky leg on a docs commit opens a revert PR against main that restores the last green tree, undoing the docs commit and anything else since. This follows from the WR-04 fix, which chose to fail open. It is noted so the trade-off is deliberate.
+**Fix:** For pushes to main only, pass the last successful push run's head as `QQ_CHANGES_BASE`. That is the same `green_runs` query `auto-revert.sh` uses, and it is safe because the base was itself tested. Otherwise, document the trade-off in the ci.yml header.
+
+### IN-12: Revert PRs opened under the old head-branch name are no longer found
+
+**File:** `scripts/ci/auto-revert.sh:219-220`, `scripts/ci/auto-revert.sh:349`
+**Issue:** The head branch name gained the `-<hash8>` suffix. A revert PR still open on `auto-revert/<branch>` from before this change is not matched by `gh pr list --head <new name>`. The next smoke failure on that branch opens a second PR, which goes against the "one pull request per source branch" promise in the PR body text. This matters only if such PRs exist on the remote.
+**Fix:** Close any open `auto-revert/*` PRs that lack the suffix by hand once. Alternatively, have the script also look up the legacy name with `--base "$BRANCH"` and edit that PR if one is found.
 
 ---
 
-_Reviewed: 2026-10-29_
+_Reviewed: 2026-10-30T15:00:00Z_
 _Reviewer: Claude (gsd-code-reviewer)_
 _Depth: standard_

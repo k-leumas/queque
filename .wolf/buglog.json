@@ -3330,8 +3330,8 @@
       "related_bugs": [
         "bug-270"
       ],
-      "occurrences": 8,
-      "last_seen": "2026-10-30T00:00:00Z"
+      "occurrences": 9,
+      "last_seen": "2026-10-30T16:16:40.060772+00:00"
     },
     {
       "id": "bug-207",
@@ -4413,8 +4413,8 @@
       "related_bugs": [
         "bug-206"
       ],
-      "occurrences": 11,
-      "last_seen": "2026-10-30T00:00:00Z"
+      "occurrences": 12,
+      "last_seen": "2026-10-30T16:16:40.060772+00:00"
     },
     {
       "id": "bug-271",
@@ -6868,8 +6868,8 @@
         "bug-206",
         "bug-270"
       ],
-      "occurrences": 2,
-      "last_seen": "2026-10-30T00:00:00Z"
+      "occurrences": 3,
+      "last_seen": "2026-10-30T16:16:40.060772+00:00"
     },
     {
       "id": "bug-453",
@@ -7090,8 +7090,8 @@
         "md"
       ],
       "related_bugs": [],
-      "occurrences": 3,
-      "last_seen": "2026-10-30T00:00:00Z"
+      "occurrences": 4,
+      "last_seen": "2026-10-30T16:16:40.060772+00:00"
     },
     {
       "id": "bug-430",

@@ -3681,3 +3681,5 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 10:14 | phase 10 UAT 4/4 pass; added P10-* IDs to REQUIREMENTS.md, marked ZSHX-01 done, filled ROADMAP phase 10 requirements | .planning/REQUIREMENTS.md, .planning/ROADMAP.md, 10-UAT.md | done | ~3k |
+| 10:20 | Created .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW.md | — | ~3401 |
+| 10:20 | phase 10 re-review after fixes: 0 critical, 1 warning (symlink into read-only store), 12 info; regression gate pass (flakes re-ran 95/95) | .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW.md | advisory | ~2k |
