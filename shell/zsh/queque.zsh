@@ -502,8 +502,8 @@ JSON
 # commands even though the file is otherwise safe to source.
 if [[ -o interactive ]]; then
   zle -N qq-question-widget
-  bindkey -M emacs '?' qq-question-widget
-  bindkey -M viins '?' qq-question-widget
+  bindkey -M emacs '~' qq-question-widget
+  bindkey -M viins '~' qq-question-widget
 
   # Warm the daemon once per interactive shell so the first `??` pays less
   # startup cost.
