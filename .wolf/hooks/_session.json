@@ -1886,6 +1886,12 @@
       "action": "create",
       "tokens": 70,
       "at": "2026-10-29T23:48:48.041Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/scripts/smoke-distro-runner.sh",
+      "action": "edit",
+      "tokens": 131,
+      "at": "2026-10-30T00:33:06.233Z"
     }
   ],
   "edit_counts": {
@@ -2027,7 +2033,8 @@
     "tests/zsh-widget.test.ts": 2,
     "shell/zsh/queque.zsh": 1,
     ".claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md": 12,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/p10-12-drill/commit-msg.txt": 1
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/p10-12-drill/commit-msg.txt": 1,
+    "scripts/smoke-distro-runner.sh": 1
   },
   "anatomy_hits": 28,
   "anatomy_misses": 25,

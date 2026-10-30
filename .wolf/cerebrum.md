@@ -225,6 +225,8 @@
 - [2026-10-29] In `shutdownDaemon`, call `telemetry.flush()` synchronously (try/catch for a sync throw); wrapping it in `Promise.resolve().then(...)` starts it after `server.close()`. To bound a test on the `server.close` callback, use `vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })` and wait on `server.once('close')`, not `vi.waitFor` (it advances fake timers itself).
 - [2026-10-29] When curating .wolf/buglog.json, compute the next id from the max BEFORE dropping hook entries: numbering after the drop reused dropped ids (bug-430..437) and had to be redone (10-11).
 - [2026-10-29] Any test that spawns git must not inherit GIT_DIR / GIT_WORK_TREE / GIT_INDEX_FILE / GIT_COMMON_DIR etc.: git hooks (lefthook pre-push) run from a linked worktree export them, and `...process.env` then aims fixture `git init --bare`/`commit`/`branch` at the real repo (set core.bare=true on the shared .git/config). tests/setup/scrub-git-env.ts (vitest setupFiles) strips them; keep new vitest configs wired to it.
+- [2026-10-29] auto-revert's "green" commit = a push run whose WHOLE ci.yml run concluded success (green_runs() queries status=success) AND whose smoke legs passed; a run with green smoke but a red test-distro leg is not a candidate, and the lookup falls back to the merge base with main (a huge revert). User decision (GAP-3): keep the whole-run definition. Never assume smoke-only green when planning a revert drill.
+- [2026-10-29] Docker Desktop (macOS) bind mounts hide in-container uid/mode mismatches (files look root-owned and readable); reproduce GitHub-runner permission bugs on a named docker volume with a second container run as -u 1001.
 
 ## Decision Log
 
