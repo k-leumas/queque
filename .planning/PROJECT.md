@@ -15,6 +15,9 @@ Turn natural-language intent into a shell command that feels native to the termi
 ### Validated
 
 - ✓ Suggestions favour installed tools; a candidate using a missing tool stays selectable and is flagged with a cyan ⓘ (legend above the controls), with Tab prepending a guarded install command — Phase 9
+- ✓ `zsh` support is stable on major Linux distros (ubuntu 22.04/24.04, debian 13, fedora 44, arch, alpine 3.24): CI runs the test suite and a real-PTY smoke per distro on every push and PR, nightly on `:latest`, with an auto-revert PR on a red smoke — Phase 10
+- ✓ `qq doctor` (and `--json`) diagnoses an install without leaking env values — Phase 10
+- ✓ Opt-in, anonymous usage/error reporting: one-time consent, strict allow-listed events, no IP, GeoIP or person profile (verified in PostHog EU) — Phase 10
 
 ### Active
 
@@ -32,7 +35,7 @@ Turn natural-language intent into a shell command that feels native to the termi
 
 - Public plugin marketplace in v1 — extension seams matter now, but third-party loading can wait until the core UX is stable.
 - Direct command execution in v1 — insertion-only is safer and preserves user control.
-- Multi-shell support in v1 — macOS `zsh` is the fastest route to a usable product in two weeks.
+- Multi-shell support in v1 — `zsh` first (macOS and, since Phase 10, Linux); bash and fish stay out of scope.
 - Persistent history by default — privacy-forward defaults matter more than convenience in the first release.
 
 ## Context
@@ -71,6 +74,9 @@ The product is meant to be used during development of the product itself. Daily-
 | Missing tools are flagged (ⓘ + selection-independent legend), never dropped; the modal never changes height with the selection | User decision at the Phase 9 checkpoint | ✓ Good — Phase 9 |
 | Install commands are built locally and insertion-only (safe package names, no `-y`); package names from per-installer aliases | The model never writes install text; model-supplied package names are backlog 999.1 | — Pending (999.1) |
 | Zellij floating-pane resizes run one at a time, newest height wins; layout height is decided during render, never from a transient filtered frame | Detached `zellij action` calls applied in finish order left the modal empty (G-09-7) | ✓ Good — Phase 9 (09-06) |
+| Linux CI is a container matrix (test-distro + real-PTY smoke against the `pnpm pack` tarball with a fake `claude`), gated by one required `ci-ok` check | One required check keeps branch protection stable while the matrix grows; the fake model keeps CI free of API spend | ✓ Good — Phase 10 |
+| A red smoke on push opens one auto-revert PR rather than reverting main directly | Keeps a human in the loop on main; one flaky leg can still open a PR (seen 2026-10-30, PR #17) | ⚠️ Revisit — retry a failed smoke once before reverting |
+| Telemetry is opt-in, PostHog EU `/batch/`, strict allow list, `$geoip_disable` + no person profiles; builds ship an empty key until the user bakes one | Privacy-forward default; key baking deferred by user decision (keep-empty, 2026-10-30) | — Pending (key bake todo) |
 
 ## Evolution
 
@@ -90,4 +96,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-10-11 after Phase 9 (installed-only command awareness, incl. G-09-7 gap closure)*
+*Last updated: 2026-10-30 after Phase 10 (Linux distro CI harness, qq doctor, opt-in anonymous telemetry)*

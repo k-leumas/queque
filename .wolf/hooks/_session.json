@@ -1,7 +1,13 @@
 {
   "session_id": "session-2026-10-30-0957",
   "started": "2026-10-30T15:57:21.819Z",
-  "files_read": {},
+  "files_read": {
+    "/Users/samuel/dev/tui-llm/.planning/STATE.md": {
+      "count": 1,
+      "tokens": 3580,
+      "first_read": "2026-10-30T16:34:48.054Z"
+    }
+  },
   "files_written": [
     {
       "file": "/Users/samuel/dev/tui-llm/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-REVIEW.md",
@@ -33,7 +39,7 @@
     "scripts/docker-homebrew-smoke-runner.sh": 1,
     ".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-VERIFICATION.md": 2
   },
-  "anatomy_hits": 0,
+  "anatomy_hits": 1,
   "anatomy_misses": 0,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,

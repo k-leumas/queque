@@ -1,19 +1,20 @@
 ---
 gsd_state_version: "1.0"
 milestone: v1.0
-current_phase: 10
-current_phase_name: Linux distro CI harness and anonymous telemetry
-status: executing
-stopped_at: Phase 10 context gathered
-last_updated: "2026-10-29T19:30:41.118Z"
-last_activity: 2026-10-29
-last_activity_desc: Phase 10 execution started
-state_head: a7bdf0bdb7a48125c349d0d7fb60fa7a2f2e04ca
+current_phase: 7
+current_phase_name: Context-Aware Learning and Ambient Suggestions
+status: planning
+stopped_at: Phase 10 complete, ready to plan Phase 7
+last_updated: "2026-10-30T16:34:53.650Z"
+last_activity: 2026-10-30
+last_activity_desc: Phase 10 complete, transitioned to Phase 7
+state_head: fa4c4c1aaeb910412670965487d2f31a941aefea
 progress:
   total_phases: 13
   completed_phases: 8
   total_plans: 56
-  completed_plans: 43
+  completed_plans: 56
+  percent: 73
 milestone_name: milestone
 ---
 
@@ -21,18 +22,18 @@ milestone_name: milestone
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-10-11)
+See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 10 — Linux distro CI harness and anonymous telemetry
+**Current focus:** Phase 7 — Context-Aware Learning and Ambient Suggestions
 
 ## Current Position
 
-Phase: 10 (Linux distro CI harness and anonymous telemetry) — EXECUTING
-Plan: 1 of 13
+Phase: 7 — Context-Aware Learning and Ambient Suggestions
+Plan: Not started
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
-Status: Executing Phase 10
-Last activity: 2026-10-29 — Phase 10 execution started
+Status: Ready to plan
+Last activity: 2026-10-30 — Phase 10 complete, transitioned to Phase 7
 
 Progress: [███████░░░] 73%
 
@@ -40,7 +41,7 @@ Progress: [███████░░░] 73%
 
 **Velocity:**
 
-- Total plans completed: 19
+- Total plans completed: 32
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -51,6 +52,7 @@ Progress: [███████░░░] 73%
 | 03 | 3 | - | - |
 | 9 | 6 | - | - |
 | 09.1 | 10 | - | - |
+| 10 | 13 | - | - |
 
 **Recent Trend:**
 
@@ -96,6 +98,9 @@ Recent decisions affecting current work:
 - Initialization: `zsh` on macOS is the v1 shell target.
 - Initialization: Claude is the first provider behind an abstraction layer.
 - Initialization: Plugin/extension seams must be preserved during MVP work.
+- [Phase 10] Linux CI: per-distro container matrix (test-distro + real-PTY smoke, fake `claude`) behind one required `ci-ok` check; a red smoke opens one auto-revert PR.
+- [Phase 10] Telemetry is opt-in and anonymous (PostHog EU, strict allow list, no IP/GeoIP/person profile); builds ship an empty key until the user bakes one (keep-empty, 2026-10-30).
+- [Phase 10] Every expect-driven smoke must opt out of the consent prompt (QQ_TELEMETRY=0); the Homebrew release smoke missed it once (fixed 80bb9d4).
 - [Phase 02-intent-router-and-context-pipeline]: Intent classification remains fully synchronous and local, with no I/O or provider calls.
 - [Phase 02-intent-router-and-context-pipeline]: unknown intent is reserved for empty or whitespace-only queries; all other unmatched queries fall back to general.
 - [Phase 02-intent-router-and-context-pipeline]: Filesystem-keyword prompts route before generic file-path detection so rename/find requests with filenames stay out of codebase intent.
@@ -136,6 +141,8 @@ None yet.
 - TUI library choice must not compromise raw keyboard handling or shell-return behavior.
 - Confidence routing quality will determine whether the product feels magical or annoying. (Deferred with Phase 5 — manual re-query is acceptable for now.)
 - [Phase 9] Zellij resize queue: WR-06 (timed-out resize can still land after its successor) and WR-07 (failed resize counted as applied, later equal heights skipped) are open advisory review findings in 09-REVIEW-DISPOSITION.md.
+- [Phase 10] One flaky smoke leg on main opens an auto-revert PR (PR #17 on a5bc52e, debian:13); consider retrying a failed smoke once before reverting. Review WR-01 (raw errno when config.json links into a read-only store) and IN-01..IN-12 are open advisory findings in 10-REVIEW-DISPOSITION.md.
+- [Phase 10] Telemetry key not baked yet: .planning/todos/pending/2026-10-30-10-bake-telemetry-key.md.
 - [Phase 9] nyquist_compliant stays false until /gsd-validate-phase 9 runs on an idle machine (bug-206 timing guards flake under load).
 
 ### Quick Tasks Completed
@@ -176,6 +183,6 @@ None yet.
 
 Last activity: 2026-10-21 - Completed quick task 261021-sya: strip credentials from changelog repository links
 
-Last session: 2026-10-29T01:15:02.475Z
-Stopped at: Phase 10 context gathered
-Resume file: .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-CONTEXT.md
+Last session: 2026-10-30T16:40:00Z
+Stopped at: Phase 10 complete, ready to plan Phase 7
+Resume file: None
