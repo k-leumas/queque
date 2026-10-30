@@ -14,6 +14,9 @@ provides:
   - "Live D-15 drill (run 40974964457): six smoke legs red, auto-revert job green, exactly one PR (#15) into ci/phase-10-revert-drill"
   - "Observed that auto-revert's green base needs a fully successful run (status=success), not smoke-only, so the drill fell back to the merge base with main (489a67a) and the PR reverts 99 files"
   - "Observed that smoke artifact upload fails with EACCES on qq-debug.log on 5 of 6 failing legs, so the PR body has diagnostics for ubuntu:24.04 only"
+  - "After the GAP-1 and GAP-4 fixes: fully green verify run 40980760144 on e9e3f48 (all 14 jobs plus ci-ok)"
+  - "Drill 2 (run 40981135886): six smoke legs red, six artifacts uploaded, exactly one PR (#16) with base e9e3f48 and a diff of only shell/zsh/queque.zsh"
+  - "ci-ok is the only required status check on main (classic protection, app 15368, strict false)"
 affects: [phase-10-gaps, ci, zsh-widget, instant-frame, auto-revert, smoke-artifacts]
 
 actuals:
@@ -39,6 +42,8 @@ key-decisions:
   - "No code was patched in this plan even though the failure is a single, well-localised test"
   - "User-approved parallel track: the drill ran from 9401eba while GAP-1 is fixed on main; the verify run is not repeated here"
   - "No code was changed after the drill exposed GAP-3 and GAP-4; both are recorded for the gap plan"
+  - "GAP-3: user kept the whole-run-green definition (no code change); the re-drill from a fully green head proved it"
+  - "GAP-1 fixed in the widget (local UTF-8 LC_ALL in _qq_instant_frame), not by setting a locale in the CI script"
 
 patterns-established:
   - "Run the full ci.yml on a ci/* scratch branch before relying on its gates"
@@ -59,35 +64,50 @@ coverage:
     requirement: P10-CI
     verification:
       - kind: integration
-        ref: "https://github.com/k-leumas/queque/actions/runs/40967340170"
-        status: fail
-    human_judgment: true
-    rationale: "Run failed on 4 of 6 test-distro legs; needs a gap plan and a re-run"
+        ref: "https://github.com/k-leumas/queque/actions/runs/40980760144 (e9e3f48; first run 40967340170 failed, GAP-1)"
+        status: pass
+    human_judgment: false
   - id: D3
     description: "D-15: smoke-breaking push opens exactly one auto-revert PR"
     requirement: P10-REVERT
     verification:
       - kind: integration
-        ref: "https://github.com/k-leumas/queque/actions/runs/40974964457 -> https://github.com/k-leumas/queque/pull/15"
-        status: fail
+        ref: "https://github.com/k-leumas/queque/actions/runs/40981135886 -> https://github.com/k-leumas/queque/pull/16 (base e9e3f48, diff shell/zsh/queque.zsh only); drill 1 (#15) failed on GAP-3/GAP-4"
+        status: pass
     human_judgment: true
-    rationale: "Exactly one PR opened with failing distros, doctor JSON and a PTY log tail, but its base is the merge base with main (489a67a), not 9401eba, so the diff touches 99 files instead of only shell/zsh/queque.zsh (GAP-3); diagnostics exist for ubuntu:24.04 only (GAP-4)"
+    rationale: "User reviewed PR #16 and approved"
   - id: D4
     description: "D-03: ci-ok is the only required check on main"
-    verification: []
-    human_judgment: true
-    rationale: "Task 3 human checkpoint, not yet done"
+    verification:
+      - kind: other
+        ref: "gh api repos/k-leumas/queque/branches/main/protection/required_status_checks -> {checks: [{app_id: 15368, context: ci-ok}], strict: false}"
+        status: pass
+    human_judgment: false
 
 duration: 9min
 completed: 2026-10-29
-status: checkpoint-pending  # Task 3 human-verify outstanding; reply expected: gaps (GAP-1 open, fix on main; GAP-2 not met; GAP-3, GAP-4 new)
+status: complete  # Task 3 approved 2026-10-30; GAP-1..4 resolved
 ---
 
 # Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary
 
 **First real run of ci.yml on phase head 9401eba: all six `smoke` legs pass, but `test-distro` fails on fedora:44, debian:13, ubuntu:24.04 and ubuntu:22.04. All four fail on the same test, `zsh-widget.test.ts` z4 (instant-frame header is 75 chars, expected 77). That points at zsh counting multibyte glyphs as bytes under a non-UTF-8 locale. The revert drill then ran as a user-approved parallel track from 9401eba: all six smoke legs failed, the `auto-revert` job passed, and exactly one PR opened (#15). But the script chose the merge base with main (`489a67a`), not `9401eba`, because its green lookup needs a fully successful run. So the PR reverts 99 files instead of two lines, and five of the six legs uploaded no diagnostics (EACCES on `qq-debug.log`). Task 3 is pending with gaps.**
 
-**Status: checkpoint pending (Task 3, human-verify). The reply expected here is "gaps".**
+**Status: complete. Task 3 approved by the user. All four gaps are resolved; see Resolution below. The sections after it are the original record of the first attempt.**
+
+## Resolution (2026-10-30)
+
+| Item | Value |
+|---|---|
+| GAP-1 fix | `54e15bc` (test z4b, `LC_ALL=C` with an accented lbuffer) and `80b6dbf` (`_qq_instant_frame` probes `${#probe}` for `›` and sets a local `LC_ALL=C.UTF-8`, falling back to `en_US.UTF-8`) |
+| GAP-3 | No code change. The user kept the whole-run-green definition (recorded in cerebrum); it works once the head has a fully green run |
+| GAP-4 fix | `abd08c0`: `smoke-distro-runner.sh` traps EXIT with `chmod -R a+rX /out` |
+| Verify run 2 | https://github.com/k-leumas/queque/actions/runs/40980760144 on `e9e3f48`: success on every job (changes, checks, 6 test-distro, 6 smoke, ci-ok; auto-revert skipped) |
+| Drill 2 SHA | `bd996c3` (`e9e3f48` plus the `~` rebinding) on `ci/phase-10-revert-drill-2` |
+| Drill 2 run | https://github.com/k-leumas/queque/actions/runs/40981135886: 6/6 smoke failed, 6/6 test-distro passed, auto-revert success, 6 smoke artifacts uploaded |
+| Drill 2 PR | https://github.com/k-leumas/queque/pull/16, the only PR for that head; base chosen `e9e3f48`; reverts 1 commit; diff is only `shell/zsh/queque.zsh` (restores the two `bindkey ... '?'` lines). GAP-2 resolved |
+| Required check | `ci-ok` only, on classic protection for `main` (`app_id` 15368, `strict: false`) |
+| Cleanup | #16 and #15 closed unmerged; branches `ci/phase-10-verify`, `ci/phase-10-revert-drill{,-2}` and `auto-revert/ci-phase-10-revert-drill{,-2}` deleted on the remote; the local drill branches deleted |
 
 ## Performance
 
@@ -280,7 +300,7 @@ The pre-push "test affected from base" step passed with both `??` bindings broke
 1. **Task 1: Allow GitHub Actions to create pull requests (D-21)**: human action, no commit
 2. **Task 2: Green six-distro run, then revert drill**: recorded as gaps; memory lines and this SUMMARY are in one `docs(10-12)` commit (hash is in the executor's return message)
    - Drill (parallel track): `0db4004` `test: break the ?? binding for the revert drill`, on the scratch branch `ci/phase-10-revert-drill` only (not on the phase branch). The record of it is in a second `docs(10-12): record the revert drill` commit
-3. **Task 3: Review drill PR, make `ci-ok` required**: pending (checkpoint)
+3. **Task 3: Review drill PR, make `ci-ok` required**: approved by the user; `ci-ok` is required on `main` (no commit)
 
 ## Files Created/Modified
 

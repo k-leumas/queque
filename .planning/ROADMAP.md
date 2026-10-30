@@ -371,7 +371,7 @@ Plans:
 **Estimate:** ~3–3.5 days.
 **Requirements**: TBD
 **Depends on:** Phase 9
-**Plans:** 11/13 plans executed
+**Plans:** 12/13 plans executed
 
 Plans:
 **Wave 1**
@@ -394,7 +394,7 @@ Plans:
 - [x] 10-11-PLAN.md — One-time default-No consent prompt after the first accepted `??` (PTY smoke pass); phase gate and OpenWolf records (wave 4)
 
 **Wave 5** *(blocked on Wave 4 completion)*
-- [ ] 10-12-PLAN.md — Human gates: Actions may create PRs, green six-distro run on GitHub, revert drill, `ci-ok` required (wave 5)
+- [x] 10-12-PLAN.md — Human gates: Actions may create PRs, green six-distro run on GitHub, revert drill, `ci-ok` required (wave 5)
 
 **Wave 6** *(blocked on Wave 5 completion)*
 - [ ] 10-13-PLAN.md — Human gates: PostHog EU project, decision to bake the key (one-way), $ip/GeoIP absence check (wave 6)
