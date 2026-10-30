@@ -52,11 +52,5 @@ export default defineConfig({
   define: {
     __QUEQUE_COMMIT__: JSON.stringify(commit),
     __QUEQUE_VERSION__: JSON.stringify(version),
-    // D-22: empty until the PostHog project exists. An empty key means nothing is ever sent
-    // (resolveTelemetryEndpoint returns null). Plan 13 bakes the real public `phc_` project
-    // key after a human decision; QQ_TELEMETRY_KEY overrides it at runtime.
-    __QUEQUE_TELEMETRY_KEY__: JSON.stringify(''),
-    // D-05: PostHog Cloud EU. QQ_TELEMETRY_HOST overrides it at runtime (tests, forks).
-    __QUEQUE_TELEMETRY_HOST__: JSON.stringify('https://eu.i.posthog.com'),
   },
 });

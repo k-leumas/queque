@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:21:28.966Z
-> Files: 554 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-22T03:00:11.311Z
+> Files: 599 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -40,69 +40,6 @@
 - `verify2.sh` — Task 2 verify from the plan, run from the worktree root. (~346 tok)
 - `verify3.sh` — Task 3 verify from the plan (content checks), run from the worktree root. (~360 tok)
 - `wolf.py` — anatomy (~871 tok)
-
-## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/
-
-- `10-12-verify-tree.mjs` — Read-only: compare on-disk files against a `git ls-tree -r` listing by computing blob SHA-1s. (~278 tok)
-- `accept-t3.sh` (~215 tok)
-- `addbug.py` — usage: addbug.py <spec.json>  (spec: error_message, file, root_cause, fix, tags) (~267 tok)
-- `bug-cr01.json` (~271 tok)
-- `bug-wr01.json` (~222 tok)
-- `bug-wr02.json` (~229 tok)
-- `bug-wr03.json` (~242 tok)
-- `bug-wr04.json` (~246 tok)
-- `bug-wr05.json` (~239 tok)
-- `bug-wr06.json` (~225 tok)
-- `make-red-record.mjs` — Declares output (~227 tok)
-- `mkrecord.mjs` — Declares output (~95 tok)
-- `mkred.mjs` (~126 tok)
-- `msg-10-02-summary.txt` (~18 tok)
-- `msg-10-02-t1.txt` (~122 tok)
-- `msg-10-02-t2-green.txt` (~113 tok)
-- `msg-10-02-t2-red.txt` — Declares that (~82 tok)
-- `msg-10-08-summary.txt` (~17 tok)
-- `msg-green.txt` (~111 tok)
-- `msg-red.txt` (~90 tok)
-- `msg-sum.txt` (~32 tok)
-- `msg-t2.txt` (~103 tok)
-- `msg-t3.txt` (~138 tok)
-- `msg-task1.txt` (~158 tok)
-- `msg-task3.txt` (~160 tok)
-- `msg1.txt` (~85 tok)
-- `msg2.txt` (~123 tok)
-- `msg3.txt` (~95 tok)
-- `msg4.txt` (~106 tok)
-- `msg5.txt` (~81 tok)
-- `msg6.txt` (~92 tok)
-- `msg7.txt` (~32 tok)
-- `plan-10-09-msg-green1.txt` (~137 tok)
-- `plan-10-09-msg-green2.txt` (~77 tok)
-- `plan-10-09-msg-red1.txt` (~98 tok)
-- `plan-10-09-msg-red2.txt` (~108 tok)
-- `plan-10-09-msg-summary.txt` (~17 tok)
-- `rf10-msg-cr01.txt` (~110 tok)
-- `rf10-msg-wr01.txt` (~104 tok)
-- `rf10-msg-wr02.txt` (~113 tok)
-- `rf10-msg-wr03.txt` (~112 tok)
-- `rf10-msg-wr04.txt` (~125 tok)
-- `rf10-msg-wr05.txt` (~108 tok)
-- `rf10-msg-wr06.txt` (~95 tok)
-
-## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/
-
-- `commit-msg.txt` (~97 tok)
-
-## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/agent-10-10-a4306/
-
-- `green1-msg.txt` (~135 tok)
-- `green2-msg.txt` (~123 tok)
-- `red1-msg.txt` (~85 tok)
-- `red2-msg.txt` (~76 tok)
-- `summary-msg.txt` (~13 tok)
-
-## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/p10-12-drill/
-
-- `commit-msg.txt` (~61 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/86c766e1-cad0-47b7-8805-8fa391d8b960/scratchpad/
 
@@ -253,12 +190,11 @@
 - `CONTRIBUTING.md` — Contributing: dev setup, live debug log (always-on `/tmp/qq-<uid>-debug.log`), Claude Provider env table (key optional, `claude -p` login route, QQ_MODEL `claude-sonnet-5` SDK route only) (~1450 tok)
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
-- `package.json` — Node.js package manifest Phase 10 scripts: smoke:distro, test:distro, test:live. (~499 tok)
+- `package.json` — Node.js package manifest (~499 tok)
 - `README.md` — Project documentation (~3537 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
-- `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. Phase 10: `define` also bakes __QUEQUE_TELEMETRY_KEY__ (empty until plan 13, D-22) and __QUEQUE_TELEMETRY_HOST__ (`https://eu.i.posthog.com`, D-05). (~600 tok)
-- `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~190 tok)
-- `vitest.live.config.ts` — /*.test.ts`) never (~198 tok)
+- `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. (~600 tok)
+- `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~88 tok)
 
 ## .claude/
 
@@ -282,20 +218,501 @@
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
-## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+## .claude/worktrees/agent-a19c27e461de31bc0/
 
-- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~4329 tok)
+- `tsconfig.json` — TypeScript configuration (~163 tok)
 
-## .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
+## .claude/worktrees/agent-a19c27e461de31bc0/.planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/
 
-- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~6996 tok)
+- `03.1-02-SUMMARY.md` — Phase 03.1 Plan 02: UI Support Components (Wave 1) Summary (~987 tok)
+
+## .claude/worktrees/agent-a19c27e461de31bc0/.wolf/
+
+- `anatomy.md` — anatomy.md (~1703 tok)
+- `memory.md` — Memory (~2897 tok)
+
+## .claude/worktrees/agent-a19c27e461de31bc0/src/ui/
+
+- `ControlsLine.tsx` — ControlsLine (~235 tok)
+- `LoadingSpinner.tsx` — FRAMES (~136 tok)
+- `Modal.tsx` — Modal (~210 tok)
+- `SearchInput.tsx` — SearchInput (~112 tok)
+
+## .claude/worktrees/agent-a1a70f3e84a5ede72/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-03-SUMMARY.md` — Phase 03 Plan 03: Error Kind Handling in ZSH Widget Summary (~770 tok)
+
+## .claude/worktrees/agent-a1a70f3e84a5ede72/shell/zsh/
+
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2387 tok)
+
+## .claude/worktrees/agent-a1a70f3e84a5ede72/tests/
+
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~4179 tok)
+
+## .claude/worktrees/agent-a2f4022ef0830f01e/.planning/phases/04-fuzzy-tui-selection-ux/
+
+- `04-02-SUMMARY.md` — Phase 04 Plan 02: useEffect([query]) Reset Hook Summary (~1331 tok)
+
+## .claude/worktrees/agent-a2f4022ef0830f01e/src/ui/
+
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1376 tok)
+
+## .claude/worktrees/agent-a2f4022ef0830f01e/tests/
+
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3290 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-07-SUMMARY.md` — Phase 09.1 Plan 07: Streamed candidate list in the modal Summary (~4532 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~5608 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/src/ui/
+
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~4808 tok)
+- `modal-layout.ts` — Mark that starts the explanation of a candidate using a tool zsh cannot resolve (D-08). (~3030 tok)
+
+## .claude/worktrees/agent-a3da1de95c7a05a60/tests/
+
+- `candidate-select-layout.test.tsx` — tests/candidate-select-layout.test.tsx (~13823 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~12687 tok)
+- `modal-layout.test.ts` — lines: flaggedWithForm (~5740 tok)
+
+## .claude/worktrees/agent-a4210920/.planning/phases/01-shell-bridge-and-result-contract/
+
+- `01-01-SUMMARY.md` — Phase 01 Plan 01: Toolchain Baseline and Shell/IPC Contracts Summary (~1742 tok)
+
+## .claude/worktrees/agent-a4210920/src/contracts/
+
+- `ipc.ts` — IPC request — sent from the foreground client to the daemon over a Unix socket. (~279 tok)
+- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~353 tok)
+
+## .claude/worktrees/agent-a4210920/src/shared/
+
+- `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~169 tok)
+
+## .claude/worktrees/agent-a4210920/tests/
+
+- `shell-contract.test.ts` — Declares validCancel (~648 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-01-SUMMARY.md` — Dependency graph (~1389 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/src/contracts/
+
+- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~417 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/src/providers/
+
+- `claude.ts` — Calls Claude with the assembled context envelope and returns ranked command candidates. (~1301 tok)
+- `provider.ts` — Exports LLMAdapter (~67 tok)
+
+## .claude/worktrees/agent-a5c7276f6fe389a4e/tests/
+
+- `claude-provider.test.ts` — ContextEnvelope: buildEnvelope (~1262 tok)
+- `shell-contract.test.ts` — Declares validCancel (~804 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-05-SUMMARY.md` — Phase 09.1 Plan 05: Prewarmed claude -p Process Summary (~4766 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/src/cli/commands/
+
+- `daemon.ts` — Real daemon command handler. (~586 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/src/providers/
+
+- `claude-cli.ts` — The Claude Code binary, resolved on PATH. (~1995 tok)
+- `claude-prewarm.ts` — One-slot prewarm pool for `claude -p` (Phase 09.1, D-11, D-12, RESEARCH Pattern 8). (~2012 tok)
+- `claude-process.ts` — One `claude -p` stream-json turn on a child process (Phase 09.1, D-04, D-13). (~3683 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/tests/
+
+- `claude-cli-prewarm.test.ts` — The runner's failure shape for a child that ended without a `result`. (~3013 tok)
+- `claude-prewarm.test.ts` — The idle child's pid once the slot holds a spawned child. (~2130 tok)
+- `claude-process.test.ts` — ClaudeChild: scratchDir, startTurn, stageNames (~4378 tok)
+
+## .claude/worktrees/agent-a6493f5431239884a/tests/fixtures/
+
+- `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~2333 tok)
+
+## .claude/worktrees/agent-a6710c066c0a39737/.planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/
+
+- `261017-5q6-SUMMARY.md` — Phase quick-261017-5q6 Plan 01: Fix the stale init command Summary (~1373 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/.planning/phases/03-claude-fast-path-and-ranked-suggestions/
+
+- `03-02-SUMMARY.md` — Phase 03 Plan 02: Confidence Propagation, Error ShellResult, and Claude Backend Registration Summary (~1577 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/src/client/
+
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2389 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/src/contracts/
+
+- `request.ts` — Broad intent categories classified before any context gathering. (~1039 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/src/registry/
+
+- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~439 tok)
+
+## .claude/worktrees/agent-a78bb2a4d3d56c042/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4737 tok)
+- `registry-bootstrap.test.ts` — Declares hookIds (~518 tok)
+
+## .claude/worktrees/agent-a827b2ba274685679/.planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-03-SUMMARY.md` — Phase 8 Plan 03: Provider Pin and Ollama Adapter Summary (~4977 tok)
+
+## .claude/worktrees/agent-a827b2ba274685679/src/providers/
+
+- `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~1985 tok)
+- `provider-pin.ts` — On-disk pin format version; bump it (with a reader migration) to reshape the file. (~1508 tok)
+
+## .claude/worktrees/agent-a827b2ba274685679/tests/
+
+- `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~4544 tok)
+- `provider-pin.test.ts` — resetRegistries: writePin (~2300 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-06-SUMMARY.md` — Phase 09.1 Plan 06: Bounded, backstopped claude -p runner Summary (~4845 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/src/providers/
+
+- `claude-process.ts` — One `claude -p` stream-json turn on a child process (Phase 09.1, D-04, D-13). (~3269 tok)
+- `stream-json.ts` — Pure helpers for `claude -p --input-format stream-json --output-format stream-json (~1190 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/tests/
+
+- `claude-process.test.ts` — ClaudeTurnFailure: scratchDir, startTurn, stageNames (~3636 tok)
+- `claude-stream-json.test.ts` — textDeltaLine: collect (~1583 tok)
+
+## .claude/worktrees/agent-a95663009d2772251/tests/fixtures/
+
+- `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~2305 tok)
+
+## .claude/worktrees/agent-a9b01c9dbe2615f0c/.planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-04-SUMMARY.md` — Phase 8 Plan 04: OpenAI Adapter Summary (~4352 tok)
+
+## .claude/worktrees/agent-a9b01c9dbe2615f0c/src/providers/
+
+- `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~2254 tok)
+
+## .claude/worktrees/agent-a9b01c9dbe2615f0c/tests/
+
+- `daemon-fetch.test.ts` — Sends one raw request and collects every reply until `candidates` or `fetch-error`. (~9545 tok)
+- `openai-provider.test.ts` — No Claude entry point and no other host (Ollama's localhost:11434) was touched. (~5201 tok)
+- `registry-bootstrap.test.ts` — Declares hookIds (~812 tok)
+
+## .claude/worktrees/agent-aa6153ab/.planning/phases/01-shell-bridge-and-result-contract/
+
+- `01-03-SUMMARY.md` — Phase 01 Plan 03: Daemon Bootstrap and Client Seam Summary (~1393 tok)
+
+## .claude/worktrees/agent-aa6153ab/src/cli/
+
+- `main.ts` — Exports main (~532 tok)
+
+## .claude/worktrees/agent-aa6153ab/src/cli/commands/
+
+- `client.ts` — Real client command handler. (~304 tok)
+- `daemon.ts` — Real daemon command handler. (~331 tok)
+
+## .claude/worktrees/agent-aa6153ab/src/client/
+
+- `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~218 tok)
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~776 tok)
+
+## .claude/worktrees/agent-aa6153ab/src/daemon/
+
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~724 tok)
+- `server.ts` — Starts the daemon Unix-socket server. (~648 tok)
+
+## .claude/worktrees/agent-aa6153ab/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~1435 tok)
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~1285 tok)
+
+## .claude/worktrees/agent-aaaee833/src/contracts/
+
+- `request.ts` — Broad intent categories classified before any context gathering. (~1028 tok)
+
+## .claude/worktrees/agent-aaaee833/src/intent/
+
+- `router.ts` — D-03: git prefix — query (after trim) begins with 'git ' (literal). (~1212 tok)
+
+## .claude/worktrees/agent-aaaee833/tests/
+
+- `intent-router.test.ts` — Helper: build a minimal NormalizedRequest for testing (~2179 tok)
+
+## .claude/worktrees/agent-aac6444be33ddae2f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-01-SUMMARY.md` — Phase 3.2 Plan 01: Wave 1 TDD Foundation — Test Contracts for FIFO and Zellij Integration Summary (~1811 tok)
+
+## .claude/worktrees/agent-aac6444be33ddae2f/.wolf/
+
+- `anatomy.md` — anatomy.md (~2238 tok)
+- `cerebrum.md` — Cerebrum (~772 tok)
+
+## .claude/worktrees/agent-aac6444be33ddae2f/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4186 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~3908 tok)
+
+## .claude/worktrees/agent-aac9f5d671b3b40db/tests/
+
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~3380 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6022 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/.planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-05-SUMMARY.md` — Phase 8 Plan 05: `qq init provider` Picker Summary (~6349 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/cli/
+
+- `main.ts` — Exports main (~1336 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/cli/commands/
+
+- `init-provider.ts` — The ask-once menu, in D-04 order. The order is the prompt, not a probe chain. (~3726 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/daemon/
+
+- `bootstrap.ts` — Attempts to connect to the daemon socket at `socketPath`. (~2594 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/src/providers/
+
+- `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~2582 tok)
+
+## .claude/worktrees/agent-aaec1b0e4d2a327d4/tests/
+
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~3319 tok)
+- `init-provider.test.ts` — Drives the picker with one line per answer, then ends the input. (~2725 tok)
+
+## .claude/worktrees/agent-ab8a809b1692afb63/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-02-SUMMARY.md` — Phase 09.1 Plan 02: claude -p effort and streamed candidates Summary (~5315 tok)
+
+## .claude/worktrees/agent-ab8a809b1692afb63/src/providers/
+
+- `candidate-stream.ts` — At most this many candidates are streamed per turn (candidateListSchema max). (~190 tok)
+
+## .claude/worktrees/agent-ab8a809b1692afb63/tests/
+
+- `candidate-stream.test.ts` — A recorded `claude -p` answer (Phase 09.1 probes), including the non-ASCII ⓘ. (~1381 tok)
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~8231 tok)
+- `qq-config.test.ts` — parsed: writeConfig (~1070 tok)
+
+## .claude/worktrees/agent-ab9387af30d3d2b0f/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-02-SUMMARY.md` — Phase 3.2 Plan 02: Wave 2 — FIFO-Aware Write and Zellij Branch Implementation Summary (~1955 tok)
+
+## .claude/worktrees/agent-ab9387af30d3d2b0f/src/client/
+
+- `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~550 tok)
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2282 tok)
+
+## .claude/worktrees/agent-ab9387af30d3d2b0f/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~4358 tok)
+
+## .claude/worktrees/agent-aca72d47efd9f909e/src/client/
+
+- `run-foreground.ts` — Selects the deterministic result mode for this Phase 1 seam: (~2352 tok)
+
+## .claude/worktrees/agent-aca72d47efd9f909e/src/ui/
+
+- `CandidateSelect.tsx` — Props for CandidateSelect. (~1190 tok)
+
+## .claude/worktrees/agent-aca72d47efd9f909e/tests/
+
+- `candidate-select.test.tsx` — tests/candidate-select.test.tsx (~1908 tok)
+
+## .claude/worktrees/agent-accab398/.planning/phases/01-shell-bridge-and-result-contract/
+
+- `01-02-SUMMARY.md` — Phase 01 Plan 02: ZSH Bridge and Result Application Summary (~1437 tok)
+
+## .claude/worktrees/agent-accab398/shell/zsh/
+
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~1407 tok)
+
+## .claude/worktrees/agent-accab398/tests/
+
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/qq.zsh`). (~2156 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-03-SUMMARY.md` — Phase 09.1 Plan 03: Streamed candidate IPC Summary (~4943 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/docs/
+
+- `SYSTEM_DESIGN.md` — System Design (~2881 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/src/daemon/
+
+- `server.ts` — Starts the daemon Unix-socket server. (~1938 tok)
+
+## .claude/worktrees/agent-acf756ac8b7aeb0ed/tests/
+
+- `daemon-bootstrap.test.ts` — vi.hoisted runs before vi.mock, giving us a stable reference to the mock fn (~2663 tok)
+- `daemon-fetch.test.ts` — Sends one raw request and collects every reply until `candidates` or `fetch-error`. (~5689 tok)
+
+## .claude/worktrees/agent-ad2dd264e20a6044c/
+
+- `README.md` — Project documentation (~2811 tok)
+
+## .claude/worktrees/agent-ad2dd264e20a6044c/.planning/phases/08-zero-config-install-and-provider-detection/
+
+- `08-06-SUMMARY.md` — Phase 8 Plan 06: Failure Hint and Shipped-Behavior Docs Summary (~3359 tok)
+
+## .claude/worktrees/agent-ad2dd264e20a6044c/docs/
+
+- `EXTENSIONS.md` — QueQue Extension Seams (~2127 tok)
+
+## .claude/worktrees/agent-ad2dd264e20a6044c/src/providers/
+
+- `claude-default.ts` — Returns milliseconds left before `deadline`, floored at zero. (~1333 tok)
+- `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~398 tok)
+
+## .claude/worktrees/agent-ad2dd264e20a6044c/tests/
+
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~11187 tok)
+- `provider-resolver.test.ts` — Declares resetRegistries (~1050 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `09.1-01-SUMMARY.md` — Phase 09.1 Plan 01: Cancellable stream-json claude -p turn Summary (~4826 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/.wolf/
+
+- `anatomy.md` — anatomy.md (~15102 tok)
+- `cerebrum.md` — Cerebrum (~9939 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/cli/
+
+- `main.ts` — Exports main (~1322 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~5020 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/daemon/
+
+- `fetch-client.ts` — How long to wait for `{kind:'fetch-accepted'}` before treating the daemon as stale. (~1455 tok)
+- `server.ts` — Starts the daemon Unix-socket server. (~1614 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/src/providers/
+
+- `claude-cli.ts` — The Claude Code binary, resolved on PATH. (~918 tok)
+- `claude-default.ts` — Returns milliseconds left before `deadline`, floored at zero. (~1131 tok)
+- `claude-process.ts` — One `claude -p` stream-json turn on a child process (Phase 09.1, D-04, D-13). (~2440 tok)
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~2046 tok)
+- `provider.ts` — Per-call options shared by every adapter (Phase 09.1). (~341 tok)
+- `stream-json.ts` — Pure helpers for `claude -p --input-format stream-json --output-format stream-json (~846 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/tests/
+
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~6155 tok)
+- `claude-process.test.ts` — ClaudeTurnFailure: scratchDir, startTurn, stageNames (~1636 tok)
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~10922 tok)
+- `daemon-fetch.test.ts` — FetchOptions: buildEnvelope (~2064 tok)
+
+## .claude/worktrees/agent-ad6a431a4e19000a0/tests/fixtures/
+
+- `fake-claude-stream.mjs` — Writes one event line with its bytes split inside `splitChar`, `gapMs` apart. (~1827 tok)
+
+## .claude/worktrees/agent-adabf5a43d4a36218/.planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
+
+- `03.2-03-SUMMARY.md` — Phase 03.2 Plan 03: qq-question-widget Zellij FIFO Rewrite Summary (~1486 tok)
+
+## .claude/worktrees/agent-adabf5a43d4a36218/shell/zsh/
+
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2159 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/.planning/phases/04-fuzzy-tui-selection-ux/
+
+- `04-03-SUMMARY.md` — Phase 04 Plan 03: Main.ts FIFO Safety Handlers Summary (~1632 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/.wolf/
+
+- `anatomy.md` — anatomy.md (~2675 tok)
+- `memory.md` — Memory (~12152 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/shell/zsh/
+
+- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2709 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/src/cli/
+
+- `main.ts` — Exports main (~1134 tok)
+
+## .claude/worktrees/agent-ae3ff4eb91307526b/tests/
+
+- `client-result.test.ts` — --------------------------------------------------------------------------- (~6651 tok)
+
+## .claude/worktrees/agent-ae9670272fd631ddb/
+
+- `README.md` — Project documentation (~2192 tok)
+
+## .claude/worktrees/agent-ae9670272fd631ddb/.planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/
+
+- `261017-4kt-SUMMARY.md` — Phase quick-261017-4kt Plan 01: README refresh Summary (~1956 tok)
+
+## .claude/worktrees/agent-ae9670272fd631ddb/.wolf/
+
+- `anatomy.md` — anatomy.md (~21191 tok)
+- `cerebrum.md` — Cerebrum (~14148 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/
+
+- `README.md` — Project documentation (~1229 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/.planning/phases/09.1-provider-latency-and-cancellation/
+
+- `.red-0904-mk.cjs` — Builds a RED-evidence record from a captured TAP report (scratch helper, not committed). (~109 tok)
+- `09.1-04-SUMMARY.md` — Phase 09.1 Plan 04: Streamed, abortable SDK request with effort Summary (~4810 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/docs/
+
+- `EXTENSIONS.md` — QueQue Extension Seams (~1541 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/src/providers/
+
+- `claude-default.ts` — Returns milliseconds left before `deadline`, floored at zero. (~1186 tok)
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~2835 tok)
+
+## .claude/worktrees/agent-aee12978fe710dd1a/tests/
+
+- `claude-cli-provider.test.ts` — The runner's is-error shape for the recorded auth failure (Probe 3). (~10001 tok)
+- `claude-provider.test.ts` — Text pieces emitted as `text` events, in order, before finalMessage settles. (~6282 tok)
+- `steering.test.ts` — API routes: GET (3 endpoints) (~2948 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/.wolf/
+
+- `anatomy.md` — anatomy.md (~4895 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~3336 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/src/providers/
+
+- `detect.ts` — Exports DetectedProvider, detectProvider (~480 tok)
+- `index.ts` (~43 tok)
+
+## .claude/worktrees/agent-af8d008deef4b25ca/tests/
+
+- `provider-detect.test.ts` — --------------------------------------------------------------------------- (~1962 tok)
 
 ## .github/workflows/
 
-- `ci.yml` — Push and PR CI (D-14): push `**`, pull_request, workflow_dispatch; per-event concurrency that never cancels main. Jobs changes (code-changed.mjs), checks (lint/typecheck/test:run/build), distro (distro.yml with 6 pinned images), ci-ok (always(), the only required check) and auto-revert (push only, distro failed, not auto-revert/*, contents/pull-requests write + actions read, download-artifact@v8 into runner.temp). Heavy jobs run unless `code == 'false'` (10-05, 10-07). (~1215 tok)
-- `distro.yml` — Reusable distro matrices (workflow_call, input `images` JSON): test-distro runs scripts/ci/test-in-distro.sh, smoke runs scripts/smoke-distro.sh; fail-fast off; `smoke-<slug>` artifacts uploaded always, 14 days (10-05). (~547 tok)
 - `homebrew.yml` — CI: Update Homebrew Tap (~957 tok)
-- `nightly.yml` — `Nightly`: schedule `23 3 * * *` plus workflow_dispatch. Job distro reuses distro.yml with ubuntu/debian/fedora/archlinux/alpine `:latest`; job live (repo guard `k-leumas/queque`) runs `pnpm test:live` with the secret in step env. Read-only token, not a required check (10-08). (~498 tok)
 - `release.yaml` — CI: Release (~1842 tok)
 
 ## .gsd/
@@ -310,7 +727,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~7270 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~6180 tok)
 - `STATE.md` — Project State (~3580 tok)
 
 ## .planning/debug/
@@ -491,31 +908,6 @@
 - `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6435 tok)
 - `COVERAGE.md` — API Coverage — Anthropic Messages API (TS SDK 0.92.0) and Claude Code print mode (2.1.285) (~681 tok)
 
-## .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
-
-- `10-01-PLAN.md` — Artifacts this phase produces (~8944 tok)
-- `10-02-PLAN.md` — Artifacts this phase produces (~3548 tok)
-- `10-03-PLAN.md` — Artifacts this phase produces (~5803 tok)
-- `10-04-PLAN.md` — Artifacts this phase produces (~7397 tok)
-- `10-05-PLAN.md` — Artifacts this phase produces (~6769 tok)
-- `10-06-PLAN.md` — Artifacts this phase produces (~8032 tok)
-- `10-07-PLAN.md` — Artifacts this phase produces (~4522 tok)
-- `10-08-PLAN.md` — Artifacts this phase produces (~3645 tok)
-- `10-09-PLAN.md` — Artifacts this phase produces (~3273 tok)
-- `10-10-PLAN.md` — Artifacts this phase produces (~4637 tok)
-- `10-11-PLAN.md` — Artifacts this phase produces (~6980 tok)
-- `10-12-PLAN.md` — Artifacts this phase produces (~5039 tok)
-- `10-13-PLAN.md` — Artifacts this phase produces (~5222 tok)
-- `10-CONTEXT.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Context (~2801 tok)
-- `10-DISCUSS-CHECKPOINT.json` (~360 tok)
-- `10-DISCUSSION-LOG.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Discussion Log (~825 tok)
-- `10-PATTERNS.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Pattern Map (~3292 tok)
-- `10-RESEARCH.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Research (~22000 tok)
-- `10-REVIEW-FIX.md` — Phase 10: Code Review Fix Report (~1991 tok)
-- `10-REVIEW.md` — Phase 10: Code Review Report (~3965 tok)
-- `10-VERIFICATION.md` — Phase 10: Linux distro CI harness and anonymous telemetry Verification Report (~6316 tok)
-- `COVERAGE.md` — API Coverage — PostHog Cloud EU public capture API, and the GitHub REST API (via `gh` in CI) (~735 tok)
-
 ## .planning/quick/20260522-selection-summary-and-history/
 
 - `PLAN.md` — Quick Task: Selection Summary and History (~824 tok)
@@ -687,49 +1079,35 @@
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
 - `docker-homebrew-smoke-runner.sh` (~491 tok)
 - `semantic-release-user-notes.ts` — semantic-release plugin that writes user-facing changelog notes. (~4122 tok)
-- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~1494 tok)
-- `smoke-distro.exp` — Expect PTY driver, `smoke-distro.exp PASS`: passes default (XDG_RUNTIME_DIR unset), c-locale (LANG=C) and consent (QQ_SMOKE_CONSENT=1: first accept shows `[y/N]`, `n`, buffer executes, second accept never asks). Accept (`command not found: tldr`) and Esc (`restored-42`) anchored on the `QQSMOKE%` prompt redraw; idle-prompt regex allows zsh trailing escapes. Exits 10-16, 17 no consent question, 18 asked twice, 19 unknown pass (10-01, 10-11). (~1705 tok)
-- `smoke-distro.sh` — `smoke-distro.sh IMAGE [--out DIR]` (env QQ_SMOKE_OUT): host entry with the D-16 Docker check, `pnpm build`, `pnpm pack`, and `docker run` of smoke-distro-runner.sh with the tarball, the fake-claude fixture, scripts/ (ro) and the out dir mounted; prints `smoke-distro: PASS|FAIL IMAGE` and on failure the tails of pty-default/c-locale/consent logs (10-01, 10-11). (~773 tok)
 - `smoke-homebrew-docker.sh` (~953 tok)
 - `strip-cursor-coauthor-from-msg.sh` — Removes Cursor co-author trailer lines from a git commit message file or stdin. (~114 tok)
-
-## scripts/ci/
-
-- `auto-revert.sh` — D-15 smoke auto-revert (bash, env-only inputs REPO, BRANCH, HEAD_SHA, BEFORE_SHA, RUN_ID, RUN_URL, ARTIFACTS_DIR, GH_TOKEN). Last green = branch push run with smoke passed, then first-parent ancestor by head_sha, then the before SHA, then the merge base with main; else ::warning::. Restores the tree on `auto-revert/<branch, / to ->` with workflow files kept at HEAD (GITHUB_TOKEN cannot push them), force-pushes, then gh pr edit+comment if open else create. Body: failing jobs, run URL, doctor.json and log tails, sanitized, 60000-char cap (10-07). (~3562 tok)
-- `code-changed.mjs` — CI doc-only path filter: `isDocOnlyPath` (`*.md`, LICENSE, .planning/, .wolf/, docs/, .github/ISSUE_TEMPLATE/), `codeChanged(paths)`. Base is QQ_CHANGES_BASE (non-zero, present), else resolveBaseRef().mergeBase. Writes `code=true|false` to $GITHUB_OUTPUT and fails open to true; exits 1 only if $GITHUB_OUTPUT is unwritable (10-05). (~790 tok)
-- `install-distro-deps.sh` — POSIX sh, run as root: installs git, zsh, jq, expect, procps and Node 24 per /etc/os-release ID (apk on alpine; nodejs.org tarball checked against SHASUMS256.txt on ubuntu/debian; dnf nodejs24 on fedora; pacman nodejs-lts-krypton on arch), plus pnpm from packageManager unless --no-pnpm. Exits 2 unsupported distro, 3 install failure, 64 usage (10-01). (~1156 tok)
-- `test-in-distro.sh` — `test-in-distro.sh IMAGE [vitest args]`: pipes `git archive HEAD` into `docker run`, then install-distro-deps, `pnpm install --frozen-lockfile`, and `pnpm test:run` or `vitest run ARGS`. D-16: without Docker it warns and exits 0 locally, exits 1 with CI set (10-01). (~450 tok)
 
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~5619 tok)
+- `queque.zsh` — QueQue ZLE widget + shell result contract: `??` trigger, qq lookup, instant first frame (quick 261011-jbh: `_qq_instant_frame`, `_qq_inline_instant_frame_bytes`, `_qq_paint_inline_instant_frame` before mktemp, `_qq_write_pane_instant_frame` + `QQ_PANE_PAINT_SCRIPT` `/bin/sh` pane wrapper, `QQ_INSTANT_FRAME=0` kill switch, inline clear on non-zero client exit), session dir, request.json, `_qq_write_tool_handoff`, Zellij FIFO pane / inline foreground client, `_qq_apply_result_str`. (~4840 tok)
 
 ## src/
 
-- `env.d.ts` — Declares the build defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_TELEMETRY_KEY__ and __QUEQUE_TELEMETRY_HOST__ (10-04). (~45 tok)
+- `env.d.ts` — Declares __QUEQUE_COMMIT__ (~24 tok)
 
 ## src/cli/
 
 - `launcher.ts` — CLI launcher built as dist/cli/main.js (quick 261011-jbh, LD-2): Node built-ins only; enables the module compile cache in `${XDG_CACHE_HOME:-~/.cache}/queque/node-compile-cache` (0700; queque parent + leaf lstat-checked: real dir, owned by getuid, no group/world write; skipped when NODE_COMPILE_CACHE / NODE_DISABLE_COMPILE_CACHE is set; silent on failure), then imports `new URL('./app.js', import.meta.url)` and awaits `main()`. (~955 tok)
-- `main.ts` — Exports main; the `client` action calls `process.exit(process.exitCode ?? 0)` after clientCommand (D-15, 09.1-01). The `init <shell>` help names `qq init zsh && source ~/.zshrc` (261017-5q6). Phase 10: registers `qq doctor [--json]` (10-03) and `qq telemetry [action]` after it (10-09). (~1300 tok)
+- `main.ts` — Exports main; the `client` action calls `process.exit(process.exitCode ?? 0)` after clientCommand (D-15, 09.1-01). The `init <shell>` help names `qq init zsh && source ~/.zshrc` (261017-5q6). (~1300 tok)
 
 ## src/cli/commands/
 
 - `client.ts` — Real client command handler. (~394 tok)
-- `daemon.ts` — Daemon command handler: `--ensure` path or `startDaemonServer`; `enablePrewarm()` after the server starts (daemon-only, never at module top level or in `--ensure`); exported `trackConnections(server)` (Set of open sockets via `connection`) and `shutdownDaemon(server, connections, {exit, graceMs})` (WR-03: `disablePrewarm()` so an in-flight refill spawns nothing, destroys open sockets so their turns abort, then exits after `SIGKILL_GRACE_MS`+100 when any were in flight); SIGTERM/SIGINT call it (09.1-05). Phase 10: creates and starts the telemetry buffer; shutdownDaemon flushes it synchronously with a 1 s bound (10-06). (~510 tok)
-- `doctor.ts` — `qq doctor [--json]`: injectable DoctorDeps (defaultDoctorDeps spawns zsh -fc / zsh -ic with stdin ignored, resolving on exit + grace; PATH scan; /tmp mkdtemp probe; lstat owner; pingDaemonFetchCap; loadProviderPin; detectProvider; telemetryStatus), runDoctorChecks (12 checks, D-17/D-19/D-20: jq and zsh < 5.0 fail, zsh 5.0-5.7 warn; `telemetry` last, always ok), parseZshBindings, formatDoctorReport (✓/⚠/✗ + ` — fix:`), doctorCommand (sets process.exitCode). Output is fixed copy only: it goes into public revert PR bodies (10-03, 10-09). (~4749 tok)
+- `daemon.ts` — Daemon command handler: `--ensure` path or `startDaemonServer`; `enablePrewarm()` after the server starts (daemon-only, never at module top level or in `--ensure`); exported `trackConnections(server)` (Set of open sockets via `connection`) and `shutdownDaemon(server, connections, {exit, graceMs})` (WR-03: `disablePrewarm()` so an in-flight refill spawns nothing, destroys open sockets so their turns abort, then exits after `SIGKILL_GRACE_MS`+100 when any were in flight); SIGTERM/SIGINT call it (09.1-05). (~510 tok)
 - `init-provider.ts` — `qq init provider` picker on /dev/tty (Claude, OpenAI, Ollama; Enter = 1). writeProviderPin then restartDaemon; dead ends print next step and exit 1. Exports PROVIDER_MENU, OLLAMA_DOWNLOAD_URL, runProviderPicker(io, deps), providerInitCommand, dispatchInit. (~2900 tok)
 - `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~732 tok)
-- `telemetry.ts` — `qq telemetry [status|on|off|show]` (D-06, D-09, D-12, D-22): injectable TelemetryCliDeps, requestDaemonOnce(socketPath, request, timeoutMs=500) (one-shot, schema-validated, null on error/close/timeout), telemetryCommand(action, deps). Prints state, variable names and the endpoint host only; show prints the daemon bodies byte for byte; off also sends telemetry-reset (10-09). (~2028 tok)
 
 ## src/client/
 
 - `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): SAVE_CURSOR/RESTORE_CURSOR/ERASE_BELOW/CURSOR_HOME/SYNC_UPDATE_BEGIN, INLINE_SURFACE_CLEAR (ESC 8 + CSI J on the client's own save), PANE_SURFACE_CLEAR (CSI H + CSI J), `inlineScrollReserve(lines)` (byte-identical to the widget's reserve), `armInstantFrameTakeover(stream, clear)` → `{ clearNow }` (inserts the clear into the first visible write, after a leading `CSI ?2026 h`). (~1291 tok)
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~6967 tok)
-- `telemetry-consent.ts` — D-09 one-time consent ask: CONSENT_PROMPT (`... [y/N] `), CONSENT_TIMEOUT_MS = 30_000, shouldAskTelemetryConsent({outcome, state, blockedBy, hasTty}) (accepted, never asked, no env gate, tty), askTelemetryConsent({input, output}, timeoutMs) on the tty streams: raw mode, first character of the first chunk, only y/Y is yes, settles once, then raw off, pause, listener removed, timer cleared, every wrapped row erased. Never stdout, never rejects (10-11). (~1135 tok)
-- `telemetry-events.ts` — Client telemetry: TELEMETRY_CLIENT_SEND_MS = 250, QueryOutcomeRecord, buildQueryOutcomeEvent/buildErrorEvent/buildEnvironmentEvent (strict-schema parsed, enums and counts only), sendTelemetryEvents (fire-and-forget socket lines, never rejects), reportClientTelemetry (gates on effectiveTelemetry in the client env first; environment, errors, outcome; never throws) (10-10). (~1482 tok)
+- `run-foreground.ts` — Foreground client: request parse, tool handoff read, llm branch opens /dev/tty streams first, writes `inlineScrollReserve(MODAL_VIEWPORT_LINES)` and arms `armInstantFrameTakeover` (inline / Zellij clear) before classify/context/render; `clearNow()` in pre-frame failure paths; `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk), Ink modal, clearScrollReserve = INLINE_SURFACE_CLEAR, ⓘ annotation, buildShellBuffers; `fetchAbort` AbortController aborted by onSelect/onCancel/cleanupOnSignal, no rerender once resolved, AbortError → `fetch aborted` log only (09.1-01); 09.1-07: streams rows via onCandidate (`streamed`, rerender per arrival as `'arriving'`, final list `'complete'`, `first candidate received` log); a late failure with rows rerenders them as `'partial'` (`llm request failed after rows`, D-16); `resolved` drops late rows (D-14) (~4920 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Zellij floating-pane sizing: `readMaxZellijPaneHeight` (QQ_PANE_HEIGHT, default 24), `resolveZellijPaneHeight` (content + 2 frame rows `ZELLIJ_FLOATING_FRAME_LINES` + 1 Ink cursor row `INK_TRAILING_CURSOR_ROWS`, min 6, capped), `formatZellijPaneId`; `syncZellijFloatingPaneHeight` runs a serialized latest-wins queue: one `zellij action change-floating-pane-coordinates` at a time, heights requested meanwhile collapse to the newest, slot released on exit, on child error (no crash when zellij is missing) or after `RESIZE_SETTLE_TIMEOUT_MS` (2000, kills the hung action; timer unref'd); `resetZellijPaneHeightCache` (tests only). (~1900 tok)
 
@@ -740,34 +1118,29 @@
 ## src/contracts/
 
 - `candidates.ts` — Zod schemas: commandCandidateSchema, candidateListSchema (~104 tok)
-- `doctor.ts` — `qq doctor --json` contract (D-18): DOCTOR_CHECK_IDS (12, stable: add, never rename; `telemetry` last), DOCTOR_STATUSES ok/warn/fail, strict doctorReportSchema `{version:1, ok, qqVersion, platform, checks}`, doctorExitCode (1 iff a check failed) (10-03, 10-09). (~501 tok)
-- `ipc.ts` — IPC request/response zod schemas: `fetch-candidates` with optional `stream: true`, streamed `{kind:'candidate'}` row kind, `{kind:'candidates'}` done signal; pong capability flags `fetchCandidates`, `installedTools`, `streamCandidates` (09.1-03). Phase 10: telemetry-event/telemetry-show/telemetry-reset requests, the telemetry-buffer response, the informational pong `telemetry` flag, fetch-error `errorKind` (10-06). (~550 tok)
+- `ipc.ts` — IPC request/response zod schemas: `fetch-candidates` with optional `stream: true`, streamed `{kind:'candidate'}` row kind, `{kind:'candidates'}` done signal; pong capability flags `fetchCandidates`, `installedTools`, `streamCandidates` (09.1-03). (~550 tok)
 - `request.ts` — Intent/base-context/envelope schemas; `contextChunkSchema` incl. the lenient `installed-tools` variant (filters non-catalog names, rejects non-name strings and > 512 entries) and the client-side `strictInstalledToolsChunkSchema`. (~1500 tok)
 - `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
-- `telemetry.ts` — Telemetry allow list (D-10, D-11): strict zod schemas for qq_query_outcome / qq_error / qq_environment (client, wire, batch) and the enums ERROR_KINDS, PROVIDER_KINDS, QUERY_OUTCOMES, OS_KINDS, ARCH_KINDS, DISTRO_IDS, TELEMETRY_EVENTS, TELEMETRY_LIB, TELEMETRY_BATCH_MAX. No latency, no free-form strings (10-04). (~1638 tok)
 
 ## src/daemon/
 
-- `bootstrap.ts` — Ensures a current daemon: ping must advertise `fetchCandidates`, `installedTools` AND `streamCandidates` (else replace the stale listener; no reply = keep), spawn if needed (09.1-03). Phase 10 Defect 1: exports `parseLsofPidList` (strict: every line `^\d+$`, else [] and debug `lsof output ignored`), `listenerPids` and `replaceStaleListener`; never replaces a daemon for lacking the pong `telemetry` flag (10-01, 10-06). (~2010 tok)
-- `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`; `requestDaemonFetch(…, timeoutMs?, options?)` sends `stream: true`, utf8-decodes, forwards `candidate` rows to `onCandidate`, treats socket `close` as IpcTransportError, rejects with abortError() on signal abort and destroys the socket; `fetchCandidatesForUi(…, options?)` never falls back in-process after an abort or after a row arrived (D-16) (09.1-01/03). Phase 10: re-tags fetch-error errorKind onto the thrown error; the in-process fallback tags pin_invalid (10-06). (~1590 tok)
-- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates, installedTools, streamCandidates: true}`; socket `setEncoding('utf8')` so split multi-byte chars survive, 256 KB request cap measured in bytes (WR-01); drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter inside a Promise chain with a per-connection AbortController (socket `close` aborts it; aborted fetches log `fetch aborted` and write nothing); streams `candidate` rows only for `stream: true` (`replied candidate`; rows after the client left are `candidate dropped`); final `candidates` is the done signal (09.1-01/03). Phase 10: telemetry-event/show/reset cases; fetch-error carries errorKind (pin_invalid for resolution throws) (10-06). (~1820 tok)
-- `telemetry-buffer.ts` — Daemon telemetry buffer (D-07, D-12, D-22): createTelemetryBuffer(deps) → { enqueue, flush, snapshot, reset, start, stop }, sendBatch(host, body, fetchImpl); TELEMETRY_FLUSH_INTERVAL_MS 60000, _THRESHOLD 20, _BUFFER_CAP 100, _SEND_TIMEOUT_MS 3000, _SHUTDOWN_WAIT_MS 1000. Gate re-read at enqueue/snapshot/flush, one shared serializer (show is byte-exact), one POST in flight, memory only, drop on failure (10-06). (~2448 tok)
+- `bootstrap.ts` — Ensures a current daemon: ping must advertise `fetchCandidates`, `installedTools` AND `streamCandidates` (else replace the stale listener; no reply = keep), spawn if needed (09.1-03). (~2010 tok)
+- `fetch-client.ts` — Asks the daemon for candidates; fails in 800ms without `fetch-accepted`; `requestDaemonFetch(…, timeoutMs?, options?)` sends `stream: true`, utf8-decodes, forwards `candidate` rows to `onCandidate`, treats socket `close` as IpcTransportError, rejects with abortError() on signal abort and destroys the socket; `fetchCandidatesForUi(…, options?)` never falls back in-process after an abort or after a row arrived (D-16) (09.1-01/03). (~1590 tok)
+- `server.ts` — Daemon Unix-socket server; pong `{fetchCandidates, installedTools, streamCandidates: true}`; socket `setEncoding('utf8')` so split multi-byte chars survive, 256 KB request cap measured in bytes (WR-01); drops lines failing ipcRequestSchema; runs `fetch-candidates` on the warm adapter inside a Promise chain with a per-connection AbortController (socket `close` aborts it; aborted fetches log `fetch aborted` and write nothing); streams `candidate` rows only for `stream: true` (`replied candidate`; rows after the client left are `candidate dropped`); final `candidates` is the done signal (09.1-01/03). (~1820 tok)
 
 ## src/providers/
 
 - `candidate-stream.ts` — Incremental JSON-array candidate scanner for streamed text deltas (09.1-02): `createCandidateScanner(onCandidate)` changes no state before the first `[`, tracks depth, strings and escapes, emits only commandCandidateSchema-valid objects that close at depth 2, stops at the array close or after `MAX_STREAMED_CANDIDATES` (5); `parseStrictCandidateList(text)` accepts a fenced or bare array of 1-5 candidates, else undefined. Used by the CLI and SDK paths. (~900 tok)
 - `claude-cli.ts` — `CLAUDE_COMMAND`, `buildClaudeCliArgv(envelope)` (`-p --input-format stream-json --output-format stream-json --verbose --include-partial-messages --effort <resolveEffort()> --safe-mode --tools '' --no-session-persistence --system-prompt buildSystemPrompt(envelope)`; no prompt, no `--model`, never bare); `fetchClaudeCliCandidates(envelope, budget, options)` builds a per-query `PrewarmSpec`, `takePrewarmed` before the turn (`prewarm hit` / `prewarm miss {reason}`) and `schedulePrewarm` in `finally`; one cold retry (`prewarm retry cold`) only for a warm `exit-without-result` with no streamed rows; runs `runClaudeTurn` with the prompt on stdin and `signal`; with `onCandidate`, text deltas feed `createCandidateScanner` and rows pass on only while the signal is live (`cli first candidate` once); final list = strict parse, then streamed rows, then `parseCandidates`; logs `cli spawned|init|first delta|first candidate|result|exit|aborted|timed out` with `ms` and `warm` (09.1-01/02/05). WR-02: warm turns get `warmInitDeadlineMs(spawnedAt)` (`WARM_INIT_DEADLINE_MS` 1500 + rest of `PREWARM_BOOT_ALLOWANCE_MS` 3000 for a young child) and `stale-prewarm` is retried cold too; a stall after `init` is still a timeout. WR-01-r2: the final list is `finalCandidateList(text, streamed, finishedNormally, { stopReason })`; a `truncated` runner failure (`isTruncatedFailure`, caught around both attempts, never retried cold) feeds its stdout with finishedNormally false, so only strict/streamed/closed rows or TRUNCATED_RESPONSE_MESSAGE, never the prose fallback (~2050 tok)
-- `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`; forwards FetchOptions to the CLI path; an AbortError is logged `claude-cli aborted` and re-thrown unmapped (09.1-01); the SDK branch passes `options` (`remainingMs(deadline), options`) as a direct return outside the CLI try/catch, so an SDK AbortError is never mapped by hardError (09.1-04); WR-01-r2: hardError returns a TRUNCATED_RESPONSE_MESSAGE error unchanged before the ENOENT/timeout/D13 mapping, so `/login` users see the same truncation copy as the SDK path Phase 10: `lookupApiKey` exported; mapped errors are tagged with withErrorKind (10-06). (~1100 tok)
+- `claude-default.ts` — SDK-first when a usable API key exists, otherwise `claude -p` for `/login`; forwards FetchOptions to the CLI path; an AbortError is logged `claude-cli aborted` and re-thrown unmapped (09.1-01); the SDK branch passes `options` (`remainingMs(deadline), options`) as a direct return outside the CLI try/catch, so an SDK AbortError is never mapped by hardError (09.1-04); WR-01-r2: hardError returns a TRUNCATED_RESPONSE_MESSAGE error unchanged before the ENOENT/timeout/D13 mapping, so `/login` users see the same truncation copy as the SDK path (~1100 tok)
 - `claude-exec.ts` — Old argv `execFileAsync` runner on `spawn`. Unused by src/ since 09.1-01 (kept with its test; removal deferred). (~1256 tok)
 - `claude-prewarm.ts` — One-slot `claude -p` prewarm pool (09.1-05, D-11/D-12), disabled by default: `prewarmKey` (sha256 of `{command, cwd, argv}`), `enablePrewarm`, `disablePrewarm`, `schedulePrewarm(spec)` (refill after every settle; never at daemon start or take time), `takePrewarmed(spec)` (`{child}` or `{miss: disabled|empty|dead|cwd|prompt}`; one-shot `diedIdle` flag gives `dead`), `retirePrewarmed(graceMs?)`, `prewarmSnapshot`; exit/error handlers only clear the slot, never respawn; logs `prewarm spawned|retired|exit`. a hit is `{child, spawnedAt}` (WR-02); daemon shutdown uses `disablePrewarm` (WR-03) (~1760 tok)
 - `claude-process.ts` — One `claude -p` stream-json turn on a child (09.1-01): `runClaudeTurn` (stdin user line + `stdin.end()`, settle on zod-validated `result`, is_error gate → `is-error` with result text as stdout, budget timer rejects at kill time with killed/SIGTERM, abort → abortError(), spawn-error, exit-without-result, invalid-result; stages spawned/init/first-delta/result/exit/aborted/timed-out), `spawnClaudeChild`, `terminateChild` (SIGTERM then SIGKILL after `SIGKILL_GRACE_MS` 1500); declares `POST_RESULT_BACKSTOP_MS`, `STDERR_CAP_BYTES` for plan 06. argv stays opaque here; 09.1-06: `ClaudeTurnOptions.backstopMs` (2000) and `killGraceMs` (1500); stdout carry overflow (1 MiB) kills the child and rejects `invalid-result`; stderr capped at `STDERR_CAP_BYTES` (64 KiB); every `result` event (incl. is_error/invalid) arms an unref'd backstop `terminateChild`, cleared on exit. 09.1-05: `ClaudeTurnOptions.child` runs a turn on a prewarmed child (no spawn, no `spawned` stage); exported `isRunning(child)`; review WR-02: `initDeadlineMs` option fails a turn with no `init` in time as `stale-prewarm` (stage `init-timed-out`, terminates the child, `killed: false`). Review WR-01-r2: a non-error `result` whose stop_reason is present and fails `isNormalStopReason` (null included) rejects as `truncated` (stdout = result text, `ClaudeTurnFailure.stopReason`, no `result` stage, backstop still armed); an absent key counts as end_turn (~3400 tok)
 - `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~5476 tok)
 - `detect.ts` — Returns whether Claude CLI auth appears present without reading secrets. (~811 tok)
-- `error-kind.ts` — withErrorKind(error, kind) sets a non-enumerable errorKind; errorKindOf(error) returns the tag, else TRUNCATED → response_truncated, UNPARSEABLE → parse_failed, else unknown. Never maps message text (10-06). (~410 tok)
 - `index.ts` (~86 tok)
 - `ollama.ts` — Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. (~3793 tok)
 - `openai.ts` — The only host an OpenAI key is ever sent to. A constant: never derived from the pin or (~4975 tok)
-- `provider-kind.ts` — resolveProviderKind(deps?): openai/ollama from the pin; a claude pin or no pin is claude-sdk when lookupApiKey() finds a key, else claude-cli; an invalid pin or a throw is unknown. Injectable loadPin and hasApiKey (10-10). (~307 tok)
 - `provider-pin.ts` — On-disk pin format version; bump it (with a reader migration) to reshape the file. (~2612 tok)
 - `provider.ts` — Per-call options shared by every adapter (Phase 09.1). (~1416 tok)
 - `resolver.ts` — Returns the Claude-default composite registered as `claude-cli`. (~352 tok)
@@ -785,12 +1158,9 @@
 - `command-words.ts` — Hand lexer (`lexHand`: quotes, escapes, `\`-newline continuations removed, heredoc bodies skipped up to the delimiter line, substitutions, redirs, placeholders, comments) + `commandWords` classifier (WRAPPERS with short+long value options, PRECOMMAND_OPTIONS for `exec`/`command`, quoted wrapper operands with whitespace recursed as command strings, explicit lookup-only mode for `command -v|-V` and LOOKUP_BUILTINS type/which/whence/where, reserved words, builtins) + safe `extractCommandWords` (Phase 9, D-03). (~4666 tok)
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~1050 tok)
-- `environment-shape.ts` — collectEnvironmentShape(input?) maps platform/arch/os-release ID/QQ_ZSH_VERSION/node major/ZELLIJ onto the telemetry enums; an unknown ID becomes `other`; returns null if the shape would not validate. Injectable env, platform, arch, nodeVersion, readOsRelease (10-10). (~868 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
-- `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. Phase 10: also exports telemetryConfigSchema (`telemetry: { enabled, asked, installId? }`) (10-04). (~1899 tok)
+- `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. (~1899 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
-- `telemetry-config.ts` — Anonymous telemetry consent state (phase 10, D-06, D-09). (~2510 tok)
-- `telemetry-endpoint.ts` — resolveTelemetryEndpoint(env): baked host/key with usableSecret QQ_TELEMETRY_HOST/QQ_TELEMETRY_KEY overrides; null for an empty or non-phc_ key, a non-http(s) host, or a host with credentials (10-04). (~407 tok)
 - `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), per-installer `PACKAGE_ALIASES` (brew/apt/dnf/pacman maps; null = no package installs that binary) + `packageFor(tool, installer)` (Homebrew-aliased tools with no Linux entry are null, never guessed), `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/unknown packages/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
 - `tool-catalog.ts` — Shipped 196-name allow list of notable CLI tools (spike 003 seed, frozen), `CATALOG_SET`, `installedCatalogTools(isInstalled)` (sorted in Node), shape constants `TOOL_NAME_RE` / `TOOL_NAME_MAX_LENGTH` (64) / `INSTALLED_TOOLS_MAX` (512). Zero imports. (~1000 tok)
 
@@ -810,7 +1180,6 @@
 
 ## tests/
 
-- `auto-revert.test.ts` — 13 tests for scripts/ci/auto-revert.sh against temp repos (bare remote, merge commit) with the gh double on PATH; skips without bash (10-07). (~4620 tok)
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (a) the lbuffer never filters (G-09.1-5: `noMatch` is the regression oracle); (d) a matching lbuffer `smt2` draws and reports the full list (G-09.1-5); (e) "header row" (plain, flagged, matching lbuffer; all draw query ''): pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases; `mountStream` helper and the 09.1-07 streamed-rows describe (D-06 to D-10, D-16, D-17); G-09.1-5 Pitfall 9 rewrite (the lbuffer never filters streamed rows, FILTER shows the placeholder); WR-04 (lbuffer `gr`, typed `grep` survives a non-matching first row, never `grgrep`); WR-05 (a later list without the highlighted row keeps the highlight position; typing/Backspace move it to row 0); WR-06 (typed `grep`, up/down on an empty filtered list, then a matching row arrives highlighted); `filterLine` helper + the `G-09.1-5: FILTER opens empty` describe (UAT case `show me how to use z3` + typed `smt`, empty lbuffer, typed text equal to the lbuffer); CR-01 one-chunk Backspace describe (`ab`+2 DEL, `a`+DEL, mid-stream `smtx`+DEL / `q`+DEL, each ONE stdin push); CR-01 invariance `it.each` (Down+Enter, corrected filter+Enter, moved highlight+typed key, filtered Down+Enter, empty-filter Backspace, Down+Tab+DEL+Enter on a flagged row: one key per read vs one read insert the same row) (~13900 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search (initialQuery never filters, a typed query does), `G-09.1-5 FILTER opens empty` describe (query state '' whatever initialQuery is; supersedes 03.1 D-01/D-02), zero-match Enter guard via typed `zzz`, Tab install toggle, Enter/Esc, effect count (2; WR-05 moved the query reset into the key handlers). Cannot see effect ordering — use candidate-select-layout.test.tsx for that.; CR-01 same-closure case (typed text + Backspace on one handler closure); CR-01 same-closure Down+Enter (wrapping navigation) and Tab+Enter (Tab install form) cases (~6650 tok)
@@ -822,8 +1191,7 @@
 - `claude-process.test.ts` — runClaudeTurn against real `fake-claude-stream.mjs` children: settles on result before exit, one stdin user line and no prompt in argv, SIGTERM abort drops later deltas and exit 143, is_error auth rejection; afterEach SIGKILLs recorded pids. Plans 05/06 extend it; 09.1-06 `runClaudeTurn failure paths` (timeout 143 with a 1000 ms budget, backstop SIGKILL, double settle, stdout-flood, exit-no-result, die-before-init, ENOENT, zero budget, pre-aborted signal, stderr cap); 09.1-05 prewarmed-child turns; WR-02 init deadline (hang-before-init → stale-prewarm + SIGTERM; never fires after init on sigterm-slow) (~3830 tok)
 - `claude-provider.test.ts` — SDK adapter tests with a fake MessageStream (`text` listeners, `finalMessage`, APIUserAbortError on abort; `create` throws), debug-log mock, per-test QQ_CONFIG_FILE: `{ timeout, signal }`, onCandidate order, final-list precedence, abort, no thinking/sampling keys, effort/`output_config` and the `sdkOutputConfig` table (09.1-04). fake stream `stopReason`; WR-07 truncation cases (fail closed on fragment / empty text, keep closed rows) (~5500 tok)
 - `claude-stream-json.test.ts` — Parser tests: chunk splits, split ⓘ through one StringDecoder, blank/non-JSON lines, maxCarryBytes/onOverflow (byte-counted, once, later input ignored), default 1 MiB cap, textDeltaOf, isInitEvent (09.1-06). (~1390 tok)
-- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; Esc during loading (onCancel from the ink render mock) writes cancel, aborts the adapter signal, never rerenders; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM); `inkMock.autoSelect` switch; streaming, partial-list and AbortError-after-Esc client tests (09.1-07) Phase 10: mocks ../src/client/telemetry-events.js (reportClientTelemetryMock); describe `runForegroundClient: telemetry outcome` (10-10); mocks telemetry-consent/telemetry-config with importOriginal spreads (real gates, fake prompt and config IO, default asked true) and describe `runForegroundClient: telemetry consent (D-09)` (call order unmount < ask < mark < report, env gates, write failure) (10-11). (~11100 tok)
-- `code-changed.test.ts` — 8 tests spawning scripts/ci/code-changed.mjs in temp git repos (branch `topic`, no main): doc-only, src, workflow, deletion, zero base, unknown base, merge-base fallback, no git repo (10-05). (~1272 tok)
+- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; Esc during loading (onCancel from the ink render mock) writes cancel, aborts the adapter signal, never rerenders; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM); `inkMock.autoSelect` switch; streaming, partial-list and AbortError-after-Esc client tests (09.1-07) (~11100 tok)
 - `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms (best of up to 3 runs, logged); 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
 - `command-words.test.ts` — Spike 002 40-case table + 09-REVIEW regression table (zsh -f `${(k)builtins}` builtins), kind classification, D-06 install words, robustness (8193 chars, prototype keys, `"rg\`), frozen lexHand op/redir/comment token contract incl. heredoc-body and continuation tokens. (~1700 tok)
 - `context-pipeline.test.ts` — Declares buildRequest (~1550 tok)
@@ -831,20 +1199,14 @@
 - `daemon-bootstrap.test.ts` — ensureDaemon keep/replace/spawn cases incl. pongs lacking `fetchCandidates`, `installedTools` or `streamCandidates` (replace), all three (keep); server pong advertises three flags (09.1-03). (~2330 tok)
 - `daemon-fetch.test.ts` — Real `startDaemonServer` fetch IPC: candidates, adapter errors, in-process fallback, installed-tools chunk accepted, catalog drift filtered (`qqfuturetool` dropped), malformed chunk ignored (not accepted < 2 s), abort after fetch-accepted reaches the adapter signal via socket close, no fallback after abort; request decoding (WR-01: request split inside a 3-byte char decodes intact; 270 KB/90k-unit request is refused); raw-socket and scripted-listener helpers; streaming (D-05/D-14: `candidate` rows only for `stream: true`, `candidate dropped` after close) and no-re-query-after-rows (D-16) cases (09.1-03); daemon shutdown (WR-03: in-flight fetch aborted and its refill spawns nothing; idle child retired, pool off, immediate exit) (~6504 tok)
 - `debug-log.test.ts` — Declares appendFileMock (~484 tok)
-- `doctor.test.ts` — Doctor status/exit/JSON/formatter/command tests with a healthy-baseline fake DoctorDeps (one dependency overridden per case), telemetry row cases, canary and install-id no-leak tests, real read-only defaultDoctorDeps probes (10-03, 10-09). (~5601 tok)
 - `env-file.test.ts` — root: projectWithEnvLocal, homeUnderPlantedFile (~1365 tok)
-- `environment-shape.test.ts` — Enum mapping, zsh/node parsing, null on an out-of-bound node, no env value leaks (10-10). (~946 tok)
-- `error-kind.test.ts` — withErrorKind/errorKindOf units; claude-default CLI/SDK mapping via importOriginal-spread mocks of claude.js and claude-cli.js; daemon fetch-error errorKind and pin_invalid; fetch-client re-tagging; the in-process fallback (10-06). (~2776 tok)
-- `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
-- `lsof-busybox.test.ts` — Defect 1 regression: parseLsofPidList cases, plus a fake busybox `lsof` on PATH (written and warmed once in beforeAll, sacrificial pid via QQ_FAKE_LSOF_PID) naming a `sleep 30` child that must survive replaceStaleListener; both replace tests assert the `lsof output ignored` log (10-01, bug-428). (~1170 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
 - `modal-layout.test.ts` — wrapText, filterCandidates, estimateCandidateSelectLines (flag rows, legend, install toggle), explanationText, missingToolsLegend, candidateKey; MODAL_VIEWPORT_LINES fits 3 two-line candidates + header + ⚠ footer + ⓘ legend (18); heldPaneLines (narrowing, a typed filter under the query header (G-09.1-5), ⚠ row then filter keeps height, grows past held, hidden toggled row counts, loading/error); streamed list status-row estimator tests (09.1-07) (~5030 tok)
 - `ollama-provider.test.ts` — API routes: GET (1 endpoints) (~9463 tok)
 - `openai-provider.test.ts` — The `reasoning_effort` of every request, in order (undefined when the key is absent). (~9647 tok)
-- `prewarm-sleep.test.ts` — D-04 stale-prewarm simulation (folded 09.1 IN-03): real pool + real runner via a `claude` PATH shim that execs fake-claude-stream.mjs; wake (SIGSTOP+SIGCONT → hit), frozen + Date aged 60 s (hit → cli init timed out → prewarm retry cold, pid gone, new idle pid), SIGKILLed idle (miss dead); only Date faked (10-02). (~1903 tok)
 - `privacy-filter.test.ts` — Returns the test config file path set in beforeEach. (~2471 tok)
 - `provider-detect.test.ts` — --------------------------------------------------------------------------- (~3034 tok)
 - `provider-pin.test.ts` — original: resetRegistries, writePin (~3837 tok)
@@ -856,33 +1218,13 @@
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d); adapters (b) model-call markers include `'messages.stream('` (09.1-04) (~2580 tok)
 - `structured-output.test.ts` — ModelTurn: turn, timeout, fired (~1991 tok)
-- `telemetry-buffer.test.ts` — Gating (CI, DO_NOT_TRACK, disabled, no id, null endpoint), byte-exact pending, fixed properties, environment dedupe, threshold, cap with an in-flight send, fake-timer interval with hasRef false, drop on failure, install-id filter, reset, count-only debug log (10-06). (~2913 tok)
-- `telemetry-cli.test.ts` — qq telemetry status/on/off/show with a temp config and an injected daemon; invalid-JSON refusal keeps the bytes; unknown action; canary no-leak; requestDaemonOnce against real `/tmp/qq-tel-cli-*.sock` servers (10-09). (~3252 tok)
-- `telemetry-config.test.ts` — Env gates, uncached read, atomic write modes, install id lifecycle (UUID v4, deleted on off), invalid-JSON refusal, qq-config leniency; temp QQ_CONFIG_FILE per test (10-04). (~2618 tok)
-- `telemetry-consent.test.ts` — D-09 gate truth table (accepted/escaped/error/undefined, asked, each env gate, no tty) and the one-key prompt with an EventEmitter tty fake: y/Y yes; n, Enter, Esc, Ctrl-C, other keys no; first character only; settles once; 30 s fake-timer timeout; raw mode off, paused, no listener, timer cleared; wrapped-row erase; raw-mode refusal is a silent no (10-11). (~1534 tok)
-- `telemetry-contract.test.ts` — Allow-list, forbidden-field, free-form-value, pinned-keys and no-timing (recursive schema walk) tests (10-04). (~3626 tok)
-- `telemetry-endpoint.test.ts` — Endpoint resolution under the vitest defines (empty key, `http://127.0.0.1:9`): overrides, trimming, trailing slashes, rejected keys and hosts (10-04). (~642 tok)
-- `telemetry-events.test.ts` — Provider kind, builders, client gate (no config, disabled, DO_NOT_TRACK, QQ_TELEMETRY=0, CI), sender timeout and real-server delivery, and the end-to-end leak test (`secret-token-xyz`, `/home/alice`, kubectl, ENOENT) (10-10). (~3877 tok)
-- `telemetry-ipc.test.ts` — Telemetry IPC kinds against a real socket server, the telemetry pong flag, fetch-error errorKind parsing, and the shutdownDaemon flush order and 1 s bound (fake setTimeout) (10-06). (~2611 tok)
 - `tool-awareness.test.ts` — Characterization tests for missing-tool semantics, installer choice, package aliases, install forms/wrapping/blocked plans and annotateCandidates (incl. CR-02: no install form for a wrapper option value such as `sudo --user root`). (~3573 tok)
 - `tool-handoff.test.ts` — readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory. (~1431 tok)
 - `zellij-pane-resize.test.ts` — argv, height cap, trailing cursor row mapping (QQ_PANE_HEIGHT=24: 15→18, 21→24, 22→24, min 6), pane-id format, dedupe, outside-Zellij no-op; fake Zellij applies heights in completion order: slower stale action lands last, coalescing to the newest, equal-height drop, ENOENT error release, RESIZE_SETTLE_TIMEOUT_MS kill release, every child unref'd. (~1900 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~14186 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`): trigger capture, result application, tool handoff (ERR-trap safety, placement, shape guard, 25 ms timing), and `instant frame` z1-z10 (rows, sanitising, truncation, reserve drift guard vs inlineScrollReserve, kill switch, pane file + `/bin/sh` wrapper, placement; `runZshArgs` passes user text as positional params). (~7917 tok)
 
 ## tests/fixtures/
 
 - `command-words-cases.ts` — `COMMAND_WORD_CASES` / `CommandWordCase`: the 40 spike 002 cases verbatim (`stretch` is a label, not an opt-out); `REVIEW_CASES`: 09-REVIEW regression commands (heredocs, continuations, wrapper options) with their expected externals. (~900 tok)
 - `command-words-fuzz-child.mjs` — Fuzz child that imports `src/shared/command-words.ts` via Node 24 type stripping; modes `fuzz <count> [seed]` (mulberry32), `one <input>`, `deep <n>`; exit 0 ok / 2 slow / 3 undefined leak / 64 unknown mode. (~800 tok)
 - `fake-claude-stream.mjs` — Real-child fake of `claude -p` stream-json (Claude Code 2.1.285 shapes, Probes 2/3/5/8); scenario = argv[2]: `success` (deltas 20 ms apart, ⓘ bytes split across two writes, result then exit 0 after 300 ms), `auth` (is_error result, subtype success, exit 1), `sigterm-slow` (deltas every 100 ms, on SIGTERM keeps writing 300 ms then exit 143); silent until the first stdin line, EOF with no line = exit 0; `FAKE_CLAUDE_STDIN_FILE`, `FAKE_CLAUDE_ARGV_FILE`. Plans 05/06 add scenarios to `SCENARIOS`; 09.1-06 adds `hang-after-result` (ignores SIGTERM, never exits), `exit-no-result`, `die-before-init`, `stderr-flood` (200 KB), `stdout-flood` (1.2 MiB, no newline) and `writeSuccessTurn`/`writeFlushed`/`waitForSignal`; 09.1-05 adds `ignore-eof` (ignores EOF and SIGTERM, only SIGKILL ends it); review WR-02 adds `hang-before-init` (reads the line, never writes init, default SIGTERM); review WR-01-r2 adds `writeStopReasonTurn(text, stopReason)` and `refusal`, `null-stop-reason` (fragment `[{"command": "find . -name`), `stop-sequence`, `no-stop-reason` (SUCCESS_ANSWER) (~2700 tok)
-
-## tests/fixtures/auto-revert/
-
-- `gh` — gh CLI test double for tests/auto-revert.test.ts: logs argv as JSON lines to $GH_LOG (per-argument `jq -Rs .`), serves jobs-ID.json, sha-runs-SHA.json, branch-runs.json and pr-list.txt from $GH_FIXTURES, copies --body-file to $GH_LOG.body (10-07). (~617 tok)
-
-## tests/live/
-
-- `sdk-contract.live.ts` — Nightly live SDK contract test, the only test that calls a real model: spawns the built daemon on `/tmp/qq-live-PID.sock` with a temp HOME and sends one streamed fetch-candidates; asserts schemas, LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08). (~2722 tok)
-
-## tests/setup/
-
-- `scrub-git-env.ts` — git exports these into hook processes (lefthook's pre-push runs this suite), most visibly (~292 tok)

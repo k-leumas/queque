@@ -4,7 +4,6 @@ import { appendDebugLog } from '../shared/debug-log.js';
 import { readEnvValueFromDotEnvLocal, usableSecret } from '../shared/env-file.js';
 import { fetchCandidates as fetchSdkCandidates, TRUNCATED_RESPONSE_MESSAGE } from './claude.js';
 import { fetchClaudeCliCandidates } from './claude-cli.js';
-import { withErrorKind } from './error-kind.js';
 import { type FetchOptions, isAbortError, type LLMAdapter } from './provider.js';
 
 const TOTAL_BUDGET_MS = 25_000;
@@ -77,8 +76,7 @@ function exitCodeDetail(error: unknown): boolean {
   return code !== 0 && code !== null && code !== undefined;
 }
 
-/** The usable ANTHROPIC_API_KEY (env first, then ~/.env.local): set means the SDK path. */
-export function lookupApiKey(): string | undefined {
+function lookupApiKey(): string | undefined {
   return (
     usableSecret(process.env.ANTHROPIC_API_KEY) ??
     usableSecret(readEnvValueFromDotEnvLocal('ANTHROPIC_API_KEY'))
@@ -88,18 +86,18 @@ export function lookupApiKey(): string | undefined {
 function hardError(error: unknown): Error {
   // WR-01-r2: a cut-off answer shows the same copy as the SDK path, never the D13 login copy.
   if (error instanceof Error && error.message === TRUNCATED_RESPONSE_MESSAGE) {
-    return withErrorKind(error, 'response_truncated');
+    return error;
   }
   if (isEnoent(error)) {
-    return withErrorKind(new Error(ENOENT_MESSAGE), 'provider_missing');
+    return new Error(ENOENT_MESSAGE);
   }
   if (isTimeoutOrKilled(error)) {
-    return withErrorKind(new Error(TIMEOUT_MESSAGE), 'provider_timeout');
+    return new Error(TIMEOUT_MESSAGE);
   }
   if (isAuthFailure(error)) {
-    return withErrorKind(new Error(D13_MESSAGE), 'auth_missing');
+    return new Error(D13_MESSAGE);
   }
-  return withErrorKind(new Error(CLI_FAILED_MESSAGE), 'provider_failed');
+  return new Error(CLI_FAILED_MESSAGE);
 }
 
 /**
@@ -112,10 +110,10 @@ function sdkError(error: unknown): unknown {
   }
   const status = errorField(error, 'status');
   if (status === 401) {
-    return withErrorKind(new Error(SDK_KEY_REJECTED_MESSAGE), 'key_rejected');
+    return new Error(SDK_KEY_REJECTED_MESSAGE);
   }
   if (status === 403) {
-    return withErrorKind(new Error(SDK_KEY_REFUSED_MESSAGE), 'key_refused');
+    return new Error(SDK_KEY_REFUSED_MESSAGE);
   }
   return error;
 }

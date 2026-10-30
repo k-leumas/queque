@@ -102,15 +102,6 @@ _qq_instant_frame() {
   if [[ "${QQ_INSTANT_FRAME:-}" == 0 ]]; then
     return 0
   fi
-  # Outside a UTF-8 locale (glibc images default to C) zsh counts and slices bytes, so the
-  # header came out short (› and … are 3 bytes) and a typed multibyte character could be cut
-  # in half. Count characters in a UTF-8 locale for this function only; if none exists the
-  # assignment is a no-op and the old byte arithmetic stays.
-  local probe='›'
-  if (( ${#probe} != 1 )); then
-    local LC_ALL=C.UTF-8
-    (( ${#probe} == 1 )) || LC_ALL=en_US.UTF-8
-  fi
   local lbuffer="${1//[[:cntrl:]]/}"
   local columns="${2:-}"
   if [[ "$columns" != <1-> ]] || (( columns > QQ_MODAL_MAX_COLUMNS )); then
@@ -378,20 +369,7 @@ qq-question-widget() {
   # Create a private session directory (CR-006 fix).
   # Using mktemp -d + chmod 700 prevents symlink-redirect attacks on temp paths.
   local tmpdir req_file
-  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX 2>/dev/null)
-  # Phase 10 Defect 3: a full or unwritable /tmp leaves tmpdir empty, and every path
-  # below would then be at the filesystem root (/request.json, the tool handoff). Stop
-  # before any write: clear the instant frame, keep the typed line, say why.
-  if [[ -z "$tmpdir" || ! -d "$tmpdir" ]]; then
-    if [[ "$QQ_INSTANT_FRAME_PAINTED" == 1 ]]; then
-      print -rn -- $'\e8\e[J' 2>/dev/null || true
-    fi
-    LBUFFER="$QQ_LBUFFER"
-    RBUFFER="$QQ_RBUFFER"
-    _qq_log "mktemp -d failed; session dir not created"
-    zle -M "queque: cannot create a temp dir in /tmp"
-    return 0
-  fi
+  tmpdir=$(mktemp -d /tmp/qq-sess.XXXXXX)
   chmod 700 "$tmpdir"
   req_file="$tmpdir/request.json"
   _qq_log "tmpdir=${tmpdir}"
@@ -418,11 +396,6 @@ qq-question-widget() {
 JSON
   _qq_write_tool_handoff "$tmpdir"
   _qq_log "tool handoff written"
-
-  # Phase 10 telemetry: $ZSH_VERSION is not exported, so the client cannot read it. Export
-  # it like QQ_RESULT_FILE: both the inline child and the Zellij pane inherit it, and the
-  # client reports major.minor only (and only with telemetry on).
-  export QQ_ZSH_VERSION="$ZSH_VERSION"
 
   if [[ -n "$ZELLIJ" ]]; then
     # ---- Zellij path: FIFO + floating pane ----

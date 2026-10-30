@@ -964,12 +964,11 @@ const INSTANT_FRAME_LBUFFER = 'show me how to use z3';
 function runZshArgs(
   script: string,
   args: readonly string[],
-  env: NodeJS.ProcessEnv = {},
 ): { stdout: string; stderr: string; status: number } {
   const result = spawnSync('zsh', ['-f', '-c', `source "$0"\n${script}`, widgetPath, ...args], {
     encoding: 'utf8',
     timeout: 5000,
-    env: { ...process.env, PATH: process.env.PATH, ...env },
+    env: { ...process.env, PATH: process.env.PATH },
   });
   return {
     stdout: result.stdout ?? '',
@@ -1028,24 +1027,6 @@ describe('instant frame', () => {
     // Non-numeric or zero columns fall back to 80 (content width 78).
     expect([...header('wide')]).toHaveLength(1 + 78);
     expect([...header('0')]).toHaveLength(1 + 78);
-  });
-
-  it('z4b: truncation counts characters, not bytes, in the C locale (glibc images default to C)', () => {
-    const C_LOCALE = { LC_ALL: 'C', LC_CTYPE: 'C', LANG: 'C' };
-    const header = (lbuffer: string, columns: string): string =>
-      frameRows(
-        runZshArgs(
-          '_qq_instant_frame "$1" "$2"; print -rn -- "$REPLY"',
-          [lbuffer, columns],
-          C_LOCALE,
-        ).stdout,
-      )[0] ?? '';
-    expect([...header('a'.repeat(200), '78')]).toHaveLength(1 + 76);
-    // A typed multibyte character is never cut in half (that would print U+FFFD garbage).
-    const accented = header('é'.repeat(200), '40');
-    expect([...accented]).toHaveLength(1 + 38);
-    expect(accented.endsWith('é…')).toBe(true);
-    expect(accented).not.toContain('�');
   });
 
   it('z5: the inline bytes start with the client reserve, byte for byte (drift guard)', () => {
@@ -1192,79 +1173,5 @@ describe('instant frame', () => {
     expect(body).toMatch(
       /client --request-file "\$req_file" --result-file "\$result_file" \\\n\s+2>>[^\n]*\|\| qq_client_status=\$\?/,
     );
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Phase 10 (10-10): the client reports zsh major.minor in its environment shape, but
-// `$ZSH_VERSION` is not exported. The widget exports it once, before both launches.
-// ---------------------------------------------------------------------------
-
-describe('QQ_ZSH_VERSION export', () => {
-  it('exports the zsh version after the session dir and before both client launches', () => {
-    const body = questionWidgetBody();
-    const exportLine = 'export QQ_ZSH_VERSION="$ZSH_VERSION"';
-    const exported = body.indexOf(exportLine);
-    expect(exported).toBeGreaterThan(0);
-    expect(body.indexOf(exportLine, exported + 1)).toBe(-1);
-
-    const sessionGuard = body.indexOf('zle -M "queque: cannot create a temp dir in /tmp"');
-    const zellijBranch = body.indexOf('if [[ -n "$ZELLIJ" ]]; then');
-    const zellijLaunch = body.search(/^\s+zellij run --floating/m);
-    const inlineLaunch = body.indexOf(
-      'client --request-file "$req_file" --result-file "$result_file"',
-    );
-    expect(sessionGuard).toBeGreaterThan(0);
-    expect(exported).toBeGreaterThan(sessionGuard);
-    expect(zellijBranch).toBeGreaterThan(exported);
-    expect(zellijLaunch).toBeGreaterThan(exported);
-    expect(inlineLaunch).toBeGreaterThan(exported);
-  });
-});
-
-// ---------------------------------------------------------------------------
-// Phase 10 Defect 3: a failed `mktemp -d` (full or unwritable /tmp) must not turn the
-// session dir into `/`, so request.json and the tool handoff never land at the root.
-// ---------------------------------------------------------------------------
-
-describe('mktemp failure', () => {
-  it('restores the typed line, shows one message and never starts the client', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'qq-mktemp-fail-'));
-    try {
-      const devRoot = join(dir, 'repo');
-      const cliDir = join(devRoot, 'dist', 'cli');
-      const marker = join(dir, 'client-started');
-      mkdirSync(cliDir, { recursive: true });
-      // Only a `client` launch writes the marker (the daemon prewarm never runs under -f -c).
-      writeFileSync(
-        join(cliDir, 'main.js'),
-        `if (process.argv.includes('client')) require('node:fs').writeFileSync(${JSON.stringify(marker)}, process.argv.join(' '));\n`,
-      );
-
-      // zsh functions shadow external commands and are inherited by $(...) subshells.
-      const script = [
-        'unset ZELLIJ',
-        'QQ_INSTANT_FRAME=0',
-        'QQ_DEV_ROOT="$3"',
-        'mktemp() { return 1 }',
-        'zle() { print -r -- "zle:$*" }',
-        'LBUFFER="$1"',
-        'RBUFFER="$2"',
-        'qq-question-widget',
-        'print -r -- "status=$?"',
-        'print -r -- "lbuffer=$LBUFFER"',
-        'print -r -- "rbuffer=$RBUFFER"',
-      ].join('\n');
-      const { stdout, stderr } = runZshArgs(script, ['echo hi?', ' | tail', devRoot]);
-
-      expect(existsSync(marker)).toBe(false);
-      expect(stdout).toContain('zle:-M queque: cannot create a temp dir in /tmp');
-      expect(stdout).toContain('status=0');
-      expect(stdout).toContain('lbuffer=echo hi\n');
-      expect(stdout).toContain('rbuffer= | tail\n');
-      expect(stderr).not.toContain('request.json');
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
   });
 });
