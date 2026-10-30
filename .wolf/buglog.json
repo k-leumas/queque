@@ -7164,6 +7164,57 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T00:35:27Z"
+    },
+    {
+      "id": "bug-434",
+      "timestamp": "2026-10-30T13:09:11.711Z",
+      "error_message": "Missing error handling in nearestExistingDir",
+      "file": "src/shared/telemetry-config.ts",
+      "root_cause": "Code path had no error handling \u2014 exceptions would propagate uncaught",
+      "fix": "Added try/catch block",
+      "tags": [
+        "auto-detected",
+        "error-handling",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:09:11.711Z"
+    },
+    {
+      "id": "bug-435",
+      "timestamp": "2026-10-30T13:09:23.877Z",
+      "error_message": "Significant refactor of ",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "2 lines replaced/restructured",
+      "fix": "Rewrote 8\u219212 lines (2 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:09:23.877Z"
+    },
+    {
+      "id": "bug-464",
+      "timestamp": "2026-10-30T13:10:27.000Z",
+      "error_message": "10-REVIEW CR-01: the telemetry consent question is asked again after every accepted ?? when config.json is invalid JSON, not an object, unreadable, or its directory is read-only; each answer is thrown away",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "readTelemetryState reads a bad file as the defaults (asked: false) but readRawConfig/writeTelemetryState refuse to write it; run-foreground only debug-logged the write error, so nothing recorded the ask and shouldAskTelemetryConsent passed again on the next ??",
+      "fix": "Added telemetryStateWritable() in src/shared/telemetry-config.ts (runs readRawConfig plus a W_OK|X_OK check on the nearest existing config dir); run-foreground asks only when shouldAskTelemetryConsent && telemetryStateWritable(). Tests in tests/telemetry-config.test.ts and tests/client-result.test.ts",
+      "tags": [
+        "telemetry",
+        "consent",
+        "config",
+        "phase-10",
+        "review-fix",
+        "CR-01"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:10:27.000Z"
     }
   ]
 }

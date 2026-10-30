@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T06:05:07.874Z
-> Files: 538 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:11:02.392Z
+> Files: 541 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -45,6 +45,8 @@
 
 - `10-12-verify-tree.mjs` — Read-only: compare on-disk files against a `git ls-tree -r` listing by computing blob SHA-1s. (~278 tok)
 - `accept-t3.sh` (~215 tok)
+- `addbug.py` — usage: addbug.py <spec.json>  (spec: error_message, file, root_cause, fix, tags) (~267 tok)
+- `bug-cr01.json` (~271 tok)
 - `make-red-record.mjs` — Declares output (~227 tok)
 - `mkrecord.mjs` — Declares output (~95 tok)
 - `mkred.mjs` (~126 tok)
@@ -72,6 +74,7 @@
 - `plan-10-09-msg-red1.txt` (~98 tok)
 - `plan-10-09-msg-red2.txt` (~108 tok)
 - `plan-10-09-msg-summary.txt` (~17 tok)
+- `rf10-msg-cr01.txt` (~110 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/
 
@@ -711,7 +714,7 @@
 
 - `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): SAVE_CURSOR/RESTORE_CURSOR/ERASE_BELOW/CURSOR_HOME/SYNC_UPDATE_BEGIN, INLINE_SURFACE_CLEAR (ESC 8 + CSI J on the client's own save), PANE_SURFACE_CLEAR (CSI H + CSI J), `inlineScrollReserve(lines)` (byte-identical to the widget's reserve), `armInstantFrameTakeover(stream, clear)` → `{ clearNow }` (inserts the clear into the first visible write, after a leading `CSI ?2026 h`). (~1291 tok)
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Foreground client: request parse, tool handoff read, llm branch opens /dev/tty streams first, writes `inlineScrollReserve(MODAL_VIEWPORT_LINES)` and arms `armInstantFrameTakeover` (inline / Zellij clear) before classify/context/render; `clearNow()` in pre-frame failure paths; `withInstalledToolsChunk` (strict-validated catalog ∩ installed chunk), Ink modal, clearScrollReserve = INLINE_SURFACE_CLEAR, ⓘ annotation, buildShellBuffers; `fetchAbort` AbortController aborted by onSelect/onCancel/cleanupOnSignal, no rerender once resolved, AbortError → `fetch aborted` log only (09.1-01); 09.1-07: streams rows via onCandidate (`streamed`, rerender per arrival as `'arriving'`, final list `'complete'`, `first candidate received` log); a late failure with rows rerenders them as `'partial'` (`llm request failed after rows`, D-16); `resolved` drops late rows (D-14) 10-10: llm branch records outcome/shownCount next to each result write and telemetryErrors (socket_failed, partial-row errorKindOf); a try/finally reports via reportClientTelemetry before the tty handle closes. 10-11: in that finally, after an accepted result and Ink unmount, shouldAskTelemetryConsent → askTelemetryConsent on the Ink tty streams → markTelemetryAsked (write failure logged as `consent not saved`, swallowed), then the report. (~4920 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~6882 tok)
 - `telemetry-consent.ts` — D-09 one-time consent ask: CONSENT_PROMPT (`... [y/N] `), CONSENT_TIMEOUT_MS = 30_000, shouldAskTelemetryConsent({outcome, state, blockedBy, hasTty}) (accepted, never asked, no env gate, tty), askTelemetryConsent({input, output}, timeoutMs) on the tty streams: raw mode, first character of the first chunk, only y/Y is yes, settles once, then raw off, pause, listener removed, timer cleared, every wrapped row erased. Never stdout, never rejects (10-11). (~1135 tok)
 - `telemetry-events.ts` — Client telemetry: TELEMETRY_CLIENT_SEND_MS = 250, QueryOutcomeRecord, buildQueryOutcomeEvent/buildErrorEvent/buildEnvironmentEvent (strict-schema parsed, enums and counts only), sendTelemetryEvents (fire-and-forget socket lines, never rejects), reportClientTelemetry (gates on effectiveTelemetry in the client env first; environment, errors, outcome; never throws) (10-10). (~1482 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
@@ -773,7 +776,7 @@
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. Phase 10: also exports telemetryConfigSchema (`telemetry: { enabled, asked, installId? }`) (10-04). (~1899 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
-- `telemetry-config.ts` — Uncached consent state in config.json `telemetry` (D-06, D-09): TELEMETRY_BLOCK_REASONS, telemetryBlockedBy (DO_NOT_TRACK > QQ_TELEMETRY=0|false|off > CI), readTelemetryState, setTelemetryEnabled (on keeps/creates a random UUID, off deletes it), markTelemetryAsked, effectiveTelemetry, TelemetryConfigWriteError. Atomic key-preserving writer (wx temp + rename, 0600) (10-04). (~1821 tok)
+- `telemetry-config.ts` — Anonymous telemetry consent state (phase 10, D-06, D-09). (~2510 tok)
 - `telemetry-endpoint.ts` — resolveTelemetryEndpoint(env): baked host/key with usableSecret QQ_TELEMETRY_HOST/QQ_TELEMETRY_KEY overrides; null for an empty or non-phc_ key, a non-http(s) host, or a host with credentials (10-04). (~407 tok)
 - `tool-awareness.ts` — ToolInventory, isInstalled (commands|functions+aliases), missingTools, installer choice (`pickInstaller`, `INSTALL_COMMANDS`, `LINUX_INSTALLER_ORDER`), per-installer `PACKAGE_ALIASES` (brew/apt/dnf/pacman maps; null = no package installs that binary) + `packageFor(tool, installer)` (Homebrew-aliased tools with no Linux entry are null, never guessed), `SAFE_PACKAGE_NAME_RE`, `buildInstallForm`/`planInstall` (brace-wraps lists, blocks unsafe words/unknown packages/comments/heredocs); `annotateCandidates(…, platform)` attaches `install` to flagged candidates. (~2000 tok)
 - `tool-catalog.ts` — Shipped 196-name allow list of notable CLI tools (spike 003 seed, frozen), `CATALOG_SET`, `installedCatalogTools(isInstalled)` (sorted in Node), shape constants `TOOL_NAME_RE` / `TOOL_NAME_MAX_LENGTH` (64) / `INSTALLED_TOOLS_MAX` (512). Zero imports. (~1000 tok)

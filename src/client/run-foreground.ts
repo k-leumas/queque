@@ -23,6 +23,7 @@ import {
   markTelemetryAsked,
   readTelemetryState,
   telemetryBlockedBy,
+  telemetryStateWritable,
 } from '../shared/telemetry-config.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
@@ -478,13 +479,17 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // accepted buffer is already in the result file and the inline reserve is cleared;
         // the prompt erases its own line before the widget redraws. Never asked after Esc
         // or an error, a second time, without a tty, or under DO_NOT_TRACK/QQ_TELEMETRY=0/CI.
+        // Also never asked when the answer could not be saved (invalid JSON in config.json,
+        // a read-only config dir): nothing would record that the user was asked, so the
+        // question would come back after every accepted `??` (CR-01).
         if (outcome?.outcome === 'accepted' && ttyReadStream && ttyWriteStream) {
-          const ask = shouldAskTelemetryConsent({
-            outcome: outcome.outcome,
-            state: readTelemetryState(),
-            blockedBy: telemetryBlockedBy(),
-            hasTty: true,
-          });
+          const ask =
+            shouldAskTelemetryConsent({
+              outcome: outcome.outcome,
+              state: readTelemetryState(),
+              blockedBy: telemetryBlockedBy(),
+              hasTty: true,
+            }) && telemetryStateWritable();
           if (ask) {
             const answer = await askTelemetryConsent({
               input: ttyReadStream,

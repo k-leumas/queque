@@ -1,4 +1,12 @@
-import { mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -11,6 +19,7 @@ import {
   TELEMETRY_BLOCK_REASONS,
   TelemetryConfigWriteError,
   telemetryBlockedBy,
+  telemetryStateWritable,
 } from '../src/shared/telemetry-config.js';
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
@@ -228,6 +237,62 @@ describe('invalid config file', () => {
   it('names the path in the error', () => {
     seed('nope');
     expect(() => setTelemetryEnabled(true)).toThrow(configFile);
+  });
+});
+
+describe('telemetryStateWritable (CR-01: never ask when the answer cannot be saved)', () => {
+  // Running as root ignores directory modes, so the read-only cases cannot fail there.
+  const isRoot = typeof process.getuid === 'function' && process.getuid() === 0;
+
+  afterEach(() => {
+    // Give the temp dir its write bit back so the top-level cleanup can remove it.
+    chmodSync(dir, 0o700);
+  });
+
+  it('is true for a missing file in a writable directory', () => {
+    expect(telemetryStateWritable(configFile)).toBe(true);
+  });
+
+  it('is true for a JSON object file', () => {
+    seed(SEEDED);
+    expect(telemetryStateWritable(configFile)).toBe(true);
+  });
+
+  it('is true when the config directory does not exist yet but its parent is writable', () => {
+    expect(telemetryStateWritable(join(dir, 'qq', 'nested', 'config.json'))).toBe(true);
+  });
+
+  it('is false for invalid JSON, which reads as never asked but refuses every write', () => {
+    seed('{ "effort": "low", oops');
+    expect(readTelemetryState(configFile).asked).toBe(false);
+    expect(telemetryStateWritable(configFile)).toBe(false);
+    expect(() => markTelemetryAsked(false, configFile)).toThrow(TelemetryConfigWriteError);
+  });
+
+  it('is false for a JSON value that is not an object', () => {
+    seed('["privacy"]');
+    expect(telemetryStateWritable(configFile)).toBe(false);
+  });
+
+  it('is false when the config path is a directory', () => {
+    mkdirSync(configFile);
+    expect(telemetryStateWritable(configFile)).toBe(false);
+  });
+
+  it.skipIf(isRoot)('is false for a read-only config directory', () => {
+    seed(SEEDED);
+    chmodSync(dir, 0o500);
+    expect(telemetryStateWritable(configFile)).toBe(false);
+  });
+
+  it.skipIf(isRoot)('is false when a missing config directory sits under a read-only one', () => {
+    chmodSync(dir, 0o500);
+    expect(telemetryStateWritable(join(dir, 'qq', 'config.json'))).toBe(false);
+  });
+
+  it('reads QQ_CONFIG_FILE by default', () => {
+    seed('nope');
+    expect(telemetryStateWritable()).toBe(false);
   });
 });
 

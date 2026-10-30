@@ -1,5 +1,15 @@
 import { randomBytes, randomUUID } from 'node:crypto';
-import { chmodSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
+import {
+  accessSync,
+  chmodSync,
+  constants,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  statSync,
+  unlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname } from 'node:path';
 import { defaultConfigPath, telemetryConfigSchema } from './qq-config.js';
 
@@ -132,6 +142,53 @@ function readRawConfig(path: string): Record<string, unknown> {
     );
   }
   return parsed;
+}
+
+/**
+ * The nearest directory on the way up from `dir` that exists (the one a recursive mkdir
+ * would create the rest under), or undefined if none can be found.
+ */
+function nearestExistingDir(dir: string): string | undefined {
+  let current = dir;
+  for (;;) {
+    try {
+      if (statSync(current).isDirectory()) {
+        return current;
+      }
+      return undefined;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        return undefined;
+      }
+    }
+    const parent = dirname(current);
+    if (parent === current) {
+      return undefined;
+    }
+    current = parent;
+  }
+}
+
+/**
+ * Whether a consent answer could be saved right now (CR-01). Runs the same checks the
+ * write does before it touches anything: the file must be missing or a JSON object, and the
+ * directory the temp file and the rename go to (or the nearest existing parent a new
+ * directory would be created under) must be writable. A false here means "do not ask": an
+ * answer that cannot be saved would be thrown away and the question asked again after every
+ * accepted `??`. Never throws.
+ */
+export function telemetryStateWritable(path: string = defaultConfigPath()): boolean {
+  try {
+    readRawConfig(path);
+    const dir = nearestExistingDir(dirname(path));
+    if (dir === undefined) {
+      return false;
+    }
+    accessSync(dir, constants.W_OK | constants.X_OK);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**

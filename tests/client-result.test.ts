@@ -65,6 +65,7 @@ const consentMock = vi.hoisted(() => ({
   askTelemetryConsent: vi.fn().mockResolvedValue(false),
   readTelemetryState: vi.fn(() => ({ enabled: false, asked: true })),
   markTelemetryAsked: vi.fn(),
+  telemetryStateWritable: vi.fn(() => true),
 }));
 
 vi.mock('../src/client/telemetry-consent.js', async (importOriginal) => ({
@@ -76,6 +77,7 @@ vi.mock('../src/shared/telemetry-config.js', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../src/shared/telemetry-config.js')>()),
   readTelemetryState: consentMock.readTelemetryState,
   markTelemetryAsked: consentMock.markTelemetryAsked,
+  telemetryStateWritable: consentMock.telemetryStateWritable,
 }));
 
 // ---------------------------------------------------------------------------
@@ -1499,6 +1501,8 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     consentMock.readTelemetryState.mockReset();
     consentMock.readTelemetryState.mockReturnValue({ enabled: false, asked: false });
     consentMock.markTelemetryAsked.mockReset();
+    consentMock.telemetryStateWritable.mockReset();
+    consentMock.telemetryStateWritable.mockReturnValue(true);
     consentMock.askTelemetryConsent.mockReset();
     consentMock.askTelemetryConsent.mockImplementation(async () => {
       resultAtAsk.push(
@@ -1516,6 +1520,8 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     consentMock.askTelemetryConsent.mockReset();
     consentMock.askTelemetryConsent.mockResolvedValue(false);
     consentMock.markTelemetryAsked.mockReset();
+    consentMock.telemetryStateWritable.mockReset();
+    consentMock.telemetryStateWritable.mockReturnValue(true);
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -1607,6 +1613,18 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
     expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
     expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('never asks when the answer could not be saved (CR-01)', async () => {
+    // An invalid-JSON config.json reads as asked: false but refuses every write: asking would
+    // repeat the question after every accepted `??` and throw each answer away.
+    consentMock.telemetryStateWritable.mockReturnValue(false);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(2);
   });
 
   it('a config write failure is logged and swallowed; the report still runs', async () => {
