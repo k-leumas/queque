@@ -15,7 +15,7 @@
 
 **Now:** Type your intent, hit `??`, pick a command — it lands in your buffer, ready to tweak and run.
 
-![QueQue demo](assets/demo.gif)
+![QueQue demo](https://raw.githubusercontent.com/k-leumas/queque/main/assets/demo.gif)
 
 ## Install
 

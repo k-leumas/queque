@@ -3720,3 +3720,6 @@
 | 11:35 | quick 261030-fdr task 2: install, usage and config reference moved to docs/INSTALL.md, USAGE.md, CONFIGURATION.md; README gets short Install and Usage steps | README.md, docs/*.md, tests/docs-links.test.ts | link guard red then green; badges green | ~8000 |
 | 11:50 | quick 261030-fdr task 3: privacy moved to docs/PRIVACY.md with source-checked telemetry section; README More index finished (66 lines); check-readme-moved.mjs passes vs b45f6db | README.md, docs/PRIVACY.md, tests/docs-links.test.ts, check-readme-moved.mjs, .wolf/cerebrum.md | link guard red then green; preservation ok (98 lines) | ~12000 |
 | 11:14 | Session end: 18 writes across 13 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 3 reads | ~42307 tok |
+| 11:24 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
+| 11:27 | README demo gif now an absolute raw.githubusercontent URL so it renders on npmjs.com | README.md | done | ~200 |
+| 11:27 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
