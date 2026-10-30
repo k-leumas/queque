@@ -91,7 +91,7 @@ flowchart LR
 
 ## Shell Integration
 
-File: [shell/zsh/queque.zsh](shell/zsh/queque.zsh)
+File: [shell/zsh/queque.zsh](../shell/zsh/queque.zsh)
 
 Responsibilities:
 
@@ -121,8 +121,8 @@ Design reasons:
 
 Files:
 
-- [src/client/run-foreground.ts](src/client/run-foreground.ts)
-- [src/client/result-writer.ts](src/client/result-writer.ts)
+- [src/client/run-foreground.ts](../src/client/run-foreground.ts)
+- [src/client/result-writer.ts](../src/client/result-writer.ts)
 
 Flow in `llm` mode:
 
@@ -192,9 +192,9 @@ flowchart TD
 
 Files:
 
-- [src/daemon/bootstrap.ts](src/daemon/bootstrap.ts)
-- [src/daemon/server.ts](src/daemon/server.ts)
-- [src/daemon/fetch-client.ts](src/daemon/fetch-client.ts)
+- [src/daemon/bootstrap.ts](../src/daemon/bootstrap.ts)
+- [src/daemon/server.ts](../src/daemon/server.ts)
+- [src/daemon/fetch-client.ts](../src/daemon/fetch-client.ts)
 
 The daemon listens on `/tmp/qq-<uid>.sock`. IPC: `ping`, `ensure-session`, `run-query` (ack-only), and `fetch-candidates` (warm Anthropic SDK / `claude -p` in the daemon process). The foreground client still owns Ink; it sends the context envelope over the socket and renders the candidate list.
 

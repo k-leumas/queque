@@ -3716,3 +3716,4 @@
 | 11:07 | Session end: 16 writes across 12 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 3 reads | ~32297 tok |
 | 11:12 | Created .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md | — | ~9264 |
 | 11:12 | Edited .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md | "https://github.com/k-leum" → "#anchor" | ~78 |
+| 11:25 | quick 261030-fdr task 1: link guard test, provider section moved to docs/PROVIDERS.md, CONTRIBUTING + SYSTEM_DESIGN link fixes | tests/docs-links.test.ts, docs/PROVIDERS.md, README.md, CONTRIBUTING.md, docs/SYSTEM_DESIGN.md | link guard red then green; badges green | ~9000 |
