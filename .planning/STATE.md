@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 10 complete, ready to plan Phase 7
-last_updated: "2026-10-30T16:46:47.983Z"
+last_updated: "2026-10-30T17:23:58.747Z"
 last_activity: 2026-10-30
 last_activity_desc: Phase 10 complete, transitioned to Phase 7
-state_head: 9155f834f246ec7ea2751a62e8a46a70bef19a59
+state_head: c857dbe927149a2efed618bae80a24e033ca7382
 progress:
   total_phases: 13
   completed_phases: 8
@@ -33,7 +33,7 @@ Phase: 7 — Context-Aware Learning and Ambient Suggestions
 Plan: Not started
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
 Status: Ready to plan
-Last activity: 2026-10-30 - Completed quick task 261030-en8: Add README badges for CI, Nightly, Release and the six tested Linux distros
+Last activity: 2026-10-30 - Completed quick task 261030-fdr: minimal README, detail moved to linked docs/ pages
 
 Progress: [███████░░░] 73%
 
@@ -179,6 +179,7 @@ None yet.
 | 261018-wax | Prevent Ollama and OpenAI cut-off answers (schema, 16k ceiling, one retry) and label them beta | 2026-10-18 | b37ee48 | [261018-wax-prevent-ollama-and-openai-cut-off-answer](./quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/) |
 | 261021-sya | Strip x-access-token credentials from changelog repository links (script + 78 existing CHANGELOG links) | 2026-10-21 | 6b3e986 | [261021-sya-fix-changelog-links-leaking-x-access-tok](./quick/261021-sya-fix-changelog-links-leaking-x-access-tok/) |
 | 261030-en8 | Add README badges for CI, Nightly, Release and the six tested Linux distros | 2026-10-30 | 9155f83 | [261030-en8-add-badges-to-the-readme-for-all-the-pas](./quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/) |
+| 261030-fdr | Minimal README for new users; detail moved to docs/INSTALL, PROVIDERS, USAGE, PRIVACY, CONFIGURATION | 2026-10-30 | c857dbe | [261030-fdr-reformat-the-readme-minimal-move-the-res](./quick/261030-fdr-reformat-the-readme-minimal-move-the-res/) |
 
 ## Session Continuity
 

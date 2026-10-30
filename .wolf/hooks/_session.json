@@ -16,6 +16,61 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-10-30T16:42:26.718Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md": {
+      "count": 1,
+      "tokens": 8700,
+      "first_read": "2026-10-30T17:14:20.182Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/README.md": {
+      "count": 4,
+      "tokens": 3980,
+      "first_read": "2026-10-30T17:16:30.453Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md": {
+      "count": 10,
+      "tokens": 22486,
+      "first_read": "2026-10-30T17:17:27.001Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/src/client/telemetry-consent.ts": {
+      "count": 1,
+      "tokens": 1135,
+      "first_read": "2026-10-30T17:19:56.848Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/src/shared/telemetry-config.ts": {
+      "count": 1,
+      "tokens": 2510,
+      "first_read": "2026-10-30T17:19:57.447Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/src/client/telemetry-events.ts": {
+      "count": 1,
+      "tokens": 1482,
+      "first_read": "2026-10-30T17:19:58.100Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/src/shared/telemetry-endpoint.ts": {
+      "count": 1,
+      "tokens": 407,
+      "first_read": "2026-10-30T17:19:58.676Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/src/daemon/telemetry-buffer.ts": {
+      "count": 1,
+      "tokens": 2448,
+      "first_read": "2026-10-30T17:20:00.537Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/src/cli/commands/telemetry.ts": {
+      "count": 1,
+      "tokens": 2028,
+      "first_read": "2026-10-30T17:20:01.190Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/docs/PRIVACY.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-30T17:20:45.450Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/cerebrum.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-10-30T17:21:53.141Z"
     }
   },
   "files_written": [
@@ -126,6 +181,132 @@
       "action": "edit",
       "tokens": 84,
       "at": "2026-10-30T17:12:54.417Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/tests/docs-links.test.ts",
+      "action": "create",
+      "tokens": 1759,
+      "at": "2026-10-30T17:15:46.816Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/README.md",
+      "action": "create",
+      "tokens": 3137,
+      "at": "2026-10-30T17:17:02.844Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 130,
+      "at": "2026-10-30T17:17:35.063Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 126,
+      "at": "2026-10-30T17:17:35.505Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 148,
+      "at": "2026-10-30T17:17:43.394Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/docs/INSTALL.md",
+      "action": "create",
+      "tokens": 191,
+      "at": "2026-10-30T17:18:38.481Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/README.md",
+      "action": "create",
+      "tokens": 1914,
+      "at": "2026-10-30T17:19:07.868Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 157,
+      "at": "2026-10-30T17:19:28.288Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 119,
+      "at": "2026-10-30T17:19:33.148Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 102,
+      "at": "2026-10-30T17:19:39.088Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/docs/PRIVACY.md",
+      "action": "edit",
+      "tokens": 844,
+      "at": "2026-10-30T17:20:57.247Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/docs/PRIVACY.md",
+      "action": "edit",
+      "tokens": 27,
+      "at": "2026-10-30T17:21:05.493Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/docs/PRIVACY.md",
+      "action": "edit",
+      "tokens": 23,
+      "at": "2026-10-30T17:21:05.866Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/README.md",
+      "action": "edit",
+      "tokens": 168,
+      "at": "2026-10-30T17:21:20.210Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/check-readme-moved.mjs",
+      "action": "create",
+      "tokens": 641,
+      "at": "2026-10-30T17:21:31.167Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/cerebrum.md",
+      "action": "edit",
+      "tokens": 213,
+      "at": "2026-10-30T17:21:58.723Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 112,
+      "at": "2026-10-30T17:22:09.774Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 139,
+      "at": "2026-10-30T17:22:15.028Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 105,
+      "at": "2026-10-30T17:22:20.554Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 36,
+      "at": "2026-10-30T17:22:26.170Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acf881fce15f7602f/.planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-SUMMARY.md",
+      "action": "create",
+      "tokens": 1364,
+      "at": "2026-10-30T17:23:08.792Z"
     }
   ],
   "edit_counts": {
@@ -141,11 +322,19 @@
     ".claude/worktrees/agent-a6430aac911b95d95/.wolf/buglog.json": 1,
     "../../../../tmp/261030-en8-commit-msg.txt": 1,
     ".claude/worktrees/agent-a6430aac911b95d95/.planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-SUMMARY.md": 1,
-    ".planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md": 2
+    ".planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md": 2,
+    ".claude/worktrees/agent-acf881fce15f7602f/tests/docs-links.test.ts": 1,
+    ".claude/worktrees/agent-acf881fce15f7602f/README.md": 3,
+    ".claude/worktrees/agent-acf881fce15f7602f/.wolf/anatomy.md": 10,
+    ".claude/worktrees/agent-acf881fce15f7602f/docs/INSTALL.md": 1,
+    ".claude/worktrees/agent-acf881fce15f7602f/docs/PRIVACY.md": 3,
+    ".claude/worktrees/agent-acf881fce15f7602f/.planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/check-readme-moved.mjs": 1,
+    ".claude/worktrees/agent-acf881fce15f7602f/.wolf/cerebrum.md": 1,
+    ".claude/worktrees/agent-acf881fce15f7602f/.planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-SUMMARY.md": 1
   },
-  "anatomy_hits": 2,
-  "anatomy_misses": 1,
-  "repeated_reads_warned": 0,
+  "anatomy_hits": 10,
+  "anatomy_misses": 4,
+  "repeated_reads_warned": 12,
   "cerebrum_warnings": 0,
-  "stop_count": 18
+  "stop_count": 19
 }
