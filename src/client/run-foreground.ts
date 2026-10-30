@@ -482,7 +482,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         // Also never asked when the answer could not be saved (invalid JSON in config.json,
         // a read-only config dir): nothing would record that the user was asked, so the
         // question would come back after every accepted `??` (CR-01).
-        if (outcome?.outcome === 'accepted' && ttyReadStream && ttyWriteStream) {
+        // Never asked in Zellij (WR-01): there the widget blocks only on the FIFO read, which
+        // the result write above has already completed, so the shell redraws its prompt while
+        // this pane is still focused and the user's next keystroke would land here as a "no".
+        if (outcome?.outcome === 'accepted' && !inZellij && ttyReadStream && ttyWriteStream) {
           const ask =
             shouldAskTelemetryConsent({
               outcome: outcome.outcome,

@@ -7215,6 +7215,41 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:10:27.000Z"
+    },
+    {
+      "id": "bug-437",
+      "timestamp": "2026-10-30T13:11:36.037Z",
+      "error_message": "Wrong condition in logic",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "Condition was: if (outcome?.outcome === 'accepted' && ttyReadStream &)",
+      "fix": "Changed to: if (outcome?.outcome === 'accepted' && !inZellij && tt)",
+      "tags": [
+        "auto-detected",
+        "logic-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:11:36.037Z"
+    },
+    {
+      "id": "bug-465",
+      "timestamp": "2026-10-30T13:12:05.000Z",
+      "error_message": "10-REVIEW WR-01: in Zellij the telemetry consent [y/N] question shows in the floating pane after the widget already returned, so the user's next keystroke goes to the pane and is saved as a permanent no",
+      "file": "src/client/run-foreground.ts",
+      "root_cause": "In the Zellij path the widget only waits on the FIFO read, which writeShellResult completes before the finally block runs the consent ask; the ask had no inZellij guard",
+      "fix": "Added !inZellij to the consent ask condition (Zellij users can still opt in with qq telemetry on); regression test in tests/client-result.test.ts stubs ZELLIJ and asserts no ask; consent describe now clears ZELLIJ by default",
+      "tags": [
+        "telemetry",
+        "consent",
+        "zellij",
+        "phase-10",
+        "review-fix",
+        "WR-01"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:12:05.000Z"
     }
   ]
 }

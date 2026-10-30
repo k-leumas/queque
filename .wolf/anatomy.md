@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:11:02.392Z
-> Files: 541 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:11:58.503Z
+> Files: 543 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -47,6 +47,7 @@
 - `accept-t3.sh` (~215 tok)
 - `addbug.py` — usage: addbug.py <spec.json>  (spec: error_message, file, root_cause, fix, tags) (~267 tok)
 - `bug-cr01.json` (~271 tok)
+- `bug-wr01.json` (~222 tok)
 - `make-red-record.mjs` — Declares output (~227 tok)
 - `mkrecord.mjs` — Declares output (~95 tok)
 - `mkred.mjs` (~126 tok)
@@ -75,6 +76,7 @@
 - `plan-10-09-msg-red2.txt` (~108 tok)
 - `plan-10-09-msg-summary.txt` (~17 tok)
 - `rf10-msg-cr01.txt` (~110 tok)
+- `rf10-msg-wr01.txt` (~104 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/
 
@@ -714,7 +716,7 @@
 
 - `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1): SAVE_CURSOR/RESTORE_CURSOR/ERASE_BELOW/CURSOR_HOME/SYNC_UPDATE_BEGIN, INLINE_SURFACE_CLEAR (ESC 8 + CSI J on the client's own save), PANE_SURFACE_CLEAR (CSI H + CSI J), `inlineScrollReserve(lines)` (byte-identical to the widget's reserve), `armInstantFrameTakeover(stream, clear)` → `{ clearNow }` (inserts the clear into the first visible write, after a leading `CSI ?2026 h`). (~1291 tok)
 - `result-writer.ts` — Validates a ShellResult and writes newline-terminated JSON to `resultFile`. (~307 tok)
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~6882 tok)
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~6967 tok)
 - `telemetry-consent.ts` — D-09 one-time consent ask: CONSENT_PROMPT (`... [y/N] `), CONSENT_TIMEOUT_MS = 30_000, shouldAskTelemetryConsent({outcome, state, blockedBy, hasTty}) (accepted, never asked, no env gate, tty), askTelemetryConsent({input, output}, timeoutMs) on the tty streams: raw mode, first character of the first chunk, only y/Y is yes, settles once, then raw off, pause, listener removed, timer cleared, every wrapped row erased. Never stdout, never rejects (10-11). (~1135 tok)
 - `telemetry-events.ts` — Client telemetry: TELEMETRY_CLIENT_SEND_MS = 250, QueryOutcomeRecord, buildQueryOutcomeEvent/buildErrorEvent/buildEnvironmentEvent (strict-schema parsed, enums and counts only), sendTelemetryEvents (fire-and-forget socket lines, never rejects), reportClientTelemetry (gates on effectiveTelemetry in the client env first; environment, errors, outcome; never throws) (10-10). (~1482 tok)
 - `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)

@@ -1489,6 +1489,8 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     vi.stubEnv('CI', '');
     vi.stubEnv('DO_NOT_TRACK', '');
     vi.stubEnv('QQ_TELEMETRY', '');
+    // Inline path by default, even when the suite itself runs inside Zellij.
+    vi.stubEnv('ZELLIJ', undefined);
     const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
     vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
       fetchCandidates: fetchCandidatesMock,
@@ -1610,6 +1612,19 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     vi.stubEnv(name, value);
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
     await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
+    expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('never asks in Zellij, where the widget has already returned (WR-01)', async () => {
+    vi.stubEnv('ZELLIJ', '0');
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toMatchObject({
+      kind: 'replace-buffer',
+      lbuffer: 'tldr z3',
+    });
     expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
     expect(consentMock.markTelemetryAsked).not.toHaveBeenCalled();
     expect(reportClientTelemetryMock).toHaveBeenCalledTimes(1);
