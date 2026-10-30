@@ -7310,6 +7310,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:17:24.000Z"
+    },
+    {
+      "id": "bug-469",
+      "timestamp": "2026-10-30T13:19:14.000Z",
+      "error_message": "10-REVIEW WR-05: feat/x and feat-x (or a/b-c and a-b/c) map to the same auto-revert/feat-x head branch, so a second branch's smoke failure force-pushes over the first branch's revert and rewrites its open PR",
+      "file": "scripts/ci/auto-revert.sh",
+      "root_cause": "HEAD_BRANCH was auto-revert/${BRANCH//\\//-}, which is not injective, and gh pr list filtered only by --head, so it found the other branch's open PR",
+      "fix": "HEAD_BRANCH now appends the first 8 hex digits of `git hash-object --stdin` of the exact branch name (portable, git is always present), and gh pr list also filters --base \"$BRANCH\". tests/auto-revert.test.ts computes the expected name and adds a feat/x vs feat-x test; shellcheck clean",
+      "tags": [
+        "ci",
+        "auto-revert",
+        "github-actions",
+        "bash",
+        "phase-10",
+        "review-fix",
+        "WR-05"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:19:14.000Z"
     }
   ]
 }

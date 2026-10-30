@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Auto-revert on smoke failure (D-15). Run by the `auto-revert` job in ci.yml after a push
 # whose distro job failed. When at least one smoke leg failed, it restores the branch's last
-# green tree on the fixed branch `auto-revert/<branch with / replaced by ->` and opens (or
+# green tree on the fixed branch `auto-revert/<branch with / replaced by ->-<hash8>` (hash8:
+# the first 8 hex digits of `git hash-object` of the exact branch name) and opens (or
 # updates) one pull request against the branch. The body lists the failing distros, the run
 # URL, and each failing distro's doctor.json and log tails. Deterministic shell plus `gh`;
 # no LLM involvement.
@@ -213,7 +214,10 @@ fi
 
 GOOD_SHORT=${GOOD:0:7}
 HEAD_SHORT=${HEAD_SHA:0:7}
-HEAD_BRANCH="auto-revert/${BRANCH//\//-}"
+# The readable part alone is ambiguous (feat/x and feat-x both give feat-x), so a short hash
+# of the exact branch name keeps every source branch on its own head branch (WR-05).
+BRANCH_HASH=$(printf '%s' "$BRANCH" | git hash-object --stdin)
+HEAD_BRANCH="auto-revert/${BRANCH//\//-}-${BRANCH_HASH:0:8}"
 REVERTED=$(git rev-list --count "$GOOD..$HEAD_SHA")
 
 # --- PR body (built before the checkout moves anything) ---
@@ -341,7 +345,8 @@ log "pushed $HEAD_BRANCH"
 
 # --- One pull request per source branch: edit the open one, else create it ---
 TITLE="revert: smoke failed on $BRANCH at $HEAD_SHORT"
-existing=$(gh pr list --repo "$REPO" --head "$HEAD_BRANCH" --state open --json number --jq '.[0].number // empty')
+# --base too: only ever edit the open revert PR that targets this same branch.
+existing=$(gh pr list --repo "$REPO" --head "$HEAD_BRANCH" --base "$BRANCH" --state open --json number --jq '.[0].number // empty')
 existing=${existing%%$'\n'*}
 case "$existing" in
   *[!0-9]*) die "unexpected pr list output: $existing" ;;

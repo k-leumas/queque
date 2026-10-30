@@ -1,4 +1,5 @@
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import {
   chmodSync,
   copyFileSync,
@@ -27,6 +28,20 @@ const ESC = '\u001b';
 // bash, so the distro test legs skip this file there.
 const HAS_BASH = spawnSync('bash', ['-c', 'exit 0']).status === 0;
 const TEST_TIMEOUT_MS = 60_000;
+
+/**
+ * The head branch auto-revert.sh uses for `branch`: `/` replaced by `-`, plus the first 8 hex
+ * digits of the git blob hash of the exact name, so feat/x and feat-x never share one (WR-05).
+ */
+function revertBranch(branch: string): string {
+  const blob = Buffer.from(branch, 'utf8');
+  const hash = createHash('sha1')
+    .update(Buffer.concat([Buffer.from(`blob ${blob.length}\0`), blob]))
+    .digest('hex');
+  return `auto-revert/${branch.replaceAll('/', '-')}-${hash.slice(0, 8)}`;
+}
+
+const REVERT_FEAT_X = revertBranch('feat/x');
 // Command substitution a careless `eval` or unquoted expansion would run: it creates `pwned`.
 const SHELL_SYNTAX = ['$(touch', '{IFS}pwned)'].join('$');
 
@@ -272,28 +287,23 @@ function tree(cwd: string, rev: string): string {
 
 describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
   it(
-    'restores the last green tree on auto-revert/feat-x and opens one PR with diagnostics',
+    'restores the last green tree on auto-revert/feat-x-HASH and opens one PR with diagnostics',
     () => {
       const f = makeFixture();
       const result = run(f);
       expect(result.stderr).not.toMatch(/unbound variable|command not found/);
       expect(result.status, result.stderr).toBe(0);
 
-      expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
-      const files = git(f.remote, [
-        'ls-tree',
-        '-r',
-        '--name-only',
-        'refs/heads/auto-revert/feat-x',
-      ]);
+      expect(tree(f.remote, `refs/heads/${REVERT_FEAT_X}`)).toBe(tree(f.work, f.sha.g));
+      const files = git(f.remote, ['ls-tree', '-r', '--name-only', `refs/heads/${REVERT_FEAT_X}`]);
       expect(files.split('\n')).not.toContain('src/new.ts');
-      expect(git(f.remote, ['rev-parse', 'refs/heads/auto-revert/feat-x^'])).toBe(f.sha.h);
+      expect(git(f.remote, ['rev-parse', `refs/heads/${REVERT_FEAT_X}^`])).toBe(f.sha.h);
       expect(git(f.remote, ['rev-parse', 'refs/heads/feat/x'])).toBe(f.sha.h);
 
       const creates = prCalls(f, 'create');
       expect(creates.length).toBe(1);
       expect(hasFlag(creates[0], '--base', 'feat/x')).toBe(true);
-      expect(hasFlag(creates[0], '--head', 'auto-revert/feat-x')).toBe(true);
+      expect(hasFlag(creates[0], '--head', REVERT_FEAT_X)).toBe(true);
       expect(prCalls(f, 'edit').length).toBe(0);
 
       const api = ghCalls(f).filter((argv) => argv[0] === 'api');
@@ -331,7 +341,35 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const comments = prCalls(f, 'comment').filter((argv) => argv[2] === '7');
       expect(comments.length).toBe(1);
       expect(comments[0].join(' ')).toContain(f.sha.h.slice(0, 7));
-      expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
+      expect(tree(f.remote, `refs/heads/${REVERT_FEAT_X}`)).toBe(tree(f.work, f.sha.g));
+    },
+    TEST_TIMEOUT_MS,
+  );
+
+  it(
+    'gives feat/x and feat-x separate head branches and only edits a PR with the same base (WR-05)',
+    () => {
+      const f = makeFixture();
+      expect(run(f).status).toBe(0);
+      const second = run(f, { BRANCH: 'feat-x' });
+      expect(second.status, second.stderr).toBe(0);
+
+      expect(revertBranch('feat-x')).not.toBe(REVERT_FEAT_X);
+      expect(remoteHasBranch(f, REVERT_FEAT_X)).toBe(true);
+      expect(remoteHasBranch(f, revertBranch('feat-x'))).toBe(true);
+      expect(remoteHasBranch(f, 'auto-revert/feat-x')).toBe(false);
+
+      const lists = prCalls(f, 'list');
+      expect(lists.length).toBe(2);
+      expect(hasFlag(lists[0], '--head', REVERT_FEAT_X)).toBe(true);
+      expect(hasFlag(lists[0], '--base', 'feat/x')).toBe(true);
+      expect(hasFlag(lists[1], '--head', revertBranch('feat-x'))).toBe(true);
+      expect(hasFlag(lists[1], '--base', 'feat-x')).toBe(true);
+
+      const creates = prCalls(f, 'create');
+      expect(creates.length).toBe(2);
+      expect(hasFlag(creates[1], '--base', 'feat-x')).toBe(true);
+      expect(hasFlag(creates[1], '--head', revertBranch('feat-x'))).toBe(true);
     },
     TEST_TIMEOUT_MS,
   );
@@ -360,7 +398,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       expect(
         ghCalls(f).some((argv) => argv[0] === 'api' && argv[1].includes('/runs/150/jobs')),
       ).toBe(true);
-      expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
+      expect(tree(f.remote, `refs/heads/${REVERT_FEAT_X}`)).toBe(tree(f.work, f.sha.g));
     },
     TEST_TIMEOUT_MS,
   );
@@ -381,7 +419,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       expect(
         ghCalls(f).some((argv) => argv[0] === 'api' && argv[1].includes(`head_sha=${f.sha.g}`)),
       ).toBe(true);
-      expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
+      expect(tree(f.remote, `refs/heads/${REVERT_FEAT_X}`)).toBe(tree(f.work, f.sha.g));
       expect(body(f)).toMatch(/ancestor/i);
     },
     TEST_TIMEOUT_MS,
@@ -394,7 +432,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       writeJson(f, 'branch-runs.json', { workflow_runs: [] });
       const result = run(f, { BEFORE_SHA: f.sha.g });
       expect(result.status, result.stderr).toBe(0);
-      expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.g));
+      expect(tree(f.remote, `refs/heads/${REVERT_FEAT_X}`)).toBe(tree(f.work, f.sha.g));
       expect(body(f)).toMatch(/before/i);
     },
     TEST_TIMEOUT_MS,
@@ -408,7 +446,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const result = run(f, { BEFORE_SHA: ZERO_SHA });
       expect(result.status, result.stderr).toBe(0);
       // main was merged into feat/x, so the merge base is main's tip M1.
-      expect(tree(f.remote, 'refs/heads/auto-revert/feat-x')).toBe(tree(f.work, f.sha.m1));
+      expect(tree(f.remote, `refs/heads/${REVERT_FEAT_X}`)).toBe(tree(f.work, f.sha.m1));
       expect(body(f)).toMatch(/merge base/i);
     },
     TEST_TIMEOUT_MS,
@@ -428,7 +466,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       expect(result.status, result.stderr).toBe(0);
       expect(result.stdout).toContain('no smoke failure in this run; nothing to revert');
       expect(prCalls(f).length).toBe(0);
-      expect(remoteHasBranch(f, 'auto-revert/feat-x')).toBe(false);
+      expect(remoteHasBranch(f, REVERT_FEAT_X)).toBe(false);
     },
     TEST_TIMEOUT_MS,
   );
@@ -453,7 +491,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       expect(result.status, result.stderr).toBe(0);
       expect(result.stdout).toContain('::warning::');
       expect(prCalls(f).length).toBe(0);
-      expect(remoteHasBranch(f, 'auto-revert/main')).toBe(false);
+      expect(remoteHasBranch(f, revertBranch('main'))).toBe(false);
     },
     TEST_TIMEOUT_MS,
   );
@@ -479,7 +517,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       expect(result.status, result.stderr).toBe(0);
       expect(existsSync(join(f.work, 'pwned'))).toBe(false);
       expect(existsSync(join(f.root, 'pwned'))).toBe(false);
-      expect(remoteHasBranch(f, `auto-revert/feat-${SHELL_SYNTAX}`)).toBe(true);
+      expect(remoteHasBranch(f, revertBranch(branch))).toBe(true);
       const creates = prCalls(f, 'create');
       expect(creates.length).toBe(1);
       expect(hasFlag(creates[0], '--base', branch)).toBe(true);
@@ -493,7 +531,7 @@ describe.skipIf(!HAS_BASH)('scripts/ci/auto-revert.sh', () => {
       const f = makeFixture({ touchWorkflow: true });
       const result = run(f);
       expect(result.status, result.stderr).toBe(0);
-      const ref = 'refs/heads/auto-revert/feat-x';
+      const ref = `refs/heads/${REVERT_FEAT_X}`;
       expect(git(f.remote, ['show', `${ref}:.github/workflows/ci.yml`])).toBe(
         git(f.work, ['show', `${f.sha.h}:.github/workflows/ci.yml`]),
       );

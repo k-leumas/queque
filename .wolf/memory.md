@@ -3638,3 +3638,6 @@
 | 07:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr04.json | — | ~246 |
 | 07:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr04.txt | — | ~133 |
 | 07:17 | 10-REVIEW-FIX WR-04: CI push runs diff against merge base with main; HEAD-as-base runs everything + tests | .github/workflows/ci.yml, scripts/ci/code-changed.mjs, tests/code-changed.test.ts | fixed, actionlint ok, 12 tests pass | ~3000 |
+| 07:19 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr05.json | — | ~239 |
+| 07:19 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr05.txt | — | ~115 |
+| 07:19 | 10-REVIEW-FIX WR-05: auto-revert head branch carries a name hash; pr list filters --base + collision test | scripts/ci/auto-revert.sh, tests/auto-revert.test.ts | fixed, shellcheck ok, 14 tests pass | ~3000 |
