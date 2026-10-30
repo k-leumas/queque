@@ -3693,3 +3693,8 @@
 | 10:31 | Session end: 3 writes across 3 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md) | 0 reads | ~9215 tok |
 | 10:32 | Created .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-VERIFICATION.md | — | ~3935 |
 | 10:35 | phase 10 complete: phase.complete, PROJECT.md evolved (3 validated, 3 decisions), STATE context updated; next phase 7 | .planning/{ROADMAP,STATE,PROJECT}.md | done | ~4k |
+| 10:35 | Session end: 4 writes across 3 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md) | 1 reads | ~17011 tok |
+| 10:40 | Created .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | — | ~5248 |
+| 10:40 | Edited .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | inline fix | ~63 |
+| 10:40 | Edited .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | "^docs\(readme\): [a-z]" → "%s\n" | ~135 |
+| 10:41 | Planned quick 261030-en8: README CI/Nightly/Release status badges + 6 tested-on distro badges from ci.yml images, drift-guard vitest | .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | planned (validated) | ~6k |

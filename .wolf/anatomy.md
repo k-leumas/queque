@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T16:32:39.890Z
-> Files: 554 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T16:40:40.977Z
+> Files: 555 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -638,6 +638,10 @@
 
 - `261021-sya-PLAN.md` — Declares normalizeRepositoryUrl (~3906 tok)
 - `261021-sya-SUMMARY.md` — Quick 261021-sya Plan 01: Fix Changelog Links Leaking x-access-token Summary (~928 tok)
+
+## .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/
+
+- `261030-en8-PLAN.md` — /*.test.ts`. tsconfig includes tests. There is no YAML parser dependency, so extract `images:` with  (~4947 tok)
 
 ## .planning/research/
 
