@@ -29,6 +29,12 @@ SMOKE_USER=qq
 SMOKE_HOME=/home/qq
 USER_PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 
+# The host user uploads /out after the container exits (GitHub's runner is uid 1001), but the
+# files are written by the in-container qq user with private modes (qq-debug.log is 0600). qq is
+# uid 1000 on most images, so the upload hit EACCES and failed legs lost their diagnostics. As
+# root, on every exit path, make /out readable for the host.
+trap 'chmod -R a+rX /out 2>/dev/null || true' EXIT
+
 printf '%s\n' "${QQ_SMOKE_IMAGE:-unknown}" >/out/image.txt
 
 # Saves the failure artifacts, then exits with the given code.
