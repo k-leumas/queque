@@ -12,6 +12,7 @@ const REQUIRED_DOCS: readonly string[] = [
   'INSTALL.md',
   'PROVIDERS.md',
   'USAGE.md',
+  'PRIVACY.md',
   'CONFIGURATION.md',
 ];
 
