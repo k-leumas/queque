@@ -37,8 +37,12 @@ jobs:
 
       - name: Did anything besides docs and planning change?
         id: filter
+        # Pushes leave the base empty and the script diffs against the merge base with main,
+        # never `github.event.before`: after a push whose run was cancelled or failed, a docs
+        # push would diff `before...after`, see docs only and turn `ci-ok` green on untested
+        # code. On main itself the merge base is HEAD, so the script runs everything.
         env:
-          QQ_CHANGES_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          QQ_CHANGES_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
         run: node scripts/ci/code-changed.mjs
 
   checks:

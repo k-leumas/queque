@@ -143,6 +143,41 @@ describe('scripts/ci/code-changed.mjs', () => {
     expect(run(cwd, ZERO_SHA).output).toBe('code=false');
   });
 
+  it('diffs a push (no base) against the merge base with main, not the last push (WR-04)', () => {
+    // Push A changes code (its run was cancelled or failed), push B changes docs only:
+    // B must still run everything, because the branch carries untested code against main.
+    const { cwd } = makeRepo();
+    git(cwd, ['branch', 'main']);
+    writeFiles(cwd, { 'src/a.ts': 'export const a = 1;\n' });
+    commitAll(cwd);
+    const pushA = git(cwd, ['rev-parse', 'HEAD']);
+    writeFiles(cwd, { 'docs/a.txt': 'doc\n' });
+    commitAll(cwd);
+
+    // What the old `github.event.before` base reported for push B: a false doc-only green.
+    expect(run(cwd, pushA).output).toBe('code=false');
+    // What ci.yml now passes for a push: an empty base.
+    expect(run(cwd, '').output).toBe('code=true');
+    expect(run(cwd, undefined).output).toBe('code=true');
+  });
+
+  it('runs everything on main itself, where the merge base is HEAD (WR-04)', () => {
+    const { cwd } = makeRepo();
+    git(cwd, ['checkout', '-q', '-b', 'main']);
+    writeFiles(cwd, { 'docs/a.txt': 'doc\n' });
+    commitAll(cwd);
+
+    const result = run(cwd, '');
+
+    expect(result.output).toBe('code=true');
+    expect(result.status).toBe(0);
+  });
+
+  it('runs everything when the explicit base is HEAD itself', () => {
+    const { cwd } = makeRepo();
+    expect(run(cwd, git(cwd, ['rev-parse', 'HEAD'])).output).toBe('code=true');
+  });
+
   it('writes code=true and exits 0 outside a git repository', () => {
     const cwd = mkdtempSync(join(tmpdir(), 'qq-code-changed-nogit-'));
     repos.push(cwd);

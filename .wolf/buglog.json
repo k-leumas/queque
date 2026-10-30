@@ -7290,6 +7290,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:15:25.000Z"
+    },
+    {
+      "id": "bug-468",
+      "timestamp": "2026-10-30T13:17:24.000Z",
+      "error_message": "10-REVIEW WR-04: a doc-only push after an untested (cancelled or failed) code push reports a green ci-ok, because push runs diff against github.event.before",
+      "file": ".github/workflows/ci.yml",
+      "root_cause": "QQ_CHANGES_BASE was github.event.before for pushes, so push B's run only saw B's own doc paths and skipped checks and distro although the branch carried untested code; with an empty base, HEAD...HEAD on main would also have skipped everything",
+      "fix": "ci.yml passes an empty base for pushes (PRs keep base.sha), so scripts/ci/code-changed.mjs diffs against the merge base with main; the script now runs everything when the base resolves to HEAD itself (a push to main). Tests in tests/code-changed.test.ts; actionlint clean",
+      "tags": [
+        "ci",
+        "github-actions",
+        "path-filter",
+        "ci-ok",
+        "phase-10",
+        "review-fix",
+        "WR-04"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:17:24.000Z"
     }
   ]
 }

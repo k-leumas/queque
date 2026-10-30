@@ -4,10 +4,12 @@
 // or `code=false` to $GITHUB_OUTPUT so the heavy jobs can be skipped by `if:`
 // (a skipped job reports success, so required checks never sit Pending).
 //
-// Base: QQ_CHANGES_BASE (the PR base SHA or the push `before` SHA) when it is set,
-// not all zeros and present in the clone; otherwise the merge base with
-// main/master from resolveBaseRef(). Every failure to compute the diff fails open
-// to `code=true`, and the script exits 0 unless $GITHUB_OUTPUT itself cannot be written.
+// Base: QQ_CHANGES_BASE (the PR base SHA; ci.yml leaves it empty for pushes) when it
+// is set, not all zeros and present in the clone; otherwise the merge base with
+// main/master from resolveBaseRef(). A base that is HEAD itself (a push to main, whose
+// merge base with main is HEAD) leaves nothing to compare and runs everything. Every
+// failure to compute the diff fails open to `code=true`, and the script exits 0 unless
+// $GITHUB_OUTPUT itself cannot be written.
 import { spawnSync } from 'node:child_process';
 import { appendFileSync } from 'node:fs';
 import { resolveBaseRef } from '../changed-files-from-base.mjs';
@@ -36,10 +38,19 @@ function explicitBase() {
   return git(['cat-file', '-e', `${base}^{commit}`]).status === 0 ? base : null;
 }
 
+function commitOf(ref) {
+  const result = git(['rev-parse', '--verify', '--quiet', `${ref}^{commit}`]);
+  return result.status === 0 ? result.stdout.trim() : null;
+}
+
 /** Returns { code, paths, base }; code is true whenever the diff cannot be computed. */
 function decide() {
   const base = explicitBase() ?? resolveBaseRef()?.mergeBase ?? null;
   if (!base) return { code: true, paths: [], base: null };
+  // An empty range is no evidence of a doc-only change (WR-04): on main the merge base with
+  // main is HEAD, and `HEAD...HEAD` would skip every check on every push to main.
+  const head = commitOf('HEAD');
+  if (head === null || head === commitOf(base)) return { code: true, paths: [], base };
   const diff = git(['diff', '--name-only', '-z', `${base}...HEAD`]);
   if (diff.status !== 0) return { code: true, paths: [], base };
   const paths = diff.stdout.split('\0').filter(Boolean);

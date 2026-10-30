@@ -3635,3 +3635,6 @@
 | 07:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr03.json | — | ~242 |
 | 07:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr03.txt | — | ~120 |
 | 07:15 | 10-REVIEW-FIX WR-03: doctor warns on a daemon socket that accepts but never answers + tests | src/cli/commands/doctor.ts, src/daemon/bootstrap.ts, tests/doctor.test.ts | fixed, 85 tests pass | ~3000 |
+| 07:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr04.json | — | ~246 |
+| 07:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr04.txt | — | ~133 |
+| 07:17 | 10-REVIEW-FIX WR-04: CI push runs diff against merge base with main; HEAD-as-base runs everything + tests | .github/workflows/ci.yml, scripts/ci/code-changed.mjs, tests/code-changed.test.ts | fixed, actionlint ok, 12 tests pass | ~3000 |
