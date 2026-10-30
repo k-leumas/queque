@@ -3698,3 +3698,4 @@
 | 10:40 | Edited .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | inline fix | ~63 |
 | 10:40 | Edited .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | "^docs\(readme\): [a-z]" → "%s\n" | ~135 |
 | 10:41 | Planned quick 261030-en8: README CI/Nightly/Release status badges + 6 tested-on distro badges from ci.yml images, drift-guard vitest | .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/261030-en8-PLAN.md | planned (validated) | ~6k |
+| 11:05 | Quick 261030-en8: README CI/Nightly/Release status badges + 6 tested-on distro badges; tests/readme-badges.test.ts drift guard (red 3/4, then green 4/4; all 9 shields URLs render with logos) | README.md, tests/readme-badges.test.ts | done | ~8k |

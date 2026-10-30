@@ -1,5 +1,16 @@
 # QueQue — copy-pasting shell commands is dead
 
+[![CI](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![Nightly](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/nightly.yml?branch=main&label=Nightly&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/nightly.yml)
+[![Release](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/release.yaml?branch=main&label=Release&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/release.yaml)
+
+[![tested on ubuntu:22.04](https://img.shields.io/badge/tested%20on-Ubuntu%2022.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on ubuntu:24.04](https://img.shields.io/badge/tested%20on-Ubuntu%2024.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on debian:13](https://img.shields.io/badge/tested%20on-Debian%2013-A81D33?logo=debian&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on fedora:44](https://img.shields.io/badge/tested%20on-Fedora%2044-51A2DA?logo=fedora&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on archlinux:latest](https://img.shields.io/badge/tested%20on-Arch%20Linux%20latest-1793D1?logo=archlinux&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on alpine:3.24](https://img.shields.io/badge/tested%20on-Alpine%203.24-0D597F?logo=alpinelinux&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+
 **Before:** Google it → copy → paste → tweak → pray.
 
 **Now:** Type your intent, hit `??`, pick a command — it lands in your buffer, ready to tweak and run.
