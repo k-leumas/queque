@@ -369,7 +369,7 @@ Plans:
 **Out of scope:** bash adapter (separate phase).
 **Open decisions (discuss-phase):** PostHog cloud vs self-hosted; whether any matrix run calls the live LLM.
 **Estimate:** ~3–3.5 days.
-**Requirements**: TBD
+**Requirements**: P10-CI, P10-SMOKE, P10-REVERT, P10-DOCTOR, P10-TEL, P10-LIVE, P10-PREWARM, P10-FIX, ZSHX-01
 **Depends on:** Phase 9
 **Plans:** 13/13 plans executed
 

@@ -45,12 +45,25 @@
 - [ ] **SAFE-01**: Errors and provider failures surface cleanly without mutating the shell buffer.
 - [x] **EXT-01**: Internal registries exist for shell adapters, context providers, provider backends, and storage/extension hooks.
 
+### CI, Diagnostics and Telemetry (Phase 10)
+
+IDs and scope defined in `.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-RESEARCH.md`.
+
+- [x] **P10-CI**: `ci.yml` runs the checks job and a vitest-in-containers matrix (ubuntu 22.04/24.04, debian, fedora, arch, alpine) on push and PR; nightly runs the `:latest` images.
+- [x] **P10-SMOKE**: `scripts/smoke-distro.sh <image>` drives a real zsh PTY with a fake `claude` against the `pnpm pack` tarball; a `smoke` matrix job runs it per distro.
+- [x] **P10-REVERT**: A smoke failure on push opens one auto-revert PR with diagnostics.
+- [x] **P10-DOCTOR**: `qq doctor` and `qq doctor --json` report install health without leaking env values.
+- [x] **P10-TEL**: Telemetry is opt-in and anonymous: strict event contract, one-time consent, daemon buffer, PostHog `/batch` sender, `qq telemetry` commands.
+- [x] **P10-LIVE**: A nightly job runs the live SDK contract test.
+- [x] **P10-PREWARM**: A vitest simulation covers stale prewarm after sleep (SIGSTOP/SIGCONT and killed children).
+- [x] **P10-FIX**: Linux portability defects are fixed (busybox `lsof` output, unguarded `mktemp`).
+
 ## v2 Requirements
 
 ### Shell Expansion
 
 - **BASH-01**: User can invoke QueQue from `bash` with equivalent buffer-replacement behavior.
-- **ZSHX-01**: User can use QueQue on non-macOS `zsh` environments.
+- [x] **ZSHX-01**: User can use QueQue on non-macOS `zsh` environments. (Done in Phase 10: CI and smoke pass on six Linux distros.)
 
 ### History and Personalization
 
@@ -99,12 +112,22 @@
 | TUI-02 | Phase 5 | Deferred |
 | TUI-03 | Phase 5 | Deferred |
 | CMD-04 | Phase 6 | Complete |
+| P10-CI | Phase 10 | Complete |
+| P10-SMOKE | Phase 10 | Complete |
+| P10-REVERT | Phase 10 | Complete |
+| P10-DOCTOR | Phase 10 | Complete |
+| P10-TEL | Phase 10 | Complete |
+| P10-LIVE | Phase 10 | Complete |
+| P10-PREWARM | Phase 10 | Complete |
+| P10-FIX | Phase 10 | Complete |
+| ZSHX-01 | Phase 10 | Complete |
 
 **Coverage:**
-- v1 requirements: 22 total
-- Mapped to phases: 22
+- v1 requirements: 22 total, plus 8 Phase 10 requirements (P10-*)
+- v2 requirements pulled forward: ZSHX-01 (Phase 10)
+- Mapped to phases: 31
 - Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-04-30*
-*Last updated: 2026-06-17 after Phase 5 deferral*
+*Last updated: 2026-10-30 after Phase 10 (P10-* IDs added, ZSHX-01 done)*
