@@ -1,3 +1,68 @@
+# [0.8.0](https://github.com/k-leumas/queque/compare/v0.7.1...v0.8.0) (2026-10-30)
+
+### Features
+
+- Added a new `qq doctor` command that checks your setup and reports problems, with an optional `--json` output for scripting.
+- QueQue now asks once, with a single keypress, whether you're okay sharing anonymous usage telemetry after your first accepted suggestion; it defaults to no if you don't answer.
+- Added `qq telemetry status`, `on`, `off`, and `show` commands so you can check or change your telemetry choice at any time.
+- `qq doctor` now shows your current telemetry setting as an informational row without failing the check.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **10-11:** ask for telemetry consent once after the first accepted ?? ([a0bcb29](https://github.com/k-leumas/queque/commit/a0bcb290bb2d4a8fd01976df4952bc2695bafc00))
+* **10-11:** add the one-key telemetry consent prompt, default no ([49aa2c7](https://github.com/k-leumas/queque/commit/49aa2c750327430933923348e015b678ef2872ab))
+* **10-07:** add the auto-revert job to ci.yml for smoke failures on push ([cd9245c](https://github.com/k-leumas/queque/commit/cd9245c9cf81edd7b313f66a75d2c46cdcddadfd))
+* **10-07:** restore the last green tree when a smoke leg fails ([633e391](https://github.com/k-leumas/queque/commit/633e391ff62c1affa19eba231c368c1ea1a59eeb))
+* **10-10:** report each query outcome after the result is written ([37cd34d](https://github.com/k-leumas/queque/commit/37cd34dec9f87162479a84ba293ffc1cdd84fcc3))
+* **10-10:** build, gate and send client telemetry events ([08663e6](https://github.com/k-leumas/queque/commit/08663e673e5d7933785e6c2dd7c158852e032d97))
+* **10-09:** show telemetry state as a non-blocking doctor row ([7ea587d](https://github.com/k-leumas/queque/commit/7ea587d443bb789a70eac1d89917bb243faf93d6))
+* **10-09:** add qq telemetry status, on, off and show ([23d8ca3](https://github.com/k-leumas/queque/commit/23d8ca35f95ac993e38ed006d84cfa106eb9173d))
+* **10-06:** classify fetch errors as an ErrorKind enum ([7d98daa](https://github.com/k-leumas/queque/commit/7d98daa42b4d49f7ec31951cb553e56a6169bf25))
+* **10-06:** wire telemetry IPC kinds and the bounded shutdown flush ([31368cb](https://github.com/k-leumas/queque/commit/31368cb036eaad8a715036c288d890cadea3dd32))
+* **10-06:** add the daemon telemetry buffer and /batch sender ([04bbf4a](https://github.com/k-leumas/queque/commit/04bbf4aa0467760353a2ebe6e2be5b6a13b580c4))
+* **10-05:** assert qq doctor exits 0 in every distro smoke ([530b353](https://github.com/k-leumas/queque/commit/530b35344aab58e06e32a5536ae316845f747d0d))
+* **10-05:** skip heavy CI jobs only for doc-only changes ([9571b26](https://github.com/k-leumas/queque/commit/9571b26b1041ac289bdaab47e6971a84f4f6776e))
+* **10-01:** add Esc, C-locale and no-Docker paths to the distro smoke ([2668d18](https://github.com/k-leumas/queque/commit/2668d187a648f7896a7cfb4733f90948a7866503))
+* **10-01:** add the distro smoke tracer for one accepted ?? in alpine ([5028926](https://github.com/k-leumas/queque/commit/50289265ee882216b07dc90585cf4e9beb6bbe44))
+* **10-04:** bake EU telemetry host and empty key with env overrides ([2ab18c4](https://github.com/k-leumas/queque/commit/2ab18c40445f40704ca7459061500f6bdbfb5959))
+* **10-04:** add uncached telemetry consent state with env gates ([020be84](https://github.com/k-leumas/queque/commit/020be848d5809ce829eec51bd33d4a7dbc1916ba))
+* **10-04:** add strict telemetry allow-list contract ([4643086](https://github.com/k-leumas/queque/commit/4643086ff924ba31a335e6eda422bef7923cc62f))
+* **10-03:** add qq doctor command with --json output ([d752e21](https://github.com/k-leumas/queque/commit/d752e21f1ce034e051a8a532411f6eb8c2d135c0))
+* **10-03:** implement qq doctor checks and exit rule ([24cd71d](https://github.com/k-leumas/queque/commit/24cd71da807e2a06dab65ce2fe082f8edd9deb67))
+
+</details>
+
+### Bug Fixes
+
+- Fixed the consent prompt so it no longer pops up inside zellij sessions where it couldn't be answered properly.
+- Fixed an issue where the consent prompt would keep re-asking every time if QueQue couldn't save your settings file.
+- Fixed config saving so that a symlinked config.json now gets written to its real target instead of breaking the link.
+- `qq doctor` now warns instead of silently failing when it can't reach the background daemon.
+- Fixed incorrect line-width calculations in terminals using a C locale without UTF-8 support, which could garble suggestion display.
+- Fixed the shell widget incorrectly signalling unrelated processes on systems using busybox's lsof.
+- The shell widget now stops cleanly instead of hanging if it can't create a temporary session directory.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **smoke:** opt out of telemetry in the homebrew install smoke ([80bb9d4](https://github.com/k-leumas/queque/commit/80bb9d457c6aa20c06c14282b47c72f5fc55dfc5))
+* **10:** clear stale doctor reports before a distro smoke run ([1cb1963](https://github.com/k-leumas/queque/commit/1cb1963f9ad2dda024e9a5acd70337a72e8c6104))
+* **10:** give each branch its own auto-revert head branch ([b4a277e](https://github.com/k-leumas/queque/commit/b4a277e1e3e712533d20eb3d1f684a7a8c9290bc))
+* **10:** diff push runs against main, not the previous push ([471d18d](https://github.com/k-leumas/queque/commit/471d18de4cfe77f8e03fc3be151f17d35fe74632))
+* **10:** warn in doctor when the daemon socket does not answer ([4d35bfd](https://github.com/k-leumas/queque/commit/4d35bfd9dbfd36b013bdf9363f11e11383f19f6c))
+* **10:** write a symlinked config.json through to its target ([8064e74](https://github.com/k-leumas/queque/commit/8064e7443e47aa291adb8786b122ec0fdd83f50d))
+* **10:** skip the consent question inside zellij ([e57a139](https://github.com/k-leumas/queque/commit/e57a139b7bbc9f8496c66f0677740e08242f13ba))
+* **10:** keep consent from re-asking when config is unwritable ([fa30b57](https://github.com/k-leumas/queque/commit/fa30b57b198a76a0add243ab2f9012cd34ed4f95))
+* **10:** keep smoke artifacts readable for the runner on every exit ([378ee22](https://github.com/k-leumas/queque/commit/378ee22d390f081c309358c8bca6d87f5a3719f7))
+* **10:** count frame width in a UTF-8 locale on C-locale hosts ([ae68aea](https://github.com/k-leumas/queque/commit/ae68aea8a2e26def402f525674fe11f610f3f395))
+* **10:** scrub hook-exported GIT_* vars before tests spawn git ([7b476ce](https://github.com/k-leumas/queque/commit/7b476cec796b4e592866aa39139ee25d39d1836f))
+* **10-01:** ignore busybox lsof output so no unrelated pid is signalled ([0444383](https://github.com/k-leumas/queque/commit/0444383354acc21644507d0f351d282f0a636994))
+* **10-02:** stop the widget when mktemp cannot create a session dir ([4af410e](https://github.com/k-leumas/queque/commit/4af410e5845896ea2a517b0dd75aec5583552f5c))
+* **lint:** root-anchor biome excludes so lint runs in worktrees ([685af4d](https://github.com/k-leumas/queque/commit/685af4d90e55a6ea1fccd8e16f24e1baf4f04223))
+
+</details>
+
 ## [0.7.1](https://github.com/k-leumas/queque/compare/v0.7.0...v0.7.1) (2026-10-27)
 
 ### Bug Fixes
