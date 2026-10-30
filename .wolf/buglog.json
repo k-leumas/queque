@@ -7330,6 +7330,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:19:14.000Z"
+    },
+    {
+      "id": "bug-470",
+      "timestamp": "2026-10-30T13:20:23.000Z",
+      "error_message": "10-REVIEW WR-06: a local rerun of scripts/smoke-distro.sh that fails early (exit 30-33) keeps the previous run's doctor.json/doctor.txt next to the new logs",
+      "file": "scripts/smoke-distro.sh",
+      "root_cause": "smoke-distro.sh reuses ${TMPDIR}/qq-smoke-SLUG and cleared only the logs, image.txt, df.txt and zshrc.txt; the runner's fail() collects doctor only when /out/doctor.json is missing, so the stale report survived",
+      "fix": "smoke-distro.sh also removes doctor.json and doctor.txt before the run, and scripts/smoke-distro-runner.sh clears /out/doctor.json and /out/doctor.txt at start (one runner per /out). Verified with bash -n and shellcheck; no Docker run",
+      "tags": [
+        "smoke",
+        "distro",
+        "docker",
+        "diagnostics",
+        "phase-10",
+        "review-fix",
+        "WR-06"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:20:23.000Z"
     }
   ]
 }

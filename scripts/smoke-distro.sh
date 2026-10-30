@@ -79,7 +79,9 @@ SLUG="${IMAGE//[:\/]/-}"
 OUT_DIR="${OUT_DIR:-${QQ_SMOKE_OUT:-${TMPDIR:-/tmp}/qq-smoke-$SLUG}}"
 mkdir -p "$OUT_DIR"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
-rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR"/{qq-debug.log,image.txt,df.txt,zshrc.txt}
+# The runner collects doctor only when /out/doctor.json is missing, so a report left by an
+# earlier local run would be shipped as this run's (WR-06): clear it with the logs.
+rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR"/{qq-debug.log,image.txt,df.txt,zshrc.txt,doctor.json,doctor.txt}
 
 cd "$ROOT_DIR"
 

@@ -35,6 +35,9 @@ USER_PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 # root, on every exit path, make /out readable for the host.
 trap 'chmod -R a+rX /out 2>/dev/null || true' EXIT
 
+# fail() collects doctor only when /out/doctor.json is missing: never let a report from an
+# earlier run in a reused /out stand in for this one (WR-06).
+rm -f /out/doctor.json /out/doctor.txt
 printf '%s\n' "${QQ_SMOKE_IMAGE:-unknown}" >/out/image.txt
 
 # Saves the failure artifacts, then exits with the given code.

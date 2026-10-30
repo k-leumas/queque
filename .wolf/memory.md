@@ -3641,3 +3641,6 @@
 | 07:19 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr05.json | — | ~239 |
 | 07:19 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr05.txt | — | ~115 |
 | 07:19 | 10-REVIEW-FIX WR-05: auto-revert head branch carries a name hash; pr list filters --base + collision test | scripts/ci/auto-revert.sh, tests/auto-revert.test.ts | fixed, shellcheck ok, 14 tests pass | ~3000 |
+| 07:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr06.json | — | ~225 |
+| 07:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr06.txt | — | ~102 |
+| 07:20 | 10-REVIEW-FIX WR-06: smoke-distro clears stale doctor.json/doctor.txt (host script + runner) | scripts/smoke-distro.sh, scripts/smoke-distro-runner.sh | fixed, bash -n + shellcheck ok | ~1500 |

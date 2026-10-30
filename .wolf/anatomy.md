@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:19:10.940Z
-> Files: 551 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:20:18.932Z
+> Files: 553 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -52,6 +52,7 @@
 - `bug-wr03.json` (~242 tok)
 - `bug-wr04.json` (~246 tok)
 - `bug-wr05.json` (~239 tok)
+- `bug-wr06.json` (~225 tok)
 - `make-red-record.mjs` — Declares output (~227 tok)
 - `mkrecord.mjs` — Declares output (~95 tok)
 - `mkred.mjs` (~126 tok)
@@ -85,6 +86,7 @@
 - `rf10-msg-wr03.txt` (~112 tok)
 - `rf10-msg-wr04.txt` (~125 tok)
 - `rf10-msg-wr05.txt` (~108 tok)
+- `rf10-msg-wr06.txt` (~95 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/
 
