@@ -3,14 +3,17 @@ import {
   accessSync,
   chmodSync,
   constants,
+  lstatSync,
   mkdirSync,
   readFileSync,
+  readlinkSync,
+  realpathSync,
   renameSync,
   statSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { defaultConfigPath, telemetryConfigSchema } from './qq-config.js';
 
 /**
@@ -145,6 +148,28 @@ function readRawConfig(path: string): Record<string, unknown> {
 }
 
 /**
+ * The file a write replaces (WR-02). A symlinked config.json (dotfile managers such as stow,
+ * chezmoi or home-manager link it) resolves to its target, so the temp file and the rename
+ * stay in the target's directory and the link itself survives; a dangling link resolves one
+ * hop to the file it names. Anything else, including a missing file, is written at `path`.
+ */
+function writeTarget(path: string): string {
+  try {
+    return realpathSync(path);
+  } catch {
+    // no file yet, or a dangling link
+  }
+  try {
+    if (lstatSync(path).isSymbolicLink()) {
+      return resolve(dirname(path), readlinkSync(path));
+    }
+  } catch {
+    // nothing at path
+  }
+  return path;
+}
+
+/**
  * The nearest directory on the way up from `dir` that exists (the one a recursive mkdir
  * would create the rest under), or undefined if none can be found.
  */
@@ -180,7 +205,7 @@ function nearestExistingDir(dir: string): string | undefined {
 export function telemetryStateWritable(path: string = defaultConfigPath()): boolean {
   try {
     readRawConfig(path);
-    const dir = nearestExistingDir(dirname(path));
+    const dir = nearestExistingDir(dirname(writeTarget(path)));
     if (dir === undefined) {
       return false;
     }
@@ -194,7 +219,8 @@ export function telemetryStateWritable(path: string = defaultConfigPath()): bool
 /**
  * Sets only `raw.telemetry` and writes the file atomically with the provider-pin pattern:
  * a sibling temp file created exclusively (`wx`, mode 0600, so a planted file or symlink at
- * that name fails instead of being followed), chmod, then rename over the target. A new
+ * that name fails instead of being followed), chmod, then rename over the target. A
+ * symlinked config.json is written through to its target, never replaced (WR-02). A new
  * directory is created 0700.
  */
 function writeTelemetryState(next: TelemetryState, path: string): void {
@@ -205,12 +231,13 @@ function writeTelemetryState(next: TelemetryState, path: string): void {
   }
   raw.telemetry = block;
 
-  mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
-  const temp = `${path}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
+  const target = writeTarget(path);
+  mkdirSync(dirname(target), { recursive: true, mode: 0o700 });
+  const temp = `${target}.${process.pid}.${randomBytes(4).toString('hex')}.tmp`;
   try {
     writeFileSync(temp, `${JSON.stringify(raw, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
     chmodSync(temp, 0o600);
-    renameSync(temp, path);
+    renameSync(temp, target);
   } catch (error) {
     try {
       unlinkSync(temp);

@@ -3629,3 +3629,6 @@
 | 07:11 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr01.json | — | ~222 |
 | 07:11 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr01.txt | — | ~111 |
 | 07:12 | 10-REVIEW-FIX WR-01: no consent ask inside Zellij + regression test | src/client/run-foreground.ts, tests/client-result.test.ts | fixed, 50 tests pass | ~1500 |
+| 07:13 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr02.json | — | ~229 |
+| 07:13 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr02.txt | — | ~121 |
+| 07:13 | 10-REVIEW-FIX WR-02: telemetry config write follows a symlinked config.json + tests | src/shared/telemetry-config.ts, tests/telemetry-config.test.ts | fixed, 71 tests pass | ~2500 |

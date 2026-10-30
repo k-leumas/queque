@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:11:58.503Z
-> Files: 543 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T13:13:10.169Z
+> Files: 545 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -48,6 +48,7 @@
 - `addbug.py` — usage: addbug.py <spec.json>  (spec: error_message, file, root_cause, fix, tags) (~267 tok)
 - `bug-cr01.json` (~271 tok)
 - `bug-wr01.json` (~222 tok)
+- `bug-wr02.json` (~229 tok)
 - `make-red-record.mjs` — Declares output (~227 tok)
 - `mkrecord.mjs` — Declares output (~95 tok)
 - `mkred.mjs` (~126 tok)
@@ -77,6 +78,7 @@
 - `plan-10-09-msg-summary.txt` (~17 tok)
 - `rf10-msg-cr01.txt` (~110 tok)
 - `rf10-msg-wr01.txt` (~104 tok)
+- `rf10-msg-wr02.txt` (~113 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/10-12/
 

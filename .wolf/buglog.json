@@ -7250,6 +7250,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:12:05.000Z"
+    },
+    {
+      "id": "bug-466",
+      "timestamp": "2026-10-30T13:13:16.000Z",
+      "error_message": "10-REVIEW WR-02: the telemetry consent write replaces a symlinked ~/.config/qq/config.json (stow, chezmoi, home-manager) with a regular file, silently detaching the dotfile repo",
+      "file": "src/shared/telemetry-config.ts",
+      "root_cause": "writeTelemetryState built the temp file next to the link path and renamed it over the link, which replaces the link rather than its target",
+      "fix": "Added writeTarget() (realpathSync, or one readlink hop for a dangling link); the temp file, mkdir and rename now use the target, and telemetryStateWritable checks the target's directory. Tests in tests/telemetry-config.test.ts (absolute, relative and dangling links, read-only target dir)",
+      "tags": [
+        "telemetry",
+        "config",
+        "symlink",
+        "dotfiles",
+        "phase-10",
+        "review-fix",
+        "WR-02"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:13:16.000Z"
     }
   ]
 }

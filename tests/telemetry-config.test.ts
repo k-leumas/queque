@@ -1,10 +1,14 @@
 import {
   chmodSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
+  readlinkSync,
   rmSync,
   statSync,
+  symlinkSync,
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -293,6 +297,61 @@ describe('telemetryStateWritable (CR-01: never ask when the answer cannot be sav
   it('reads QQ_CONFIG_FILE by default', () => {
     seed('nope');
     expect(telemetryStateWritable()).toBe(false);
+  });
+});
+
+describe('a symlinked config.json (WR-02: dotfile managers)', () => {
+  const isRoot = typeof process.getuid === 'function' && process.getuid() === 0;
+  let dotfiles: string;
+  let target: string;
+
+  beforeEach(() => {
+    dotfiles = join(dir, 'dotfiles', 'qq');
+    mkdirSync(dotfiles, { recursive: true });
+    target = join(dotfiles, 'config.json');
+  });
+
+  afterEach(() => {
+    chmodSync(dotfiles, 0o700);
+  });
+
+  it('writes through to the target and keeps the link', () => {
+    writeFileSync(target, JSON.stringify(SEEDED));
+    symlinkSync(target, configFile);
+
+    markTelemetryAsked(false, configFile);
+
+    expect(lstatSync(configFile).isSymbolicLink()).toBe(true);
+    expect(readlinkSync(configFile)).toBe(target);
+    const written = JSON.parse(readFileSync(target, 'utf8')) as Record<string, unknown>;
+    expect(written).toMatchObject(SEEDED);
+    expect(written.telemetry).toEqual({ enabled: false, asked: true });
+    expect(readTelemetryState(configFile).asked).toBe(true);
+    // The temp file went next to the target and was renamed away.
+    expect(readdirSync(dotfiles)).toEqual(['config.json']);
+    expect(readdirSync(dir).sort()).toEqual(['config.json', 'dotfiles']);
+  });
+
+  it('follows a relative link', () => {
+    writeFileSync(target, '{}');
+    symlinkSync(join('dotfiles', 'qq', 'config.json'), configFile);
+    setTelemetryEnabled(true, configFile);
+    expect(lstatSync(configFile).isSymbolicLink()).toBe(true);
+    expect(readTelemetryState(target).enabled).toBe(true);
+  });
+
+  it('creates the file a dangling link names instead of replacing the link', () => {
+    symlinkSync(target, configFile);
+    markTelemetryAsked(false, configFile);
+    expect(lstatSync(configFile).isSymbolicLink()).toBe(true);
+    expect(readTelemetryState(target)).toEqual({ enabled: false, asked: true });
+  });
+
+  it.skipIf(isRoot)('reports the link as unwritable when the target directory is read-only', () => {
+    writeFileSync(target, '{}');
+    symlinkSync(target, configFile);
+    chmodSync(dotfiles, 0o500);
+    expect(telemetryStateWritable(configFile)).toBe(false);
   });
 });
 
