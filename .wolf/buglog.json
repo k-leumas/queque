@@ -7124,6 +7124,46 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-29T23:48:16.705Z"
+    },
+    {
+      "id": "bug-462",
+      "timestamp": "2026-10-30T00:35:27Z",
+      "error_message": "CI test-distro on debian:13, fedora:44, ubuntu:22.04, ubuntu:24.04: zsh-widget.test.ts > instant frame > z4: expected length 77 but got 75 (run 40967340170)",
+      "file": "shell/zsh/queque.zsh",
+      "root_cause": "glibc images run zsh in the C locale, where ${#text} and ${text[1,n]} count bytes; the 3-byte › and … made the instant-frame header 2 columns short, and a typed multibyte character could be split (alpine musl and arch default to UTF-8)",
+      "fix": "_qq_instant_frame probes ${#probe} for › and, if not 1, sets `local LC_ALL=C.UTF-8` (fallback en_US.UTF-8) for that function only; no-op if no UTF-8 locale exists. Regression z4b runs with LC_ALL=C and an accented lbuffer (RED 54e15bc, GREEN 80b6dbf); green in debian:13, ubuntu:22.04, fedora:44 via pnpm test:distro",
+      "tags": [
+        "zsh",
+        "locale",
+        "utf-8",
+        "glibc",
+        "ci",
+        "phase-10",
+        "GAP-1"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-10-30T00:35:27Z"
+    },
+    {
+      "id": "bug-463",
+      "timestamp": "2026-10-30T00:35:27Z",
+      "error_message": "distro smoke, failed legs: Upload smoke artifacts EACCES: permission denied, open /home/runner/work/_temp/smoke-out/qq-debug.log on 5 of 6 images (only ubuntu:24.04 uploaded) in drill run 40974964457",
+      "file": "scripts/smoke-distro-runner.sh",
+      "root_cause": "/out is written by the in-container qq user with private modes (debug log 0600); qq is uid 1000 on most images but the GitHub runner is uid 1001, so the host could not read the files. ubuntu:24.04 already has ubuntu=1000, so qq got 1001 there and its upload worked",
+      "fix": "root EXIT trap `chmod -R a+rX /out` in smoke-distro-runner.sh (keeps the exit code). Reproduced on a named docker volume: uid 1001 read EACCES without the trap, OK with it; local debian:13 smoke still PASS with qq-debug.log rw-r--r--. Docker Desktop bind mounts hide the uid mismatch, so use a named volume to reproduce",
+      "tags": [
+        "ci",
+        "docker",
+        "permissions",
+        "artifacts",
+        "smoke",
+        "phase-10",
+        "GAP-4"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T00:35:27Z"
     }
   ]
 }

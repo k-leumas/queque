@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-29T23:48:48.011Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T00:33:06.175Z
 > Files: 536 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -669,7 +669,7 @@
 - `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
 - `docker-homebrew-smoke-runner.sh` (~491 tok)
 - `semantic-release-user-notes.ts` — semantic-release plugin that writes user-facing changelog notes. (~4122 tok)
-- `smoke-distro-runner.sh` — In-container POSIX sh: install deps, `npm install -g` the tarball, the `claude` shim around the fake model, user qq, ~/.zshrc exports above the `qq init zsh` source line (QQ_DEBUG_LOG_FILE; `[ -n "${QQ_SMOKE_CONSENT:-}" ] || export QQ_TELEMETRY=0`), `qq doctor --json`/`qq doctor` (doctor.json/doctor.txt, also on exits 32-33), then expect passes default, c-locale, consent and a jq check that the consent `n` was saved (asked, disabled, no installId). Exits 30-33, 34 doctor non-zero, 35 doctor.json not v1 with >= 11 checks, 36 consent not saved; df.txt/zshrc.txt on failure (10-01, 10-05, 10-11). (~1300 tok)
+- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~1494 tok)
 - `smoke-distro.exp` — Expect PTY driver, `smoke-distro.exp PASS`: passes default (XDG_RUNTIME_DIR unset), c-locale (LANG=C) and consent (QQ_SMOKE_CONSENT=1: first accept shows `[y/N]`, `n`, buffer executes, second accept never asks). Accept (`command not found: tldr`) and Esc (`restored-42`) anchored on the `QQSMOKE%` prompt redraw; idle-prompt regex allows zsh trailing escapes. Exits 10-16, 17 no consent question, 18 asked twice, 19 unknown pass (10-01, 10-11). (~1705 tok)
 - `smoke-distro.sh` — `smoke-distro.sh IMAGE [--out DIR]` (env QQ_SMOKE_OUT): host entry with the D-16 Docker check, `pnpm build`, `pnpm pack`, and `docker run` of smoke-distro-runner.sh with the tarball, the fake-claude fixture, scripts/ (ro) and the out dir mounted; prints `smoke-distro: PASS|FAIL IMAGE` and on failure the tails of pty-default/c-locale/consent logs (10-01, 10-11). (~773 tok)
 - `smoke-homebrew-docker.sh` (~953 tok)
