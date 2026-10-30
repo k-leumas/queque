@@ -45,7 +45,7 @@ created: "2026-10-28"
 | 10-01-T2 | 01 | 1 | P10-FIX | T-10-01 | non-numeric lsof output never signals a pid | integration + in-Alpine | `pnpm exec vitest run tests/lsof-busybox.test.ts tests/daemon-bootstrap.test.ts` and `pnpm test:distro alpine:3.24 tests/lsof-busybox.test.ts tests/daemon-bootstrap.test.ts` | ✅ | ✅ green |
 | 10-01-T3 | 01 | 1 | P10-SMOKE | T-10-04 | CI never skips the smoke | e2e (Docker) | `pnpm smoke:distro alpine:3.24 && pnpm smoke:distro debian:13` | ✅ | ✅ green |
 | 10-02-T1 | 02 | 1 | P10-PREWARM | T-10-06 | — | integration (real children) | `pnpm exec vitest run tests/prewarm-sleep.test.ts tests/claude-prewarm.test.ts` | ✅ | ✅ green |
-| 10-02-T2 | 02 | 1 | P10-FIX | T-10-05 | mktemp failure restores buffer, writes nothing to `/` | zsh integration | `pnpm exec vitest run tests/zsh-widget.test.ts` | ✅ | ⬜ pending |
+| 10-02-T2 | 02 | 1 | P10-FIX | T-10-05 | mktemp failure restores buffer, writes nothing to `/` | zsh integration | `pnpm exec vitest run tests/zsh-widget.test.ts` | ✅ | ✅ green |
 | 10-03-T1/T2 | 03 | 1 | P10-DOCTOR | T-10-07 | doctor JSON never contains env values | unit + CLI | `pnpm exec vitest run tests/doctor.test.ts` | ✅ | ✅ green |
 | 10-04-T1..T3 | 04 | 1 | P10-TEL | T-10-10, T-10-11 | strict allow list; key-preserving atomic config write; empty key = no endpoint | unit | `pnpm exec vitest run tests/telemetry-contract.test.ts tests/telemetry-config.test.ts tests/telemetry-endpoint.test.ts` | ✅ | ✅ green |
 | 10-05-T1 | 05 | 2 | P10-CI | T-10-16 | path filter fails open | unit (temp git repos) | `pnpm exec vitest run tests/code-changed.test.ts` | ✅ | ✅ green |
@@ -101,3 +101,13 @@ created: "2026-10-28"
 - [x] `nyquist_compliant: true` set in frontmatter
 
 **Approval:** approved 2026-10-30
+
+## Validation Audit 2026-10-30
+
+| Metric | Count |
+|---|---|
+| Gaps found | 0 |
+| Resolved | 0 |
+| Escalated | 0 |
+| Manual-only | 2 |
+| Tests passed | 490 |
