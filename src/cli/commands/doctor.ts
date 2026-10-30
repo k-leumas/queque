@@ -17,7 +17,7 @@ import {
   doctorExitCode,
   doctorReportSchema,
 } from '../../contracts/doctor.js';
-import { pingDaemonFetchCap } from '../../daemon/bootstrap.js';
+import { pingDaemonFetchCap, tryConnect } from '../../daemon/bootstrap.js';
 import { type DetectedProvider, detectProvider } from '../../providers/detect.js';
 import { loadProviderPin, type ProviderPinState } from '../../providers/provider-pin.js';
 import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
@@ -70,6 +70,8 @@ export interface DoctorDeps {
   probeTmp(): boolean;
   socketOwner(path: string): number | null;
   pingDaemon(path: string): Promise<'yes' | 'no' | 'unknown'>;
+  /** Whether anything accepts a connection on the socket (told apart from a ping reply). */
+  socketConnectable(path: string): Promise<boolean>;
   loadProviderPin(): ProviderPinState;
   detectProvider(): Promise<DetectedProvider>;
   /** Telemetry gate, consent state and whether this build has a project key (D-09, D-22). */
@@ -244,6 +246,7 @@ export function defaultDoctorDeps(): DoctorDeps {
     probeTmp: probeTmpDir,
     socketOwner: lstatOwner,
     pingDaemon: pingDaemonFetchCap,
+    socketConnectable: tryConnect,
     loadProviderPin,
     detectProvider,
     telemetryStatus: () => ({
@@ -379,6 +382,22 @@ async function checkDaemon(deps: DoctorDeps): Promise<DoctorCheck> {
       'daemon',
       'daemon outdated; replaced on the next ??',
       'nothing to do, or run `qq daemon --ensure` now',
+    );
+  }
+  // `unknown` covers both "nothing listening" and "a listener that never sends a pong". The
+  // second is the one where `??` stalls (ensureDaemon keeps a listener that does not answer),
+  // so it must not read as a healthy "not running" (WR-03).
+  let connectable = false;
+  try {
+    connectable = await deps.socketConnectable(deps.socketPath);
+  } catch {
+    connectable = false;
+  }
+  if (connectable) {
+    return warn(
+      'daemon',
+      `a process accepts connections on ${deps.socketPath} but does not answer the daemon ping`,
+      `stop the process holding ${deps.socketPath} (lsof -t ${deps.socketPath}); the next ?? starts a fresh daemon`,
     );
   }
   return ok('daemon', 'daemon not running; starts on the next ??');

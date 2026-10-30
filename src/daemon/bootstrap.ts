@@ -16,8 +16,10 @@ const SHUTDOWN_ACK_TIMEOUT_MS = 500;
 /**
  * Attempts to connect to the daemon socket at `socketPath`.
  * Resolves true if the connection succeeds, false on any error.
+ * Exported so `qq doctor` can tell "no listener" from "a listener that does not answer"
+ * (10-REVIEW WR-03).
  */
-function tryConnect(socketPath: string): Promise<boolean> {
+export function tryConnect(socketPath: string): Promise<boolean> {
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
       client.destroy();

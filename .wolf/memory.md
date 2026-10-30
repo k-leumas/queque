@@ -3632,3 +3632,6 @@
 | 07:13 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr02.json | — | ~229 |
 | 07:13 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr02.txt | — | ~121 |
 | 07:13 | 10-REVIEW-FIX WR-02: telemetry config write follows a symlinked config.json + tests | src/shared/telemetry-config.ts, tests/telemetry-config.test.ts | fixed, 71 tests pass | ~2500 |
+| 07:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/bug-wr03.json | — | ~242 |
+| 07:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/85f5a372-208d-4198-940f-b4cc04a301cb/scratchpad/rf10-msg-wr03.txt | — | ~120 |
+| 07:15 | 10-REVIEW-FIX WR-03: doctor warns on a daemon socket that accepts but never answers + tests | src/cli/commands/doctor.ts, src/daemon/bootstrap.ts, tests/doctor.test.ts | fixed, 85 tests pass | ~3000 |

@@ -38,6 +38,7 @@ function healthyDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
     probeTmp: () => true,
     socketOwner: () => 501,
     pingDaemon: async () => 'yes',
+    socketConnectable: async () => false,
     loadProviderPin: () => ({ kind: 'absent' }),
     detectProvider: async () => ({ kind: 'anthropic-key' }),
     telemetryStatus: () => ({
@@ -244,10 +245,66 @@ describe('runDoctorChecks: warnings keep exit 0 (D-17)', () => {
     expect(check(report, 'integration').hint).toContain('qq init zsh && source ~/.zshrc');
   });
 
-  it('is ok with "starts on the next ??" when the daemon is not answering', async () => {
-    const report = await runDoctorChecks(healthyDeps({ pingDaemon: async () => 'unknown' }));
+  it('is ok with "starts on the next ??" when nothing listens on the socket', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({ pingDaemon: async () => 'unknown', socketConnectable: async () => false }),
+    );
     expect(check(report, 'daemon').status).toBe('ok');
     expect(check(report, 'daemon').summary).toContain('starts on the next ??');
+  });
+
+  it('warns, never "not running", when a listener accepts but does not answer (WR-03)', async () => {
+    const socketConnectable = vi.fn(async () => true);
+    const report = await runDoctorChecks(
+      healthyDeps({ pingDaemon: async () => 'unknown', socketConnectable }),
+    );
+    const daemon = check(report, 'daemon');
+    expect(daemon.status).toBe('warn');
+    expect(daemon.summary).toContain('does not answer');
+    expect(daemon.summary).not.toContain('not running');
+    expect(daemon.hint).toContain(SOCKET);
+    expect(socketConnectable).toHaveBeenCalledWith(SOCKET);
+    expect(doctorExitCode(report)).toBe(0);
+  });
+
+  it('a throwing connect probe falls back to "not running"', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({
+        pingDaemon: async () => 'unknown',
+        socketConnectable: async () => {
+          throw new Error('boom');
+        },
+      }),
+    );
+    expect(check(report, 'daemon').status).toBe('ok');
+  });
+
+  it('warns for a real listener that accepts and never replies (WR-03)', async () => {
+    const { createServer } = await import('node:net');
+    const { pingDaemonFetchCap, tryConnect } = await import('../src/daemon/bootstrap.js');
+    const sockDir = mkdtempSync('/tmp/qq-dr-');
+    const socketPath = join(sockDir, 's.sock');
+    const held: import('node:net').Socket[] = [];
+    const server = createServer((conn) => {
+      held.push(conn);
+    });
+    await new Promise<void>((resolve) => server.listen(socketPath, resolve));
+    try {
+      const report = await runDoctorChecks(
+        healthyDeps({ socketPath, pingDaemon: pingDaemonFetchCap, socketConnectable: tryConnect }),
+      );
+      expect(check(report, 'daemon').status).toBe('warn');
+    } finally {
+      for (const conn of held) conn.destroy();
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+      rmSync(sockDir, { recursive: true, force: true });
+    }
+  });
+
+  it('does not probe the connection when the ping answered', async () => {
+    const socketConnectable = vi.fn(async () => true);
+    await runDoctorChecks(healthyDeps({ socketConnectable }));
+    expect(socketConnectable).not.toHaveBeenCalled();
   });
 
   it('warns when the daemon is outdated', async () => {

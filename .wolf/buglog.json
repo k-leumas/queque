@@ -7270,6 +7270,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T13:13:16.000Z"
+    },
+    {
+      "id": "bug-467",
+      "timestamp": "2026-10-30T13:15:25.000Z",
+      "error_message": "10-REVIEW WR-03: qq doctor reports a stuck daemon (accepts connections, never answers the ping) as 'daemon not running; starts on the next ??' with an ok status",
+      "file": "src/cli/commands/doctor.ts",
+      "root_cause": "pingDaemonFetchCap returns 'unknown' for no listener, a ping timeout and a non-pong reply alike; checkDaemon mapped every 'unknown' to ok, although ensureDaemon keeps a non-answering listener and ?? stalls",
+      "fix": "Exported tryConnect from src/daemon/bootstrap.ts and added DoctorDeps.socketConnectable; on 'unknown' doctor probes the connection and warns 'accepts connections ... but does not answer' with a stop-the-process hint. Tests in tests/doctor.test.ts, including a real net.Server that never replies",
+      "tags": [
+        "doctor",
+        "daemon",
+        "ipc",
+        "diagnostics",
+        "phase-10",
+        "review-fix",
+        "WR-03"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-30T13:15:25.000Z"
     }
   ]
 }
