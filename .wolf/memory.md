@@ -3717,3 +3717,4 @@
 | 11:12 | Created .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md | — | ~9264 |
 | 11:12 | Edited .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/261030-fdr-PLAN.md | "https://github.com/k-leum" → "#anchor" | ~78 |
 | 11:25 | quick 261030-fdr task 1: link guard test, provider section moved to docs/PROVIDERS.md, CONTRIBUTING + SYSTEM_DESIGN link fixes | tests/docs-links.test.ts, docs/PROVIDERS.md, README.md, CONTRIBUTING.md, docs/SYSTEM_DESIGN.md | link guard red then green; badges green | ~9000 |
+| 11:35 | quick 261030-fdr task 2: install, usage and config reference moved to docs/INSTALL.md, USAGE.md, CONFIGURATION.md; README gets short Install and Usage steps | README.md, docs/*.md, tests/docs-links.test.ts | link guard red then green; badges green | ~8000 |

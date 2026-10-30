@@ -8,7 +8,12 @@ const README = resolve(ROOT, 'README.md');
 const REPO_BLOB = 'https://github.com/k-leumas/queque/blob/main/';
 
 // Every peripheral doc the README must link (through REPO_BLOB) in its More list.
-const REQUIRED_DOCS: readonly string[] = ['PROVIDERS.md'];
+const REQUIRED_DOCS: readonly string[] = [
+  'INSTALL.md',
+  'PROVIDERS.md',
+  'USAGE.md',
+  'CONFIGURATION.md',
+];
 
 type Line = { line: number; text: string };
 type Link = { file: string; line: number; target: string };

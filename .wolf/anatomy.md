@@ -254,7 +254,7 @@
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest Phase 10 scripts: smoke:distro, test:distro, test:live. (~499 tok)
-- `README.md` — Project documentation; under the H1 a live CI/Nightly/Release status badge row and a static `tested on` distro badge row that must equal the ci.yml `images:` array (tests/readme-badges.test.ts). Short Choose a provider step; provider detail lives in docs/PROVIDERS.md; links repo docs only through absolute `https://github.com/k-leumas/queque/blob/main/` URLs (npm ships README alone); ends with a More list (quick 261030-fdr) (~3200 tok)
+- `README.md` — Project documentation; under the H1 a live CI/Nightly/Release status badge row and a static `tested on` distro badge row that must equal the ci.yml `images:` array (tests/readme-badges.test.ts). Then pitch, demo gif, short Install (brew, then npm), Choose a provider and Usage steps; detail lives in docs/INSTALL, PROVIDERS, USAGE, CONFIGURATION.md; links repo docs only through absolute `https://github.com/k-leumas/queque/blob/main/` URLs (npm ships README alone); ends with a More list (quick 261030-fdr) (~2200 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. Phase 10: `define` also bakes __QUEQUE_TELEMETRY_KEY__ (empty until plan 13, D-22) and __QUEQUE_TELEMETRY_HOST__ (`https://eu.i.posthog.com`, D-05). (~600 tok)
 - `vitest.config.ts` — /*.test.ts', 'tests/**/*.test.tsx'], (~190 tok)
@@ -685,11 +685,14 @@
 ## docs/
 
 - `config.example.json` — Example `~/.config/qq/config.json` incl. `"effort": "low"` (09.1-02). (~61 tok)
+- `CONFIGURATION.md` — Configuration reference, moved verbatim from the README (quick 261030-fdr): the `config.json` field table (`effort`, `privacy.*`, `safety.destructiveCommandPatterns`), links config.example.json, PROVIDERS.md#after-changing-your-key-or-settings and SYSTEM_DESIGN.md. (~700 tok)
 - `EXTENSIONS.md` — QueQue Extension Seams (~2376 tok)
+- `INSTALL.md` — Install (quick 261030-fdr): Homebrew, Install via npm with the old README Requirements bullets and npm block, Set up zsh with the `qq init zsh` do-not-redirect note. (~300 tok)
 - `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
 - `RELEASING.md` — Release Process (~1426 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
-- `SYSTEM_DESIGN.md` — System Design; the IPC paragraph covers the streaming reply sequence (`candidate` rows, `candidates` done signal), the three pong flags, abort on socket close and D-16 (09.1-03). (~2900 tok)
+- `SYSTEM_DESIGN.md` — System Design; the IPC paragraph covers the streaming reply sequence (`candidate` rows, `candidates` done signal), the three pong flags, abort on socket close and D-16 (09.1-03). Source links are `../`-relative (quick 261030-fdr). (~2900 tok)
+- `USAGE.md` — Usage, moved verbatim from the README (quick 261030-fdr): the `??` examples, picker (streaming rows, FILTER box, Enter, Esc), destructive-command mark, Installed-tool awareness (`#installed-tool-awareness`, `QQ_TOOL_AWARENESS=0`), Inside Zellij (`QQ_PANE_WIDTH`/`QQ_PANE_HEIGHT`). (~1000 tok)
 
 ## scripts/
 
