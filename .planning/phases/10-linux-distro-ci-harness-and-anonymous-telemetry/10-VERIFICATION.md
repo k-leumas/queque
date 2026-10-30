@@ -1,186 +1,154 @@
 ---
 phase: 10-linux-distro-ci-harness-and-anonymous-telemetry
-verified: 2026-10-30T00:10:00Z
-status: human_needed
-score: 87/92 must-haves verified
-covered_files: [".github/workflows/ci.yml",".github/workflows/distro.yml",".github/workflows/nightly.yml",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-01-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-01-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-02-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-02-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-03-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-03-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-04-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-04-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-05-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-05-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-06-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-06-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-07-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-07-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-08-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-08-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-09-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-09-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-10-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-10-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-11-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-11-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-13-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-13-SUMMARY.md","biome.json","package.json","scripts/ci/auto-revert.sh","scripts/ci/code-changed.mjs","scripts/ci/install-distro-deps.sh","scripts/ci/test-in-distro.sh","scripts/smoke-distro-runner.sh","scripts/smoke-distro.exp","scripts/smoke-distro.sh","shell/zsh/queque.zsh","src/cli/commands/daemon.ts","src/cli/commands/doctor.ts","src/cli/commands/telemetry.ts","src/cli/main.ts","src/client/run-foreground.ts","src/client/telemetry-consent.ts","src/client/telemetry-events.ts","src/contracts/doctor.ts","src/contracts/ipc.ts","src/contracts/telemetry.ts","src/daemon/bootstrap.ts","src/daemon/fetch-client.ts","src/daemon/server.ts","src/daemon/telemetry-buffer.ts","src/env.d.ts","src/providers/claude-default.ts","src/providers/error-kind.ts","src/providers/provider-kind.ts","src/shared/environment-shape.ts","src/shared/qq-config.ts","src/shared/telemetry-config.ts","src/shared/telemetry-endpoint.ts","tests/auto-revert.test.ts","tests/client-result.test.ts","tests/code-changed.test.ts","tests/daemon-bootstrap.test.ts","tests/doctor.test.ts","tests/environment-shape.test.ts","tests/error-kind.test.ts","tests/fixtures/auto-revert/gh","tests/git-env-isolation.test.ts","tests/live/sdk-contract.live.ts","tests/lsof-busybox.test.ts","tests/prewarm-sleep.test.ts","tests/setup/scrub-git-env.ts","tests/telemetry-buffer.test.ts","tests/telemetry-cli.test.ts","tests/telemetry-config.test.ts","tests/telemetry-consent.test.ts","tests/telemetry-contract.test.ts","tests/telemetry-endpoint.test.ts","tests/telemetry-events.test.ts","tests/telemetry-ipc.test.ts","tests/zsh-widget.test.ts","tsconfig.json","tsup.config.ts","vitest.config.ts","vitest.live.config.ts"]
-covered_digest: "v3:sha256:9765360c6f65e641fac78660e4c5f759beaebbf64fb70d9e2309895eeafa9719"
-behavior_unverified: 2
+verified: 2026-10-30T17:30:00Z
+status: gaps_found
+score: 92/93 must-haves verified
+covered_files: [".github/workflows/ci.yml",".github/workflows/distro.yml",".github/workflows/nightly.yml",".github/workflows/release.yaml",".planning/REQUIREMENTS.md",".planning/ROADMAP.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-01-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-01-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-02-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-02-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-03-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-03-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-04-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-04-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-05-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-05-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-06-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-06-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-07-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-07-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-08-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-08-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-09-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-09-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-10-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-10-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-11-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-11-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-13-PLAN.md",".planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-13-SUMMARY.md","biome.json","package.json","scripts/ci/auto-revert.sh","scripts/ci/code-changed.mjs","scripts/ci/install-distro-deps.sh","scripts/ci/test-in-distro.sh","scripts/docker-homebrew-smoke-runner.sh","scripts/smoke-distro-runner.sh","scripts/smoke-distro.exp","scripts/smoke-distro.sh","scripts/smoke-homebrew-docker.sh","shell/zsh/queque.zsh","src/cli/commands/daemon.ts","src/cli/commands/doctor.ts","src/cli/commands/telemetry.ts","src/cli/main.ts","src/client/run-foreground.ts","src/client/telemetry-consent.ts","src/client/telemetry-events.ts","src/contracts/doctor.ts","src/contracts/ipc.ts","src/contracts/telemetry.ts","src/daemon/bootstrap.ts","src/daemon/fetch-client.ts","src/daemon/server.ts","src/daemon/telemetry-buffer.ts","src/env.d.ts","src/providers/claude-default.ts","src/providers/error-kind.ts","src/providers/provider-kind.ts","src/shared/environment-shape.ts","src/shared/qq-config.ts","src/shared/telemetry-config.ts","src/shared/telemetry-endpoint.ts","tests/auto-revert.test.ts","tests/client-result.test.ts","tests/code-changed.test.ts","tests/daemon-bootstrap.test.ts","tests/doctor.test.ts","tests/environment-shape.test.ts","tests/error-kind.test.ts","tests/fixtures/auto-revert/gh","tests/git-env-isolation.test.ts","tests/live/sdk-contract.live.ts","tests/lsof-busybox.test.ts","tests/prewarm-sleep.test.ts","tests/setup/scrub-git-env.ts","tests/telemetry-buffer.test.ts","tests/telemetry-cli.test.ts","tests/telemetry-config.test.ts","tests/telemetry-consent.test.ts","tests/telemetry-contract.test.ts","tests/telemetry-endpoint.test.ts","tests/telemetry-events.test.ts","tests/telemetry-ipc.test.ts","tests/zsh-widget.test.ts","tsconfig.json","tsup.config.ts","vitest.config.ts","vitest.live.config.ts"]
+covered_digest: "v3:sha256:ba61b26247025a3783b42119ec9143f061c3ecaef0a700d5bae3fdcb0e30543f"
+behavior_unverified: 0
 overrides_applied: 0
-behavior_unverified_items:
-  - truth: "10-08 D-02: the live test asserts the contract (>=1 candidate, every row passes commandCandidateSchema, final list passes candidateListSchema, first candidate <= 15 000 ms, final list <= 25 000 ms, no `request failed` / `response truncated`)"
-    test: "Push main so nightly.yml is on the default branch, then `gh workflow run nightly.yml` and `gh run watch`"
-    expected: "The `live` job builds, spawns the real daemon on /tmp/qq-live-PID.sock, gets candidates from the real SDK path and passes within the ceilings"
-    why_human: "The assertions are present in tests/live/sdk-contract.live.ts but the test has never run against the real model; it needs the ANTHROPIC_API_KEY repo secret and nightly.yml on main"
-  - truth: "10-08: nightly also runs the distro vitest and smoke matrices against :latest images (ubuntu, debian, fedora, archlinux, alpine)"
-    test: "Same nightly dispatch as above; read the five `distro / test-distro (*:latest)` and `distro / smoke (*:latest)` legs"
-    expected: "All ten legs report; a red leg is visible but blocks nothing (not a required check)"
-    why_human: "nightly.yml has never run (not on the default branch); the PR pins are green but :latest images (e.g. ubuntu:latest) have not been exercised"
-human_verification:
-  - test: "Nightly live SDK run: push main, then `gh workflow run nightly.yml` and `gh run watch` (planner-deferred human-check from 10-08 Task 2)"
-    expected: "`live` green within 15 s / 25 s ceilings; five :latest smoke and test-distro legs report; a red result opens no issue and is not a required check"
-    why_human: "Needs the ANTHROPIC_API_KEY secret and nightly.yml on the default branch; local main is 101 commits ahead of origin and unpushed"
-  - test: "Telemetry backend and key (deferred by the user's keep-empty decision, todo .planning/todos/pending/2026-10-30-10-bake-telemetry-key.md): choose the backend, bake the key, send one opted-in event through the daemon shutdown flush"
-    expected: "The event view shows no `$ip`, no GeoIP properties and no person profile"
-    why_human: "External service plus a one-way decision (D-08); the user chose keep-empty, so 10-13 truths D-22 (project created, key supplied) and D-22 (event reaches PostHog without $ip/GeoIP) are open by decision, not by missing code"
-  - test: "Decide on review CR-01: put an invalid-JSON ~/.config/qq/config.json in place, accept two `??` queries"
-    expected: "Either fix (gate the ask on a writability probe so the question is asked at most once) or explicitly accept the edge case"
-    why_human: "Confirmed in code: readTelemetryState() reads invalid JSON as asked:false and markTelemetryAsked() throws on the same file; run-foreground.ts only logs the throw, so the 30 s [y/N] question repeats on every accepted ?? and a `y` is discarded. This breaks D-09 'asked once ever' on that path; the review disposition is still `open`"
-  - test: "Requirements traceability: decide whether to add P10-SMOKE, P10-FIX, P10-PREWARM, P10-DOCTOR, P10-TEL, P10-CI, P10-REVERT, P10-LIVE to .planning/REQUIREMENTS.md (and set ROADMAP Phase 10 `Requirements:` from TBD), or accept 10-RESEARCH.md §Phase Requirements as their source"
-    expected: "Every phase requirement ID resolves from REQUIREMENTS.md, or the exception is recorded"
-    why_human: "Documentation decision; all eight IDs are defined in 10-RESEARCH.md and claimed by plans, but none appear in REQUIREMENTS.md. ZSHX-01 (v2, non-macOS zsh) is now effectively delivered and may be marked"
+gaps:
+  - truth: "Phase 10 does not break the existing release path: the Release workflow's Homebrew install smoke still passes on main (derived from the goal clause 'catch environment breakage before it reaches main')"
+    status: failed
+    reason: "The 10-11 consent prompt ('QueQue: send anonymous usage and error counts ...? [y/N]') is printed after the accepted command in the Homebrew smoke container. scripts/docker-homebrew-smoke-runner.sh treats any 'QueQue:' output after Enter as an error (expect -re {QueQue:} -> exit 13). Release run 41072733118 on origin/main a5bc52e failed at 'Homebrew install smoke' with exit 13 on both attempts (14:34 and 16:18), so tag-and-changelog, publish-npm and publish-homebrew were skipped. The previous Release run (40578760934 on 489a67a) passed the same step. smoke-distro-runner.sh already sets QQ_TELEMETRY=0 for this exact reason (research Pitfall 10); the Homebrew runner was never updated. ci.yml does not exercise the Homebrew smoke, so this breakage reached main uncaught."
+    artifacts:
+      - path: "scripts/docker-homebrew-smoke-runner.sh"
+        issue: "The ~/.zshrc block (lines 21-26) does not set QQ_TELEMETRY=0, and the post-accept expect (lines 58-69) fails on the consent prompt's 'QueQue:' prefix"
+      - path: "scripts/smoke-homebrew-docker.sh"
+        issue: "docker run passes only ANTHROPIC_API_KEY and QQ_SMOKE_QUERY (lines 115-117), so the CI kill switch does not reach the container"
+    missing:
+      - "Add `export QQ_TELEMETRY=0` to the zshrc block that docker-homebrew-smoke-runner.sh appends (this mirrors smoke-distro-runner.sh:102-105), or answer the prompt with `n` in the expect script"
+      - "Re-run the Release workflow on main and confirm the 'Homebrew install smoke' step passes and the publish jobs run"
+      - "Optional hardening: have the Homebrew smoke's error regex match real error prefixes rather than the bare product name, so a future informational 'QueQue:' line does not block releases"
 ---
 
 # Phase 10: Linux distro CI harness and anonymous telemetry Verification Report
 
 **Phase Goal:** Catch environment breakage before it reaches main, make zsh support stable across the major Linux distros, and add opt-in, privacy-safe error/usage reporting.
-**Verified:** 2026-10-30
-**Status:** human_needed
-**Re-verification:** No (initial verification)
+**Verified:** 2026-10-30T17:30:00Z
+**Status:** gaps_found
+**Re-verification:** No. The previous report had no `gaps:` section, so this is a fresh initial verification. It was regenerated because the code review fix run changed covered source files. The five truths that were open before (two behavior-unverified, three uncertain) were re-checked against code, GitHub and 10-UAT.md.
 
 ## Goal Achievement
 
-The three goal clauses hold in the codebase and on GitHub:
+The planned work is all present, wired and tested. The four human items from the previous report are resolved: 10-UAT.md shows 4/4 pass, and I checked each one against GitHub or the code (see below).
 
-- **Catch breakage before main:** `ci.yml` runs on every push and PR. `ci-ok` is the only required check on main. I confirmed this with `gh api .../branches/main/protection/required_status_checks`, which returns `contexts: ["ci-ok"]`, app 15368, strict false. On a push, a failed smoke leg opens one revert PR. The drill opened PR #16 (closed); its only changed file is `shell/zsh/queque.zsh`.
-- **zsh stable across Linux distros:** run 40980760144 on e9e3f48 is a success, with 6/6 `test-distro`, 6/6 `smoke`, `checks` and `ci-ok` all green (`gh run view`). There is no code diff between e9e3f48 and HEAD outside `.planning/` and `.wolf/`, so that run covers the current code.
-- **Opt-in, privacy-safe reporting:** the strict allow-list contract, consent prompt, daemon buffer and sender, and `qq telemetry` are all present, wired and tested. The user chose to keep the key empty, so no release sends anything yet. Sending to a real backend is deferred to a todo by that decision.
+One goal-level regression is new. I found it on GitHub rather than in the plans. The consent prompt added in 10-11 breaks the **Release** workflow's Homebrew install smoke on main, and it does so deterministically: both attempts fail with exit 13 on the prompt text. As a result, no tag or npm/Homebrew publish can run from main. This is breakage that reached main, which is exactly what the first goal clause targets, so I count it as a BLOCKER.
 
-### Observable Truths: roadmap level (scope items, with the amendments recorded in 10-CONTEXT.md)
+Separately, the push CI on main (run 41072732766, a5bc52e) is red because of one `smoke (debian:13)` leg. That leg opened auto-revert PR #17, which is still OPEN. The evidence points to a flake: the same leg passed on renovate branch 56b34f1, which contains the fix commits, and `debian:latest` passed on the Nightly run of the same SHA. It is therefore a WARNING, not a gap.
+
+### Observable Truths: roadmap level
 
 | # | Truth | Status | Evidence |
 |---|-------|--------|----------|
-| R1 | `ci.yml` has a `checks` job (lint, typecheck, test:run, build) and a vitest-in-containers matrix (ubuntu 22.04/24.04, debian, fedora, arch, alpine with Node from apk), plus a nightly against `:latest` | ✓ VERIFIED | ci.yml `checks` steps; distro.yml `test-distro` runs `scripts/ci/test-in-distro.sh`; install-distro-deps.sh:96 `apk add ... nodejs npm`; nightly.yml calls distro.yml with `:latest` images; CI run 40980760144 green |
-| R2 | `scripts/smoke-distro.sh <image>` installs from `pnpm pack` and drives a real zsh PTY with only `claude` faked. It asserts that `??` opens the TUI, Enter fills the buffer, Esc restores the line, unset XDG_RUNTIME_DIR works and the C locale works. It runs as the `smoke` matrix job | ✓ VERIFIED | runner: `npm install -g /pkg/*.tgz`, claude shim execs fake-claude-stream.mjs; exp: `env -u XDG_RUNTIME_DIR` (default), `LANG=C LC_ALL=C` (c-locale), `command not found: tldr`, `restored-42`; 6/6 smoke green on GitHub |
-| R3 | Roadmap item 3 was amended by D-13 to D-16: no lefthook Docker smoke; remote smoke on every push, with an auto-revert PR on failure | ✓ VERIFIED | `git diff 489a67a..HEAD -- lefthook.yml` is empty; ci.yml `auto-revert` job; drill PR #16 (auto-revert/ci-phase-10-revert-drill-2, CLOSED, files: shell/zsh/queque.zsh) |
-| R4 | `qq doctor` covers zsh version, TERM, locale, socket path length, conflicting widgets (`binding`) and the provider, and every smoke run asserts exit 0 | ✓ VERIFIED | DOCTOR_CHECK_IDS has 12 ids; runner fails with exit 34 when `qq doctor --json` is non-zero and exit 35 when the shape is wrong; tests/doctor.test.ts passes |
-| R5 | Telemetry is opt-in (D-09 moved the ask from `qq init` to the first accepted `??`). It is always off under DO_NOT_TRACK, QQ_TELEMETRY=0 or CI. A strict zod allow list lives in src/contracts/telemetry.ts. The daemon batches events and sends them fire-and-forget. `qq telemetry status\|on\|off\|show` exists, and a vitest fails on any field outside the allow list | ✓ VERIFIED | every schema is `z.strictObject`; telemetry-contract.test.ts (87 tests) pins keys and rejects timing fields; telemetry-buffer.ts posts `HOST/batch/`; main.ts registers `telemetry [action]`. The real send is deferred (see human items) |
-| R6 | Privacy-safe: no prompt, buffer, command, path or env value ever reaches a sent batch | ✓ VERIFIED | the tests/telemetry-events.test.ts end-to-end leak test (`secret-token-xyz`, `/home/alice/proj`, kubectl candidate) passed in this verification run |
+| R1 | `ci.yml` has a `checks` job and a six-distro vitest matrix, plus a nightly against `:latest` | ✓ VERIFIED | ci.yml/distro.yml unchanged in structure. The Nightly run 41073946911 (workflow_dispatch on a5bc52e) succeeded: `live`, five `test-distro (*:latest)` and five `smoke (*:latest)` legs are all success |
+| R2 | `scripts/smoke-distro.sh` drives a real zsh PTY from `pnpm pack` with only `claude` faked, as a `smoke` matrix job | ✓ VERIFIED | Runner and exp are unchanged apart from WR-06 (stale doctor files cleared). 6/6 smoke legs green on 56b34f1 (run 41072982303) and 5/6 on main (see the debian warning) |
+| R3 | Roadmap item 3 is amended by D-13 to D-16: no lefthook Docker smoke; remote smoke on every push and an auto-revert PR on failure | ✓ VERIFIED | The mechanism fired for real on main: run 41072732766 had `smoke (debian:13)` failure, `auto-revert` success, and PR #17 `auto-revert/main-88d050b1` was opened (the WR-05 hash-suffixed name) |
+| R4 | `qq doctor` covers zsh, TERM, locale, socket path, conflicting widgets and provider, and the smoke asserts exit 0 | ✓ VERIFIED | WR-03 added `socketConnectable` (doctor.ts:74,249,388-401); tests/doctor.test.ts passed |
+| R5 | Telemetry is opt-in and off under DO_NOT_TRACK/QQ_TELEMETRY=0/CI, with a strict allow list, daemon batching, `qq telemetry status\|on\|off\|show`, and a vitest that fails on unknown fields | ✓ VERIFIED | telemetry-contract and telemetry-events passed. UAT 2 shows a real event stored in PostHog EU |
+| R6 | Privacy-safe: no prompt, buffer, command, path or env value is sent | ✓ VERIFIED | Leak test in tests/telemetry-events.test.ts passed. UAT 2: the stored event has no `$ip`, no `$geoip_*` and no person profile |
+| R7 (derived) | Phase 10 does not break the existing release path (Release Homebrew smoke passes on main) | ✗ FAILED | Release run 41072733118 failed at "Homebrew install smoke" with exit 13, on attempts 1 and 2. The log shows `QueQue: send anonymous usage and error counts ... [y/N]`, which the runner's `-re {QueQue:}` treats as an error. `git log -S` traces the prompt string to 28d9099 (10-11) |
 
 ### Observable Truths: plan must_haves (86 truths across 13 plans)
 
-| Plan | Truths | Verified | Not verified | Evidence highlights |
-|------|--------|----------|--------------|---------------------|
-| 10-01 tracer smoke + busybox lsof | 8 | 8 | 0 | `parseLsofPidList` accepts output only when every line is a bare pid and logs `lsof output ignored` otherwise (bootstrap.ts:197-207). tests/lsof-busybox.test.ts passed (7). D-16 skip: `docker info` check with exit 1 under CI in both scripts. SHASUMS256.txt check (install-distro-deps.sh:77-80). In-Alpine behaviour comes from the 6/6 GitHub legs |
-| 10-02 prewarm simulation + mktemp guard | 5 | 5 | 0 | tests/prewarm-sleep.test.ts passed all 3 named transitions (stop/cont hit, frozen to stale to cold to refill, killed to dead to refill). queque.zsh:381-394 guard; zsh-widget `-t mktemp` passed (2) |
-| 10-03 qq doctor | 7 | 7 | 0 | doctorReportSchema is strict with an enum of ids; `doctorExitCode` returns 1 only on `fail`; ZSH_FAIL_BELOW 5.0, ZSH_WARN_BELOW 5.8; a missing jq is a hard fail; tests/doctor.test.ts passed |
-| 10-04 telemetry contract/config/endpoint | 8 | 8 | 0 | strict schemas; `.optional().catch(undefined)` at qq-config.ts:88; tsup bakes host `https://eu.i.posthog.com` and an empty key; `usableSecret` overrides; tests/telemetry-config and tests/telemetry-endpoint passed |
-| 10-05 ci.yml/distro.yml | 7 | 7 | 0 | push `**`, pull_request, workflow_dispatch; `changes` job fails open; `ci-ok` uses `if: always()` and its case on failure/cancelled; no `secrets.` and no pull_request_target in ci/distro; doctor artifacts uploaded `if: always()`; lefthook unchanged |
-| 10-06 daemon buffer/IPC/error kinds | 8 | 8 | 0 | cap 100, threshold 20, 60 s timer with `unref`, 3 s send timeout, TELEMETRY_SHUTDOWN_WAIT_MS 1000; server.ts telemetry-event/show/reset; telemetry-buffer (19 tests), telemetry-ipc and error-kind tests passed |
-| 10-07 auto-revert | 8 | 8 | 0 | reverts only on smoke failure (auto-revert.sh:124-127); `git restore --source="$GOOD" ... -- .`; `gh pr edit`/`comment` on a repeat; loop guard for `auto-revert/*`; inputs only from env; tests/auto-revert.test.ts passed; live drill PR #16 |
-| 10-08 nightly + live | 5 | 3 | 2 (⚠️ PRESENT_BEHAVIOR_UNVERIFIED) | Static, verified: schedule plus dispatch only, a repository guard, `contents: read` with no issue step, a throw (never a skip) when the key is missing, and live tests excluded from test:run. Unexercised: D-02 contract run against the real SDK, and the `:latest` matrices (nightly.yml has never run) |
-| 10-09 qq telemetry CLI + doctor row | 6 | 6 | 0 | `telemetry [action]` is registered; tests/telemetry-cli.test.ts passed (status/on/off/show, `daemon not running: nothing buffered`, invalid JSON never overwritten); the `telemetry` doctor id exists |
-| 10-10 client events | 7 | 7 | 0 | outcomes accepted/escaped/error set at run-foreground.ts:327/341/451/472; `reportClientTelemetry` after the result is written; QQ_ZSH_VERSION export (queque.zsh:425); leak test passed |
-| 10-11 consent prompt + phase gate | 7 | 6 | 1 (? UNCERTAIN, WARNING) | The prompt copy, the 30 s timeout and the `y`/`Y`-only answer are in place. The PTY `consent` pass (exit 17/18 guards, plus runner exit 36 on config state) is green on 6 distros. The 09.1 todo is in todos/done, and buglog has the defects. **UNCERTAIN:** "asked once ever" does not hold when config.json cannot be written (CR-01, confirmed in code) |
-| 10-12 human CI gates | 5 | 5 | 0 | `gh api .../actions/permissions/workflow` returns `{"default_workflow_permissions":"read","can_approve_pull_request_reviews":true}`; run 40980760144 shows all jobs success; drill PR #16 closed; `ci-ok` is the only required check |
-| 10-13 telemetry key decision | 5 | 3 | 2 (? UNCERTAIN, deferred by user) | Verified: the keep-empty decision is recorded and both configs keep `JSON.stringify('')`; the host stays EU; "carry-over ok" is recorded. Open by decision: the PostHog project/key is not created, and the event without $ip/GeoIP has not been checked |
+| Plan | Truths | Verified | Change since the last report |
+|------|--------|----------|------------------------------|
+| 10-01 tracer smoke + busybox lsof | 8 | 8 | none |
+| 10-02 prewarm simulation + mktemp guard | 5 | 5 | none |
+| 10-03 qq doctor | 7 | 7 | WR-03 hung-socket warning added; doctor tests green |
+| 10-04 telemetry contract/config/endpoint | 8 | 8 | tsup key still `JSON.stringify('')` and host EU; vitest keeps an empty key |
+| 10-05 ci.yml/distro.yml | 7 | 7 | WR-04: `QQ_CHANGES_BASE` is `''` on push (ci.yml:45). code-changed tests green |
+| 10-06 daemon buffer/IPC/error kinds | 8 | 8 | none |
+| 10-07 auto-revert | 8 | 8 | WR-05: `git hash-object` suffix (auto-revert.sh:219) and `--base` filter (:349); tests green; the live firing produced PR #17 |
+| 10-08 nightly + live | 5 | 5 | **was 3/5.** D-02 live contract and the `:latest` matrices are now VERIFIED by Nightly run 41073946911 (all 11 jobs success) and UAT 1 |
+| 10-09 qq telemetry CLI + doctor row | 6 | 6 | none |
+| 10-10 client events | 7 | 7 | none |
+| 10-11 consent prompt + phase gate | 7 | 7 | **was 6/7.** The "asked once ever" truth is now VERIFIED. CR-01 was fixed by `telemetryStateWritable()` (telemetry-config.ts:205), which gates the ask at run-foreground.ts:488-495. tests/client-result (two accepted queries with an unwritable config, never asked) and telemetry-config passed. The ENOSPC-at-write case remains, as documented |
+| 10-12 human CI gates | 5 | 5 | none |
+| 10-13 telemetry key decision | 5 | 5 | **was 3/5.** UAT 2: PostHog EU project "queque - telemetry" exists with anonymize_ips on; one `qq_environment` event returned HTTP 200 and was stored with no `$ip`, no `$geoip_*` and 0 persons. The key was supplied as a runtime `QQ_TELEMETRY_KEY` override. The build key stays empty by the user's keep-empty decision (D-08), so that is recorded, not a gap |
 
-**Score:** 87/92 truths verified (6 roadmap + 86 plan). Two are present but behavior-unverified, and three are uncertain and routed to a human (two deferred by user decision, one review defect that needs a decision). No truth FAILED.
+**Score:** 92/93 truths verified (7 roadmap level including one derived, plus 86 plan truths). 1 FAILED (R7). 0 behavior-unverified.
 
 ### Required Artifacts
 
 | Check | Result |
 |-------|--------|
-| `verify.artifacts` across plans 01-11 and 13 | 40/40 passed (exists, substantive, contains pattern) |
-| Plan 12 | declares no artifacts (human gates); verified directly through `gh` |
-
-The main artifacts are all wired: `scripts/smoke-distro*.sh`/`.exp`, `scripts/ci/*`, the three workflows, `src/contracts/{doctor,telemetry}.ts`, `src/cli/commands/{doctor,telemetry}.ts`, `src/daemon/telemetry-buffer.ts`, `src/shared/telemetry-{config,endpoint}.ts`, `src/client/telemetry-{consent,events}.ts`, `src/shared/environment-shape.ts`, `src/providers/{error-kind,provider-kind}.ts` and `tests/live/sdk-contract.live.ts`.
+| `verify.artifacts` across plans 01-11 and 13 | 40/40 passed |
+| Plan 12 | no artifacts declared (human gates); verified through `gh` |
+| Code review fix symbols | All present: `telemetryStateWritable`, `writeTarget`/`realpathSync`, `!inZellij` ask guard, `socketConnectable`, `QQ_CHANGES_BASE` push `''`, `BRANCH_HASH` with `--base`, and stale `doctor.json`/`doctor.txt` removal |
 
 ### Key Link Verification
 
 | Result | Detail |
 |--------|--------|
 | `verify.key-links` for plans 01-11 and 13 | 36/36 WIRED |
-| 10-12 "ci/phase-10-revert-drill push -> scripts/ci/auto-revert.sh" | The tool cannot check it (the source is an event, not a file). Verified directly: the drill run opened PR #16 from `auto-revert/ci-phase-10-revert-drill-2` |
-| Manual spot checks | main.ts to doctorCommand/telemetryCommand; server.ts `options.telemetry?.enqueue`; daemon.ts uses TELEMETRY_SHUTDOWN_WAIT_MS; run-foreground.ts calls shouldAskTelemetryConsent, askTelemetryConsent, markTelemetryAsked and reportClientTelemetry; ci.yml `auto-revert` runs `bash scripts/ci/auto-revert.sh` with `GH_TOKEN: github.token` |
+| 10-12 drill event -> auto-revert.sh | The tool cannot resolve an event source. Verified live twice: drill PR #16, and on main PR #17 |
+| Release workflow -> consent prompt | **Broken interaction.** release.yaml:45-48 runs `scripts/smoke-homebrew-docker.sh`. The container gets no QQ_TELEMETRY/CI kill switch, so the consent prompt appears after accept and the runner's expect treats it as an error |
 
 ### Data-Flow Trace (Level 4)
 
 | Artifact | Data | Source | Real data | Status |
 |----------|------|--------|-----------|--------|
-| telemetry-buffer `pending`/`lastSent` | serialized batch | client `telemetry-event` IPC, then strict re-validation, then `telemetryBatchSchema` | yes (tests use a real daemon server) | ✓ FLOWING |
-| Outbound `/batch/` POST | batch body | `resolveTelemetryEndpoint()` | null with the shipped empty key, so nothing is sent by design (D-22) | ⚠️ STATIC by user decision (human item 2) |
-| doctor.json in revert PR body | `qq doctor --json` from the smoke container | artifacts `smoke-<slug>/doctor.json` | yes (drill PR body) | ✓ FLOWING |
+| telemetry-buffer -> `/batch/` | serialized batch | client IPC, then strict re-validation | yes. UAT 2 shows a stored event in PostHog EU when given a runtime key | ✓ FLOWING (needs a runtime key; the shipped build sends nothing by user decision) |
+| doctor.json in revert PR body | `qq doctor --json` | smoke artifacts | yes (PR #16, PR #17) | ✓ FLOWING |
 
 ### Behavioral Spot-Checks (run by this verifier)
 
 | Behavior | Command | Result | Status |
 |----------|---------|--------|--------|
-| Contract allow list, consent gate, buffer, leak test, busybox lsof, prewarm transitions | `pnpm exec vitest run tests/telemetry-contract tests/telemetry-events tests/lsof-busybox tests/telemetry-consent tests/prewarm-sleep tests/telemetry-buffer` | 6 files, 160 tests passed | ✓ PASS |
-| Doctor, telemetry CLI/IPC/config/endpoint, auto-revert, path filter, error kind, env shape | `pnpm exec vitest run tests/doctor ... tests/environment-shape` (9 files) | 9 files, 192 tests passed | ✓ PASS |
-| mktemp guard | `pnpm exec vitest run tests/zsh-widget.test.ts -t mktemp` | 2 passed | ✓ PASS |
-| Six-distro CI on the verified SHA | `gh run view 40980760144` | success; all 16 jobs success (auto-revert skipped) | ✓ PASS |
-| Live SDK nightly | not runnable (secret, nightly not on main) | n/a | ? SKIP to human |
+| CR-01/WR-01..05 fixes, consent, doctor, path filter, auto-revert, contract, leak test | `pnpm exec vitest run tests/telemetry-config tests/client-result tests/telemetry-consent tests/doctor tests/code-changed tests/auto-revert tests/telemetry-contract tests/telemetry-events` | 8 files, 313 tests passed | ✓ PASS |
+| Nightly live + `:latest` legs | `gh run view 41073946911` | success; live plus 10 distro legs all success | ✓ PASS |
+| Push CI on main a5bc52e | `gh run view 41072732766` | `smoke (debian:13)` failure (exp exit 12, prompt redraw timeout), all others success, `ci-ok` failure, PR #17 opened | ⚠️ WARNING (flake by evidence) |
+| Same fix commits on renovate/actions-checkout-7.x 56b34f1 | `gh run view 41072982303` | 6/6 smoke success | ✓ PASS |
+| Release Homebrew smoke on main | `gh run view 41072733118` (attempts 1 and 2) | exit 13 on the consent prompt, both attempts | ✗ FAIL |
 
 ### Probe Execution
 
-Step 7c: not applicable. The phase declares no `scripts/*/tests/probe-*.sh`. The smoke itself is the runnable check, and the orchestrator ran it on GitHub (6/6 green).
+Step 7c: not applicable. There are no `scripts/*/tests/probe-*.sh`. The smoke matrices are the runnable checks, and their GitHub results are cited above.
 
 ### Requirements Coverage
 
-| Requirement | Source Plans | Description (from 10-RESEARCH.md §Phase Requirements) | Status | Evidence |
-|-------------|--------------|------------------------------------------------------|--------|----------|
-| P10-SMOKE | 01, 05, 11, 12 | real zsh PTY smoke from `pnpm pack` with only claude faked; `smoke` matrix | ✓ SATISFIED | 6/6 smoke legs green, 3 passes each |
-| P10-FIX | 01, 02, 03, 11 | Linux portability defects (busybox lsof, unguarded mktemp, jq hard blocker) | ✓ SATISFIED | lsof-busybox, the zsh-widget mktemp case and the doctor jq check; buglog entries |
-| P10-PREWARM | 02, 11 | D-04 stale-prewarm simulation | ✓ SATISFIED | prewarm-sleep 3/3; 09.1 todo closed |
-| P10-DOCTOR | 03, 05, 09 | `qq doctor [--json]` | ✓ SATISFIED | doctor tests; smoke exit-34/35 gates |
-| P10-TEL | 04, 06, 09, 10, 11, 13 | opt-in telemetry stack | ✓ SATISFIED (code); real backend send deferred by user | contract, buffer, consent, CLI and leak tests |
-| P10-CI | 05, 08, 12 | ci.yml, distro matrix, nightly | ✓ SATISFIED (PR side); nightly ? NEEDS HUMAN | run 40980760144; `ci-ok` required |
-| P10-REVERT | 07, 12 | auto-revert PR on smoke failure | ✓ SATISFIED | auto-revert tests; drill PR #16 |
-| P10-LIVE | 08 | nightly live SDK contract job | ? NEEDS HUMAN | code present; never run |
+All nine IDs now resolve from `.planning/REQUIREMENTS.md`, at lines 52-59, 66 and 115-123. The ROADMAP Phase 10 `**Requirements**:` line lists all nine. No ID is orphaned.
 
-**Traceability warning:** none of the eight P10-* IDs appear in `.planning/REQUIREMENTS.md`, and ROADMAP lists Phase 10 `Requirements: TBD`. All are defined in 10-RESEARCH.md, and every one is claimed by at least one plan. No orphaned IDs. Routed to the human as a documentation decision.
+| Requirement | Source Plans | Status | Evidence |
+|-------------|--------------|--------|----------|
+| P10-CI | 05, 08, 12 | ✓ SATISFIED | ci.yml/distro.yml; Nightly 41073946911 green; `ci-ok` required |
+| P10-SMOKE | 01, 05, 11, 12 | ✓ SATISFIED | 6/6 smoke on 56b34f1; 5/5 `:latest` on Nightly |
+| P10-REVERT | 07, 12 | ✓ SATISFIED | tests green; fired live (PR #16 drill, PR #17 on main) |
+| P10-DOCTOR | 03, 05, 09 | ✓ SATISFIED | doctor tests; smoke exit-34/35 gates |
+| P10-TEL | 04, 06, 09, 10, 11, 13 | ✓ SATISFIED (code and privacy); but see the gap: the consent prompt broke the release smoke | contract, buffer, consent and leak tests; UAT 2 |
+| P10-LIVE | 08 | ✓ SATISFIED | Nightly `live` job success |
+| P10-PREWARM | 02, 11 | ✓ SATISFIED | prewarm-sleep tests (prior run); unchanged code |
+| P10-FIX | 01, 02, 03, 11 | ✓ SATISFIED | lsof-busybox, mktemp guard, jq check |
+| ZSHX-01 | phase-level (marked done in REQUIREMENTS.md) | ✓ SATISFIED | six Linux distros green on PR pins and `:latest` |
 
 ### Anti-Patterns Found
 
-The debt-marker scan (TBD/FIXME/XXX, plus TODO/HACK/PLACEHOLDER) over all 61 implementation files changed in the phase found nothing (`mktemp` `XXXXXX` templates excluded). There are no stubs.
+The debt-marker scan (TBD/FIXME/XXX) over the 14 files the fix run changed found nothing. The rest of the phase was scanned clean in the previous run and is unchanged.
 
-The open findings from the code review (10-REVIEW.md, disposition `open`) are advisory, as the orchestrator directed. Each one is confirmed or plausible from the code:
-
-| File | Finding | Severity | Impact |
-|------|---------|----------|--------|
-| src/client/run-foreground.ts:481-503, src/shared/telemetry-config.ts:86-135 | CR-01: the consent question repeats on every accepted `??` when config.json is invalid or unwritable, and the answer is discarded | ⚠️ Warning (human decision) | Breaks D-09 "asked once ever" on that path, with up to a 30 s stall per `??` |
-| src/client/run-foreground.ts:481 | WR-01: in Zellij, the consent prompt can take the next keystroke | ⚠️ Warning | The accepted command still lands; the next key may become a permanent "no" |
-| src/shared/telemetry-config.ts | WR-02: the atomic rename replaces a symlinked config.json | ⚠️ Warning | Detaches dotfile-managed configs |
-| src/cli/commands/doctor.ts:367-385 | WR-03: a hung daemon is reported as "not running" (ok) | ⚠️ Warning | Misleading diagnostics, including in revert PR bodies |
-| .github/workflows/ci.yml:41 | WR-04: push runs diff against `event.before`, so a doc-only push after a cancelled or red code push gives a green `ci-ok` | ⚠️ Warning | Weakens "catch breakage before main" in that sequence |
-| scripts/ci/auto-revert.sh:216 | WR-05: `feat/x` and `feat-x` map to the same revert branch | ⚠️ Warning | Rare collision between revert PRs |
-| scripts/smoke-distro.sh:82 | WR-06: a stale local doctor.json survives a rerun | ℹ️ Info (local only; CI uses a fresh dir) | Local debugging only |
-| scripts/ci/auto-revert.sh:328-330 | Deviation: `.github/workflows` stays at HEAD in the tree restore (the workflow token cannot push workflow files); the PR body says so | ℹ️ Info | Intentional, documented |
+| File | Line | Pattern | Severity | Impact |
+|------|------|---------|----------|--------|
+| scripts/docker-homebrew-smoke-runner.sh | 21-26, 58-69 | the PTY smoke was not updated for the new post-accept consent prompt | 🛑 Blocker | Release pipeline red on main; nothing publishes |
+| (GitHub) PR #17 | - | an open auto-revert PR against main, from a likely-flaky debian leg | ⚠️ Warning | Merging it would restore the last green tree and undo the code review fixes. It needs a human close plus a CI rerun on main |
+| src/shared/telemetry-config.ts:234-247 | - | re-review WR-01: `qq telemetry on\|off` on a config.json linked into a read-only store prints a raw errno | ⚠️ Warning (advisory, review disposition open) | Opt-out UX on home-manager setups |
+| .github/workflows/ci.yml:45 | - | re-review IN-11: every push to main now runs the full matrix and can auto-revert. This just happened, in PR #17 | ℹ️ Info (advisory) | Flakes on main produce revert PRs |
+| IN-01..IN-10, IN-12 (10-REVIEW.md) | - | carried-forward info items | ℹ️ Info | not goal blockers |
 
 ### Human Verification Required
 
-### 1. Nightly live SDK run
-**Test:** Push main, then run `gh workflow run nightly.yml` and `gh run watch`.
-**Expected:** The `live` job is green within the 15 s / 25 s ceilings. The five `:latest` smoke and test-distro legs report. Nothing is required and no issue is opened.
-**Why human:** It needs the ANTHROPIC_API_KEY secret, and nightly.yml must be on the default branch (local main is 101 commits ahead of origin).
+Status is gaps_found, so these are follow-ups to do alongside the gap closure, not the gating items:
 
-### 2. Telemetry backend, key and $ip/GeoIP check (deferred by keep-empty)
-**Test:** Follow `.planning/todos/pending/2026-10-30-10-bake-telemetry-key.md`.
-**Expected:** One opted-in event arrives with no `$ip`, no GeoIP and no person profile.
-**Why human:** It involves an external service and a one-way key decision (D-08).
-
-### 3. Review CR-01 decision
-**Test:** Create an invalid-JSON `~/.config/qq/config.json`, then accept two `??` queries.
-**Expected:** The question is asked at most once (fix), or the edge case is explicitly accepted.
-**Why human:** The defect is confirmed in code; the choice between fixing it now and accepting it belongs to the developer.
-
-### 4. Requirements traceability
-**Test:** Add P10-* rows to REQUIREMENTS.md and the ROADMAP `Requirements:` line, or record that 10-RESEARCH.md is their source.
-**Expected:** Phase IDs resolve from REQUIREMENTS.md.
-**Why human:** This is a documentation-ownership decision.
+1. **PR #17 and red `ci-ok` on main.** Close PR #17 (`auto-revert/main-88d050b1`) without merging. Re-run the failed `smoke (debian:13)` job of run 41072732766, or push the gap fix, and confirm `ci-ok` is green on main. Why human: whether to treat the debian exit 12 (prompt redraw timeout after accept) as a flake is a judgment call. If it recurs, it is a real Debian stability issue for the "zsh stable across distros" clause.
 
 ### Gaps Summary
 
-There are no blocking gaps. All 12 artifact sets and 36 checkable key links pass. Every behavior-dependent truth that CI or a local test can exercise was exercised: prewarm transitions, the consent PTY pass, the leak test, busybox lsof, and six-distro smoke and vitest on GitHub. The remaining five items are of three kinds:
+There is one blocking gap. Phase 10 added a one-time consent prompt that prints after an accepted `??`. The new distro smoke was adapted to it (QQ_TELEMETRY=0 plus a dedicated consent pass), but the pre-existing Release workflow's Homebrew smoke was not. That smoke fails on any `QueQue:` output after accept, so the Release `test` job now fails on main every time, and tag/changelog/npm/Homebrew publishing is blocked. The fix is one line in `scripts/docker-homebrew-smoke-runner.sh` (`export QQ_TELEMETRY=0` in the appended zshrc block), followed by a Release re-run.
 
-- the nightly live and `:latest` runs, which are blocked on pushing main and the secret;
-- the PostHog send and privacy check, deferred by the user's keep-empty decision;
-- the CR-01 consent-repeat defect, a real but edge-path violation of D-09 that needs a fix-or-accept decision.
+Every other must-have is verified. That includes the five truths left open last time: nightly live and `:latest` (run 41073946911), CR-01 (fixed and tested), and the PostHog privacy check (UAT 2, runtime key, with the build key kept empty by user decision). Requirements traceability is complete.
 
-The six review warnings stay advisory and open in 10-REVIEW-DISPOSITION.md. WR-04 is the one most directly relevant to the "before main" clause and is worth scheduling.
+No later milestone phase exists in ROADMAP.md, so nothing was deferred.
 
 ---
 
-_Verified: 2026-10-30_
+_Verified: 2026-10-30T17:30:00Z_
 _Verifier: Claude (gsd-verifier)_

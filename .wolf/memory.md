@@ -3686,3 +3686,6 @@
 | 10:21 | Session end: 1 writes across 1 files (10-REVIEW.md) | 0 reads | ~3644 tok |
 | 10:23 | Edited scripts/docker-homebrew-smoke-runner.sh | 2→6 lines | ~92 |
 | 10:23 | fixed Release Homebrew smoke exit 13 (consent prompt read as error): QQ_TELEMETRY=0 in smoke zshrc | scripts/docker-homebrew-smoke-runner.sh | fixed, not run locally (needs real API key) | ~3k |
+| 10:23 | Session end: 2 writes across 2 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh) | 0 reads | ~3742 tok |
+| 10:27 | Created .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-VERIFICATION.md | — | ~5108 |
+| 10:27 | phase 10 re-verification: gaps_found 92/93 (Release Homebrew smoke exit 13, fixed in 80bb9d4, release run pending); CI red on a5bc52e debian:13 flake, auto-revert PR #17 open | .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-VERIFICATION.md | awaiting runs | ~2k |
