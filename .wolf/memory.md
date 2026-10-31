@@ -3723,3 +3723,9 @@
 | 11:24 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
 | 11:27 | README demo gif now an absolute raw.githubusercontent URL so it renders on npmjs.com | README.md | done | ~200 |
 | 11:27 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
+| 21:12 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
+| 21:20 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
+| 21:21 | user telemetry: moved QQ_TELEMETRY_KEY above queque source in ~/.zshrc, qq telemetry on, replaced pre-phase-10 daemon (pid 818) that ignored telemetry IPC | ~/.zshrc, ~/.config/qq | working | ~2k |
+| 21:21 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
+| 21:24 | Session end: 39 writes across 18 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~98938 tok |
+| 21:35 | Created .planning/quick/261030-tq3-restart-outdated-daemon-and-report-a-dae/261030-tq3-PLAN.md | — | ~9737 |

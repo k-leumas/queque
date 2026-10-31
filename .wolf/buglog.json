@@ -7388,6 +7388,24 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-30T17:05:00Z"
+    },
+    {
+      "id": "bug-473",
+      "timestamp": "2026-10-31T03:21:26Z",
+      "error_message": "qq telemetry show: 'daemon not running: nothing buffered' while a daemon was running; debug log shows '[daemon] ignored unknown request' for telemetry-event and telemetry-show",
+      "file": "src/cli/commands/telemetry.ts",
+      "root_cause": "A daemon started 2026-10-20 (before phase 10) kept running across rebuilds/upgrades; it ignores the new telemetry-* IPC kinds and never replies, so events are silently dropped and the CLI's no-reply path reports 'daemon not running'",
+      "fix": "Operational: sent {kind:'shutdown'} and restarted the daemon from the user's zsh env (with QQ_TELEMETRY_KEY). Code follow-up open: detect a daemon older than the client (version in pong) and restart it, and word the no-reply case as 'daemon did not answer (maybe outdated)'",
+      "tags": [
+        "telemetry",
+        "daemon",
+        "ipc",
+        "version-skew",
+        "stale-daemon"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-10-31T03:21:26Z"
     }
   ]
 }
