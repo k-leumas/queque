@@ -3732,3 +3732,14 @@
 | 21:50 | quick 261030-tq3 task 1: pong `build` (__QUEQUE_BUILD_ID__ tsup/vitest define); ensureDaemon replaces a daemon from another build; regression tests | tsup.config.ts, vitest.config.ts, src/env.d.ts, src/contracts/ipc.ts, src/daemon/server.ts, src/daemon/bootstrap.ts, tests/daemon-bootstrap.test.ts, tests/telemetry-ipc.test.ts | 129 tests pass, typecheck/biome/build ok | ~9000 |
 | 21:58 | quick 261030-tq3 task 2: `qq daemon --restart` reuses restartDaemon; docs PROVIDERS/SYSTEM_DESIGN | src/cli/commands/daemon.ts, src/cli/main.ts, tests/daemon-bootstrap.test.ts, docs/PROVIDERS.md, docs/SYSTEM_DESIGN.md | 121 tests pass, help lists --restart | ~4000 |
 | 22:10 | quick 261030-tq3 task 3: qq telemetry show/off tell a silent daemon from a missing one (socketConnectable probe, restart hint); bug-474 logged | src/cli/commands/telemetry.ts, tests/telemetry-cli.test.ts, .wolf/buglog.json, .wolf/cerebrum.md | 140 tests pass, typecheck/biome ok, buglog append-only | ~6000 |
+| 21:36 | Session end: 40 writes across 19 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 14 reads | ~109370 tok |
+| 21:40 | Created ../../../../tmp/claude-tq3-scratch/tq3-anatomy1.py | — | ~675 |
+| 21:40 | Created ../../../../tmp/claude-tq3-scratch/tq3-msg-task1.txt | — | ~158 |
+| 21:42 | Created ../../../../tmp/claude-tq3-scratch/tq3-anatomy2.py | — | ~268 |
+| 21:42 | Created ../../../../tmp/claude-tq3-scratch/tq3-msg-task2.txt | — | ~108 |
+| 21:44 | Created ../../../../tmp/claude-tq3-scratch/tq3-anatomy3.py | — | ~206 |
+| 21:44 | Created ../../../../tmp/claude-tq3-scratch/tq3-msg-task3.txt | — | ~155 |
+| 21:45 | Created ../../../../tmp/claude-tq3-scratch/tq3-fake-daemon.mjs | — | ~270 |
+| 21:45 | Created ../../../../tmp/claude-tq3-scratch/tq3-oneshot.mjs | — | ~176 |
+| 21:48 | merged 261030-tq3; rebuilt dist; live daemon replaced via build-id check (null -> 0.8.2+332b484), key present | src/daemon/bootstrap.ts et al | verified live | ~3k |
+| 21:48 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
