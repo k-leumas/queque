@@ -1,29 +1,3 @@
-# [0.9.0](https://github.com/k-leumas/queque/compare/v0.8.2...v0.9.0) (2026-10-31)
-
-### Features
-
-- Added a new `qq daemon --restart` command so you can manually restart the background assistant daemon whenever you need to, without having to stop and start it separately.
-
-<details>
-<summary>Detailed changes</summary>
-
-* **quick-261030-tq3:** add qq daemon --restart ([5172dd4](https://github.com/k-leumas/queque/commit/5172dd423b844ccf1e4003407cd3b457dd88dc60))
-
-</details>
-
-### Bug Fixes
-
-- QueQue now correctly detects and reports when the background daemon becomes unresponsive, instead of hanging silently.
-- When you upgrade QueQue, it now properly replaces an old daemon process left over from a previous build instead of getting stuck trying to talk to it.
-
-<details>
-<summary>Detailed changes</summary>
-
-* **quick-261030-tq3:** report a daemon that does not answer ([332b484](https://github.com/k-leumas/queque/commit/332b484984b3854777c77fa20e0e0c020dcdf18b))
-* **quick-261030-tq3:** replace a running daemon from another qq build ([3176bbc](https://github.com/k-leumas/queque/commit/3176bbc926984ce5e44a8ad6337875963f100941))
-
-</details>
-
 ## [0.8.2](https://github.com/k-leumas/queque/compare/v0.8.1...v0.8.2) (2026-10-30)
 
 ## [0.8.1](https://github.com/k-leumas/queque/compare/v0.8.0...v0.8.1) (2026-10-30)
