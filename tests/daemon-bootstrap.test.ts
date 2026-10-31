@@ -589,6 +589,52 @@ describe('daemon bootstrap', () => {
     await expect(restartDaemon('/etc/qq.sock')).rejects.toThrow(/unsafe socket path/);
     expect(spawnFn).not.toHaveBeenCalled();
   });
+
+  it('qq daemon --restart replaces a current daemon over IPC (quick 261030-tq3)', async () => {
+    const { startDaemonServer } = await import('../src/daemon/server.js');
+    const { daemonCommand, shutdownDaemon, trackConnections } = await import(
+      '../src/cli/commands/daemon.js'
+    );
+    const exit = vi.fn();
+    let requestShutdown = (): void => undefined;
+    const currentServer = await startDaemonServer(socketPath, {
+      onShutdown: () => requestShutdown(),
+    });
+    const connections = trackConnections(currentServer);
+    requestShutdown = () => shutdownDaemon(currentServer, connections, { exit, graceMs: 0 });
+
+    spawnFn.mockImplementation(() => {
+      testServer = net.createServer(() => {});
+      testServer.listen(socketPath);
+      return { unref: vi.fn(), on: vi.fn() };
+    });
+    const written: string[] = [];
+    const writeSpy = vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
+      written.push(String(chunk));
+      return true;
+    });
+
+    try {
+      await expect(daemonCommand({ socket: socketPath, restart: true })).resolves.toBeUndefined();
+      writeSpy.mockRestore();
+      expect(currentServer.listening).toBe(false);
+      expect(spawnFn).toHaveBeenCalledTimes(1);
+      expect(written.join('')).toBe('daemon restarted\n');
+    } finally {
+      writeSpy.mockRestore();
+      currentServer.close();
+      currentServer.unref();
+    }
+  });
+
+  it('qq daemon --restart rejects an unsafe socket path', async () => {
+    const { daemonCommand } = await import('../src/cli/commands/daemon.js');
+
+    await expect(daemonCommand({ socket: '/tmp/not-qq.sock', restart: true })).rejects.toThrow(
+      /unsafe socket path/,
+    );
+    expect(spawnFn).not.toHaveBeenCalled();
+  });
 });
 
 describe('daemon server', () => {

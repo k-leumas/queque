@@ -16,6 +16,7 @@ type ClientOptions = {
 type DaemonOptions = {
   socket?: string;
   ensure?: boolean;
+  restart?: boolean;
 };
 
 function requiredOption(name: string, value: string | undefined): string {
@@ -121,6 +122,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
     .command('daemon')
     .option('--socket <path>', 'Unix socket path for the daemon')
     .option('--ensure', 'Ensure the daemon is running before returning')
+    .option('--restart', 'Stop the running daemon and start a fresh one from this qq')
     .action(async (options: DaemonOptions) => {
       await daemonCommand(options);
     });

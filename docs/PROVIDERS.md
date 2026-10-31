@@ -68,6 +68,7 @@ A background daemon answers `??` for every terminal. It starts with your first i
 - After changing any of them, restart the daemon from a shell that has the new values:
 
 ```shell
-pkill -f 'daemon --socket /tmp/qq-'
-qq daemon --ensure
+qq daemon --restart
 ```
+
+After an upgrade or a rebuild of qq, the next `??` (or a new shell) replaces a daemon from another qq build by itself.

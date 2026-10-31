@@ -1,5 +1,7 @@
 import type * as net from 'node:net';
-import { ensureDaemon } from '../../daemon/bootstrap.js';
+// restartDaemon is read only inside daemonCommand (call time): tests/client-result.test.ts mocks
+// daemon/bootstrap.js with ensureDaemon only and still loads main.ts.
+import { ensureDaemon, restartDaemon } from '../../daemon/bootstrap.js';
 import { startDaemonServer } from '../../daemon/server.js';
 import {
   createTelemetryBuffer,
@@ -14,6 +16,7 @@ import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
 export interface DaemonCommandOptions {
   socket?: string;
   ensure?: boolean;
+  restart?: boolean;
 }
 
 /** Records every open connection of `server`, so shutdown can end the in-flight ones. */
@@ -111,12 +114,28 @@ export function shutdownDaemon(
  *
  * `qq daemon --socket <path>` — starts the daemon server and blocks.
  * `qq daemon --socket <path> --ensure` — ensures a daemon is running, then exits.
+ * `qq daemon --socket <path> --restart` — stops whatever daemon holds the socket and starts
+ *   a fresh one from this qq, then prints `daemon restarted` (quick 261030-tq3). The same
+ *   restartDaemon that `qq init provider` runs, so the new daemon inherits this shell's
+ *   environment. Wins over `--ensure`, because it also leaves a running daemon. Errors (an
+ *   unsafe path, a daemon that never listens) reach main.ts's top-level catch (exit code 1).
  *
  * Free of Ink, React, and /dev/tty assumptions.
  */
 export async function daemonCommand(options: DaemonCommandOptions): Promise<void> {
   const sock = options.socket ?? defaultSocketPath();
-  void appendDebugLog('daemon', 'command start', { socket: sock, ensure: options.ensure });
+  void appendDebugLog('daemon', 'command start', {
+    socket: sock,
+    ensure: options.ensure,
+    restart: options.restart,
+  });
+
+  if (options.restart) {
+    await restartDaemon(sock);
+    void appendDebugLog('daemon', 'restart command complete', { socket: sock });
+    process.stdout.write('daemon restarted\n');
+    return;
+  }
 
   if (options.ensure) {
     await ensureDaemon(sock);
