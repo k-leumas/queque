@@ -14,7 +14,8 @@ import type { TelemetryBuffer } from './telemetry-buffer.js';
  * Handles newline-delimited JSON IPC messages. Supported requests:
  *   {kind: 'ping'}              → {kind: 'pong', fetchCandidates: true, installedTools: true,
  *                                   streamCandidates: true, providerPin: true} plus the
- *                                   `telemetry` flag (informational, never a replace trigger)
+ *                                   `telemetry` flag (informational) and `build`, this daemon's
+ *                                   __QUEQUE_BUILD_ID__ (a client from another build replaces it)
  *   {kind: 'ensure-session'}    → {kind: 'session-ready', socketPath}
  *   {kind: 'run-query'}         → {kind: 'query-accepted', requestId}
  *   {kind: 'fetch-candidates'}  → {kind: 'fetch-accepted'}, then {kind: 'candidate'} × N when the
@@ -112,6 +113,7 @@ export function startDaemonServer(
                 streamCandidates: true,
                 providerPin: true,
                 telemetry: true,
+                build: __QUEQUE_BUILD_ID__,
               });
               void appendDebugLog('daemon', 'replied pong');
               break;

@@ -67,9 +67,14 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
     // prompt to Claude even when the user pinned a local provider.
     providerPin: z.literal(true).optional(),
     // Daemon buffers `telemetry-event` and answers `telemetry-show`/`telemetry-reset` (phase
-    // 10). Informational only: ensureDaemon never replaces a daemon for lacking it, because
-    // telemetry is optional and replacement goes through replaceStaleListener.
+    // 10). The flag alone never triggers a replacement, but a daemon that lacks it is from an
+    // older build, and it is replaced for the build mismatch (quick 261030-tq3).
     telemetry: z.literal(true).optional(),
+    // The daemon's `__QUEQUE_BUILD_ID__` (quick 261030-tq3). Absent on daemons from before
+    // 261030-tq3. A malformed value becomes undefined (read as another build) instead of
+    // rejecting the pong: a rejected pong would read as 'unknown', and an 'unknown' daemon is
+    // kept.
+    build: z.string().max(128).optional().catch(undefined),
   }),
   z.object({
     kind: z.literal('session-ready'),

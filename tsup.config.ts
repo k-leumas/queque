@@ -9,6 +9,10 @@ try {
   // non-git environment (e.g. Homebrew build)
 }
 const version = (JSON.parse(readFileSync('package.json', 'utf-8')) as { version: string }).version;
+// Identifies this exact build: ensureDaemon replaces a daemon from any other build (quick
+// 261030-tq3, bug-473). `tsup --watch` evaluates this config once, so watch rebuilds share one
+// id; `pnpm build` always gets a new one.
+const buildId = `${version}+${commit}.${Date.now().toString(36)}`;
 
 export default defineConfig({
   // Two outputs (quick 261011-jbh, LD-2). main.js is a built-in-only launcher: bin, the zsh
@@ -52,6 +56,7 @@ export default defineConfig({
   define: {
     __QUEQUE_COMMIT__: JSON.stringify(commit),
     __QUEQUE_VERSION__: JSON.stringify(version),
+    __QUEQUE_BUILD_ID__: JSON.stringify(buildId),
     // D-22: empty until the PostHog project exists. An empty key means nothing is ever sent
     // (resolveTelemetryEndpoint returns null). Plan 13 bakes the real public `phc_` project
     // key after a human decision; QQ_TELEMETRY_KEY overrides it at runtime.

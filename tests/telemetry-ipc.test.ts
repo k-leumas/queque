@@ -168,7 +168,7 @@ describe('telemetry IPC kinds', () => {
     });
   });
 
-  it('the pong advertises telemetry with the four existing flags', async () => {
+  it('the pong advertises telemetry and the build with the four existing flags', async () => {
     server = await startDaemonServer(socketPath);
 
     expect(await requestOnce(socketPath, { kind: 'ping' })).toEqual({
@@ -178,7 +178,31 @@ describe('telemetry IPC kinds', () => {
       streamCandidates: true,
       providerPin: true,
       telemetry: true,
+      build: __QUEQUE_BUILD_ID__,
     });
+  });
+});
+
+describe('pong build (quick 261030-tq3)', () => {
+  function buildOf(pong: Record<string, unknown>): unknown {
+    const parsed = ipcResponseSchema.safeParse(pong);
+    return parsed.success ? (parsed.data as Record<string, unknown>).build : 'parse-failed';
+  }
+
+  it('keeps a normal build string', () => {
+    expect(buildOf({ kind: 'pong', build: '0.8.2+abc1234.mh3k2l' })).toBe('0.8.2+abc1234.mh3k2l');
+  });
+
+  it('filters a non-string build to undefined instead of rejecting the pong', () => {
+    expect(buildOf({ kind: 'pong', build: 42 })).toBe(undefined);
+  });
+
+  it('filters a build longer than 128 characters to undefined', () => {
+    expect(buildOf({ kind: 'pong', build: 'x'.repeat(129) })).toBe(undefined);
+  });
+
+  it('leaves build undefined for an old daemon', () => {
+    expect(buildOf({ kind: 'pong', fetchCandidates: true })).toBe(undefined);
   });
 });
 

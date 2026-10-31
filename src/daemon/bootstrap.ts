@@ -44,19 +44,23 @@ export function tryConnect(socketPath: string): Promise<boolean> {
  * envelope.
  *
  * - `yes`: pong includes `fetchCandidates: true`, `installedTools: true`,
- *   `streamCandidates: true` and `providerPin: true`
+ *   `streamCandidates: true` and `providerPin: true`, AND its `build` equals this
+ *   client's `__QUEQUE_BUILD_ID__`
  * - `no`: pong missing any flag (older production daemon — replace it). Such a
  *   daemon silently drops `fetch-candidates` envelopes it cannot validate, which
  *   costs the 800 ms ack timeout plus a cold in-process fetch on every `??`, or
  *   (without `streamCandidates`) never streams rows to a `stream: true` client, or
  *   (without `providerPin`, e.g. v0.6.0) ignores provider.json and sends every
- *   prompt to Claude even for a local-only pin.
+ *   prompt to Claude even for a local-only pin. Also `no` when the flags pass but
+ *   `build` is absent or differs (quick 261030-tq3, bug-473): a daemon from another
+ *   build runs other code, for example one that ignores `telemetry-event`.
  * - `unknown`: no reply, timeout or unparseable reply (tests' dumb
  *   `net.createServer`, or a hung socket — keep)
  *
- * Envelope SHAPE changes (a new chunk kind or field) and daemon ROUTING changes
- * (which provider receives the prompt) need a new pong flag here; catalog CONTENT
- * changes do not, because the daemon filters unknown names.
+ * Since 261030-tq3 the build check replaces a daemon from any other build, which covers
+ * later IPC shape and routing changes by itself; the capability flags remain as the
+ * guard they were. The comparison rides on the single existing ping, so a same-build
+ * daemon costs no extra round trip.
  */
 export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | 'unknown'> {
   return new Promise((resolve) => {
@@ -102,12 +106,25 @@ export function pingDaemonFetchCap(socketPath: string): Promise<'yes' | 'no' | '
         done('unknown');
         return;
       }
-      const current =
+      const flags =
         response.data.fetchCandidates === true &&
         response.data.installedTools === true &&
         response.data.streamCandidates === true &&
         response.data.providerPin === true;
-      done(current ? 'yes' : 'no');
+      if (!flags) {
+        done('no');
+        return;
+      }
+      const build = response.data.build;
+      if (build === __QUEQUE_BUILD_ID__) {
+        done('yes');
+        return;
+      }
+      void appendDebugLog('daemon', 'daemon build differs', {
+        daemonBuild: build ?? null,
+        clientBuild: __QUEQUE_BUILD_ID__,
+      });
+      done('no');
     });
 
     client.on('error', () => {
@@ -352,9 +369,12 @@ export async function restartDaemon(socketPath: string): Promise<void> {
  *      any of `fetchCandidates`, `installedTools`, `streamCandidates` or
  *      `providerPin` — such a daemon silently drops `fetch-candidates` envelopes
  *      it cannot validate and stalls the client, never streams rows, or ignores
- *      provider.json and sends the prompt to Claude. IPC SHAPE and routing changes
- *      need a new pong flag; catalog CONTENT changes do not (the daemon filters
- *      unknown names).
+ *      provider.json and sends the prompt to Claude. Since quick 261030-tq3 a pong
+ *      whose `build` is absent or differs from this client's `__QUEQUE_BUILD_ID__` is
+ *      replaced too (bug-473: a daemon left running across an upgrade or rebuild),
+ *      which covers later IPC shape and routing changes; the flags remain as a guard.
+ *      Replacement goes through replaceStaleListener, the graceful `shutdown` path
+ *      that restartDaemon also uses.
  *   2. If the socket file exists but the connect failed, unlink it (stale socket).
  *   3. Spawn `qq daemon --socket <path>` as a detached, unreferenced child.
  *   4. Poll until the new daemon starts listening, then return.

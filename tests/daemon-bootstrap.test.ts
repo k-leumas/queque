@@ -219,11 +219,16 @@ describe('daemon bootstrap', () => {
     }
   });
 
-  it('keeps a live daemon whose pong has all four capabilities', async () => {
+  it('keeps a live daemon whose pong has all four capabilities and this build', async () => {
+    // Updated deliberately in quick 261030-tq3: the pong now also carries this client's build.
+    // Still no `telemetry` flag, which pins that a missing telemetry flag alone never triggers
+    // a replacement. The fake counts ping lines: the same-build path costs exactly one ping.
+    let pings = 0;
     testServer = net.createServer((socket) => {
       socket.on('data', (chunk) => {
         const line = chunk.toString();
         if (line.includes('"ping"')) {
+          pings += 1;
           socket.write(
             `${JSON.stringify({
               kind: 'pong',
@@ -231,6 +236,7 @@ describe('daemon bootstrap', () => {
               installedTools: true,
               streamCandidates: true,
               providerPin: true,
+              build: __QUEQUE_BUILD_ID__,
             })}\n`,
           );
         }
@@ -245,6 +251,126 @@ describe('daemon bootstrap', () => {
 
     await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
     expect(spawnFn).not.toHaveBeenCalled();
+    expect(pings).toBe(1);
+  });
+
+  describe('a daemon from another qq build (quick 261030-tq3, bug-473)', () => {
+    const FOUR_FLAGS = {
+      kind: 'pong',
+      fetchCandidates: true,
+      installedTools: true,
+      streamCandidates: true,
+      providerPin: true,
+    } as const;
+
+    /**
+     * A fake daemon that answers `ping` with `pong` and `shutdown` with shutdown-accepted,
+     * then closes its server. Every other line (telemetry-show included) is ignored, as the
+     * bug-473 daemon did.
+     */
+    async function fakeDaemon(pong: Record<string, unknown>): Promise<net.Server> {
+      const server: net.Server = net.createServer((socket) => {
+        socket.on('data', (chunk) => {
+          const line = chunk.toString();
+          if (line.includes('"ping"')) {
+            socket.write(`${JSON.stringify(pong)}\n`);
+          } else if (line.includes('"shutdown"')) {
+            socket.end(`${JSON.stringify({ kind: 'shutdown-accepted' })}\n`);
+            server.close();
+          }
+        });
+      });
+      await new Promise<void>((resolve, reject) => {
+        server.listen(socketPath, () => resolve());
+        server.once('error', reject);
+      });
+      return server;
+    }
+
+    function spawnListens(): void {
+      spawnFn.mockImplementation(() => {
+        testServer = net.createServer(() => {});
+        testServer.listen(socketPath);
+        return { unref: vi.fn(), on: vi.fn() };
+      });
+    }
+
+    it('replaces a bug-473 daemon (four flags, no telemetry, no build) over IPC', async () => {
+      const oldServer = await fakeDaemon(FOUR_FLAGS);
+      spawnListens();
+
+      const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      try {
+        await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+        expect(spawnFn).toHaveBeenCalledTimes(1);
+        // Stopped by the IPC shutdown: lsof never signals the vitest pid.
+        expect(oldServer.listening).toBe(false);
+      } finally {
+        oldServer.close();
+        oldServer.unref();
+      }
+    });
+
+    it('pingDaemonFetchCap is no for the bug-473 pong', async () => {
+      const oldServer = await fakeDaemon(FOUR_FLAGS);
+
+      const { pingDaemonFetchCap } = await import('../src/daemon/bootstrap.js');
+
+      try {
+        await expect(pingDaemonFetchCap(socketPath)).resolves.toBe('no');
+      } finally {
+        oldServer.close();
+        oldServer.unref();
+      }
+    });
+
+    it('replaces a daemon whose pong carries another build', async () => {
+      const oldServer = await fakeDaemon({
+        ...FOUR_FLAGS,
+        telemetry: true,
+        build: '9.9.9+other.0',
+      });
+      spawnListens();
+
+      const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      try {
+        await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+        expect(spawnFn).toHaveBeenCalledTimes(1);
+        expect(oldServer.listening).toBe(false);
+      } finally {
+        oldServer.close();
+        oldServer.unref();
+      }
+    });
+
+    it('replaces a daemon with this build that lacks a capability flag', async () => {
+      const { providerPin: _omitted, ...threeFlags } = FOUR_FLAGS;
+      const oldServer = await fakeDaemon({ ...threeFlags, build: __QUEQUE_BUILD_ID__ });
+      spawnListens();
+
+      const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      try {
+        await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+        expect(spawnFn).toHaveBeenCalledTimes(1);
+      } finally {
+        oldServer.close();
+        oldServer.unref();
+      }
+    });
+
+    it('keeps a real daemon server from this build', async () => {
+      const { startDaemonServer } = await import('../src/daemon/server.js');
+      testServer = await startDaemonServer(socketPath);
+
+      const { ensureDaemon } = await import('../src/daemon/bootstrap.js');
+
+      await expect(ensureDaemon(socketPath)).resolves.toBeUndefined();
+      expect(spawnFn).not.toHaveBeenCalled();
+      expect(testServer.listening).toBe(true);
+    });
   });
 
   it('spawns the daemon when no socket file exists', async () => {
@@ -520,6 +646,7 @@ describe('daemon server', () => {
       streamCandidates: true,
       providerPin: true,
       telemetry: true,
+      build: __QUEQUE_BUILD_ID__,
     });
   });
 });
