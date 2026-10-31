@@ -1,5 +1,6 @@
 import * as net from 'node:net';
 import { type IpcRequest, type IpcResponse, ipcResponseSchema } from '../../contracts/ipc.js';
+import { tryConnect } from '../../daemon/bootstrap.js';
 import { usableSecret } from '../../shared/env-file.js';
 import { defaultConfigPath } from '../../shared/qq-config.js';
 import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
@@ -32,8 +33,18 @@ export interface TelemetryCliDeps {
   configPath?: string;
   socketPath: string;
   endpoint(): TelemetryEndpoint | null;
-  /** One request to the daemon; null when no daemon answers in time or the reply is invalid. */
+  /**
+   * One request to the daemon; null when no daemon answers in time or the reply is invalid.
+   * Null covers both "no daemon listening" and "a daemon that connected but did not answer";
+   * socketConnectable tells them apart.
+   */
   requestDaemon(request: IpcRequest): Promise<IpcResponse | null>;
+  /**
+   * Whether anything accepts connections on the socket. Asked only after requestDaemon
+   * returned null, to tell "no daemon" from "a daemon that did not answer" (quick 261030-tq3,
+   * bug-473). The same probe `qq doctor` uses (WR-03).
+   */
+  socketConnectable(path: string): Promise<boolean>;
   out(text: string): void;
   err(text: string): void;
 }
@@ -43,6 +54,9 @@ export const DAEMON_REQUEST_TIMEOUT_MS = 500;
 
 const USAGE = 'usage: qq telemetry [status|on|off|show]';
 const DAEMON_NOT_RUNNING = 'daemon not running: nothing buffered';
+// Fixed copy: no socket path, no environment values (T-10-33).
+const DAEMON_NO_ANSWER = 'the daemon did not answer (it may be outdated)';
+const DAEMON_RESTART_HINT = 'restart it: qq daemon --restart';
 const NO_KEY_NOTE = 'note: this build has no project key, so nothing is sent';
 
 /**
@@ -108,6 +122,9 @@ export function defaultTelemetryCliDeps(): TelemetryCliDeps {
     socketPath: socket,
     endpoint: () => resolveTelemetryEndpoint(process.env),
     requestDaemon: (request) => requestDaemonOnce(socket, request),
+    // An arrow wrapper reads the bootstrap binding at call time: tests/client-result.test.ts
+    // mocks daemon/bootstrap.js with ensureDaemon only (see init-provider.ts).
+    socketConnectable: (path) => tryConnect(path),
     out: (text) => {
       process.stdout.write(text);
     },
@@ -134,6 +151,19 @@ function endpointHost(deps: TelemetryCliDeps, endpoint: TelemetryEndpoint | null
     // fall through
   }
   return 'not configured';
+}
+
+/**
+ * True when something accepts connections on the daemon socket, after a request got no
+ * reply: a daemon that did not answer (for example one from an older build). A throwing probe
+ * counts as "not running", as in `qq doctor`.
+ */
+async function daemonIsSilent(deps: TelemetryCliDeps): Promise<boolean> {
+  try {
+    return await deps.socketConnectable(deps.socketPath);
+  } catch {
+    return false;
+  }
 }
 
 function printStatus(deps: TelemetryCliDeps, configPath: string): void {
@@ -178,6 +208,10 @@ async function turnOff(deps: TelemetryCliDeps, configPath: string): Promise<void
   const lines = ['telemetry: off', 'install id deleted'];
   if (reply?.kind === 'telemetry-buffer') {
     lines.push('daemon buffer cleared');
+  } else if (reply === null && (await daemonIsSilent(deps))) {
+    // Restarting is safe after off: the restarted daemon's final flush re-checks the consent
+    // gate, which is now off.
+    lines.push(`${DAEMON_NO_ANSWER}: its buffer was not cleared`, DAEMON_RESTART_HINT);
   }
   deps.out(`${lines.join('\n')}\n`);
 }
@@ -185,11 +219,18 @@ async function turnOff(deps: TelemetryCliDeps, configPath: string): Promise<void
 async function show(deps: TelemetryCliDeps): Promise<void> {
   const reply = await deps.requestDaemon({ kind: 'telemetry-show' });
   if (reply === null) {
+    if (await daemonIsSilent(deps)) {
+      deps.out(`${DAEMON_NO_ANSWER}: nothing shown\n${DAEMON_RESTART_HINT}\n`);
+      return;
+    }
     deps.out(`${DAEMON_NOT_RUNNING}\n`);
     return;
   }
   if (reply.kind !== 'telemetry-buffer') {
-    deps.out('the daemon did not return a telemetry buffer (it may be outdated): nothing shown\n');
+    deps.out(
+      'the daemon did not return a telemetry buffer (it may be outdated): nothing shown\n' +
+        `${DAEMON_RESTART_HINT}\n`,
+    );
     return;
   }
   // D-12: the bodies exactly as the daemon holds them; nothing else is added.

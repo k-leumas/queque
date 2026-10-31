@@ -7406,6 +7406,26 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-10-31T03:21:26Z"
+    },
+    {
+      "id": "bug-474",
+      "timestamp": "2026-10-31T03:43:44Z",
+      "error_message": "A daemon from an older qq build stays running after an upgrade or rebuild (bug-473 code follow-up): it drops telemetry-event, and qq telemetry show says 'daemon not running' while a daemon listens",
+      "file": "src/daemon/bootstrap.ts",
+      "root_cause": "The pong carried capability flags only, so a daemon from an older build that had every flag was kept by ensureDaemon, and the CLI's null reply could not tell a silent daemon from a missing one",
+      "fix": "Quick 261030-tq3: the pong carries build (tsup define __QUEQUE_BUILD_ID__) and pingDaemonFetchCap returns 'no' for an absent or different build, so ensureDaemon replaces it via replaceStaleListener; new qq daemon --restart (restartDaemon); qq telemetry show/off probe the socket with socketConnectable (tryConnect) after a null reply and print 'the daemon did not answer (it may be outdated)' plus 'restart it: qq daemon --restart'",
+      "tags": [
+        "daemon",
+        "ipc",
+        "version-skew",
+        "stale-daemon",
+        "telemetry"
+      ],
+      "related_bugs": [
+        "bug-473"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-10-31T03:43:44Z"
     }
   ]
 }

@@ -9,6 +9,7 @@ import {
   telemetryCommand,
 } from '../src/cli/commands/telemetry.js';
 import type { IpcRequest, IpcResponse } from '../src/contracts/ipc.js';
+import { tryConnect } from '../src/daemon/bootstrap.js';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -48,6 +49,7 @@ function harness(
     configPath,
     socketPath: '/tmp/qq-tel-cli-unused.sock',
     endpoint: () => null,
+    socketConnectable: async () => false,
     requestDaemon: async (request) => {
       requests.push(request);
       return reply;
@@ -215,6 +217,26 @@ describe('qq telemetry off', () => {
     expect(process.exitCode).toBeUndefined();
   });
 
+  it('reports a daemon that accepts but does not answer (quick 261030-tq3)', async () => {
+    await telemetryCommand('on', harness().deps);
+    let enabledAtReset: boolean | undefined;
+    const h = harness({
+      socketConnectable: async () => true,
+      requestDaemon: async () => {
+        enabledAtReset = telemetryBlock().enabled;
+        return null;
+      },
+    });
+    await telemetryCommand('off', h.deps);
+    expect(enabledAtReset).toBe(false);
+    expect(h.stdout()).toBe(
+      'telemetry: off\ninstall id deleted\n' +
+        'the daemon did not answer (it may be outdated): its buffer was not cleared\n' +
+        'restart it: qq daemon --restart\n',
+    );
+    expect(process.exitCode).toBeUndefined();
+  });
+
   it('refuses an invalid-JSON config, exits 1 and leaves the bytes unchanged', async () => {
     const broken = '[1, 2,';
     writeFileSync(configPath, broken);
@@ -248,6 +270,49 @@ describe('qq telemetry show', () => {
     await telemetryCommand('show', h.deps);
     expect(h.stdout()).toBe('daemon not running: nothing buffered\n');
     expect(process.exitCode).toBeUndefined();
+  });
+
+  describe('a daemon that does not answer (quick 261030-tq3, bug-473)', () => {
+    const NO_ANSWER =
+      'the daemon did not answer (it may be outdated): nothing shown\n' +
+      'restart it: qq daemon --restart\n';
+
+    it('says so when the socket accepts connections', async () => {
+      const h = harness({ socketConnectable: async () => true });
+      await telemetryCommand('show', h.deps);
+      expect(h.stdout()).toBe(NO_ANSWER);
+      expect(process.exitCode).toBeUndefined();
+    });
+
+    it('falls back to not running when the probe throws', async () => {
+      const h = harness({
+        socketConnectable: async () => {
+          throw new Error('probe failed');
+        },
+      });
+      await telemetryCommand('show', h.deps);
+      expect(h.stdout()).toBe('daemon not running: nothing buffered\n');
+    });
+
+    it('never probes the socket when the daemon answered', async () => {
+      const socketConnectable = vi.fn(async () => true);
+      const h = harness(
+        { socketConnectable },
+        { kind: 'telemetry-buffer', pending: null, lastSent: null },
+      );
+      await telemetryCommand('show', h.deps);
+      expect(socketConnectable).not.toHaveBeenCalled();
+      expect(h.stdout()).toBe('pending:\n(none)\nlast sent:\n(none)\n');
+    });
+
+    it('adds the restart hint to a reply of another kind', async () => {
+      const h = harness({}, { kind: 'pong' });
+      await telemetryCommand('show', h.deps);
+      expect(h.stdout()).toBe(
+        'the daemon did not return a telemetry buffer (it may be outdated): nothing shown\n' +
+          'restart it: qq daemon --restart\n',
+      );
+    });
   });
 });
 
@@ -361,5 +426,54 @@ describe('requestDaemonOnce (real socket)', () => {
     const started = Date.now();
     expect(await requestDaemonOnce(path, { kind: 'telemetry-show' }, 100)).toBeNull();
     expect(Date.now() - started).toBeLessThan(2000);
+  });
+
+  describe('qq telemetry show against real sockets (quick 261030-tq3, bug-473)', () => {
+    const NO_ANSWER =
+      'the daemon did not answer (it may be outdated): nothing shown\n' +
+      'restart it: qq daemon --restart\n';
+
+    function realDeps(path: string): Harness {
+      return harness({
+        socketPath: path,
+        requestDaemon: (request) => requestDaemonOnce(path, request, 100),
+        socketConnectable: tryConnect,
+      });
+    }
+
+    it('reports a listener that accepts and never replies', async () => {
+      const path = await listen(() => {});
+      const h = realDeps(path);
+      await telemetryCommand('show', h.deps);
+      expect(h.stdout()).toBe(NO_ANSWER);
+    });
+
+    it('reports a bug-473 daemon that answers ping and ignores telemetry-show', async () => {
+      const received: string[] = [];
+      const path = await listen((socket, line) => {
+        received.push(line);
+        if (line.includes('"ping"')) {
+          socket.write(
+            `${JSON.stringify({
+              kind: 'pong',
+              fetchCandidates: true,
+              installedTools: true,
+              streamCandidates: true,
+              providerPin: true,
+            })}\n`,
+          );
+        }
+      });
+      const h = realDeps(path);
+      await telemetryCommand('show', h.deps);
+      expect(received).toContain('{"kind":"telemetry-show"}');
+      expect(h.stdout()).toBe(NO_ANSWER);
+    });
+
+    it('says not running when nothing listens on the path', async () => {
+      const h = realDeps(uniqueSocket());
+      await telemetryCommand('show', h.deps);
+      expect(h.stdout()).toBe('daemon not running: nothing buffered\n');
+    });
   });
 });
