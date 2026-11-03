@@ -1,6 +1,6 @@
 #!/bin/sh
 # Installs what QueQue needs on a fresh Linux distro image: git, zsh, jq, expect,
-# procps and Node 24 (plus pnpm unless --no-pnpm). Shared by the CI distro legs,
+# procps, su and Node 24 (plus pnpm unless --no-pnpm). Shared by the CI distro legs,
 # scripts/smoke-distro-runner.sh and local runs. POSIX sh, runs as root.
 #
 # Usage: sh scripts/ci/install-distro-deps.sh [--no-pnpm]
@@ -103,7 +103,8 @@ case "$DISTRO_ID" in
     install_node_tarball
     ;;
   fedora)
-    retry dnf -y install git-core zsh jq expect procps-ng shadow-utils nodejs24 nodejs24-npm ||
+    # util-linux provides su, which newer fedora:latest base images no longer ship.
+    retry dnf -y install git-core zsh jq expect procps-ng shadow-utils util-linux nodejs24 nodejs24-npm ||
       die 3 "dnf install failed"
     if ! command -v node >/dev/null 2>&1; then
       ln -sf "$(command -v node-24)" /usr/local/bin/node || die 3 "node-24 not found"
@@ -121,6 +122,8 @@ case "$DISTRO_ID" in
 esac
 
 command -v node >/dev/null 2>&1 || die 3 "node is not on PATH after the install"
+# smoke-distro-runner.sh runs everything as the smoke user through su.
+command -v su >/dev/null 2>&1 || die 3 "su is not on PATH after the install"
 
 if [ "$WITH_PNPM" -eq 1 ]; then
   [ -f package.json ] || die 3 "no package.json in $(pwd) to read the pnpm version from"
