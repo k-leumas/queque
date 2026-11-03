@@ -1,3 +1,14 @@
+## [0.9.1](https://github.com/k-leumas/queque/compare/v0.9.0...v0.9.1) (2026-11-03)
+
+### Bug Fixes
+
+<details>
+<summary>Detailed changes</summary>
+
+* **ci:** install su on fedora distro images ([b39865d](https://github.com/k-leumas/queque/commit/b39865d5683d040fe5251bff2e434ddcdfe4a392))
+
+</details>
+
 # [0.9.0](https://github.com/k-leumas/queque/compare/v0.8.2...v0.9.0) (2026-10-31)
 
 ### Features
