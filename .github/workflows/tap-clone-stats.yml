@@ -44,7 +44,7 @@ jobs:
   snapshot:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       # Switch the workspace itself to `stats`: a second actions/checkout with `ref: stats` fails
       # on the first run, before the branch exists. STATS_FILE therefore stays relative to the
