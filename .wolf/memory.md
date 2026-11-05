@@ -3753,3 +3753,4 @@
 | 13:47 | Created .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | — | ~8923 |
 | 13:48 | Edited .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | "$(/usr/local/bin/git log " → "$S" | ~194 |
 | 13:48 | planned quick 261105-ix8 (weekly tap clone stats, stats branch, publishing-run subtraction; offline harness) | .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | plan valid | ~9000 |
+| 13:53 | quick 261105-ix8: added weekly tap clone stats workflow (publishing-run subtraction, orphan stats branch) and offline harness; 6 cases ALL PASS, actionlint clean | .github/workflows/tap-clone-stats.yml, .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/verify-tap-clone-stats.sh | done | ~16000 |

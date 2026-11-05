@@ -1,0 +1,141 @@
+# Weekly snapshot of Homebrew tap clone traffic, with the clones made by our own publishing runs
+# subtracted. The traffic API keeps only 14 days, so a weekly run always overlaps the previous one
+# and never misses a day; re-fetched days overwrite their old entry.
+# Put this in the queque repo (not the tap), at .github/workflows/tap-clone-stats.yml,
+# so the job's own checkout doesn't add a clone to the tap's numbers.
+#
+# Each UTC day in stats/tap-clones.json holds {count, uniques, release_clones, adjusted_count,
+# adjusted_uniques}. release_clones counts the "Release to Homebrew tap" steps in release.yaml and
+# homebrew.yml that ran (success or failure, every attempt), keyed by the step's UTC start day.
+# adjusted_* is the raw value minus release_clones, clamped at 0. It is an upper bound on real
+# installs: brew update and other automated fetches still count as clones. Renaming that step in
+# either workflow requires updating the jq filter below.
+#
+# History lives on the orphan `stats` branch (its only file is stats/tap-clones.json), not on main:
+# main requires ci-ok, so a bot push there is rejected, and GITHUB_TOKEN pushes trigger no
+# workflows. Read it with:
+#   git fetch origin stats && git show origin/stats:stats/tap-clones.json
+#
+# Only the schedule and manual dispatch trigger it, so PR and fork code never runs with the token.
+#
+# Setup:
+#   1. Create a fine-grained PAT with access to the tap repo and the queque repo:
+#        - Administration: Read  (needed for the traffic API)
+#        - Actions: Read         (needed to list publishing runs and their jobs)
+#        - Metadata: Read
+#   2. Add it to the queque repo as the secret TRAFFIC_TOKEN.
+#   3. Edit TAP_REPO below if your tap repo has a different name.
+name: Tap clone stats
+
+on:
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC; weekly stays well inside the 14-day window
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  TAP_REPO: k-leumas/homebrew-tap
+  CI_REPO: ${{ github.repository }}
+  STATS_FILE: stats/tap-clones.json
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      # Switch the workspace itself to `stats`: a second actions/checkout with `ref: stats` fails
+      # on the first run, before the branch exists. STATS_FILE therefore stays relative to the
+      # workspace root. `git switch --orphan` removes main's tracked files and empties the index.
+      # ls-remote exit 2 means only "no such branch"; any other failure stops the job, so it never
+      # forks a second history.
+      - name: Check out the stats branch
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin stats >/dev/null; then
+            git fetch --depth=1 origin +refs/heads/stats:refs/remotes/origin/stats
+            git switch -c stats origin/stats
+          else
+            rc=$?
+            [ "$rc" -eq 2 ] || exit "$rc"
+            git switch --orphan stats
+          fi
+
+      - name: Fetch clone traffic and publishing runs
+        env:
+          GH_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$STATS_FILE")"
+          [ -f "$STATS_FILE" ] || echo '{}' > "$STATS_FILE"
+
+          gh api "repos/$TAP_REPO/traffic/clones?per=day" > /tmp/clones.json
+
+          since=$(jq -r '[.clones[].timestamp[:10]] | min // empty' /tmp/clones.json)
+          if [ -z "$since" ]; then
+            echo "No clone data returned"
+            exit 0
+          fi
+
+          # Publishing runs since the oldest day. %3E%3D is ">=", encoded so the query is valid.
+          for wf in release.yaml homebrew.yml; do
+            gh api --paginate \
+              "repos/$CI_REPO/actions/workflows/$wf/runs?created=%3E%3D$since&per_page=100" \
+              | jq -r '.workflow_runs[].id'
+          done > /tmp/publish-runs.txt
+
+          # Only "Release to Homebrew tap" clones the tap; count it when it ran (success or
+          # failure), on its UTC start day. filter=all includes every re-run attempt. File
+          # redirects (no pipe into `while`) keep set -e here, so a failed API call fails the
+          # step instead of recording a falsely low count.
+          while read -r id; do
+            gh api --paginate "repos/$CI_REPO/actions/runs/$id/jobs?filter=all&per_page=100" \
+              | jq -r '.jobs[].steps[]?
+                  | select(.name == "Release to Homebrew tap")
+                  | select(.conclusion == "success" or .conclusion == "failure")
+                  | .started_at[:10]'
+          done < /tmp/publish-runs.txt > /tmp/publish-days.txt
+
+          jq -R -s 'split("\n") | map(select(. != "")) | group_by(.)
+            | map({key: .[0], value: length}) | from_entries' \
+            /tmp/publish-days.txt > /tmp/publish.json
+
+          # Merge by day: re-fetched days overwrite, days that left the API window are kept.
+          jq --slurpfile pub /tmp/publish.json '
+            reduce (input.clones[]) as $d (.;
+              ($d.timestamp[:10]) as $day
+              | ($pub[0][$day] // 0) as $r
+              | .[$day] = {
+                  count: $d.count,
+                  uniques: $d.uniques,
+                  release_clones: $r,
+                  adjusted_count: ([$d.count - $r, 0] | max),
+                  adjusted_uniques: ([$d.uniques - $r, 0] | max)
+                })
+          ' "$STATS_FILE" /tmp/clones.json > /tmp/merged.json
+          mv /tmp/merged.json "$STATS_FILE"
+
+      - name: Write summary
+        run: |
+          jq -r '
+            [.[]] as $v
+            | "### Tap clone stats",
+              "",
+              "| | Days | Sum of daily clones | Sum of daily uniques |",
+              "|---|---|---|---|",
+              "| Raw | \($v | length) | \([$v[].count] | add // 0) | \([$v[].uniques] | add // 0) |",
+              "| Adjusted (publishing runs subtracted) | \($v | length) | \([$v[].adjusted_count] | add // 0) | \([$v[].adjusted_uniques] | add // 0) |",
+              "",
+              "Adjusted is an upper bound: other automated fetches (brew update, for example) may also count as clones."
+          ' "$STATS_FILE" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit snapshot
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$STATS_FILE"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: tap clone stats $(date -u +%F)"
+          git push origin stats
