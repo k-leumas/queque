@@ -7426,23 +7426,6 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-10-31T03:43:44Z"
-    },
-    {
-      "id": "bug-475",
-      "timestamp": "2026-11-05T13:53:00Z",
-      "error_message": "shellcheck SC2034 (warning): FAILED_CASE appears unused, in verify-tap-clone-stats.sh",
-      "file": ".planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/verify-tap-clone-stats.sh",
-      "root_cause": "A leftover variable from the first harness draft; failures exit through fail() with CURRENT_CASE, so FAILED_CASE was never read",
-      "fix": "Removed the unused assignment; shellcheck --shell=bash is clean and the harness still prints ALL PASS",
-      "tags": [
-        "shellcheck",
-        "harness",
-        "ci",
-        "tap-clone-stats"
-      ],
-      "related_bugs": [],
-      "occurrences": 1,
-      "last_seen": "2026-11-05T13:53:00Z"
     }
   ]
 }

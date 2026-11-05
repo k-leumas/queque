@@ -3743,18 +3743,3 @@
 | 21:45 | Created ../../../../tmp/claude-tq3-scratch/tq3-oneshot.mjs | — | ~176 |
 | 21:48 | merged 261030-tq3; rebuilt dist; live daemon replaced via build-id check (null -> 0.8.2+332b484), key present | src/daemon/bootstrap.ts et al | verified live | ~3k |
 | 21:48 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:34 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:36 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:37 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:38 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:42 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:43 | Session end: 76 writes across 41 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~130503 tok |
-| 13:44 | Created .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | — | ~6793 |
-| 13:47 | Created .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | — | ~8923 |
-| 13:48 | Edited .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | "$(/usr/local/bin/git log " → "$S" | ~194 |
-| 13:48 | planned quick 261105-ix8 (weekly tap clone stats, stats branch, publishing-run subtraction; offline harness) | .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/261105-ix8-PLAN.md | plan valid | ~9000 |
-| 13:53 | quick 261105-ix8: added weekly tap clone stats workflow (publishing-run subtraction, orphan stats branch) and offline harness; 6 cases ALL PASS, actionlint clean | .github/workflows/tap-clone-stats.yml, .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/verify-tap-clone-stats.sh | done | ~16000 |
-| 13:49 | Session end: 79 writes across 42 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 22 reads | ~147549 tok |
-| 13:53 | Created ../../../../tmp/ix8-mutation/mutate.sh | — | ~303 |
-| 13:56 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
-| 13:57 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |

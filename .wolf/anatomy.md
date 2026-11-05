@@ -297,7 +297,6 @@
 - `homebrew.yml` — CI: Update Homebrew Tap (~957 tok)
 - `nightly.yml` — `Nightly`: schedule `23 3 * * *` plus workflow_dispatch. Job distro reuses distro.yml with ubuntu/debian/fedora/archlinux/alpine `:latest`; job live (repo guard `k-leumas/queque`) runs `pnpm test:live` with the secret in step env. Read-only token, not a required check (10-08). (~498 tok)
 - `release.yaml` — CI: Release (~1842 tok)
-- `tap-clone-stats.yml` — `Tap clone stats`: schedule `17 6 * * 1` (Mondays 06:17 UTC) plus workflow_dispatch. Reads k-leumas/homebrew-tap per-day clone traffic and subtracts per UTC day the "Release to Homebrew tap" steps (release.yaml, homebrew.yml; success or failure, all attempts) as release_clones, clamped adjusted_count/adjusted_uniques; merges into stats/tap-clones.json on the orphan `stats` branch (ls-remote exit 2 then `git switch --orphan`; `git push origin stats`, never main). TRAFFIC_TOKEN (fine-grained PAT) as GH_TOKEN in the fetch step only; contents: write; summary rows Raw and Adjusted. Offline harness: .planning/quick/261105-ix8-*/verify-tap-clone-stats.sh (quick 261105-ix8). (~1630 tok)
 
 ## .gsd/
 

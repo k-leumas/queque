@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 10 complete, ready to plan Phase 7
-last_updated: "2026-11-05T19:56:29.805Z"
+last_updated: "2026-10-31T03:48:13.853Z"
 last_activity: 2026-10-30
 last_activity_desc: Phase 10 complete, transitioned to Phase 7
-state_head: 27e495e02191a5b903429b4c2a20898d81c71b1f
+state_head: 332b484984b3854777c77fa20e0e0c020dcdf18b
 progress:
   total_phases: 13
   completed_phases: 8
@@ -33,7 +33,7 @@ Phase: 7 — Context-Aware Learning and Ambient Suggestions
 Plan: Not started
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
 Status: Ready to plan
-Last activity: 2026-11-05 - Completed quick task 261105-ix8: weekly Homebrew tap clone stats workflow (stats branch, publishing runs subtracted)
+Last activity: 2026-10-30 - Completed quick task 261030-tq3: outdated daemons are replaced, qq daemon --restart, silent daemon reported accurately
 
 Progress: [███████░░░] 73%
 
@@ -181,7 +181,6 @@ None yet.
 | 261030-en8 | Add README badges for CI, Nightly, Release and the six tested Linux distros | 2026-10-30 | 9155f83 | [261030-en8-add-badges-to-the-readme-for-all-the-pas](./quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/) |
 | 261030-fdr | Minimal README for new users; detail moved to docs/INSTALL, PROVIDERS, USAGE, PRIVACY, CONFIGURATION | 2026-10-30 | c857dbe | [261030-fdr-reformat-the-readme-minimal-move-the-res](./quick/261030-fdr-reformat-the-readme-minimal-move-the-res/) |
 | 261030-tq3 | Replace a daemon from another qq build (build id in pong), add qq daemon --restart, report a silent daemon accurately | 2026-10-30 | 332b484 | [261030-tq3-restart-outdated-daemon-and-report-a-dae](./quick/261030-tq3-restart-outdated-daemon-and-report-a-dae/) |
-| 261105-ix8 | Weekly tap clone stats workflow: snapshots homebrew-tap clone traffic to the stats branch, minus publishing-run clones | 2026-11-05 | 27e495e | [261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo](./quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/) |
 
 ## Session Continuity
 
