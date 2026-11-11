@@ -1,5 +1,3 @@
-## [0.9.2](https://github.com/k-leumas/queque/compare/v0.9.1...v0.9.2) (2026-11-05)
-
 ## [0.9.1](https://github.com/k-leumas/queque/compare/v0.9.0...v0.9.1) (2026-11-03)
 
 ### Bug Fixes
