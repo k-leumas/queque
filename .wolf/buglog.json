@@ -7528,6 +7528,40 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-13T21:12:21.276Z"
+    },
+    {
+      "id": "bug-454",
+      "timestamp": "2026-11-13T21:17:50.633Z",
+      "error_message": "plan-checker blocker research_resolution: 11-RESEARCH.md '## Open Questions' lacks a (RESOLVED) suffix; questions 1-4 have no RESOLVED marker",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-RESEARCH.md",
+      "root_cause": "Planner settled the open questions inside the plans (11-01, 11-03, 11-07, 11-11) but never wrote the answers back into RESEARCH.md; plans also cited an 'open question 5' that RESEARCH did not list",
+      "fix": "Heading now '## Open Questions (RESOLVED)'; each of 5 items has a RESOLVED line naming the implementing plan/task; Pattern 4 'drop hash -r' bullet marked superseded",
+      "tags": [
+        "gsd",
+        "plan-checker",
+        "research-resolution",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-13T21:17:50.633Z"
+    },
+    {
+      "id": "bug-455",
+      "timestamp": "2026-11-13T21:18:04.454Z",
+      "error_message": "plan-checker warning context_compliance: 11-09 user_setup why cites D-16; CONTEXT.md defines only D-01..D-14",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-09-PLAN.md",
+      "root_cause": "Prior-phase decision IDs (Phase 10 D-16/D-17, a doctor.ts D-20 comment) were cited as bare D-NN tokens, which the checker reads as current-phase decisions",
+      "fix": "11-09 cites D-10/D-12 plus scripts/smoke-distro.sh:67-75; same pattern fixed in 11-01, 11-04, 11-08 (source location or 'Phase 10 decision N')",
+      "tags": [
+        "gsd",
+        "plan-checker",
+        "context-compliance",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-13T21:18:04.454Z"
     }
   ]
 }

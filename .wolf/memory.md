@@ -3832,3 +3832,15 @@
 | 15:11 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-11-PLAN.md | — | ~2871 |
 | 15:12 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VALIDATION.md | 20→22 lines | ~1064 |
 | 15:12 | Edited .planning/ROADMAP.md | expanded (+20 lines) | ~431 |
+| 15:14 | Session end: 23 writes across 20 files (11-DISCUSS-CHECKPOINT.json, project_target_audience.md, 11-CONTEXT.md, 11-DISCUSSION-LOG.md, 11-RESEARCH.md) | 8 reads | ~128659 tok |
+| 15:15 | Session end: 23 writes across 20 files (11-DISCUSS-CHECKPOINT.json, project_target_audience.md, 11-CONTEXT.md, 11-DISCUSSION-LOG.md, 11-RESEARCH.md) | 8 reads | ~128659 tok |
+| 15:17 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-RESEARCH.md | added nullish coalescing | ~974 |
+| 15:17 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-RESEARCH.md | inline fix | ~42 |
+| 15:17 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-RESEARCH.md | inline fix | ~35 |
+| 15:17 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-RESEARCH.md | inline fix | ~20 |
+| 15:18 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-09-PLAN.md | "The distro smoke and the " → "The distro smoke bash pas" | ~66 |
+| 15:18 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-01-PLAN.md | inline fix | ~43 |
+| 15:18 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-04-PLAN.md | inline fix | ~27 |
+| 15:18 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-08-PLAN.md | inline fix | ~28 |
+| 15:18 | Edited .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-01-PLAN.md | 3→5 lines | ~94 |
+| 15:18 | Phase 11 plan revision: RESEARCH Open Questions marked RESOLVED (5 items, plan pointers), out-of-range D-NN citations removed from 11-01/04/08/09, tracer rationale added to 11-01; tracer type kept (REVISION_CONFLICT) | 11-RESEARCH.md, 11-01/04/08/09-PLAN.md, cerebrum.md | plans validate | ~6000 |

@@ -315,7 +315,7 @@ The inventory is needed **before the fetch** (`withInstalledToolsChunk(await gat
   The writer body stays spike-safe: never chain on compgen's status, and a failed write removes all three files.
 - Client: `readToolHandoff(dir, { pendingBudgetMs })`. While `tools.pending` exists, poll every ~10 ms up to the budget (recommend 500 ms), then read. On timeout return `null` with debug reason `pending-timeout`. With no marker (zsh), read at once, so zsh behaviour and cost don't change. **Start** the promise where it is today, but **await** it right before `withInstalledToolsChunk`, so the scan overlaps with `ensureDaemon`, Ink setup and `gatherContext`. `readToolHandoff` never throws [VERIFIED: tool-handoff.ts:34-37], so an un-awaited start is safe.
 - Two-flag cleanup in the adapter (replaces a plain `rm -rf`): `: >"$tmpdir/closed"; [[ -e $tmpdir/tools.pending ]] || command rm -rf -- "$tmpdir"`. The writer removes the marker first and then checks `closed`. Neither side can skip removal: if the widget sees `pending`, the writer has not yet removed it, so the writer will later see `closed`. A double `rm -rf` is harmless.
-- **Drop `hash -r` from the bash writer** (D-05 lists it, but it is a no-op here). In the subshell it can't refresh the parent's table, and `compgen -c` lists a binary created after the shell started without it. On bash 3.2 `compgen -c | grep qqprobe` went 0 → 1 with no rehash [VERIFIED: local probe]. Re-verify on 5.x with a bash version of the zsh SC-1 test ("lists a tool created after the hash table was primed"). If the user wants `hash -r` kept literally, it is harmless in the subshell.
+- *Superseded by Open Questions 1 (RESOLVED): `hash -r` is kept per D-05.* **Drop `hash -r` from the bash writer** (D-05 lists it, but it is a no-op here). In the subshell it can't refresh the parent's table, and `compgen -c` lists a binary created after the shell started without it. On bash 3.2 `compgen -c | grep qqprobe` went 0 → 1 with no rehash [VERIFIED: local probe]. Re-verify on 5.x with a bash version of the zsh SC-1 test ("lists a tool created after the hash table was primed"). If the user wants `hash -r` kept literally, it is harmless in the subshell.
 - **Landmine re-verified:** `compgen -a` with no aliases exits 1 [VERIFIED: local probe bash 3.2]. Never use `&&` with it.
 
 **Job-control probe (this session, bash 3.2, real PTY via tmux):**
@@ -435,7 +435,7 @@ Claude Code runs inside the user's Zellij (`ZELLIJ_SESSION_NAME=tui`). **Avoid:*
 Fixture mode still calls `ensureDaemon` (pinned by `tests/client-result.test.ts:404-415`). The socket is fixed at `/tmp/qq-${uid}.sock` (socket-path.ts:10-12), and a different build id replaces the developer's running daemon. **Avoid:** set `QQ_DAEMON_PREWARMED=1` before sourcing, use a throwaway `HOME`, and accept that a local run swaps the dev daemon (the next `??` swaps it back). Don't add a socket-path override.
 
 ### Pitfall 10: The harness passing by skipping in CI
-**Avoid:** a `findShell()` helper that skips **locally** with a warning when bash ≥5 or tmux is missing, but **throws when `CI` is set**, mirroring D-16's smoke rule [VERIFIED: smoke-distro.sh:67-75]. Add tmux to `ci.yml:67-68` (`sudo apt-get install -y zsh jq`), to `release.yaml:29`, and to `install-distro-deps.sh` for all five families. Add `bash` explicitly for alpine (`apk add … bash tmux`, line 96).
+**Avoid:** a `findShell()` helper that skips **locally** with a warning when bash ≥5 or tmux is missing, but **throws when `CI` is set**, mirroring the Phase 10 smoke skip rule (Phase 10 decision 16) [VERIFIED: smoke-distro.sh:67-75]. Add tmux to `ci.yml:67-68` (`sudo apt-get install -y zsh jq`), to `release.yaml:29`, and to `install-distro-deps.sh` for all five families. Add `bash` explicitly for alpine (`apk add … bash tmux`, line 96).
 
 ### Pitfall 11: Expect smoke patterns are zsh-shaped
 `smoke-distro.exp` expects `command not found: tldr` (zsh wording; bash prints `tldr: command not found` [ASSUMED]), `print -r --` (zsh builtin), `QQSMOKE[%#]` prompt and the `[y/N]` consent text. **Avoid:** take the shell as a second argument with per-shell spawn, prompt regex (`QQSMOKE[%#$] `), not-found regex and restore command (`echo restored-$((6*7))` works in both). Add new exit codes (e.g. 37 for `qq init bash`). Keep `QQ_TELEMETRY=0` in the bash rc so the consent question never trips `(queque|QueQue): ` (cerebrum 2026-10-29/30).
@@ -523,18 +523,28 @@ The harness needs to put the client into fixture mode. The zsh widget has no hoo
 | A13 | 3.2 never parses 5.x syntax after the early `return` | Pattern 1 | Parse error on macOS `/bin/bash`. Falsify on `bash:3.2` |
 | A14 | `${PS1@P}` re-running command substitutions is acceptable | Pitfall 6 | Slow or duplicated prompt side effects (starship) |
 
-## Open Questions
+## Open Questions (RESOLVED)
+
+All five questions were settled during planning. Each entry names the plan and task that implement the answer.
 
 1. **Keep `hash -r` in the bash writer literally (D-05 wording) or drop it?**
    - Known: it is a no-op for `compgen -c` freshness on 3.2, and inside the subshell it can't touch the user's table.
    - Recommendation: drop it, note why in a comment, and keep a bash SC-1 freshness test. If the user prefers the literal wording, it is harmless in the subshell.
+   - **RESOLVED: kept, per locked D-05** (it names `hash -r`; the research recommendation to drop it is overridden). It runs first inside the detached writer subshell, where it is harmless, with a comment that compgen scans PATH itself. Freshness is proven by bash-widget test b12 (SC-1 mirror), not by that line. Implemented in **11-07 Task 1**.
 2. **Pending-marker budget.**
    - Known: the scan takes 80–88 ms, and under load (load avg 70+) timings balloon [VERIFIED: cerebrum 2026-10-17].
    - Recommendation: 500 ms, logged as `pending-timeout`. Make it a constant, not configuration.
+   - **RESOLVED: 500 ms, a named constant.** `TOOL_HANDOFF_PENDING_BUDGET_MS = 500` and `TOOL_HANDOFF_PENDING_POLL_MS = 10` in `src/client/tool-handoff.ts`; no config key or env var. The `pendingBudgetMs` option exists only so tests can shorten the wait. On timeout the client returns no inventory and logs debug reason `pending-timeout` (threat T-11-10). Implemented in **11-03 Task 1**.
 3. **macOS CI.**
    - Known: no workflow uses a macOS runner [VERIFIED: grep runs-on]. The darwin-specific logic (3.2 refusal in init, `bash_profile` warning) can be unit-tested with injected `platform: 'darwin'`.
    - Recommendation: no macOS runner this phase. Cover macOS by unit tests plus the Wave 4 human UAT on the developer's Mac with Homebrew bash.
+   - **RESOLVED: no macOS runner this phase.** Darwin logic is unit-tested with an injected platform: `InitDeps.platform` covers the init refusal copy, the `.bash_profile` hint and the unchanged `.bash_profile` in **11-04 Task 2**; the existing `DoctorDeps.platform` covers the darwin-only `bash_profile` row in **11-08 Task 1**. The developer confirms on macOS with Homebrew bash (inline and Zellij, live model) in the blocking human check, **11-11 Task 2**.
 4. **Optional FIFO O_RDWR hardening (Pitfall 8)**: is it in scope as parity-plus, or deferred for both shells? Recommendation: bash-only, behind the same `read -r -t 30`, flagged in the plan.
+   - **RESOLVED: in scope, bash only.** bash opens the FIFO read-write (`exec {fd}<>`) and keeps D-07's `read -r -t 30` (`QQ_RESULT_READ_TIMEOUT_S=30`), so the timeout also covers a pane that never starts. Test b20 proves this (dead pane), and it mitigates threat T-11-23. zsh is not changed this phase: the 11-07 SUMMARY records the read-write open as a zsh follow-up candidate. Implemented in **11-07 Task 2**.
+5. **How does the PTY harness put the client into fixture mode?** (raised under the "Shell-parameterized tmux driver" code example)
+   - Known: the zsh widget has no hook, `--result-mode` is only a CLI flag, and `parseResultMode(undefined)` is `'llm'`.
+   - Recommendation: one client-side hook reading `QQ_TEST_RESULT_MODE`, documented as dev-only in CONTRIBUTING.md.
+   - **RESOLVED: client-side hook, documented in CONTRIBUTING.md only.** `parseResultMode(options.resultMode ?? process.env.QQ_TEST_RESULT_MODE)`; the `--result-mode` flag wins. No adapter carries test code, and README never mentions the variable (threat T-11-07, accepted). Implemented in **11-01 Task 1** (`src/cli/commands/client.ts`) and **11-01 Task 3** (CONTRIBUTING.md).
 
 ## Environment Availability
 
@@ -545,7 +555,7 @@ The harness needs to put the client into fixture mode. The zsh widget has no hoo
 | jq | adapter | ✓ | 1.8.1 | — |
 | expect | distro smoke | ✓ | system | — |
 | zsh | zsh harness/parity | ✓ | 5.9 | — |
-| Docker daemon | `pnpm test:distro`, `pnpm smoke:distro` | ✗ (client present; daemon not running) | — | Skips locally with a warning (D-16), CI runs it. Starting Docker Desktop enables it |
+| Docker daemon | `pnpm test:distro`, `pnpm smoke:distro` | ✗ (client present; daemon not running) | — | Skips locally with a warning (Phase 10 skip rule, decision 16), CI runs it. Starting Docker Desktop enables it |
 | shellcheck / actionlint | lint adapter / workflows | ✓ | 0.11.0 / present | — |
 | node | everything | ✓ | v24.14.1 | — |
 | fish | Phase 12 only | ✗ | — | not needed |
