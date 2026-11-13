@@ -62,4 +62,4 @@ fix (user: "picked candidate landed in buffer").
 
 fish needed three fish-specific fixes zsh and bash didn't (newline before output, prompt-height
 padding, FIFO read) — all small, but it means fish can't share bash's adapter code, only the
-contract. fish 3.x not tested. Per-`?` feel not checked by hand.
+contract. fish 3.x not tested. By hand, user: "the first ? feels instantaneous".

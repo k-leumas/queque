@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T17:12:54.398Z
-> Files: 557 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T18:38:08.363Z
+> Files: 570 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -684,14 +684,51 @@
 - `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1696 tok)
 - `README.md` — Project documentation (~1195 tok)
 
+
+## .planning/spikes/004-bash-readline-trigger/
+- `README.md` — spike 004: bash `bind -x` ?? trigger, VALIDATED on 5.0+ (~1100 tok)
+- `spike.bash` — stub bash adapter: `?` binding, READLINE_LINE/POINT, 3.2 guard (~350 tok)
+- `run.exp` / `run-all.sh` — expect driver running trigger cases per bash binary (~600 tok)
+
+## .planning/spikes/005-bash-tui-handoff/
+- `README.md` — spike 005: bash → Ink picker handoff, inline + Zellij, VALIDATED (~900 tok)
+- `queque.bash` — full bash adapter port of qq-question-widget (handoff, FIFO, prompt-head reprint) (~1200 tok)
+- `drive.sh` — private-tmux driver: fixture / llm-pick / llm-esc / prompt-multiline (~550 tok)
+
+## .planning/spikes/006-fish-commandline-trigger/
+- `README.md` — spike 006: fish bind + commandline ?? trigger, VALIDATED on 4.x (~900 tok)
+- `spike.fish` — stub fish adapter (~300 tok)
+- `drive.sh` — private-tmux driver for fish trigger cases (~450 tok)
+
+## .planning/spikes/007-fish-tui-handoff/
+- `README.md` — spike 007: fish → Ink picker handoff, inline + Zellij, VALIDATED (~950 tok)
+- `queque.fish` — full fish adapter (PATH handoff, FIFO cat + timeout guard, repaint padding) (~1400 tok)
+- `drive.sh` — private-tmux driver for fish picker scenarios (~600 tok)
+## .planning/spikes/004-bash-readline-trigger/
+
+- `README.md` — Project documentation (~1191 tok)
+
+## .planning/spikes/005-bash-tui-handoff/
+
+- `README.md` — Project documentation (~911 tok)
+
+## .planning/spikes/006-fish-commandline-trigger/
+
+- `README.md` — Project documentation (~881 tok)
+
+## .planning/spikes/007-fish-tui-handoff/
+
+- `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1538 tok)
+- `README.md` — Project documentation (~820 tok)
+
 ## docs/
 
 - `config.example.json` — Example `~/.config/qq/config.json` incl. `"effort": "low"` (09.1-02). (~61 tok)
 - `CONFIGURATION.md` — Configuration reference, moved verbatim from the README (quick 261030-fdr): the `config.json` field table (`effort`, `privacy.*`, `safety.destructiveCommandPatterns`), links config.example.json, PROVIDERS.md#after-changing-your-key-or-settings and SYSTEM_DESIGN.md. (~700 tok)
 - `EXTENSIONS.md` — QueQue Extension Seams (~2376 tok)
 - `INSTALL.md` — Install (quick 261030-fdr): Homebrew, Install via npm with the old README Requirements bullets and npm block, Set up zsh with the `qq init zsh` do-not-redirect note. (~300 tok)
-- `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
 - `PRIVACY.md` — Privacy defaults, moved verbatim from the README (quick 261030-fdr): insertion-only, what leaves the machine per provider, what is never sent, debug logging, user config; plus a source-checked Anonymous telemetry section (consent prompt text, env overrides, the three allow-listed events, install id, PostHog Cloud EU batches dropped on failure, `qq telemetry status|on|off|show`). (~1700 tok)
+- `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
 - `RELEASING.md` — Release Process (~1426 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
 - `SYSTEM_DESIGN.md` — System Design; the IPC paragraph covers the streaming reply sequence (`candidate` rows, `candidates` done signal), the three pong flags, abort on socket close and D-16 (09.1-03). Source links are `../`-relative (quick 261030-fdr). (~2900 tok)

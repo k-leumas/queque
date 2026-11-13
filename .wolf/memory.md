@@ -3758,3 +3758,26 @@
 | 13:53 | Created ../../../../tmp/ix8-mutation/mutate.sh | — | ~303 |
 | 13:56 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
 | 13:57 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
+| 14:05 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
+| 14:09 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
+| 14:14 | PR #20 opened; push-run smoke ubuntu:24.04 flake (exit 12) re-run; closed auto-revert PR #21 | github | done | ~1k |
+| 14:14 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
+| 14:21 | Session end: 87 writes across 46 files (10-REVIEW.md, docker-homebrew-smoke-runner.sh, 10-VERIFICATION.md, 261030-en8-PLAN.md, readme-badges.test.ts) | 23 reads | ~157493 tok |
+
+## Session: 2026-11-13 08:51
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 11:25 | Created .planning/spikes/004-bash-readline-trigger/README.md | — | ~1270 |
+| 11:35 | Created .planning/spikes/006-fish-commandline-trigger/README.md | — | ~939 |
+| 11:39 | Session end: 2 writes across 1 files (README.md) | 1 reads | ~7986 tok |
+| 11:54 | Session end: 2 writes across 1 files (README.md) | 1 reads | ~7986 tok |
+| 12:21 | Session end: 2 writes across 1 files (README.md) | 1 reads | ~7986 tok |
+| 12:26 | Session end: 2 writes across 1 files (README.md) | 1 reads | ~7986 tok |
+| 12:30 | Edited .planning/spikes/007-fish-tui-handoff/queque.fish | expanded (+10 lines) | ~184 |
+| 12:32 | Session end: 3 writes across 2 files (README.md, queque.fish) | 1 reads | ~8184 tok |
+| 12:34 | Session end: 3 writes across 2 files (README.md, queque.fish) | 1 reads | ~8184 tok |
+| 12:37 | Created .planning/spikes/005-bash-tui-handoff/README.md | — | ~965 |
+| 12:37 | Created .planning/spikes/007-fish-tui-handoff/README.md | — | ~870 |
+| 12:38 | Edited .planning/spikes/005-bash-tui-handoff/README.md | 2→2 lines | ~36 |
+| 12:38 | Edited .planning/spikes/007-fish-tui-handoff/README.md | "?" → "the first ? feels instant" | ~22 |

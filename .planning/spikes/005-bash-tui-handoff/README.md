@@ -63,5 +63,5 @@ candidate from the floating pane; it landed in the buffer).
 80–88 ms over 5 runs (27 PATH dirs), vs 8.8 ms for zsh's `rehash; ${(k)commands}`. Options for
 the build: run it in the background while Node starts, or let the client scan PATH itself.
 
-Not checked by hand: whether the per-`?` line redraw (readline redraws after every `bind -x`)
-is perceptible.
+By hand, the per-`?` line redraw (readline redraws after every `bind -x`) is not perceptible —
+user: "the first ? feels instantaneous".
