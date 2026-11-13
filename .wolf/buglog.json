@@ -7480,6 +7480,54 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-13T12:40:00Z"
+    },
+    {
+      "id": "bug-451",
+      "timestamp": "2026-11-13T20:57:15.037Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-02-PLAN.md",
+      "root_cause": "Had `grep -cF \"",
+      "fix": "Changed to `git diff --stat HEAD~2 -- src/providers/steering.",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-13T20:57:22.795Z"
+    },
+    {
+      "id": "bug-452",
+      "timestamp": "2026-11-13T21:12:11.299Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VALIDATION.md",
+      "root_cause": "20 lines replaced/restructured",
+      "fix": "Rewrote 20→22 lines (20 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-13T21:12:11.299Z"
+    },
+    {
+      "id": "bug-453",
+      "timestamp": "2026-11-13T21:12:21.276Z",
+      "error_message": "Function not marked async",
+      "file": ".planning/ROADMAP.md",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-13T21:12:21.276Z"
     }
   ]
 }

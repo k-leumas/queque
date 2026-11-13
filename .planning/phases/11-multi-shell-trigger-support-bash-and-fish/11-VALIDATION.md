@@ -41,26 +41,28 @@ created: "2026-11-13"
 
 Task IDs are filled in by the planner. Requirement and decision rows come from research:
 
-| Req / Decision | Behavior | Test Type | Automated Command | File Exists | Status |
-|----------------|----------|-----------|-------------------|-------------|--------|
-| BASH-01 / D-01 | First `?` inserts, second fires; mid-line, multibyte, vi-insert | PTY | `pnpm exec vitest run tests/shell-pty.test.ts -t bash` | ❌ W0 | ⬜ pending |
-| BASH-01 / D-13 | Replace-buffer round trip; cancel restores; history has the query | PTY + unit | `pnpm exec vitest run tests/shell-pty.test.ts tests/bash-widget.test.ts` | ❌ W0 | ⬜ pending |
-| BASH-01 | Pasted `??` does not fire | PTY | `pnpm exec vitest run tests/shell-pty.test.ts -t paste` | ❌ W0 | ⬜ pending |
-| BASH-01 | Multi-line PS1 head reprinted | PTY | `pnpm exec vitest run tests/shell-pty.test.ts -t prompt-multiline` | ❌ W0 | ⬜ pending |
-| D-02 | Request `shell` defaults to zsh; enum accepts bash/fish; old JSON parses | unit | `pnpm exec vitest run tests/shell-contract.test.ts` | ✅ extend | ⬜ pending |
-| D-02 | Lexer dialect (bash vs zsh reserved words) | unit | `pnpm exec vitest run tests/command-words.test.ts` | ✅ extend | ⬜ pending |
-| D-02 / D-05 | Pending marker waits, reads, times out to null; zsh unchanged | unit | `pnpm exec vitest run tests/tool-handoff.test.ts` | ✅ extend | ⬜ pending |
-| D-04 | zsh and bash frame bytes == TS oracle over fixtures (incl. ESC/CSI) | unit | `pnpm exec vitest run tests/instant-frame-parity.test.ts` | ❌ W0 | ⬜ pending |
-| D-05 | bash handoff files, marker removed, no job notices, compgen landmine | unit + PTY | `pnpm exec vitest run tests/bash-widget.test.ts -t handoff` | ❌ W0 | ⬜ pending |
-| D-06 | `buildPrompt` carries `shellName: bash` + syntax sentence | unit | `pnpm exec vitest run tests/claude-provider.test.ts` | ✅ extend | ⬜ pending |
-| D-07 | Zellij path: faked `zellij` gets pane argv; FIFO result applied | unit | `pnpm exec vitest run tests/bash-widget.test.ts -t zellij` | ❌ W0 | ⬜ pending |
-| D-08 / D-14 | init detection, `~/.bashrc` write, idempotent; darwin 3.2 refusal | unit | `pnpm exec vitest run tests/init-command.test.ts` | ✅ extend | ⬜ pending |
-| D-09 / D-12 | doctor bash_profile warn/ok; fails <5.0 | unit | `pnpm exec vitest run tests/doctor.test.ts` | ✅ extend | ⬜ pending |
-| D-10 | Harness runs zsh + bash in PR CI; distro bash smoke | CI | `ci.yml` checks job; `pnpm smoke:distro debian:13` | ❌ W0 | ⬜ pending |
-| D-11 | Telemetry `shell`/`shell_version` strict; version shaping | unit | `pnpm exec vitest run tests/telemetry-contract.test.ts tests/environment-shape.test.ts` | ✅ extend | ⬜ pending |
-| D-12 | Refusal on bash 3.2/4.4: one line, `?` literal, rc 0 | docker matrix | `docker run --rm -v "$PWD:/w:ro" bash:4.4 bash -ic 'source /w/shell/bash/queque.bash'` | ❌ W0 (CI job) | ⬜ pending |
-| D-03 | Docs updated | grep | `grep -n "BASH-01 \| Phase 11" .planning/REQUIREMENTS.md` | ✅ | ⬜ pending |
-| Pitfall | Non-interactive source prints nothing | unit | `pnpm exec vitest run tests/bash-widget.test.ts -t non-interactive` | ❌ W0 | ⬜ pending |
+| Req / Decision | Plan / Task | Behavior | Test Type | Automated Command | File Exists | Status |
+|----------------|-------------|----------|-----------|-------------------|-------------|--------|
+| BASH-01 / D-01 | 11-01 T1, T2 | First `?` inserts, second fires; mid-line, multibyte, vi-insert | PTY | `CI=true pnpm exec vitest run tests/shell-pty.test.ts -t bash` | ❌ W0 (11-01 T1) | ⬜ pending |
+| BASH-01 / D-13 | 11-01 T1, T2 | Replace-buffer round trip; cancel restores; history has the query | PTY + unit | `CI=true pnpm exec vitest run tests/shell-pty.test.ts tests/bash-widget.test.ts` | ❌ W0 (11-01) | ⬜ pending |
+| BASH-01 | 11-01 T2 | Pasted `??` does not fire | PTY | `CI=true pnpm exec vitest run tests/shell-pty.test.ts -t paste` | ❌ W0 (11-01 T2) | ⬜ pending |
+| BASH-01 | 11-01 T2 | Multi-line PS1 head reprinted | PTY | `CI=true pnpm exec vitest run tests/shell-pty.test.ts -t prompt-multiline` | ❌ W0 (11-01 T2) | ⬜ pending |
+| D-02 | 11-01 T1, 11-02 T1 | Request `shell` defaults to zsh; enum accepts bash/fish; old JSON parses | unit | `pnpm exec vitest run tests/shell-contract.test.ts` | ✅ extend | ⬜ pending |
+| D-02 | 11-03 T2 | Lexer dialect (bash vs zsh reserved words) | unit | `pnpm exec vitest run tests/command-words.test.ts` | ✅ extend | ⬜ pending |
+| D-02 / D-05 | 11-03 T1 | Pending marker waits, reads, times out to null; zsh unchanged | unit | `pnpm exec vitest run tests/tool-handoff.test.ts` | ✅ extend | ⬜ pending |
+| D-02 | 11-10 T2 | Every SHELL_NAMES entry round-trips through request, registry, telemetry, doctor ids | unit | `pnpm exec vitest run tests/shell-names-invariant.test.ts` | ❌ (11-10 T2) | ⬜ pending |
+| D-04 | 11-06 T1, T2 | zsh and bash frame bytes == TS oracle over fixtures (incl. ESC/CSI) | unit | `CI=true pnpm exec vitest run tests/instant-frame-parity.test.ts` | ❌ (11-06 T1) | ⬜ pending |
+| D-05 | 11-07 T1 | bash handoff files, marker removed, no job notices, compgen landmine | unit + PTY | `CI=true pnpm exec vitest run tests/bash-widget.test.ts tests/shell-pty.test.ts -t handoff` | ❌ (11-07 T1) | ⬜ pending |
+| D-06 | 11-02 T2 | `buildPrompt` carries `shellName: bash` + syntax sentence | unit | `pnpm exec vitest run tests/claude-provider.test.ts` | ✅ extend | ⬜ pending |
+| D-07 | 11-07 T2 | Zellij path: faked `zellij` gets pane argv; FIFO result applied; dead pane times out | unit | `CI=true pnpm exec vitest run tests/bash-widget.test.ts -t b1[89]` / `-t b20` | ❌ (11-07 T2) | ⬜ pending |
+| D-08 / D-14 | 11-04 T1, T2 | init detection, `~/.bashrc` write, idempotent; darwin 3.2 refusal | unit | `pnpm exec vitest run tests/init-command.test.ts tests/shell-registry.test.ts` | ✅ extend | ⬜ pending |
+| D-09 / D-12 | 11-08 T1, T2 | doctor bash_profile warn/ok; fails below 5.0; `--shell` | unit | `pnpm exec vitest run tests/doctor.test.ts` | ✅ extend | ⬜ pending |
+| D-10 | 11-01 T3, 11-09 T1 | Harness runs zsh + bash in PR CI; distro bash smoke | CI | `ci.yml` checks job; `CI=true pnpm smoke:distro debian:13` | ❌ W0 (11-01 T3) | ⬜ pending |
+| D-11 | 11-05 T1, T2 | Telemetry `shell`/`shell_version` strict; version shaping | unit | `pnpm exec vitest run tests/telemetry-contract.test.ts tests/environment-shape.test.ts tests/telemetry-events.test.ts` | ✅ extend | ⬜ pending |
+| D-12 | 11-09 T2 | Refusal on bash 3.2/4.4: one line, `?` literal, rc 0; 5.0 accepts | docker matrix | `docker run --rm -e QQ_DAEMON_PREWARMED=1 -v "$PWD:/w:ro" bash:4.4 sh /w/scripts/ci/bash-version-check.sh refuse` | ❌ (11-09 T2, CI job `bash-versions`) | ⬜ pending |
+| D-03 | 11-10 T2 | Docs updated (already applied; verified) | grep | `grep -cF "\| BASH-01 \| Phase 11 \|" .planning/REQUIREMENTS.md` | ✅ | ⬜ pending |
+| Pitfall | 11-01 T2 (b1) | Non-interactive source prints nothing | unit | `pnpm exec vitest run tests/bash-widget.test.ts -t b1` | ❌ W0 (11-01 T2) | ⬜ pending |
+| BASH-01 (macOS) | 11-11 T2 | Homebrew bash UAT, inline + Zellij, live model; green CI | manual | see Manual-Only Verifications | n/a | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 

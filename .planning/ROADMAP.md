@@ -404,10 +404,30 @@ Plans:
 **Goal:** Ship the literal `??` trigger and picker handoff in bash ≥5.0 (`bind -x`) with zsh parity (instant frame, tool awareness, inline + Zellij), and make every shared seam (request contract, tool handoff, lexer, `qq init`/`qq doctor`, telemetry, PTY harness) shell-aware for zsh/bash/fish so Phase 12 is adapter-only. Per spikes 004–005 in the `spike-findings-tui-llm` skill.
 **Requirements**: BASH-01
 **Depends on:** Phase 10
-**Plans:** 0 plans
+**Plans:** 11 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 11 to break down)
+
+**Wave 1**
+- [ ] 11-01-PLAN.md — Tracer: bash `??` → fixture client → buffer replaced, proven in a zsh+bash tmux PTY harness; edge cases; CI deps (wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+- [ ] 11-02-PLAN.md — Shell identity reaches the base context and prompt (bash syntax for bash, D-06); zsh widget declares `shell` (wave 2)
+- [ ] 11-03-PLAN.md — Client tool handoff: `tools.pending` wait (500 ms), start-early/await-late, shell-aware lexer (wave 2)
+- [ ] 11-04-PLAN.md — Shell registry and `qq init [shell]`: detection, `~/.bashrc`, bash 5.0 gate, macOS hint (wave 2)
+- [ ] 11-06-PLAN.md — Instant frame: TS reference, cross-shell byte-parity test, bash painter (wave 2)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+- [ ] 11-05-PLAN.md — Telemetry `shell` / `shell_version` allow-listed fields (wave 3)
+- [ ] 11-07-PLAN.md — bash async compgen handoff, two-flag cleanup, prewarm, hostile-env hardening, Zellij path (wave 3)
+- [ ] 11-08-PLAN.md — `qq doctor` per shell: bash version floor, bindings, bracketed paste, `bash_profile`, `--shell` (wave 3)
+
+**Wave 4** *(blocked on Wave 3 completion)*
+- [ ] 11-09-PLAN.md — Distro smoke bash pass, `bash-versions` CI job (3.2/4.4 refuse, 5.0 accept), Homebrew bash adapter (wave 4)
+- [ ] 11-10-PLAN.md — Shell-neutral docs, undo guidance, `shell/README.md` adapter contract, SHELL_NAMES invariant test (wave 4)
+
+**Wave 5** *(blocked on Wave 4 completion)*
+- [ ] 11-11-PLAN.md — Phase gate with bash 5, OpenWolf records, human UAT on macOS Homebrew bash and green CI (wave 5)
 
 ### Phase 12: fish trigger support
 

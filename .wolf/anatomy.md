@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T20:36:27.157Z
-> Files: 591 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T21:12:21.253Z
+> Files: 603 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -20,6 +20,10 @@
 - `p91-raw.mjs` — Phase 09.1 research probe: spawn /usr/local/bin/claude with arbitrary args, optionally write a (~747 tok)
 - `p91-sum.mjs` — Summarize p91-raw dumps: stage times relative to spawn (cold) or stdin write (warm). (~640 tok)
 - `prespawn-probe.mjs` — Measures a PRE-SPAWNED `claude -p` (what a daemon-side warm process would look like): (~907 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/
+
+- `fill.py` (~115 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/
 
@@ -315,7 +319,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~7270 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~7974 tok)
 - `STATE.md` — Project State (~3580 tok)
 
 ## .planning/debug/
@@ -523,12 +527,23 @@
 
 ## .planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 
+- `11-01-PLAN.md` — Artifacts this phase produces (~10394 tok)
+- `11-02-PLAN.md` — Artifacts this phase produces (~5107 tok)
+- `11-03-PLAN.md` — Declares TOOL_HANDOFF_PENDING_BUDGET_MS (~4387 tok)
+- `11-04-PLAN.md` — Declares ShellSpec (~5278 tok)
+- `11-05-PLAN.md` — Declares and (~3483 tok)
+- `11-06-PLAN.md` — Declares inlineInstantFrameBytes (~4753 tok)
+- `11-07-PLAN.md` — Declares does (~4995 tok)
+- `11-08-PLAN.md` — BASH_BINDINGS_SCRIPT: fails (~4378 tok)
+- `11-09-PLAN.md` (~4565 tok)
+- `11-10-PLAN.md` — Declares entries (~3583 tok)
+- `11-11-PLAN.md` — Trust Boundaries (~2691 tok)
 - `11-CONTEXT.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Context (~2667 tok)
 - `11-DISCUSS-CHECKPOINT.json` (~443 tok)
 - `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
 - `11-PATTERNS.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Pattern Map (~4891 tok)
 - `11-RESEARCH.md` — Phase 11 research: verbatim inventory of 18 zsh hardcodes (request/base-context/doctor/telemetry/init/main/registry/lexer/handoff/Homebrew formula/docs) and their shell-aware shapes; instant-frame TS oracle + cross-shell byte-parity test (D-04); tools.pending marker + detached `( … & )` writer + two-flag cleanup (D-05); per-shell init/doctor registry; telemetry shell/shell_version; tmux harness via vitest + bash smoke pass + bash:<tag> matrix; 13 pitfalls; Nyquist map (~17181 tok)
-- `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1568 tok)
+- `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1816 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
