@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T20:04:20.981Z
-> Files: 588 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T20:33:12.666Z
+> Files: 589 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -526,6 +526,7 @@
 - `11-CONTEXT.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Context (~2667 tok)
 - `11-DISCUSS-CHECKPOINT.json` (~443 tok)
 - `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
+- `11-RESEARCH.md` — Phase 11 research: verbatim inventory of 18 zsh hardcodes (request/base-context/doctor/telemetry/init/main/registry/lexer/handoff/Homebrew formula/docs) and their shell-aware shapes; instant-frame TS oracle + cross-shell byte-parity test (D-04); tools.pending marker + detached `( … & )` writer + two-flag cleanup (D-05); per-shell init/doctor registry; telemetry shell/shell_version; tmux harness via vitest + bash smoke pass + bash:<tag> matrix; 13 pitfalls; Nyquist map (~17181 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
