@@ -3812,3 +3812,6 @@
 | 14:22 | Session end: 4 writes across 4 files (11-DISCUSS-CHECKPOINT.json, project_target_audience.md, 11-CONTEXT.md, 11-DISCUSSION-LOG.md) | 2 reads | ~10356 tok |
 | 14:33 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-RESEARCH.md | — | ~18327 |
 | 14:33 | Phase 11 research: wrote 11-RESEARCH.md (seam inventory, frame parity, pending marker, registry, harness); cerebrum +3 learnings | 11-RESEARCH.md, .wolf/anatomy.md, .wolf/cerebrum.md | done | ~60000 |
+| 14:34 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VALIDATION.md | — | ~1672 |
+| 14:35 | Session end: 6 writes across 6 files (11-DISCUSS-CHECKPOINT.json, project_target_audience.md, 11-CONTEXT.md, 11-DISCUSSION-LOG.md, 11-RESEARCH.md) | 4 reads | ~51632 tok |
+| 14:36 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-PATTERNS.md | — | ~5217 |
