@@ -32,6 +32,12 @@ and whether fish comes back onto the roadmap.
   two-key `??` sequence binding (it delays every lone `?` by `keyseq-timeout`).
 - bash 3.2 (macOS `/bin/bash`) must be refused with one clear line, leaving `?` untouched.
 - A pasted `??` must not open the picker.
+- bash support targets 5.0+ (`READLINE_POINT` counts characters from 5.0; bytes in 4.x).
+- The unchanged `qq client` is the picker for every shell; only the buffer read/write and the
+  result read differ per shell. A result read must time out (30 s) so a dead pane can't hang
+  the shell — in fish that needs a guard, because `read -t` there means `--tokenize`.
+- After the picker, every line of a multi-line prompt must be redrawn (bash: `${PS1@P}` head;
+  fish: pad by prompt height).
 
 ## Spikes
 
@@ -42,3 +48,5 @@ and whether fish comes back onto the roadmap.
 | 003 | installed-only-commands | prompt-steering | comparison | Given real ?? queries, when the prompt carries nothing / installed∩catalog / full list / full list cached, then compare missing-tool rate, steering, tokens, latency | PARTIAL | prompt, steering, tokens, prompt-caching |
 | 004 | multi-shell-trigger | bash-readline-trigger | standard | Given interactive bash in a pty, when the user types `foo??` (emacs/vi-insert, multibyte, mid-line, pasted), then the trigger fires correctly and writes back to READLINE_LINE | VALIDATED (bash ≥5.0; 4.x untested) | bash, readline, bind-x, multibyte, bracketed-paste |
 | 006 | multi-shell-trigger | fish-commandline-trigger | standard | Given interactive fish 4.x, when the user types `foo??` (default/vi insert, multibyte, multi-line, pasted), then bind + commandline fire and write back correctly | VALIDATED (fish 4.9; 3.x untested) | fish, commandline, bind, multibyte, paste |
+| 005 | multi-shell-trigger | bash-tui-handoff | standard | Given the trigger fires in bind -x, when the real qq Ink picker runs (inline + Zellij), then keys reach it, the pick lands in READLINE_LINE, Esc restores, the prompt redraws | VALIDATED (bash 5.3, Zellij by hand) | bash, bind-x, ink, tty, zellij, fifo, tool-handoff |
+| 007 | multi-shell-trigger | fish-tui-handoff | standard | Given the fish binding fires, when the Ink picker runs (inline + Zellij), then the pick lands via commandline, Esc restores, repaint is clean | VALIDATED (fish 4.9, Zellij by hand after FIFO fix) | fish, ink, tty, zellij, fifo, repaint |
