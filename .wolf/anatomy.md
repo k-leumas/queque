@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T18:38:08.363Z
-> Files: 570 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T18:47:06.280Z
+> Files: 583 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -277,8 +277,12 @@
 - `SKILL.md` — Spike findings blueprint index: installed-only-commands requirements + feature areas (~600 tok)
 
 ## .claude/skills/spike-findings-tui-llm/references/
+- `bash-integration.md` — blueprint: bash ≥5.0 ?? adapter (bind -x, READLINE_*, compgen handoff, Zellij FIFO, PS1 head) (~1300 tok)
+- `fish-integration.md` — blueprint: fish 4.x ?? adapter (bind/commandline, string collect, cat+guard FIFO read, repaint padding) (~1300 tok)
 
+- `bash-integration.md` — bash integration (`??` in bash ≥5.0) (~1173 tok)
 - `candidate-command-check.md` — Candidate Command Check (flag suggestions that use missing tools) (~1016 tok)
+- `fish-integration.md` — fish integration (`??` in fish 4.x) (~1142 tok)
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
@@ -684,41 +688,32 @@
 - `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1696 tok)
 - `README.md` — Project documentation (~1195 tok)
 
-
 ## .planning/spikes/004-bash-readline-trigger/
+
 - `README.md` — spike 004: bash `bind -x` ?? trigger, VALIDATED on 5.0+ (~1100 tok)
-- `spike.bash` — stub bash adapter: `?` binding, READLINE_LINE/POINT, 3.2 guard (~350 tok)
-- `run.exp` / `run-all.sh` — expect driver running trigger cases per bash binary (~600 tok)
-
-## .planning/spikes/005-bash-tui-handoff/
-- `README.md` — spike 005: bash → Ink picker handoff, inline + Zellij, VALIDATED (~900 tok)
-- `queque.bash` — full bash adapter port of qq-question-widget (handoff, FIFO, prompt-head reprint) (~1200 tok)
-- `drive.sh` — private-tmux driver: fixture / llm-pick / llm-esc / prompt-multiline (~550 tok)
-
-## .planning/spikes/006-fish-commandline-trigger/
-- `README.md` — spike 006: fish bind + commandline ?? trigger, VALIDATED on 4.x (~900 tok)
-- `spike.fish` — stub fish adapter (~300 tok)
-- `drive.sh` — private-tmux driver for fish trigger cases (~450 tok)
-
-## .planning/spikes/007-fish-tui-handoff/
-- `README.md` — spike 007: fish → Ink picker handoff, inline + Zellij, VALIDATED (~950 tok)
-- `queque.fish` — full fish adapter (PATH handoff, FIFO cat + timeout guard, repaint padding) (~1400 tok)
-- `drive.sh` — private-tmux driver for fish picker scenarios (~600 tok)
-## .planning/spikes/004-bash-readline-trigger/
-
 - `README.md` — Project documentation (~1191 tok)
+- `spike.bash` — stub bash adapter: `?` binding, READLINE_LINE/POINT, 3.2 guard (~350 tok)
 
 ## .planning/spikes/005-bash-tui-handoff/
 
+- `drive.sh` — private-tmux driver: fixture / llm-pick / llm-esc / prompt-multiline (~550 tok)
+- `queque.bash` — full bash adapter port of qq-question-widget (handoff, FIFO, prompt-head reprint) (~1200 tok)
+- `README.md` — spike 005: bash → Ink picker handoff, inline + Zellij, VALIDATED (~900 tok)
 - `README.md` — Project documentation (~911 tok)
 
 ## .planning/spikes/006-fish-commandline-trigger/
 
+- `drive.sh` — private-tmux driver for fish trigger cases (~450 tok)
+- `README.md` — spike 006: fish bind + commandline ?? trigger, VALIDATED on 4.x (~900 tok)
 - `README.md` — Project documentation (~881 tok)
+- `spike.fish` — stub fish adapter (~300 tok)
 
 ## .planning/spikes/007-fish-tui-handoff/
 
+- `drive.sh` — private-tmux driver for fish picker scenarios (~600 tok)
+- `queque.fish` — full fish adapter (PATH handoff, FIFO cat + timeout guard, repaint padding) (~1400 tok)
 - `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1538 tok)
+- `README.md` — spike 007: fish → Ink picker handoff, inline + Zellij, VALIDATED (~950 tok)
 - `README.md` — Project documentation (~820 tok)
 
 ## docs/

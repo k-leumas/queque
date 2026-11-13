@@ -3781,3 +3781,6 @@
 | 12:37 | Created .planning/spikes/007-fish-tui-handoff/README.md | — | ~870 |
 | 12:38 | Edited .planning/spikes/005-bash-tui-handoff/README.md | 2→2 lines | ~36 |
 | 12:38 | Edited .planning/spikes/007-fish-tui-handoff/README.md | "?" → "the first ? feels instant" | ~22 |
+| 12:39 | Session end: 7 writes across 2 files (README.md, queque.fish) | 1 reads | ~10212 tok |
+| 12:47 | Created .claude/skills/spike-findings-tui-llm/references/bash-integration.md | — | ~1251 |
+| 12:47 | Created .claude/skills/spike-findings-tui-llm/references/fish-integration.md | — | ~1218 |

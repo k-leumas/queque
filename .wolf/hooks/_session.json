@@ -50,6 +50,18 @@
       "action": "edit",
       "tokens": 23,
       "at": "2026-11-13T18:38:08.384Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/references/bash-integration.md",
+      "action": "create",
+      "tokens": 1340,
+      "at": "2026-11-13T18:47:05.732Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/skills/spike-findings-tui-llm/references/fish-integration.md",
+      "action": "create",
+      "tokens": 1305,
+      "at": "2026-11-13T18:47:06.296Z"
     }
   ],
   "edit_counts": {
@@ -57,11 +69,13 @@
     ".planning/spikes/006-fish-commandline-trigger/README.md": 1,
     ".planning/spikes/007-fish-tui-handoff/queque.fish": 1,
     ".planning/spikes/005-bash-tui-handoff/README.md": 2,
-    ".planning/spikes/007-fish-tui-handoff/README.md": 2
+    ".planning/spikes/007-fish-tui-handoff/README.md": 2,
+    ".claude/skills/spike-findings-tui-llm/references/bash-integration.md": 1,
+    ".claude/skills/spike-findings-tui-llm/references/fish-integration.md": 1
   },
   "anatomy_hits": 1,
   "anatomy_misses": 0,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,
-  "stop_count": 8
+  "stop_count": 9
 }
