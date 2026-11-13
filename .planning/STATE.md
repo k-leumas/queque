@@ -89,6 +89,8 @@ Progress: [███████░░░] 73%
 - Phase 8 scope expanded (2026-07-31): 08-01 must fix macOS Keychain detection gap — prototype `detectProvider()` only checks credentials file, missing `/login` sessions on darwin.
 - Phase 09.1 inserted after Phase 9: Provider Latency and Cancellation: effort low, stream-json, early first candidate, prewarmed claude -p, Esc aborts the model call (from debug llm-response-latency-profile) (URGENT)
 - Phase 10 added (2026-10-28): Linux distro CI harness and anonymous telemetry — PR CI + distro container matrix, smoke-distro.sh PTY smoke, filtered pre-push smoke, `qq doctor`, opt-in allow-listed PostHog telemetry.
+- Phase 11 added (2026-11-13): Multi-shell trigger support (bash and fish) — port `??` trigger + ink picker handoff to bash ≥5.0 (`bind -x`) and fish 4.x, from spikes 005–007.
+- Phase 11 rescoped (2026-11-13): bash ships, every shared seam becomes shell-aware; Phase 12 added: fish trigger support (adapter-only on Phase 11 seams).
 
 ### Decisions
 

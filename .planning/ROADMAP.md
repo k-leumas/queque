@@ -398,3 +398,23 @@ Plans:
 
 **Wave 6** *(blocked on Wave 5 completion)*
 - [x] 10-13-PLAN.md — Human gates: PostHog EU project, decision to bake the key (one-way), $ip/GeoIP absence check (wave 6)
+
+### Phase 11: Multi-shell trigger support (bash, fish-ready)
+
+**Goal:** Ship the literal `??` trigger and picker handoff in bash ≥5.0 (`bind -x`) with zsh parity (instant frame, tool awareness, inline + Zellij), and make every shared seam (request contract, tool handoff, lexer, `qq init`/`qq doctor`, telemetry, PTY harness) shell-aware for zsh/bash/fish so Phase 12 is adapter-only. Per spikes 004–005 in the `spike-findings-tui-llm` skill.
+**Requirements**: BASH-01
+**Depends on:** Phase 10
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 11 to break down)
+
+### Phase 12: fish trigger support
+
+**Goal:** Ship the `??` trigger in fish 4.x as a `shell/fish/queque.fish` adapter plus registry entries on the shell-aware seams from Phase 11 (no contract changes), including fish-syntax lexer cases. Per spikes 006–007 in the `spike-findings-tui-llm` skill.
+**Requirements**: FISH-01
+**Depends on:** Phase 11
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 12 to break down)

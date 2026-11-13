@@ -62,7 +62,8 @@ IDs and scope defined in `.planning/phases/10-linux-distro-ci-harness-and-anonym
 
 ### Shell Expansion
 
-- **BASH-01**: User can invoke QueQue from `bash` with equivalent buffer-replacement behavior.
+- **BASH-01**: User can invoke QueQue from `bash` with equivalent buffer-replacement behavior. (Phase 11)
+- **FISH-01**: User can invoke QueQue from `fish` with equivalent buffer-replacement behavior. (Phase 12)
 - [x] **ZSHX-01**: User can use QueQue on non-macOS `zsh` environments. (Done in Phase 10: CI and smoke pass on six Linux distros.)
 
 ### History and Personalization
@@ -121,11 +122,13 @@ IDs and scope defined in `.planning/phases/10-linux-distro-ci-harness-and-anonym
 | P10-PREWARM | Phase 10 | Complete |
 | P10-FIX | Phase 10 | Complete |
 | ZSHX-01 | Phase 10 | Complete |
+| BASH-01 | Phase 11 | Pending |
+| FISH-01 | Phase 12 | Pending |
 
 **Coverage:**
 - v1 requirements: 22 total, plus 8 Phase 10 requirements (P10-*)
-- v2 requirements pulled forward: ZSHX-01 (Phase 10)
-- Mapped to phases: 31
+- v2 requirements pulled forward: ZSHX-01 (Phase 10), BASH-01 (Phase 11), FISH-01 (Phase 12)
+- Mapped to phases: 33
 - Unmapped: 0 ✓
 
 ---

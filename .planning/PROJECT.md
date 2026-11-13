@@ -35,7 +35,7 @@ Turn natural-language intent into a shell command that feels native to the termi
 
 - Public plugin marketplace in v1 — extension seams matter now, but third-party loading can wait until the core UX is stable.
 - Direct command execution in v1 — insertion-only is safer and preserves user control.
-- Multi-shell support in v1 — `zsh` first (macOS and, since Phase 10, Linux); bash and fish stay out of scope.
+- Multi-shell support in v1 — `zsh` first (macOS and, since Phase 10, Linux); bash follows in Phase 11 and fish in Phase 12, with shared code kept shell-agnostic and shell quirks inside per-shell adapters.
 - Persistent history by default — privacy-forward defaults matter more than convenience in the first release.
 
 ## Context

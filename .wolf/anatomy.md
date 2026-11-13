@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T18:47:06.280Z
-> Files: 583 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T20:04:20.981Z
+> Files: 588 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -213,7 +213,7 @@
 - `feedback_terminology.md` (~163 tok)
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
-- `project_target_audience.md` (~202 tok)
+- `project_target_audience.md` (~276 tok)
 
 ## ../../.cursor/plans/
 
@@ -277,11 +277,11 @@
 - `SKILL.md` — Spike findings blueprint index: installed-only-commands requirements + feature areas (~600 tok)
 
 ## .claude/skills/spike-findings-tui-llm/references/
-- `bash-integration.md` — blueprint: bash ≥5.0 ?? adapter (bind -x, READLINE_*, compgen handoff, Zellij FIFO, PS1 head) (~1300 tok)
-- `fish-integration.md` — blueprint: fish 4.x ?? adapter (bind/commandline, string collect, cat+guard FIFO read, repaint padding) (~1300 tok)
 
+- `bash-integration.md` — blueprint: bash ≥5.0 ?? adapter (bind -x, READLINE_*, compgen handoff, Zellij FIFO, PS1 head) (~1300 tok)
 - `bash-integration.md` — bash integration (`??` in bash ≥5.0) (~1173 tok)
 - `candidate-command-check.md` — Candidate Command Check (flag suggestions that use missing tools) (~1016 tok)
+- `fish-integration.md` — blueprint: fish 4.x ?? adapter (bind/commandline, string collect, cat+guard FIFO read, repaint padding) (~1300 tok)
 - `fish-integration.md` — fish integration (`??` in fish 4.x) (~1142 tok)
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
@@ -520,6 +520,12 @@
 - `10-REVIEW.md` — Phase 10: Code Review Report (re-review after the fix run) (~3189 tok)
 - `10-VERIFICATION.md` — Phase 10: Linux distro CI harness and anonymous telemetry Verification Report (~3689 tok)
 - `COVERAGE.md` — API Coverage — PostHog Cloud EU public capture API, and the GitHub REST API (via `gh` in CI) (~735 tok)
+
+## .planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-CONTEXT.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Context (~2667 tok)
+- `11-DISCUSS-CHECKPOINT.json` (~443 tok)
+- `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
