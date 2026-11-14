@@ -4230,3 +4230,24 @@
 | 08:09 | Created .claude/worktrees/agent-a0683766a13a0d567/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-09-SUMMARY.md | — | ~3718 |
 | 08:09 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-09-msg.txt | — | ~20 |
 | 08:12 | wave 4 merged (11-09 distro bash smoke debian/alpine + bash-versions job + Homebrew; 11-10 docs, shell/README.md, shell-names invariant); gate fully green 1849/1849 | scripts/, .github/workflows, docs/ | ok | ~15k |
+| 08:13 | Session end: 238 writes across 112 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 22 reads | ~187456 tok |
+| 08:13 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-pre.sh | — | ~125 |
+| 08:13 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-gate.sh | — | ~409 |
+| 08:14 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-wolf.sh | — | ~416 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | modified defined() | ~124 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | added nullish coalescing | ~424 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | inline fix | ~101 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | inline fix | ~142 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | inline fix | ~76 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | inline fix | ~74 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | inline fix | ~40 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | modified adapter() | ~163 |
+| 08:16 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | modified registry() | ~188 |
+| 08:17 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | modified frame() | ~414 |
+| 08:17 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | 2→6 lines | ~87 |
+| 08:17 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | 2→6 lines | ~92 |
+| 08:17 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-anatomy.md | inline fix | ~69 |
+| 08:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-mkpatch.sh | — | ~229 |
+| 08:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-initdry.sh | — | ~247 |
+| 08:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-rcdry.sh | — | ~195 |
+| 08:20 | 11-11 Task 1: phase gate green with bash 5.3 (1849/1849, CI=true); anatomy real-path entries applied; checkpoint for macOS UAT + CI | .wolf/anatomy.md | ok | ~3k |

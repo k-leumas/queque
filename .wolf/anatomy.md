@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T14:09:58.535Z
-> Files: 723 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T14:18:24.031Z
+> Files: 730 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -86,6 +86,13 @@
 - `11-09-paste-probe.sh` — Runs inside a distro container: does readline report bracketed paste off without TERM? (~98 tok)
 - `11-09-quote.sh` — Simulates the runner's as_user quoting for the bash PS1 line. (~98 tok)
 - `11-10-msg.txt` (~36 tok)
+- `11-11-anatomy.md` — anatomy.md (~28543 tok)
+- `11-11-gate.sh` — Declares r (~409 tok)
+- `11-11-initdry.sh` (~247 tok)
+- `11-11-mkpatch.sh` (~229 tok)
+- `11-11-pre.sh` (~125 tok)
+- `11-11-rcdry.sh` (~195 tok)
+- `11-11-wolf.sh` — Declares b (~416 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
@@ -994,7 +1001,7 @@
 - `config.example.json` — Example `~/.config/qq/config.json` incl. `"effort": "low"` (09.1-02). (~61 tok)
 - `CONFIGURATION.md` — Configuration reference, moved verbatim from the README (quick 261030-fdr): the `config.json` field table (`effort`, `privacy.*`, `safety.destructiveCommandPatterns`), links config.example.json, PROVIDERS.md#after-changing-your-key-or-settings and SYSTEM_DESIGN.md. (~700 tok)
 - `EXTENSIONS.md` — QueQue Extension Seams (~2376 tok)
-- `INSTALL.md` — Install (quick 261030-fdr): Homebrew, Install via npm with the old README Requirements bullets and npm block, Set up zsh with the `qq init zsh` do-not-redirect note. (~300 tok)
+- `INSTALL.md` — Install (quick 261030-fdr; Phase 11 11-10): Homebrew, npm, `qq init` for zsh and bash, the bash 5.0 floor and Homebrew bash, optional chsh, the `~/.bash_profile` line, `qq doctor`, undoing `qq init` (remove the two QueQue lines). (~800 tok)
 - `PRIVACY.md` — Privacy defaults, moved verbatim from the README (quick 261030-fdr): insertion-only, what leaves the machine per provider, what is never sent, debug logging, user config; plus a source-checked Anonymous telemetry section (consent prompt text, env overrides, the three allow-listed events, install id, PostHog Cloud EU batches dropped on failure, `qq telemetry status|on|off|show`). (~1700 tok)
 - `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
 - `RELEASING.md` — Release Process (~1426 tok)
@@ -1015,15 +1022,24 @@
 
 ## scripts/ci/
 
+- `bash-version-check.sh` — `bash-version-check.sh refuse|accept`, the Phase 11 D-12 check inside one official `bash:<tag>` image (repo at /w, read-only): a non-interactive source is silent; refuse = one `needs bash 5.0+` line and no `_qq_question`; accept = function defined and `?` in `bind -m emacs -X`. POSIX sh (busybox); run by the ci.yml `bash-versions` job on bash:3.2, 4.4 (refuse) and 5.0 (accept) (11-09). (~930 tok)
 - `auto-revert.sh` — D-15 smoke auto-revert (bash, env-only inputs REPO, BRANCH, HEAD_SHA, BEFORE_SHA, RUN_ID, RUN_URL, ARTIFACTS_DIR, GH_TOKEN). Last green = branch push run with smoke passed, then first-parent ancestor by head_sha, then the before SHA, then the merge base with main; else ::warning::. Restores the tree on `auto-revert/<branch, / to ->` with workflow files kept at HEAD (GITHUB_TOKEN cannot push them), force-pushes, then gh pr edit+comment if open else create. Body: failing jobs, run URL, doctor.json and log tails, sanitized, 60000-char cap (10-07). (~3562 tok)
 - `code-changed.mjs` — CI doc-only path filter: `isDocOnlyPath` (`*.md`, LICENSE, .planning/, .wolf/, docs/, .github/ISSUE_TEMPLATE/), `codeChanged(paths)`. Base is QQ_CHANGES_BASE (non-zero, present), else resolveBaseRef().mergeBase. Writes `code=true|false` to $GITHUB_OUTPUT and fails open to true; exits 1 only if $GITHUB_OUTPUT is unwritable (10-05). (~790 tok)
 - `install-distro-deps.sh` — POSIX sh, run as root: installs git, zsh, jq, expect, procps and Node 24 per /etc/os-release ID (apk on alpine; nodejs.org tarball checked against SHASUMS256.txt on ubuntu/debian; dnf nodejs24 on fedora; pacman nodejs-lts-krypton on arch), plus pnpm from packageManager unless --no-pnpm. Exits 2 unsupported distro, 3 install failure, 64 usage (10-01). (~1156 tok)
 - `test-in-distro.sh` — `test-in-distro.sh IMAGE [vitest args]`: pipes `git archive HEAD` into `docker run`, then install-distro-deps, `pnpm install --frozen-lockfile`, and `pnpm test:run` or `vitest run ARGS`. D-16: without Docker it warns and exits 0 locally, exits 1 with CI set (10-01). (~450 tok)
 
+## shell/
+
+- `README.md` — Shell adapter contract for authors (Phase 11 D-01/D-02, 11-10): trigger rules, session dir, request.json fields (`shell`, `shellVersion`), result kinds, cursor restore, history, the Zellij timeout and setup failures, the tool handoff (`tools.pending`, two-flag `closed` cleanup), instant-frame parity, and the new-shell checklist gated by tests/shell-names-invariant.test.ts. (~2670 tok)
+
+## shell/bash/
+
+- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). (~6350 tok)
+
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~5619 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). (~5619 tok)
 
 ## src/
 
@@ -1038,9 +1054,9 @@
 
 - `client.ts` — Real client command handler. (~394 tok)
 - `daemon.ts` — Daemon command handler: `--ensure` path or `startDaemonServer`; `enablePrewarm()` after the server starts (daemon-only, never at module top level or in `--ensure`); exported `trackConnections(server)` (Set of open sockets via `connection`) and `shutdownDaemon(server, connections, {exit, graceMs})` (WR-03: `disablePrewarm()` so an in-flight refill spawns nothing, destroys open sockets so their turns abort, then exits after `SIGKILL_GRACE_MS`+100 when any were in flight); SIGTERM/SIGINT call it (09.1-05). Phase 10: creates and starts the telemetry buffer; shutdownDaemon flushes it synchronously with a 1 s bound (10-06). Quick 261030-tq3: `--restart` (wins over --ensure) calls restartDaemon at call time, prints `daemon restarted`; errors reach main.ts's catch. (~600 tok)
-- `doctor.ts` — `qq doctor [--json]`: injectable DoctorDeps (defaultDoctorDeps spawns zsh -fc / zsh -ic with stdin ignored, resolving on exit + grace; PATH scan; /tmp mkdtemp probe; lstat owner; pingDaemonFetchCap; loadProviderPin; detectProvider; telemetryStatus), runDoctorChecks (12 checks, D-17/D-19/D-20: jq and zsh < 5.0 fail, zsh 5.0-5.7 warn; `telemetry` last, always ok), parseZshBindings, formatDoctorReport (✓/⚠/✗ + ` — fix:`), doctorCommand (sets process.exitCode). Output is fixed copy only: it goes into public revert PR bodies (10-03, 10-09). (~4749 tok)
+- `doctor.ts` — `qq doctor [--json] [--shell <name>]` (Phase 11 11-08: one target shell per report, registry-driven; 12 rows for zsh and Linux bash, 13 with `bash_profile` on macOS bash; DoctorDeps.shellVersion/shellBindings/readRc/userShell, `BASH_BINDINGS_SCRIPT`, `parseBashBindings`, `resolveDoctorShell`, `runDoctorChecks(deps?, {shell?})`). Pre-phase-11 notes: injectable DoctorDeps (defaultDoctorDeps spawns zsh -fc / zsh -ic with stdin ignored, resolving on exit + grace; PATH scan; /tmp mkdtemp probe; lstat owner; pingDaemonFetchCap; loadProviderPin; detectProvider; telemetryStatus), runDoctorChecks (12 checks, D-17/D-19/D-20: jq and zsh < 5.0 fail, zsh 5.0-5.7 warn; `telemetry` last, always ok), parseZshBindings, formatDoctorReport (✓/⚠/✗ + ` — fix:`), doctorCommand (sets process.exitCode). Output is fixed copy only: it goes into public revert PR bodies (10-03, 10-09). (~4749 tok)
 - `init-provider.ts` — `qq init provider` picker on /dev/tty (Claude, OpenAI, Ollama; Enter = 1). writeProviderPin then restartDaemon; dead ends print next step and exit 1. Exports PROVIDER_MENU, OLLAMA_DOWNLOAD_URL, runProviderPicker(io, deps), providerInitCommand, dispatchInit. (~2900 tok)
-- `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~732 tok)
+- `init.ts` — `qq init [shell]` (Phase 11 11-04): auto-detects the shell (arg, $SHELL, user shell) via src/shared/shell-registry.ts; bash gate probes the $SHELL bash first, else the PATH bash, refusing below 5.0 (`bash 5+ needed: brew install bash` on darwin); appends the marker + `source <adapter>` to ~/.zshrc or ~/.bashrc only (never ~/.bash_profile); macOS login-shell hint when ~/.bash_profile does not source ~/.bashrc. Exports InitDeps, defaultInitDeps, runInit(shellArg, deps), initCommand, hasShellIntegration. (~2300 tok)
 - `telemetry.ts` — `qq telemetry [status|on|off|show]` (D-06, D-09, D-12, D-22): injectable TelemetryCliDeps, requestDaemonOnce(socketPath, request, timeoutMs=500) (one-shot, schema-validated, null on error/close/timeout), telemetryCommand(action, deps). Prints state, variable names and the endpoint host only; show prints the daemon bodies byte for byte; off also sends telemetry-reset (10-09). Quick 261030-tq3: `socketConnectable` dep (tryConnect, read at call time) is probed only after a null reply; a connectable socket prints `the daemon did not answer (it may be outdated)` + `restart it: qq daemon --restart` (show and off); a wrong-kind reply also gets the restart hint. (~2400 tok)
 
 ## src/client/
@@ -1050,7 +1066,7 @@
 - `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~6967 tok)
 - `telemetry-consent.ts` — D-09 one-time consent ask: CONSENT_PROMPT (`... [y/N] `), CONSENT_TIMEOUT_MS = 30_000, shouldAskTelemetryConsent({outcome, state, blockedBy, hasTty}) (accepted, never asked, no env gate, tty), askTelemetryConsent({input, output}, timeoutMs) on the tty streams: raw mode, first character of the first chunk, only y/Y is yes, settles once, then raw off, pause, listener removed, timer cleared, every wrapped row erased. Never stdout, never rejects (10-11). (~1135 tok)
 - `telemetry-events.ts` — Client telemetry: TELEMETRY_CLIENT_SEND_MS = 250, QueryOutcomeRecord, buildQueryOutcomeEvent/buildErrorEvent/buildEnvironmentEvent (strict-schema parsed, enums and counts only), sendTelemetryEvents (fire-and-forget socket lines, never rejects), reportClientTelemetry (gates on effectiveTelemetry in the client env first; environment, errors, outcome; never throws) (10-10). (~1482 tok)
-- `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
+- `tool-handoff.ts` — readToolHandoff(sessionDir, { shell, pendingBudgetMs }) waits while `tools.pending` exists (TOOL_HANDOFF_PENDING_POLL_MS 10, TOOL_HANDOFF_PENDING_BUDGET_MS 500, then null with reason `pending-timeout`) and tags the inventory with `shell` (11-03). Earlier: reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Zellij floating-pane sizing: `readMaxZellijPaneHeight` (QQ_PANE_HEIGHT, default 24), `resolveZellijPaneHeight` (content + 2 frame rows `ZELLIJ_FLOATING_FRAME_LINES` + 1 Ink cursor row `INK_TRAILING_CURSOR_ROWS`, min 6, capped), `formatZellijPaneId`; `syncZellijFloatingPaneHeight` runs a serialized latest-wins queue: one `zellij action change-floating-pane-coordinates` at a time, heights requested meanwhile collapse to the newest, slot released on exit, on child error (no crash when zellij is missing) or after `RESIZE_SETTLE_TIMEOUT_MS` (2000, kills the hung action; timer unref'd); `resetZellijPaneHeightCache` (tests only). (~1900 tok)
 
 ## src/context/
@@ -1060,10 +1076,10 @@
 ## src/contracts/
 
 - `candidates.ts` — Zod schemas: commandCandidateSchema, candidateListSchema (~104 tok)
-- `doctor.ts` — `qq doctor --json` contract (D-18): DOCTOR_CHECK_IDS (12, stable: add, never rename; `telemetry` last), DOCTOR_STATUSES ok/warn/fail, strict doctorReportSchema `{version:1, ok, qqVersion, platform, checks}`, doctorExitCode (1 iff a check failed) (10-03, 10-09). (~501 tok)
+- `doctor.ts` — `qq doctor --json` contract (D-18; Phase 11 11-08 adds ids `bash`, `fish` (reserved, not emitted until Phase 12) and `bash_profile`): DOCTOR_CHECK_IDS (12, stable: add, never rename; `telemetry` last), DOCTOR_STATUSES ok/warn/fail, strict doctorReportSchema `{version:1, ok, qqVersion, platform, checks}`, doctorExitCode (1 iff a check failed) (10-03, 10-09). (~501 tok)
 - `ipc.ts` — IPC request/response zod schemas: `fetch-candidates` with optional `stream: true`, streamed `{kind:'candidate'}` row kind, `{kind:'candidates'}` done signal; pong capability flags `fetchCandidates`, `installedTools`, `streamCandidates` (09.1-03). Phase 10: telemetry-event/telemetry-show/telemetry-reset requests, the telemetry-buffer response, the informational pong `telemetry` flag, fetch-error `errorKind` (10-06). Quick 261030-tq3: pong `build` = z.string().max(128).optional().catch(undefined) (malformed reads as another build, never a rejected pong). (~650 tok)
 - `request.ts` — Intent/base-context/envelope schemas; `contextChunkSchema` incl. the lenient `installed-tools` variant (filters non-catalog names, rejects non-name strings and > 512 entries) and the client-side `strictInstalledToolsChunkSchema`. (~1500 tok)
-- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
+- `shell.ts` — Shell request — sent from the shell adapter (zsh, bash) to the qq client. Phase 11 11-01: `SHELL_NAMES = ['zsh','bash','fish']`, `ShellName`, `isShellName`; `shellRequestSchema.shell` (default zsh) and `shellVersion` (max 40); `version: 1` unchanged. (~600 tok)
 - `telemetry.ts` — Telemetry allow list (D-10, D-11): strict zod schemas for qq_query_outcome / qq_error / qq_environment (client, wire, batch) and the enums ERROR_KINDS, PROVIDER_KINDS, QUERY_OUTCOMES, OS_KINDS, ARCH_KINDS, DISTRO_IDS, TELEMETRY_EVENTS, TELEMETRY_LIB, TELEMETRY_BATCH_MAX. No latency, no free-form strings (10-04). (~1638 tok)
 
 ## src/daemon/
@@ -1105,9 +1121,11 @@
 - `command-words.ts` — Hand lexer (`lexHand`: quotes, escapes, `\`-newline continuations removed, heredoc bodies skipped up to the delimiter line, substitutions, redirs, placeholders, comments) + `commandWords` classifier (WRAPPERS with short+long value options, PRECOMMAND_OPTIONS for `exec`/`command`, quoted wrapper operands with whitespace recursed as command strings, explicit lookup-only mode for `command -v|-V` and LOOKUP_BUILTINS type/which/whence/where, reserved words, builtins) + safe `extractCommandWords` (Phase 9, D-03). (~4666 tok)
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~1050 tok)
+- `instant-frame-spec.ts` — D-04 instant-frame reference shared by every adapter (11-06): escape constants, `inlineScrollReserve`, `INSTANT_FRAME_VIEWPORT_LINES` (18), `INSTANT_FRAME_LOADING_TEXT`, `MODAL_MAX_COLUMNS`, `INSTANT_FRAME_SPEC`, and the oracle `instantFrameRows` / `inlineInstantFrameBytes` / `paneInstantFrameBytes`. Imports nothing from client or ui; src/client/instant-frame.ts re-exports from it. Change it together with both adapters (tests/instant-frame-parity.test.ts). (~1570 tok)
 - `environment-shape.ts` — collectEnvironmentShape(input?) maps platform/arch/os-release ID/QQ_ZSH_VERSION/node major/ZELLIJ onto the telemetry enums; an unknown ID becomes `other`; returns null if the shape would not validate. Injectable env, platform, arch, nodeVersion, readOsRelease (10-10). (~868 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. Phase 10: also exports telemetryConfigSchema (`telemetry: { enabled, asked, installId? }`) (10-04). (~1899 tok)
+- `shell-registry.ts` — One per-shell registry (Phase 11 D-02/D-08, 11-04; `src/shared/shell-registry.ts`): `ShellSpec`, `SHELL_SPECS` (zsh, bash; fish not shipped), `getShellSpec`, `shippedShellNames()`, `detectShell(input)`, `resolveAdapterPath(spec)` (Homebrew `share/queque/<adapter>` first, else the package `shell/` dir next to dist), `HOMEBREW_PREFIXES`, the zsh/bash floors (`BASH_FAIL_BELOW = '5.0'`, `BASH_WARN_BELOW = '5.1'`), `parseShellVersion`/`versionBelow`, `BASH_LOGIN_FILES`, `BASHRC_SOURCE_RE`, `loginFileSourcesBashrc`. Every fact `qq init` and `qq doctor` need about a shell. (~1900 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
 - `telemetry-config.ts` — Anonymous telemetry consent state (phase 10, D-06, D-09). (~2510 tok)
 - `telemetry-endpoint.ts` — resolveTelemetryEndpoint(env): baked host/key with usableSecret QQ_TELEMETRY_HOST/QQ_TELEMETRY_KEY overrides; null for an empty or non-phc_ key, a non-http(s) host, or a host with credentials (10-04). (~407 tok)
@@ -1130,6 +1148,11 @@
 
 ## tests/
 
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01) via `bash -i -c` (job-control notices filtered): b1-b7 basics (11-01), b8-b9 instant-frame placement (11-06), b10-b17 + b21 tool handoff, prewarm, hostile aliases, cleanup after cancel and client crash, b18-b20 + b22-b23 Zellij with a fake `zellij` incl. mkfifo and launcher failures (11-07). (~9900 tok)
+- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, 11-06): oracle cases, src/shared layering guard, `ADAPTERS` (zsh, bash; fish in Phase 12) x 23 FIXTURES compared as hex via temp files. (~2980 tok)
+- `shell-names-invariant.test.ts` — Every `SHELL_NAMES` entry appears in `shellRequestSchema`, `SHELL_SPECS`, `SHELL_KINDS` and `DOCTOR_CHECK_IDS`; shipped shells are exactly zsh and bash and their adapter files exist (Phase 11 D-02, 11-10). Phase 12 flips fish here. (~600 tok)
+- `shell-pty.test.ts` — Real-PTY scenarios for zsh and bash (`PTY_SHELLS`) through tests/pty/drive.sh and a private tmux server: round-trip, cancel, empty, multibyte, vi-insert, paste, prompt-multiline, errexit (11-01), handoff-quiet, hostile-env (11-07). Builds the real bundle into a temp QQ_DEV_ROOT and uses QQ_TEST_RESULT_MODE fixture mode; diagnostics are single-line. (~4080 tok)
+- `shell-registry.test.ts` — Unit tests for `src/shared/shell-registry.ts` (11-04): specs, detection, version parsing and floors, login-file sourcing, adapter path resolution. (~1820 tok)
 - `auto-revert.test.ts` — 13 tests for scripts/ci/auto-revert.sh against temp repos (bare remote, merge commit) with the gh double on PATH; skips without bash (10-07). (~4620 tok)
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (a) the lbuffer never filters (G-09.1-5: `noMatch` is the regression oracle); (d) a matching lbuffer `smt2` draws and reports the full list (G-09.1-5); (e) "header row" (plain, flagged, matching lbuffer; all draw query ''): pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases; `mountStream` helper and the 09.1-07 streamed-rows describe (D-06 to D-10, D-16, D-17); G-09.1-5 Pitfall 9 rewrite (the lbuffer never filters streamed rows, FILTER shows the placeholder); WR-04 (lbuffer `gr`, typed `grep` survives a non-matching first row, never `grgrep`); WR-05 (a later list without the highlighted row keeps the highlight position; typing/Backspace move it to row 0); WR-06 (typed `grep`, up/down on an empty filtered list, then a matching row arrives highlighted); `filterLine` helper + the `G-09.1-5: FILTER opens empty` describe (UAT case `show me how to use z3` + typed `smt`, empty lbuffer, typed text equal to the lbuffer); CR-01 one-chunk Backspace describe (`ab`+2 DEL, `a`+DEL, mid-stream `smtx`+DEL / `q`+DEL, each ONE stdin push); CR-01 invariance `it.each` (Down+Enter, corrected filter+Enter, moved highlight+typed key, filtered Down+Enter, empty-filter Backspace, Down+Tab+DEL+Enter on a flagged row: one key per read vs one read insert the same row) (~13900 tok)
@@ -1201,9 +1224,17 @@
 
 - `gh` — gh CLI test double for tests/auto-revert.test.ts: logs argv as JSON lines to $GH_LOG (per-argument `jq -Rs .`), serves jobs-ID.json, sha-runs-SHA.json, branch-runs.json and pr-list.txt from $GH_FIXTURES, copies --body-file to $GH_LOG.body (10-07). (~617 tok)
 
+## tests/helpers/
+
+- `shells.ts` — `findShell(name, { min })` (QQ_TEST_BASH / QQ_TEST_ZSH, then PATH, Homebrew (Apple silicon, Intel), MacPorts, system dirs), `findBinary(name)`, `ciRequired(value, label)` (warns locally, throws `is required when CI is set` under CI), `shellVersionOf` (11-01). (~1000 tok)
+
 ## tests/live/
 
 - `sdk-contract.live.ts` — Nightly live SDK contract test, the only test that calls a real model: spawns the built daemon on `/tmp/qq-live-PID.sock` with a temp HOME and sends one streamed fetch-candidates; asserts schemas, LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08). (~2722 tok)
+
+## tests/pty/
+
+- `drive.sh` — `tests/pty/drive.sh start|type|key|paste|wait|capture|stop SERVER …`: drives an interactive zsh or bash (`QQ_PTY_SHELL_BIN`) in a private tmux server (`-L`, `-f /dev/null`); bash 3.2-safe; strips ZELLIJ* and TMUX so it never opens a pane in the user's session (Phase 11 D-10, 11-01). (~750 tok)
 
 ## tests/setup/
 
