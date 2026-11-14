@@ -14,13 +14,23 @@
  *   b5  insertion only (the bash mirror of the zsh CMD-04 checks)
  *   b6  a user's `set -e` survives the trigger
  *   b7  qq missing: one message, line restored
+ *   b8  instant frame placement: lookup, paint (outside Zellij), then mktemp (mirrors zsh z10)
+ *   b9  instant frame kill switch, no paint without a terminal, pane file, the two clears
  *
  * Every shell starts without ZELLIJ* or TMUX. A missing bash 5 or jq skips locally and fails
  * when CI is set.
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, symlinkSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -264,3 +274,169 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
     expect(run.stdout).toContain('line=[ask me tail] point=6');
   });
 });
+
+// ---------------------------------------------------------------------------
+// Plan 11-06 (D-04): the instant frame. The bytes are pinned against the TS reference by
+// tests/instant-frame-parity.test.ts; these cases pin where and when bash paints and clears.
+// ---------------------------------------------------------------------------
+
+/** `ESC 8` + `CSI J`: back to the paint's own save on the reserve top, erase below. */
+const FRAME_CLEAR = '\u001B8\u001B[J';
+
+/** The `_qq_question` function body. */
+function questionBody(): string {
+  const source = readFileSync(adapterPath, 'utf8');
+  const start = source.indexOf('_qq_question() {');
+  const end = source.indexOf('\n}\n', start);
+  expect(start).toBeGreaterThanOrEqual(0);
+  expect(end).toBeGreaterThan(start);
+  return source.slice(start, end);
+}
+
+/** A PATH dir with jq and the given fake tools (`#!/bin/sh` bodies). */
+function fakeBin(tools: Record<string, string>): string {
+  const bin = mkdtempSync(join(scratch, 'bin-'));
+  if (jq) symlinkSync(jq, join(bin, 'jq'));
+  for (const [name, body] of Object.entries(tools)) {
+    writeFileSync(join(bin, name), `#!/bin/sh\n${body}\n`, { mode: 0o755 });
+  }
+  return bin;
+}
+
+/**
+ * Replaces the painter with one that records the call and marks the frame painted: without a
+ * terminal on stdout the real painter (rightly) paints nothing, so the clear paths after it
+ * could not be reached. The bytes of the real painter are covered by the parity test.
+ */
+const PAINT_PROBE = `_qq_paint_inline_instant_frame() { QQ_INSTANT_FRAME_PAINTED=1; printf 'PAINT[%s]' "$1"; return 0; }`;
+
+describe('bash adapter: instant frame placement', () => {
+  it('b8: lookup, then the inline paint (outside Zellij), then mktemp', () => {
+    const body = questionBody();
+    const lookup = body.indexOf('type -P qq');
+    const notFound = body.indexOf('queque: qq not found');
+    const paint = body.indexOf('_qq_paint_inline_instant_frame "$QQ_ORIG_LBUFFER"');
+    const mktemp = body.indexOf('mktemp -d');
+    expect(lookup).toBeGreaterThan(0);
+    expect(notFound).toBeGreaterThan(lookup);
+    expect(paint).toBeGreaterThan(notFound);
+    expect(mktemp).toBeGreaterThan(paint);
+    // Painted only when ZELLIJ is empty (the Zellij pane gets its frame through a file).
+    expect(body).toMatch(
+      /if \[\[ -z \$\{ZELLIJ:-\} \]\]; then\n\s+_qq_paint_inline_instant_frame "\$QQ_ORIG_LBUFFER"/,
+    );
+    // Every early stop after the paint clears it: mktemp failure, request.json failure, and a
+    // non-zero client exit (a client that exits 0 clears its own frame in its first write).
+    const clearAt = (from: number): number => body.indexOf('_qq_clear_instant_frame', from);
+    const mktempFailed = body.indexOf('mktemp -d failed');
+    const requestFailed = body.indexOf('request.json could not be written');
+    const clientFailed = body.indexOf('qq_client_status != 0');
+    expect(body.match(/_qq_clear_instant_frame/g)).toHaveLength(3);
+    expect(clearAt(mktemp)).toBeLessThan(mktempFailed);
+    expect(clearAt(mktempFailed)).toBeLessThan(requestFailed);
+    expect(clearAt(clientFailed)).toBeGreaterThan(clientFailed);
+    // The clear only restores a save the paint itself made.
+    const source = readFileSync(adapterPath, 'utf8');
+    const helper = source.slice(source.indexOf('_qq_clear_instant_frame() {'));
+    expect(helper.slice(0, helper.indexOf('\n}\n'))).toMatch(
+      /if \[\[ \$QQ_INSTANT_FRAME_PAINTED == 1 \]\]; then\n\s+printf '\\e8\\e\[J'/,
+    );
+  });
+});
+
+/** The trigger cases run jq, mktemp and the fake client in a `bash -i`: about 1 s each locally. */
+const TRIGGER_TIMEOUT_MS = 20_000;
+
+describe.skipIf(bash5 === null || jq === null)(
+  'bash adapter: instant frame (bash 5)',
+  {
+    timeout: TRIGGER_TIMEOUT_MS,
+  },
+  () => {
+    it('b9: QQ_INSTANT_FRAME=0 leaves REPLY empty, writes no file and returns 0 everywhere', () => {
+      const dir = mkdtempSync(join(scratch, 'frame-off-'));
+      const run = runInteractiveBash(
+        `QQ_INSTANT_FRAME=0
+trap 'echo TRAPPED' ERR
+_qq_instant_frame 'echo hi' 78; s1=$?; f=$REPLY
+_qq_inline_instant_frame_bytes 'echo hi' 78; s2=$?; b=$REPLY
+_qq_paint_inline_instant_frame 'echo hi'; s3=$?
+_qq_write_pane_instant_frame '${dir}' 'echo hi' 78; s4=$?
+echo "frame=[$f] bytes=[$b] status=$s1$s2$s3$s4 painted=$QQ_INSTANT_FRAME_PAINTED"`,
+      );
+      expect(run.stdout).toContain('frame=[] bytes=[] status=0000 painted=0\n');
+      expect(run.stdout).not.toContain('TRAPPED');
+      expect(run.stderr.trim()).toBe('');
+      expect(readdirSync(dir)).toEqual([]);
+    });
+
+    it('b9: the painter writes nothing when stdout is not a terminal or is closed', () => {
+      const run = runInteractiveBash(`trap 'echo TRAPPED' ERR
+printf 'A'; _qq_paint_inline_instant_frame 'echo hi'; s1=$?; printf 'B\\n'
+_qq_paint_inline_instant_frame 'echo hi' >&-; s2=$?
+echo "status=$s1$s2 painted=$QQ_INSTANT_FRAME_PAINTED"`);
+      expect(run.stdout).toContain('AB\n');
+      expect(run.stdout).toContain('status=00 painted=0\n');
+      expect(run.stdout).not.toContain('TRAPPED');
+      expect(run.stderr.trim()).toBe('');
+    });
+
+    it('b9: the pane writer writes the frame file and is silent for a missing dir', () => {
+      const dir = mkdtempSync(join(scratch, 'frame-pane-'));
+      const run = runInteractiveBash(`trap 'echo TRAPPED' ERR
+_qq_write_pane_instant_frame '${dir}' 'echo hi' 78; s1=$?
+_qq_write_pane_instant_frame /nonexistent/qq-instant-probe 'echo hi' 78; s2=$?
+echo "status=$s1$s2"`);
+      expect(run.stdout).toContain('status=00\n');
+      expect(run.stdout).not.toContain('TRAPPED');
+      expect(run.stderr.trim()).toBe('');
+      expect(readdirSync(dir)).toEqual(['instant-frame.txt']);
+      expect(readFileSync(join(dir, 'instant-frame.txt'), 'utf8').endsWith('\u001B[H')).toBe(true);
+      expect(existsSync('/nonexistent/qq-instant-probe')).toBe(false);
+    });
+
+    it('b9: a non-zero client exit after a paint clears the frame', () => {
+      const bin = fakeBin({ qq: 'exit 3' });
+      const run = runInteractiveBash(
+        `${PAINT_PROBE}
+READLINE_LINE='ask?'; READLINE_POINT=4
+_qq_question
+echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
+        cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
+      );
+      expect(run.status).toBe(0);
+      const paint = run.stdout.indexOf('PAINT[ask]');
+      expect(paint).toBeGreaterThanOrEqual(0);
+      expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
+      expect(run.stdout).toContain('line=[ask] point=3');
+    });
+
+    it('b9: a client that exits 0 clears its own frame; the adapter prints no clear', () => {
+      const bin = fakeBin({ qq: 'exit 0' });
+      const run = runInteractiveBash(
+        `${PAINT_PROBE}
+READLINE_LINE='ask?'; READLINE_POINT=4
+_qq_question`,
+        cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
+      );
+      expect(run.stdout).toContain('PAINT[ask]');
+      expect(run.stdout).not.toContain(FRAME_CLEAR);
+    });
+
+    it('b9: a failed mktemp after a paint clears the frame and keeps the line', () => {
+      const bin = fakeBin({ qq: 'exit 0', mktemp: 'exit 1' });
+      const run = runInteractiveBash(
+        `${PAINT_PROBE}
+READLINE_LINE='ask? tail'; READLINE_POINT=4
+_qq_question
+echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
+        cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
+      );
+      const paint = run.stdout.indexOf('PAINT[ask]');
+      expect(paint).toBeGreaterThanOrEqual(0);
+      expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
+      expect(run.stderr).toContain('queque: cannot create a temp dir in /tmp');
+      expect(run.stdout).toContain('line=[ask tail] point=3');
+    });
+  },
+);
