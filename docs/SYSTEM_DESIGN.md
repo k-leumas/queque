@@ -1,18 +1,18 @@
 # System Design
 
-> Last updated Phase 6 — 2026-06-18
+> Last updated Phase 11 — 2026-11-14 (shell adapters); other sections Phase 6
 
 This document describes how QueQue is structured today, how the major pieces interact, and where the current implementation stops versus the intended end-state.
 
 ## Purpose
 
-QueQue is a `zsh`-integrated command helper. The user flow:
+QueQue is a shell-integrated command helper for zsh and bash (fish is planned). Each shell has its own adapter script under `shell/`; everything after the trigger is shared. The user flow:
 
 1. The user types `??` inside an active shell buffer.
-2. A `zsh` widget captures the shell context around the cursor.
+2. The shell adapter (the zsh ZLE widget or the bash `bind -x` function) captures the line around the cursor.
 3. The foreground `qq client` starts, ensures a background daemon exists, gathers context, calls a registered provider, and runs an Ink selection TUI.
 4. The selected command is written back as a structured result.
-5. The shell widget applies that result to `LBUFFER` and `RBUFFER` — **insertion-only**; the user presses Enter to execute.
+5. The shell adapter applies that result to the line (zsh `LBUFFER`/`RBUFFER`, bash `READLINE_LINE`/`READLINE_POINT`) — **insertion-only**; the user presses Enter to execute.
 
 Steps 1–5 are fully implemented. Phase 7 adds local learning; Phase 8 adds zero-config subprocess providers (Claude CLI, Ollama, OpenAI).
 
@@ -21,13 +21,13 @@ Steps 1–5 are fully implemented. Phase 7 adds local learning; Phase 8 adds zer
 ```mermaid
 sequenceDiagram
     participant User
-    participant Widget as zsh widget<br/>shell/zsh/queque.zsh
+    participant Widget as shell adapter<br/>shell/zsh, shell/bash
     participant Client as qq client<br/>run-foreground.ts
     participant Pipeline as gatherContext<br/>filterContextEnvelope
     participant Resolver as resolveAdapter
     participant Provider as LLMAdapter<br/>(claude)
     participant TUI as Ink CandidateSelect
-    participant Shell as LBUFFER/RBUFFER
+    participant Shell as shell line
 
     User->>Widget: Type ??
     Widget->>Widget: Capture lbuffer/rbuffer
@@ -57,8 +57,8 @@ User config at `~/.config/qq/config.json` merges extra patterns onto built-in de
 
 ```mermaid
 flowchart LR
-    U[User in zsh]
-    Z[ZLE widget<br/>shell/zsh/queque.zsh]
+    U[User in zsh or bash]
+    Z[Shell adapter<br/>shell/zsh, shell/bash]
     C[Foreground client<br/>src/client/*]
     CLI[CLI entrypoint<br/>src/cli/*]
     D[Daemon<br/>src/daemon/*]
@@ -79,7 +79,7 @@ flowchart LR
 
 ### Annotations
 
-- `shell/zsh/queque.zsh` — shell boundary: `??` binding, buffer capture, Zellij FIFO or inline path, result application.
+- `shell/zsh/queque.zsh`, `shell/bash/queque.bash` — shell boundary: `??` binding, buffer capture, Zellij FIFO or inline path, result application. The adapter contract is [shell/README.md](../shell/README.md).
 - `src/cli/main.ts` — routes to `client`, `daemon`, or `init`.
 - `src/client/run-foreground.ts` — request validation, daemon ensure, `gatherContext` → `resolveAdapter` → Ink TUI → result write.
 - `src/context/pipeline.ts` — intent classification, registry-backed context providers, `filterContextEnvelope`.
@@ -91,11 +91,13 @@ flowchart LR
 
 ## Shell Integration
 
-File: [shell/zsh/queque.zsh](../shell/zsh/queque.zsh)
+Files: [shell/zsh/queque.zsh](../shell/zsh/queque.zsh) (the reference adapter) and [shell/bash/queque.bash](../shell/bash/queque.bash) (bash 5.0+). fish is planned. [shell/README.md](../shell/README.md) is the contract every adapter follows, with the checklist of registry, doctor, telemetry and test entries a new shell needs.
 
-Responsibilities:
+Shared seams: the request names its shell (`shell`, `shellVersion` in `shellRequestSchema`), per-shell facts for `qq init` and `qq doctor` live in `src/shared/shell-registry.ts`, the instant frame is specified once in `src/shared/instant-frame-spec.ts`, and slow tool scans hand off through the `tools.pending` marker.
 
-- Bind `?` in `emacs` and `viins` keymaps; detect `??` without `KEYTIMEOUT`.
+Responsibilities of each adapter:
+
+- Bind `?` in the insert keymaps (zsh `emacs` and `viins`, bash `emacs` and `vi-insert`); detect `??` from the character before the cursor, never with a two-key binding.
 - Capture split-buffer state as `lbuffer` and `rbuffer`.
 - **Zellij path** (when `$ZELLIJ` is set): create FIFO + request JSON, launch `zellij run --floating`, block on FIFO read.
 - **Inline path** (no Zellij): foreground client writes result to temp file; widget applies after exit.
@@ -144,7 +146,7 @@ Built-ins register in `src/registry/bootstrap.ts`:
 |----------|----------|-------------|
 | Context providers | `git-context`, `filesystem-context` | `listContextProviders()` |
 | Provider backends | `claude` (Anthropic SDK) | `getProviderAdapter()` |
-| Shell adapters | `zsh` | `listShellAdapters()` |
+| Shell adapters | `zsh`, `bash` | `listShellAdapters()` |
 | Storage hooks | `noop` | `listStorageHooks()` |
 
 Provider resolution:
@@ -158,7 +160,7 @@ See [docs/EXTENSIONS.md](EXTENSIONS.md) for Phase 7 (local learning) and Phase 8
 
 ## Zellij Floating Pane + FIFO
 
-When `$ZELLIJ` is set, the widget uses a named pipe instead of polling a temp file:
+When `$ZELLIJ` is set, the adapter uses a named pipe instead of polling a temp file. The diagram shows zsh; bash does the same with `READLINE_LINE`, and both read the FIFO with a 30-second timeout:
 
 ```mermaid
 flowchart TD
@@ -219,7 +221,7 @@ The daemon listens on `/tmp/qq-<uid>.sock`. IPC: `ping`, `ensure-session`, `run-
 
 | Area | Implemented (Phase 6) | Roadmap |
 |---|---|---|
-| Shell trigger | `??` widget, Zellij + inline paths | Cross-OS zsh via `qq init zsh` |
+| Shell trigger | `??` in zsh and bash, Zellij + inline paths, `qq init` detects the shell | fish adapter (Phase 12) |
 | Foreground client | Ink TUI, registry provider resolution, privacy filter | Phase 5 clarification chat (deferred) |
 | Provider | Anthropic SDK via `resolveAdapter` | Phase 8: Claude CLI, Ollama, OpenAI subprocess adapters |
 | Privacy | Sensitive path stripping, log redaction, config merge | Future file-read context (gated by `QQ_ALLOW_FILE_READ`) |
@@ -230,7 +232,7 @@ The daemon listens on `/tmp/qq-<uid>.sock`. IPC: `ping`, `ensure-session`, `run-
 
 ### Split buffer contract
 
-Pass `lbuffer` and `rbuffer` instead of buffer + cursor index. Cursor semantics stay owned by `zsh`.
+Pass `lbuffer` and `rbuffer` instead of buffer + cursor index. Cursor semantics stay owned by the shell.
 
 ### Insertion-only safety (CMD-04)
 
