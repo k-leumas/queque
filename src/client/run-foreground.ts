@@ -196,7 +196,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         lbuffer: fixtureLbuffer,
         rbuffer: request.rbuffer,
       });
-      void appendDebugLog('client', 'wrote replace-buffer result', {
+      // Awaited: main.ts exits right after the command returns, which drops an
+      // un-awaited append (the PTY harness asserts this line).
+      await appendDebugLog('client', 'wrote replace-buffer result', {
         resultFile,
         lbufferLength: fixtureLbuffer.length,
         rbufferLength: request.rbuffer.length,
@@ -514,7 +516,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });
-      void appendDebugLog('client', 'wrote cancel result', { resultFile });
+      // Awaited like the fixture line above: main.ts exits right after the command returns.
+      await appendDebugLog('client', 'wrote cancel result', { resultFile });
     }
   } finally {
     await ttyHandle?.close();
