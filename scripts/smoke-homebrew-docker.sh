@@ -93,10 +93,12 @@ RUN npm install --ignore-scripts --loglevel=error \
   && node_modules/.bin/tsup
 
 # Local equivalent of the Homebrew formula install block from
-# .github/workflows/homebrew.yml:
+# .github/workflows/homebrew.yml (and release.yaml):
 #   npm install *std_npm_args
 #   bin.install_symlink libexec/.../dist/cli/main.js => "qq"
 #   (share/"queque").install "shell/zsh/queque.zsh"
+#   (share/"queque").install "shell/bash/queque.bash"
+# The `test -f` lines fail the image build when an adapter is missing from share/queque.
 RUN set -eux; \
   cellar="$HOMEBREW_PREFIX/Cellar/queque/local"; \
   libexec="$cellar/libexec"; \
@@ -104,6 +106,9 @@ RUN set -eux; \
   npm install --global --prefix "$libexec" --ignore-scripts --loglevel=error /src; \
   ln -sf "$libexec/lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" "$HOMEBREW_PREFIX/bin/qq"; \
   cp /src/shell/zsh/queque.zsh "$HOMEBREW_PREFIX/share/queque/queque.zsh"; \
+  cp /src/shell/bash/queque.bash "$HOMEBREW_PREFIX/share/queque/queque.bash"; \
+  test -f "$HOMEBREW_PREFIX/share/queque/queque.zsh"; \
+  test -f "$HOMEBREW_PREFIX/share/queque/queque.bash"; \
   chmod +x "$HOMEBREW_PREFIX/bin/qq"; \
   qq --version
 

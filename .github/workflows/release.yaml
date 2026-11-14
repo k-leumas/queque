@@ -186,6 +186,7 @@ jobs:
             system "npm", "install", *std_npm_args, "--loglevel=error"
             bin.install_symlink libexec/"lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" => "qq"
             (share/"queque").install "shell/zsh/queque.zsh"
+            (share/"queque").install "shell/bash/queque.bash"
           test: |
             assert_match "queque", shell_output("#{bin}/qq --version")
           depends_on: |
@@ -199,11 +200,14 @@ jobs:
                   Step 1 — connect QueQue to Claude (pick one):
                     Already use Claude Code? Sign in once, no API key needed:
                       claude /login
-                    Or add an Anthropic API key to ~/.zshrc:
+                    Or add an Anthropic API key to your shell rc file (~/.zshrc or ~/.bashrc):
                       export ANTHROPIC_API_KEY="sk-ant-..."
 
-                  Step 2 — activate the ?? trigger:
-                    qq init zsh && source ~/.zshrc
+                  Step 2 — activate the ?? trigger (qq init detects your shell):
+                    qq init
+                    then for zsh:  source ~/.zshrc
+                    or for bash 5 or newer:  source ~/.bashrc
+                    macOS /bin/bash is 3.2, too old for ??: brew install bash first
 
                   Then try:
                     git log??
