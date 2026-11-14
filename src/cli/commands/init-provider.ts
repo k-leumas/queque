@@ -68,7 +68,7 @@ const NO_CHANGES = 'No changes made.';
 const CLAUDE_AUTH_HINT =
   'If ?? says Claude is not authenticated, run `claude /login` or set ANTHROPIC_API_KEY (docs: https://code.claude.com/docs/en/authentication).';
 const OPENAI_KEY_MISSING =
-  'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to ~/.zshrc (before the queque source line) or put it in ~/.env.local, open a new terminal, and run `qq init provider` again.';
+  'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to your shell rc file (~/.zshrc or ~/.bashrc), before the queque source line, or put it in ~/.env.local, open a new terminal, and run `qq init provider` again.';
 
 /**
  * Opens the Ollama download page with the platform opener, without a shell. Spawn failures
@@ -439,15 +439,16 @@ export async function providerInitCommand(): Promise<void> {
 
 export interface InitHandlers {
   provider: () => Promise<void>;
-  shell: (shell: string) => void;
+  shell: (shell: string | undefined) => void;
 }
 
 /**
- * The `qq init <shell>` dispatcher (D-05): only the literal `provider` reaches the picker;
- * every other value (`zsh`, unsupported shells) goes to initCommand unchanged.
+ * The `qq init [shell]` dispatcher (D-05, Phase 11 D-08): only the literal `provider` reaches
+ * the picker; every other value (`zsh`, `bash`, unsupported shells, or no argument, which makes
+ * initCommand detect the login shell) goes to initCommand unchanged.
  */
 export async function dispatchInit(
-  shell: string,
+  shell: string | undefined,
   handlers: InitHandlers = { provider: providerInitCommand, shell: initCommand },
 ): Promise<void> {
   if (shell === 'provider') {
