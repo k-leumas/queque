@@ -439,15 +439,16 @@ export async function providerInitCommand(): Promise<void> {
 
 export interface InitHandlers {
   provider: () => Promise<void>;
-  shell: (shell: string) => void;
+  shell: (shell: string | undefined) => void;
 }
 
 /**
- * The `qq init <shell>` dispatcher (D-05): only the literal `provider` reaches the picker;
- * every other value (`zsh`, unsupported shells) goes to initCommand unchanged.
+ * The `qq init [shell]` dispatcher (D-05, Phase 11 D-08): only the literal `provider` reaches
+ * the picker; every other value (`zsh`, `bash`, unsupported shells, or no argument, which makes
+ * initCommand detect the login shell) goes to initCommand unchanged.
  */
 export async function dispatchInit(
-  shell: string,
+  shell: string | undefined,
   handlers: InitHandlers = { provider: providerInitCommand, shell: initCommand },
 ): Promise<void> {
   if (shell === 'provider') {
