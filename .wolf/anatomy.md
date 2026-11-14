@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T14:18:24.031Z
-> Files: 730 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T15:47:04.739Z
+> Files: 759 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -93,6 +93,18 @@
 - `11-11-pre.sh` (~125 tok)
 - `11-11-rcdry.sh` (~195 tok)
 - `11-11-wolf.sh` — Declares b (~416 tok)
+- `11-11fix-binds.sh` — usage: 11-11fix-binds.sh BASHBIN (~68 tok)
+- `11-11fix-chord.sh` — inside bash:TAG: how do bind -p/-P/-X show a bind -x chord per keymap? (~106 tok)
+- `11-11fix-docker-all.sh` (~96 tok)
+- `11-11fix-docker-binds.sh` — run inside bash:TAG image: sh /s/11-11fix-docker-binds.sh (~78 tok)
+- `11-11fix-docker44.sh` — A "bash binary" for drive.sh that runs bash:${QQ_FIX_TAG:-4.4} in Docker with a TTY. (~108 tok)
+- `11-11fix-gate.sh` — Full gate for the 11-11 fix, bash 5.3 present. (~184 tok)
+- `11-11fix-lone.sh` — usage: 11-11fix-lone.sh REPO BASHBIN  -- when does a lone ? appear? (~217 tok)
+- `11-11fix-msg.txt` (~297 tok)
+- `11-11fix-mutate.sh` — usage: 11-11fix-mutate.sh REPO  -- builds two mutated /w trees in the scratchpad (~226 tok)
+- `11-11fix-probe.sh` — usage: 11-11fix-probe.sh BASHBIN ADAPTER (~146 tok)
+- `11-11fix-screen.sh` — usage: 11-11fix-screen.sh REPO BASHBIN [vi] (~184 tok)
+- `11-11fix-vt.sh` — usage: 11-11fix-vt.sh [vitest args...]  -- runs vitest with MacPorts bash 5.3 and CI=true (~81 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
@@ -485,6 +497,23 @@
 ## .claude/worktrees/agent-a3f8055ae191c3229/tests/pty/
 
 - `drive.sh` — tests/pty/drive.sh: drive an interactive zsh or bash in a private tmux server (Phase 11 D-10). (~794 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/.github/workflows/
+
+- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1870 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/
+
+- `bash-version-check.sh` — Usage: bash-version-check.sh refuse|accept (~1427 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~7181 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11679 tok)
+- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~5384 tok)
 
 ## .claude/worktrees/agent-a69c0cacb81a465ce/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 
@@ -1022,8 +1051,8 @@
 
 ## scripts/ci/
 
-- `bash-version-check.sh` — `bash-version-check.sh refuse|accept`, the Phase 11 D-12 check inside one official `bash:<tag>` image (repo at /w, read-only): a non-interactive source is silent; refuse = one `needs bash 5.0+` line and no `_qq_question`; accept = function defined and `?` in `bind -m emacs -X`. POSIX sh (busybox); run by the ci.yml `bash-versions` job on bash:3.2, 4.4 (refuse) and 5.0 (accept) (11-09). (~930 tok)
 - `auto-revert.sh` — D-15 smoke auto-revert (bash, env-only inputs REPO, BRANCH, HEAD_SHA, BEFORE_SHA, RUN_ID, RUN_URL, ARTIFACTS_DIR, GH_TOKEN). Last green = branch push run with smoke passed, then first-parent ancestor by head_sha, then the before SHA, then the merge base with main; else ::warning::. Restores the tree on `auto-revert/<branch, / to ->` with workflow files kept at HEAD (GITHUB_TOKEN cannot push them), force-pushes, then gh pr edit+comment if open else create. Body: failing jobs, run URL, doctor.json and log tails, sanitized, 60000-char cap (10-07). (~3562 tok)
+- `bash-version-check.sh` — `bash-version-check.sh refuse|accept`, the Phase 11 D-12 check inside one official `bash:<tag>` image (repo at /w, read-only): a non-interactive source is silent; refuse = one `needs bash 5.0+` line and no `_qq_question`; accept = function defined and `?` in `bind -m emacs -X`. POSIX sh (busybox); run by the ci.yml `bash-versions` job on bash:3.2, 4.4 (refuse) and 5.0 (accept) (11-09). (~930 tok)
 - `code-changed.mjs` — CI doc-only path filter: `isDocOnlyPath` (`*.md`, LICENSE, .planning/, .wolf/, docs/, .github/ISSUE_TEMPLATE/), `codeChanged(paths)`. Base is QQ_CHANGES_BASE (non-zero, present), else resolveBaseRef().mergeBase. Writes `code=true|false` to $GITHUB_OUTPUT and fails open to true; exits 1 only if $GITHUB_OUTPUT is unwritable (10-05). (~790 tok)
 - `install-distro-deps.sh` — POSIX sh, run as root: installs git, zsh, jq, expect, procps and Node 24 per /etc/os-release ID (apk on alpine; nodejs.org tarball checked against SHASUMS256.txt on ubuntu/debian; dnf nodejs24 on fedora; pacman nodejs-lts-krypton on arch), plus pnpm from packageManager unless --no-pnpm. Exits 2 unsupported distro, 3 install failure, 64 usage (10-01). (~1156 tok)
 - `test-in-distro.sh` — `test-in-distro.sh IMAGE [vitest args]`: pipes `git archive HEAD` into `docker run`, then install-distro-deps, `pnpm install --frozen-lockfile`, and `pnpm test:run` or `vitest run ARGS`. D-16: without Docker it warns and exits 0 locally, exits 1 with CI set (10-01). (~450 tok)
@@ -1121,8 +1150,8 @@
 - `command-words.ts` — Hand lexer (`lexHand`: quotes, escapes, `\`-newline continuations removed, heredoc bodies skipped up to the delimiter line, substitutions, redirs, placeholders, comments) + `commandWords` classifier (WRAPPERS with short+long value options, PRECOMMAND_OPTIONS for `exec`/`command`, quoted wrapper operands with whitespace recursed as command strings, explicit lookup-only mode for `command -v|-V` and LOOKUP_BUILTINS type/which/whence/where, reserved words, builtins) + safe `extractCommandWords` (Phase 9, D-03). (~4666 tok)
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~1050 tok)
-- `instant-frame-spec.ts` — D-04 instant-frame reference shared by every adapter (11-06): escape constants, `inlineScrollReserve`, `INSTANT_FRAME_VIEWPORT_LINES` (18), `INSTANT_FRAME_LOADING_TEXT`, `MODAL_MAX_COLUMNS`, `INSTANT_FRAME_SPEC`, and the oracle `instantFrameRows` / `inlineInstantFrameBytes` / `paneInstantFrameBytes`. Imports nothing from client or ui; src/client/instant-frame.ts re-exports from it. Change it together with both adapters (tests/instant-frame-parity.test.ts). (~1570 tok)
 - `environment-shape.ts` — collectEnvironmentShape(input?) maps platform/arch/os-release ID/QQ_ZSH_VERSION/node major/ZELLIJ onto the telemetry enums; an unknown ID becomes `other`; returns null if the shape would not validate. Injectable env, platform, arch, nodeVersion, readOsRelease (10-10). (~868 tok)
+- `instant-frame-spec.ts` — D-04 instant-frame reference shared by every adapter (11-06): escape constants, `inlineScrollReserve`, `INSTANT_FRAME_VIEWPORT_LINES` (18), `INSTANT_FRAME_LOADING_TEXT`, `MODAL_MAX_COLUMNS`, `INSTANT_FRAME_SPEC`, and the oracle `instantFrameRows` / `inlineInstantFrameBytes` / `paneInstantFrameBytes`. Imports nothing from client or ui; src/client/instant-frame.ts re-exports from it. Change it together with both adapters (tests/instant-frame-parity.test.ts). (~1570 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. Phase 10: also exports telemetryConfigSchema (`telemetry: { enabled, asked, installId? }`) (10-04). (~1899 tok)
 - `shell-registry.ts` — One per-shell registry (Phase 11 D-02/D-08, 11-04; `src/shared/shell-registry.ts`): `ShellSpec`, `SHELL_SPECS` (zsh, bash; fish not shipped), `getShellSpec`, `shippedShellNames()`, `detectShell(input)`, `resolveAdapterPath(spec)` (Homebrew `share/queque/<adapter>` first, else the package `shell/` dir next to dist), `HOMEBREW_PREFIXES`, the zsh/bash floors (`BASH_FAIL_BELOW = '5.0'`, `BASH_WARN_BELOW = '5.1'`), `parseShellVersion`/`versionBelow`, `BASH_LOGIN_FILES`, `BASHRC_SOURCE_RE`, `loginFileSourcesBashrc`. Every fact `qq init` and `qq doctor` need about a shell. (~1900 tok)
@@ -1148,12 +1177,8 @@
 
 ## tests/
 
-- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01) via `bash -i -c` (job-control notices filtered): b1-b7 basics (11-01), b8-b9 instant-frame placement (11-06), b10-b17 + b21 tool handoff, prewarm, hostile aliases, cleanup after cancel and client crash, b18-b20 + b22-b23 Zellij with a fake `zellij` incl. mkfifo and launcher failures (11-07). (~9900 tok)
-- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, 11-06): oracle cases, src/shared layering guard, `ADAPTERS` (zsh, bash; fish in Phase 12) x 23 FIXTURES compared as hex via temp files. (~2980 tok)
-- `shell-names-invariant.test.ts` — Every `SHELL_NAMES` entry appears in `shellRequestSchema`, `SHELL_SPECS`, `SHELL_KINDS` and `DOCTOR_CHECK_IDS`; shipped shells are exactly zsh and bash and their adapter files exist (Phase 11 D-02, 11-10). Phase 12 flips fish here. (~600 tok)
-- `shell-pty.test.ts` — Real-PTY scenarios for zsh and bash (`PTY_SHELLS`) through tests/pty/drive.sh and a private tmux server: round-trip, cancel, empty, multibyte, vi-insert, paste, prompt-multiline, errexit (11-01), handoff-quiet, hostile-env (11-07). Builds the real bundle into a temp QQ_DEV_ROOT and uses QQ_TEST_RESULT_MODE fixture mode; diagnostics are single-line. (~4080 tok)
-- `shell-registry.test.ts` — Unit tests for `src/shared/shell-registry.ts` (11-04): specs, detection, version parsing and floors, login-file sourcing, adapter path resolution. (~1820 tok)
 - `auto-revert.test.ts` — 13 tests for scripts/ci/auto-revert.sh against temp repos (bare remote, merge commit) with the gh double on PATH; skips without bash (10-07). (~4620 tok)
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01) via `bash -i -c` (job-control notices filtered): b1-b7 basics (11-01), b8-b9 instant-frame placement (11-06), b10-b17 + b21 tool handoff, prewarm, hostile aliases, cleanup after cancel and client crash, b18-b20 + b22-b23 Zellij with a fake `zellij` incl. mkfifo and launcher failures (11-07). (~9900 tok)
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (a) the lbuffer never filters (G-09.1-5: `noMatch` is the regression oracle); (d) a matching lbuffer `smt2` draws and reports the full list (G-09.1-5); (e) "header row" (plain, flagged, matching lbuffer; all draw query ''): pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases; `mountStream` helper and the 09.1-07 streamed-rows describe (D-06 to D-10, D-16, D-17); G-09.1-5 Pitfall 9 rewrite (the lbuffer never filters streamed rows, FILTER shows the placeholder); WR-04 (lbuffer `gr`, typed `grep` survives a non-matching first row, never `grgrep`); WR-05 (a later list without the highlighted row keeps the highlight position; typing/Backspace move it to row 0); WR-06 (typed `grep`, up/down on an empty filtered list, then a matching row arrives highlighted); `filterLine` helper + the `G-09.1-5: FILTER opens empty` describe (UAT case `show me how to use z3` + typed `smt`, empty lbuffer, typed text equal to the lbuffer); CR-01 one-chunk Backspace describe (`ab`+2 DEL, `a`+DEL, mid-stream `smtx`+DEL / `q`+DEL, each ONE stdin push); CR-01 invariance `it.each` (Down+Enter, corrected filter+Enter, moved highlight+typed key, filtered Down+Enter, empty-filter Backspace, Down+Tab+DEL+Enter on a flagged row: one key per read vs one read insert the same row) (~13900 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search (initialQuery never filters, a typed query does), `G-09.1-5 FILTER opens empty` describe (query state '' whatever initialQuery is; supersedes 03.1 D-01/D-02), zero-match Enter guard via typed `zzz`, Tab install toggle, Enter/Esc, effect count (2; WR-05 moved the query reset into the key handlers). Cannot see effect ordering — use candidate-select-layout.test.tsx for that.; CR-01 same-closure case (typed text + Backspace on one handler closure); CR-01 same-closure Down+Enter (wrapping navigation) and Tab+Enter (Tab install form) cases (~6650 tok)
@@ -1182,6 +1207,7 @@
 - `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
+- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, 11-06): oracle cases, src/shared layering guard, `ADAPTERS` (zsh, bash; fish in Phase 12) x 23 FIXTURES compared as hex via temp files. (~2980 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `lsof-busybox.test.ts` — Defect 1 regression: parseLsofPidList cases, plus a fake busybox `lsof` on PATH (written and warmed once in beforeAll, sacrificial pid via QQ_FAKE_LSOF_PID) naming a `sleep 30` child that must survive replaceStaleListener; both replace tests assert the `lsof output ignored` log (10-01, bug-428). (~1170 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
@@ -1199,6 +1225,9 @@
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `semantic-release-user-notes.test.ts` — Declares repo; covers commit parsing, notes formatting, generateNotes (incl. CI credential URL) and normalizeRepositoryUrl cases (userinfo, git+, ssh, scp, trailing slash). (~3500 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
+- `shell-names-invariant.test.ts` — Every `SHELL_NAMES` entry appears in `shellRequestSchema`, `SHELL_SPECS`, `SHELL_KINDS` and `DOCTOR_CHECK_IDS`; shipped shells are exactly zsh and bash and their adapter files exist (Phase 11 D-02, 11-10). Phase 12 flips fish here. (~600 tok)
+- `shell-pty.test.ts` — Real-PTY scenarios for zsh and bash (`PTY_SHELLS`) through tests/pty/drive.sh and a private tmux server: round-trip, cancel, empty, multibyte, vi-insert, paste, prompt-multiline, errexit (11-01), handoff-quiet, hostile-env (11-07). Builds the real bundle into a temp QQ_DEV_ROOT and uses QQ_TEST_RESULT_MODE fixture mode; diagnostics are single-line. (~4080 tok)
+- `shell-registry.test.ts` — Unit tests for `src/shared/shell-registry.ts` (11-04): specs, detection, version parsing and floors, login-file sourcing, adapter path resolution. (~1820 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d); adapters (b) model-call markers include `'messages.stream('` (09.1-04) (~2580 tok)
 - `structured-output.test.ts` — ModelTurn: turn, timeout, fired (~1991 tok)
 - `telemetry-buffer.test.ts` — Gating (CI, DO_NOT_TRACK, disabled, no id, null endpoint), byte-exact pending, fixed properties, environment dedupe, threshold, cap with an in-flight send, fake-timer interval with hasRef false, drop on failure, install-id filter, reset, count-only debug log (10-06). (~2913 tok)

@@ -4251,3 +4251,37 @@
 | 08:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-initdry.sh | — | ~247 |
 | 08:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-rcdry.sh | — | ~195 |
 | 08:20 | 11-11 Task 1: phase gate green with bash 5.3 (1849/1849, CI=true); anatomy real-path entries applied; checkpoint for macOS UAT + CI | .wolf/anatomy.md | ok | ~3k |
+| 08:20 | Session end: 257 writes across 119 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 25 reads | ~197972 tok |
+| 09:15 | Session end: 257 writes across 119 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 25 reads | ~197972 tok |
+| 09:35 | Session end: 257 writes across 119 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 25 reads | ~197972 tok |
+| 09:35 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-binds.sh | — | ~68 |
+| 09:35 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-docker-binds.sh | — | ~78 |
+| 09:36 | Edited .claude/worktrees/agent-a42288e8a0c40af47/shell/bash/queque.bash | modified 0() | ~438 |
+| 09:36 | Edited .claude/worktrees/agent-a42288e8a0c40af47/shell/bash/queque.bash | modified _qq_old_bash_hint() | ~111 |
+| 09:37 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-probe.sh | — | ~146 |
+| 09:37 | Edited .claude/worktrees/agent-a42288e8a0c40af47/tests/bash-widget.test.ts | expanded (+16 lines) | ~393 |
+| 09:37 | Edited .claude/worktrees/agent-a42288e8a0c40af47/tests/bash-widget.test.ts | "?" → "??" | ~27 |
+| 09:38 | Edited .claude/worktrees/agent-a42288e8a0c40af47/tests/shell-pty.test.ts | modified do() | ~35 |
+| 09:38 | Edited .claude/worktrees/agent-a42288e8a0c40af47/tests/shell-pty.test.ts | modified do() | ~28 |
+| 09:38 | Edited .claude/worktrees/agent-a42288e8a0c40af47/tests/shell-pty.test.ts | added optional chaining | ~752 |
+| 09:38 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-screen.sh | — | ~184 |
+| 09:39 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-docker44.sh | — | ~108 |
+| 09:39 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-lone.sh | — | ~217 |
+| 09:40 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | added nullish coalescing | ~110 |
+| 09:40 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | expanded (+7 lines) | ~203 |
+| 09:40 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | added nullish coalescing | ~265 |
+| 09:40 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | modified section() | ~55 |
+| 09:41 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-mutate.sh | — | ~226 |
+| 09:41 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-chord.sh | — | ~106 |
+| 09:41 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | 2→4 lines | ~87 |
+| 09:42 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | "$PROBE; for m in emacs vi" → "$PROBE; echo __qq_chord__" | ~15 |
+| 09:42 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | 6→4 lines | ~47 |
+| 09:42 | Edited .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/bash-version-check.sh | 2→2 lines | ~47 |
+| 09:43 | Edited .claude/worktrees/agent-a42288e8a0c40af47/.github/workflows/ci.yml | 2→3 lines | ~72 |
+| 09:43 | Edited .claude/worktrees/agent-a42288e8a0c40af47/shell/bash/queque.bash | 3→5 lines | ~120 |
+| 09:44 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-vt.sh | — | ~81 |
+| 09:44 | Edited .claude/worktrees/agent-a42288e8a0c40af47/tests/bash-widget.test.ts | 4→9 lines | ~182 |
+| 09:45 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-gate.sh | — | ~184 |
+| 09:46 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-docker-all.sh | — | ~96 |
+| 09:47 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-msg.txt | — | ~317 |
+| 09:50 | 11-11 UAT fix merged (012bef1): ?? warns on bash<5; D-12 amendment logged; gate green (prewarm load flake passes alone) | shell/bash/queque.bash, scripts/ci/bash-version-check.sh | ok | ~10k |
