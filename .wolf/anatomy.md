@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T15:47:04.739Z
-> Files: 759 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T15:57:33.012Z
+> Files: 764 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -105,6 +105,10 @@
 - `11-11fix-probe.sh` — usage: 11-11fix-probe.sh BASHBIN ADAPTER (~146 tok)
 - `11-11fix-screen.sh` — usage: 11-11fix-screen.sh REPO BASHBIN [vi] (~184 tok)
 - `11-11fix-vt.sh` — usage: 11-11fix-vt.sh [vitest args...]  -- runs vitest with MacPorts bash 5.3 and CI=true (~81 tok)
+- `11-11fix2-b2.sh` (~159 tok)
+- `11-11fix2-proto.sh` (~210 tok)
+- `11-11fix2-rc` (~69 tok)
+- `11-11fix2-rc2` (~96 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
@@ -441,6 +445,10 @@
 ## .claude/worktrees/agent-a1536771d36d290f8/src/client/
 
 - `tool-handoff.ts` — Fixed sibling filenames a shell adapter's `??` widget writes next to request.json (~1371 tok)
+
+## .claude/worktrees/agent-a1b3b715f798c3738/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~7482 tok)
 
 ## .claude/worktrees/agent-a337e7a5046250a2b/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 

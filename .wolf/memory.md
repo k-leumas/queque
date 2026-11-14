@@ -4285,3 +4285,11 @@
 | 09:46 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-docker-all.sh | — | ~96 |
 | 09:47 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix-msg.txt | — | ~317 |
 | 09:50 | 11-11 UAT fix merged (012bef1): ?? warns on bash<5; D-12 amendment logged; gate green (prewarm load flake passes alone) | shell/bash/queque.bash, scripts/ci/bash-version-check.sh | ok | ~10k |
+| 09:50 | Session end: 287 writes across 131 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 26 reads | ~204460 tok |
+| 09:55 | Session end: 287 writes across 131 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 26 reads | ~204460 tok |
+| 09:55 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix2-rc | — | ~69 |
+| 09:56 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix2-proto.sh | — | ~210 |
+| 09:56 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix2-rc2 | — | ~96 |
+| 09:57 | Edited .claude/worktrees/agent-a1b3b715f798c3738/shell/bash/queque.bash | added 1 condition(s) | ~747 |
+| 09:57 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix2-b2.sh | — | ~159 |
+| 10:02 | reverted cab3e59 (old-bash ?? warning) per user: old bash = startup line only; gate 1849/1849, docker 3.2/4.4 refuse + 5.0 accept pass | shell/bash/queque.bash | ok | ~5k |
