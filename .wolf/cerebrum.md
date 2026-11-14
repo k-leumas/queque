@@ -206,6 +206,12 @@
 - [2026-11-14] In the Bash tool `command -v node` prints `node` (nvm function); env -i scripts need `whence -p node`.
 - [2026-11-14] Instant frame (D-04): change src/shared/instant-frame-spec.ts, shell/zsh/queque.zsh and shell/bash/queque.bash together; tests/instant-frame-parity.test.ts fails on byte drift (fish adds an ADAPTERS row in Phase 12). src/shared must not import client/ui/cli/daemon (static guard there).
 - [2026-11-14] bash `local LC_ALL=C.UTF-8 2>/dev/null` in a function switches ${#var}/${var:o:n} to characters and restores on return. macOS [[:cntrl:]] strips C0/DEL/C1 but not U+2028 (glibc does) — keep cross-shell fixtures to C0, DEL, ESC, C1.
+- [2026-11-14] Telemetry environment shape takes the shell from request.json, not env; QQ_ZSH_VERSION is read only for shell=zsh; a request without shell reports zsh (D-02). SHELL_KINDS (telemetry allow list) must equal SHELL_NAMES.
+- [2026-11-14] FIFO data is dropped once no end is open: open the read end (`{ exec {fd}<>"$f"; } 2>/dev/null`, quiet and checkable) BEFORE launching a detached writer, or a fast-failing launcher loses its sentinel. A bare `exec {fd}<>"$f" 2>/dev/null` redirects the shell's stderr for good.
+- [2026-11-14] macOS (BSD) `printenv A B` prints only A — one printenv per name in tests.
+- [2026-11-14] bash `( { ...; } </dev/null >/dev/null 2>&1 & )` inside bind -x gives no job notice (5.3 too); bash 5.3 `compgen -c` sees binaries created after the hash table was primed.
+- [2026-11-14] bash 5.3 `bind -m KEYMAP -X` prints `"?" "_qq_question"` (no colon); `bind -X` lists only bind -x bindings, readline functions come from `bind -p`; bash 3.2 has no -X and prints ESC[?1034h on the next line. `bash -ic` probes expand user aliases: use `builtin printf`/`builtin bind`/`command grep`.
+- [2026-11-14] A doctor report has one target shell: 12 rows for zsh and Linux bash, 13 for macOS bash; never compare checks.length with DOCTOR_CHECK_IDS.length (fish reserved, not emitted). In the Bash tool, `qq doctor --shell bash` sees /bin/bash 3.2 unless /opt/local/bin is first on PATH.
 
 ## Do-Not-Repeat
 - [2026-11-13] Plan acceptance criteria must not use `git diff HEAD~1 HEAD` (or any relative `HEAD~N`): `verify.plan-structure` fails it as plan-criteria R6 (parallel sessions move HEAD). Name the commit: `git show --name-only --format= <sha>`. Also: adding a zod field with `.default()` makes it REQUIRED on the output type, so every hand-built literal typed as that schema's type (tests/intent-router.test.ts, tests/context-pipeline.test.ts for NormalizedRequest) needs the field or `pnpm typecheck` fails.
@@ -273,6 +279,10 @@
 - [2026-11-14] Keep `it('name', () => {` titles short and pass timeouts through describe options; a trailing timeout arg makes biome wrap the title and breaks grep-based acceptance criteria.
 - [2026-11-14] When an acceptance criterion greps a literal (`grep -cF "LLMAdapter = {"`), write that literal in the test; a regex spelling doesn't match grep -F.
 - [2026-11-14] Timing-budget tests (command-words-fuzz 1 s per-child kill incl. Node startup; zsh-widget prewarm 2.5 s poll; bash -i -c helper cases ~1 s each) fail when load avg >30 (parallel executors, or a local Ollama llama-server at ~600% CPU). Rerun the file alone before calling it a regression; give bash -i -c describes `{ timeout: 20_000 }`.
+- [2026-11-14] Adding a required field to a strict telemetry payload breaks every hand-built environment fixture: typed SHAPE in telemetry-events.test.ts fails tsc, untyped ENVIRONMENT in telemetry-buffer.test.ts fails only at runtime (buffer drops invalid events). Grep `node_major` across tests.
+- [2026-11-14] Key-link grep patterns need the call on one line; destructure inputs first if biome would wrap it.
+- [2026-11-14] A vitest RED target whose first assertion is `toContain` on a multi-line string breaks tap-flat (tdd-red-evidence invalid_record); assert a one-line scalar with toBe first.
+- [2026-11-14] The worktree Bash guard refuses `node "$S/script.mjs"` with a computed path; use a scratchpad .sh run with `sh FILE`.
 
 ## Decision Log
 

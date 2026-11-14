@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T13:25:55.903Z
-> Files: 672 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T13:50:27.133Z
+> Files: 701 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -45,6 +45,10 @@
 - `11-04-msg.txt` (~16 tok)
 - `11-04-new-task23.txt` — its: initCommand (~2913 tok)
 - `11-04-red.sh` — usage: 11-04-red.sh <test-file> <test-name> <expected> <actual> <out.json> (~211 tok)
+- `11-05-full.sh` (~226 tok)
+- `11-05-guard.sh` (~150 tok)
+- `11-05-msg.txt` (~16 tok)
+- `11-05-red.sh` — usage: 11-05-red.sh <test-file> <-t pattern> <targetTest> <expected> <actual> <record-name> (~287 tok)
 - `11-06-ac1.sh` — Declares inlineInstantFrameBytes (~275 tok)
 - `11-06-ac2.sh` (~200 tok)
 - `11-06-flake.sh` (~182 tok)
@@ -54,6 +58,22 @@
 - `11-06-precommit.sh` (~184 tok)
 - `11-06-run.sh` (~105 tok)
 - `11-06-selfcheck.sh` (~208 tok)
+- `11-07-ac1.sh` (~242 tok)
+- `11-07-ac2.sh` (~248 tok)
+- `11-07-mkred.mjs` — usage: node 11-07-mkred.mjs <tapOut> <exitCode> <command> <targetTest> <expected> <actual> <semantic (~175 tok)
+- `11-07-msg.txt` (~49 tok)
+- `11-07-probe.sh` (~126 tok)
+- `11-07-red1.sh` (~331 tok)
+- `11-07-red2.sh` — Declares was (~374 tok)
+- `11-07-selfcheck.sh` (~152 tok)
+- `11-07-time.sh` (~254 tok)
+- `11-08-ac1.sh` — Declares BASH_BINDINGS_SCRIPT (~264 tok)
+- `11-08-green.py` — zsh below this version cannot run the widget: `zsh` fails (D-20). (~5479 tok)
+- `11-08-live53.sh` (~57 tok)
+- `11-08-msg.txt` (~33 tok)
+- `11-08-probe.sh` (~219 tok)
+- `11-08-red.sh` — usage: 11-08-red.sh <out-json> <test-file> <short-title> <qualified-name> <expected> <actual> (~324 tok)
+- `11-08-script-check.test.ts` — HOME: run (~385 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
@@ -323,6 +343,22 @@
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
+## .claude/worktrees/agent-a0f685ede72cc35a6/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-08-SUMMARY.md` — Phase 11 Plan 08: bash diagnostics in `qq doctor` Summary (~4292 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/src/cli/
+
+- `main.ts` — Exports main (~1576 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/src/cli/commands/
+
+- `doctor.ts` — Unix socket path limits from the Node docs (107 bytes on Linux, 103 on macOS). (~8634 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/tests/
+
+- `doctor.test.ts` — The zsh target's twelve rows, in order (Phase 10; unchanged by Phase 11). (~12044 tok)
+
 ## .claude/worktrees/agent-a12c46af7c526c5d0/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 
 - `11-06-SUMMARY.md` — Phase 11 Plan 06: Instant frame spec and bash painter Summary (~4569 tok)
@@ -357,6 +393,19 @@
 ## .claude/worktrees/agent-a1536771d36d290f8/src/client/
 
 - `tool-handoff.ts` — Fixed sibling filenames a shell adapter's `??` widget writes next to request.json (~1371 tok)
+
+## .claude/worktrees/agent-a337e7a5046250a2b/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-07-SUMMARY.md` — Phase 11 Plan 07: bash tool handoff, prewarm and Zellij pane Summary (~4802 tok)
+
+## .claude/worktrees/agent-a337e7a5046250a2b/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~6770 tok)
+
+## .claude/worktrees/agent-a337e7a5046250a2b/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11317 tok)
+- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~4650 tok)
 
 ## .claude/worktrees/agent-a3f8055ae191c3229/
 
@@ -400,6 +449,10 @@
 ## .claude/worktrees/agent-a3f8055ae191c3229/tests/pty/
 
 - `drive.sh` — tests/pty/drive.sh: drive an interactive zsh or bash in a private tmux server (Phase 11 D-10). (~794 tok)
+
+## .claude/worktrees/agent-a69c0cacb81a465ce/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-05-SUMMARY.md` — Phase 11 Plan 05: Shell-aware telemetry environment Summary (~3753 tok)
 
 ## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
