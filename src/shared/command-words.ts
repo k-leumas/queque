@@ -8,8 +8,10 @@
  *   nested command text, `$(( ))` / `${ }` skipped, redirections, QueQue `<placeholders>`, and
  *   `#` comments emitted as `comment` tokens. `\`-newline continuations are removed and heredoc
  *   bodies (`<<EOF` / `<<-EOF` up to the delimiter line) are skipped as data, never lexed.
- * - `commandWords(tokens, builtins)` — finds every program a command would run and classifies it.
- * - `extractCommandWords(command, builtins)` — the safe entry point: input cap plus try/catch.
+ * - `commandWords(tokens, builtins, depth, shell)` — finds every program a command would run and
+ *   classifies it, reading reserved words from the shell's table (zsh default, Phase 11 D-02).
+ * - `extractCommandWords(command, builtins, shell)` — the safe entry point: input cap plus
+ *   try/catch.
  *
  * Hardening over the spike (model output is untrusted and must never hang or throw):
  * - every `indexOf` cursor clamps -1 to the end of input (ported unchanged);
@@ -18,8 +20,9 @@
  * - recursion into substitutions stops past MAX_RECURSION_DEPTH;
  * - inputs over MAX_COMMAND_LENGTH are skipped.
  *
- * Zero imports and erasable-only syntax on purpose: a Node 24 `.mjs` child process imports this
- * file directly (fuzz harness). Builtins come only from the caller (zsh handoff, D-02).
+ * No runtime imports (the one `import type` is erased) and erasable-only syntax on purpose: a
+ * Node 24 `.mjs` child process imports this file directly (fuzz harness). Builtins come only from
+ * the caller (the shell adapter's handoff, D-02).
  */
 
 import type { ShellName } from '../contracts/shell.js';
@@ -295,8 +298,11 @@ export function lexHand(s: string): ShellToken[] {
   return tokens;
 }
 
-// zsh reserved words that leave us expecting a command word next.
-const RES_EXPECT = new Set([
+// Reserved words that leave us expecting a command word next, per shell (RES_EXPECT_BY_SHELL),
+// and loop keywords whose header is skipped up to `do` (RES_LOOP_BY_SHELL). zsh is the
+// reference; bash drops the zsh-only `nocorrect`, `noglob`, `repeat`, `end` and `foreach`, so
+// they lex as ordinary command words there. Only set membership differs between dialects.
+const ZSH_RES_EXPECT: ReadonlySet<string> = new Set([
   'if',
   'then',
   'else',
@@ -317,7 +323,25 @@ const RES_EXPECT = new Set([
   'repeat',
   'end',
 ]);
-const RES_LOOP = new Set(['for', 'foreach', 'select']);
+const ZSH_ONLY_RES_EXPECT: ReadonlySet<string> = new Set(['nocorrect', 'noglob', 'repeat', 'end']);
+const BASH_RES_EXPECT: ReadonlySet<string> = new Set(
+  [...ZSH_RES_EXPECT].filter((word) => !ZSH_ONLY_RES_EXPECT.has(word)),
+);
+const ZSH_RES_LOOP: ReadonlySet<string> = new Set(['for', 'foreach', 'select']);
+const BASH_RES_LOOP: ReadonlySet<string> = new Set(['for', 'select']);
+
+export const RES_EXPECT_BY_SHELL: Readonly<Record<ShellName, ReadonlySet<string>>> = {
+  zsh: ZSH_RES_EXPECT,
+  bash: BASH_RES_EXPECT,
+  // Phase 12 gives fish its own table (begin, end, and, or, not); until then it reads as bash.
+  fish: BASH_RES_EXPECT,
+};
+export const RES_LOOP_BY_SHELL: Readonly<Record<ShellName, ReadonlySet<string>>> = {
+  zsh: ZSH_RES_LOOP,
+  bash: BASH_RES_LOOP,
+  // Phase 12: fish loops (`for x in …; …; end`) have no `do`; until then it reads as bash.
+  fish: BASH_RES_LOOP,
+};
 const SHELLS = new Set(['bash', 'sh', 'zsh', 'dash', 'ksh', 'fish']);
 const FIND_EXEC = new Set(['-exec', '-execdir', '-ok', '-okdir']);
 
@@ -407,18 +431,22 @@ const ASSIGN_RE = /^[A-Za-z_][A-Za-z0-9_]*(\[[^\]]*\])?\+?=/;
  * Finds every program a token stream would run.
  *
  * @param tokens   token stream from `lexHand`
- * @param builtins shell builtin names (from the zsh handoff — never hardcoded, D-02)
+ * @param builtins shell builtin names (from the shell adapter's handoff — never hardcoded, D-02)
  * @param depth    recursion depth into substitutions / `sh -c` strings
+ * @param shell    dialect whose reserved words apply; recursion keeps the caller's shell
  */
 export function commandWords(
   tokens: readonly ShellToken[],
   builtins: ReadonlySet<string>,
   depth = 0,
+  shell: ShellName = 'zsh',
 ): CommandWord[] {
   const out: CommandWord[] = [];
+  const resExpect = RES_EXPECT_BY_SHELL[shell] ?? ZSH_RES_EXPECT;
+  const resLoop = RES_LOOP_BY_SHELL[shell] ?? ZSH_RES_LOOP;
   const recurse = (text: string): void => {
     if (depth + 1 > MAX_RECURSION_DEPTH) return;
-    out.push(...commandWords(lexHand(text), builtins, depth + 1));
+    out.push(...commandWords(lexHand(text), builtins, depth + 1, shell));
   };
   let expect = true;
   let skipNextWord = false;
@@ -505,8 +533,12 @@ export function commandWords(
     }
 
     if (ASSIGN_RE.test(tok.lead ?? w) && (current === null || WRAPPERS.has(current))) continue;
-    if (!tok.quoted && RES_EXPECT.has(w)) continue;
-    if (!tok.quoted && RES_LOOP.has(w)) {
+    if (!tok.quoted && resExpect.has(w)) {
+      // zsh `repeat N cmd`: the count is not a program.
+      if (w === 'repeat' && tokens[k + 1]?.t === 'word') skipNextWord = true;
+      continue;
+    }
+    if (!tok.quoted && resLoop.has(w)) {
       skipUntil = 'do';
       continue;
     }
@@ -580,12 +612,11 @@ export function commandWords(
 export function extractCommandWords(
   command: string,
   builtins: ReadonlySet<string>,
-  // RED stub (11-03 Task 2): the dialect is not read yet.
-  _shell: ShellName = 'zsh',
+  shell: ShellName = 'zsh',
 ): CommandWord[] {
   if (command.length > MAX_COMMAND_LENGTH) return [];
   try {
-    return commandWords(lexHand(command), builtins);
+    return commandWords(lexHand(command), builtins, 0, shell);
   } catch {
     return [];
   }

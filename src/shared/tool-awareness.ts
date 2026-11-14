@@ -3,16 +3,20 @@ import type { ShellName } from '../contracts/shell.js';
 import { extractCommandWords, lexHand } from './command-words.js';
 
 /**
- * Names zsh can resolve, read from the session-dir handoff (D-01).
+ * Names the user's shell can resolve, read from the session-dir handoff (D-01).
  * The full set stays in the foreground client — never sent over IPC or logged (D-04).
  */
 export interface ToolInventory {
-  /** Keys of zsh `$commands` (external commands on PATH, freshly rehashed). */
+  /** External commands the shell resolves on PATH (zsh `$commands`, bash `compgen -c`). */
   readonly commands: ReadonlySet<string>;
-  /** Keys of zsh `$builtins` — never flagged (D-02). */
+  /** Shell builtins — never flagged (D-02). */
   readonly builtins: ReadonlySet<string>;
-  /** zsh function AND alias names from functions.txt (D-01 amended). */
+  /**
+   * Names the shell resolves that are not on PATH, from functions.txt: functions, aliases and,
+   * for fish later, abbreviations (D-01 amended).
+   */
   readonly functions: ReadonlySet<string>;
+  /** The shell the handoff came from; missing-tool flags use its dialect. Absent means zsh. */
   readonly shell?: ShellName;
 }
 
@@ -20,7 +24,7 @@ export interface ToolInventory {
  * A candidate as displayed in the picker. UI-local: flags never enter the IPC candidate contract.
  */
 export type DisplayCandidate = CommandCandidate & {
-  /** External command words that zsh cannot resolve, in first-seen order. */
+  /** External command words that the shell cannot resolve, in first-seen order. */
   readonly missingTools?: readonly string[];
   /** Install plan for a flagged candidate (09-04): the Tab install form or why there is none. */
   readonly install?: InstallPlan;
@@ -274,7 +278,7 @@ export function planInstall(
 }
 
 /**
- * The single "installed" predicate: a name zsh resolves through `$commands`, functions or aliases.
+ * The single "installed" predicate: a name the shell resolves on PATH, as a function or an alias.
  * Every caller (missing-tool flags, catalog intersection, installer choice) uses this.
  */
 export function isInstalled(inventory: ToolInventory, name: string): boolean {
@@ -288,7 +292,8 @@ export function isInstalled(inventory: ToolInventory, name: string): boolean {
 export function missingTools(command: string, inventory: ToolInventory): string[] {
   const missing: string[] = [];
   const seen = new Set<string>();
-  for (const { word, kind } of extractCommandWords(command, inventory.builtins)) {
+  // An inventory without `shell` (zsh widgets before Phase 11) takes the lexer's zsh default.
+  for (const { word, kind } of extractCommandWords(command, inventory.builtins, inventory.shell)) {
     if (kind !== 'external' || seen.has(word)) continue;
     seen.add(word);
     if (!isInstalled(inventory, word)) missing.push(word);
@@ -297,7 +302,8 @@ export function missingTools(command: string, inventory: ToolInventory): string[
 }
 
 /**
- * Attaches `missingTools` and an install plan to candidates that use a tool zsh cannot resolve.
+ * Attaches `missingTools` and an install plan to candidates that use a tool the shell cannot
+ * resolve.
  * Keeps the model's order and never drops a candidate (SC-3, D-13). A null inventory
  * (handoff unavailable or disabled) returns unflagged copies. The installer is chosen once
  * from the same inventory (D-11); there is no use-before-install or wrong-OS logic (D-07).
