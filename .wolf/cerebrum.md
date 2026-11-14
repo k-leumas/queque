@@ -18,6 +18,7 @@
 - [2026-10-10] Search must never make a row appear/disappear when Tab toggles it: `filterCandidates(candidates, query)` matches the command OR the install form, regardless of toggle (user: keep the row visible after undoing tab).
 - [2026-10-12] FILTER must start empty when the modal opens (UAT 09.1 G-09.1-5, user: "the filter value should be empty upon opening of the modal as the query text is displayed above this"). This supersedes 03.1 D-01/D-02 (lbuffer pre-filter): the lbuffer belongs only in the dim `queque ›` header; text typed during `thinking…` must become the whole filter, never be appended to the lbuffer. Debug session: .planning/debug/modal-filter-prefilled-with-query.md.
 - [2026-10-12] Changelog is for scanning, not tickets: Features / Bug Fixes / Deprecations describe how the product got better. Conventional-commit lists live under `<details>Detailed changes</details>`. Future release notes are LLM-written from the git changeset since the last tag (`scripts/semantic-release-user-notes.ts`); a missing `ANTHROPIC_API_KEY` must not fail the release.
+- [2026-11-14] Run the full test suite after every update, not just touched files (user: "after every update you should be running the test suite to make sure there are no broken tests").
 - [2026-10-10] Load-flaky timing tests (bug-206: fuzz 1 s spawn bound, 25 ms handoff guard): user prefers marking them flaky and re-running validation on an idle machine over loosening guards or moving them to manual-only.
 
 ## Key Learnings
@@ -290,6 +291,7 @@
 - [2026-11-14] A vitest RED target whose first assertion is `toContain` on a multi-line string breaks tap-flat (tdd-red-evidence invalid_record); assert a one-line scalar with toBe first.
 - [2026-11-14] The worktree Bash guard refuses `node "$S/script.mjs"` with a computed path; use a scratchpad .sh run with `sh FILE`.
 - [2026-11-14] In a worktree-isolated agent, `sh script.sh` that runs git is refused as too complex; run each git command as its own Bash call.
+- [2026-11-14] The Bash tool has no controlling tty, so a green gate there can still fail in the user's terminal (lefthook pre-push). Spawn interactive shells in tests with `...NO_TTY` (tests/helpers/shells.ts), and verify tty-sensitive tests under a pty harness: python `pty.fork()` + vitest in `process_group=0` (bug-538).
 - [2026-11-14] In a `bash -c` string `"__qq_$m__"` reads `$m__`; write `${m}__`. Changing adapter binds breaks bash-widget b5 (pins exact bind lines): update it in the same commit.
 
 ## Decision Log

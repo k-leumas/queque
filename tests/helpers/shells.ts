@@ -107,3 +107,12 @@ export function ciRequired<T>(value: T | null, label: string): T | null {
   }
   return null;
 }
+
+/**
+ * Spread into `spawnSync` options for an interactive shell (`bash -i`). A new session has no
+ * controlling terminal, so the shell never grabs the developer's tty: run from a git hook it
+ * printed `initialize_job_control: no job control in background`, or stopped and hung.
+ * Node's spawnSync honors `detached` (UV_PROCESS_DETACHED) though @types/node leaves it out,
+ * hence a spread rather than a literal key.
+ */
+export const NO_TTY = { detached: true } as const;

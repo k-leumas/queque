@@ -40,7 +40,7 @@ import {
   RESTORE_CURSOR,
 } from '../src/shared/instant-frame-spec.js';
 import { MODAL_VIEWPORT_LINES } from '../src/ui/modal-layout.js';
-import { ciRequired, findShell } from './helpers/shells.js';
+import { ciRequired, findShell, NO_TTY } from './helpers/shells.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(__dirname, '..');
@@ -161,6 +161,7 @@ function runAdapter(
       timeout: 10_000,
       env,
       stdio: ['ignore', 'pipe', 'pipe'],
+      ...NO_TTY,
     },
   );
   return { status: result.status ?? 1, stderr: result.stderr ?? '' };

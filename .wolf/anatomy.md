@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T15:57:33.012Z
-> Files: 764 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T19:52:24.622Z
+> Files: 765 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -301,6 +301,7 @@
 - `feedback_no_coauthored.md` (~148 tok)
 - `feedback_no_stub_in_smoke_tests.md` (~267 tok)
 - `feedback_rebase_wolf_conflicts.md` (~225 tok)
+- `feedback_run_full_suite.md` (~269 tok)
 - `feedback_terminology.md` (~163 tok)
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
@@ -1186,7 +1187,7 @@
 ## tests/
 
 - `auto-revert.test.ts` — 13 tests for scripts/ci/auto-revert.sh against temp repos (bare remote, merge commit) with the gh double on PATH; skips without bash (10-07). (~4620 tok)
-- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01) via `bash -i -c` (job-control notices filtered): b1-b7 basics (11-01), b8-b9 instant-frame placement (11-06), b10-b17 + b21 tool handoff, prewarm, hostile aliases, cleanup after cancel and client crash, b18-b20 + b22-b23 Zellij with a fake `zellij` incl. mkfifo and launcher failures (11-07). (~9900 tok)
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11378 tok)
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (a) the lbuffer never filters (G-09.1-5: `noMatch` is the regression oracle); (d) a matching lbuffer `smt2` draws and reports the full list (G-09.1-5); (e) "header row" (plain, flagged, matching lbuffer; all draw query ''): pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases; `mountStream` helper and the 09.1-07 streamed-rows describe (D-06 to D-10, D-16, D-17); G-09.1-5 Pitfall 9 rewrite (the lbuffer never filters streamed rows, FILTER shows the placeholder); WR-04 (lbuffer `gr`, typed `grep` survives a non-matching first row, never `grgrep`); WR-05 (a later list without the highlighted row keeps the highlight position; typing/Backspace move it to row 0); WR-06 (typed `grep`, up/down on an empty filtered list, then a matching row arrives highlighted); `filterLine` helper + the `G-09.1-5: FILTER opens empty` describe (UAT case `show me how to use z3` + typed `smt`, empty lbuffer, typed text equal to the lbuffer); CR-01 one-chunk Backspace describe (`ab`+2 DEL, `a`+DEL, mid-stream `smtx`+DEL / `q`+DEL, each ONE stdin push); CR-01 invariance `it.each` (Down+Enter, corrected filter+Enter, moved highlight+typed key, filtered Down+Enter, empty-filter Backspace, Down+Tab+DEL+Enter on a flagged row: one key per read vs one read insert the same row) (~13900 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search (initialQuery never filters, a typed query does), `G-09.1-5 FILTER opens empty` describe (query state '' whatever initialQuery is; supersedes 03.1 D-01/D-02), zero-match Enter guard via typed `zzz`, Tab install toggle, Enter/Esc, effect count (2; WR-05 moved the query reset into the key handlers). Cannot see effect ordering — use candidate-select-layout.test.tsx for that.; CR-01 same-closure case (typed text + Backspace on one handler closure); CR-01 same-closure Down+Enter (wrapping navigation) and Tab+Enter (Tab install form) cases (~6650 tok)
@@ -1215,7 +1216,7 @@
 - `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
-- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, 11-06): oracle cases, src/shared layering guard, `ADAPTERS` (zsh, bash; fish in Phase 12) x 23 FIXTURES compared as hex via temp files. (~2980 tok)
+- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3424 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `lsof-busybox.test.ts` — Defect 1 regression: parseLsofPidList cases, plus a fake busybox `lsof` on PATH (written and warmed once in beforeAll, sacrificial pid via QQ_FAKE_LSOF_PID) naming a `sleep 30` child that must survive replaceStaleListener; both replace tests assert the `lsof output ignored` log (10-01, bug-428). (~1170 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
@@ -1263,7 +1264,7 @@
 
 ## tests/helpers/
 
-- `shells.ts` — `findShell(name, { min })` (QQ_TEST_BASH / QQ_TEST_ZSH, then PATH, Homebrew (Apple silicon, Intel), MacPorts, system dirs), `findBinary(name)`, `ciRequired(value, label)` (warns locally, throws `is required when CI is set` under CI), `shellVersionOf` (11-01). (~1000 tok)
+- `shells.ts` — `findShell(name, { min })` (QQ_TEST_BASH / QQ_TEST_ZSH, then PATH, Homebrew (Apple silicon, Intel), MacPorts, system dirs), `findBinary(name)`, `ciRequired(value, label)` (warns locally, throws `is required when CI is set` under CI), `shellVersionOf` (11-01), `NO_TTY` spawnSync spread (detached: no controlling tty for `bash -i`). (~1150 tok)
 
 ## tests/live/
 

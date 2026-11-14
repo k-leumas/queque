@@ -4293,3 +4293,13 @@
 | 09:57 | Edited .claude/worktrees/agent-a1b3b715f798c3738/shell/bash/queque.bash | added 1 condition(s) | ~747 |
 | 09:57 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11fix2-b2.sh | — | ~159 |
 | 10:02 | reverted cab3e59 (old-bash ?? warning) per user: old bash = startup line only; gate 1849/1849, docker 3.2/4.4 refuse + 5.0 accept pass | shell/bash/queque.bash | ok | ~5k |
+| 10:03 | Session end: 292 writes across 135 files (reference_local_shells.md, 11-01-env.sh, shell.ts, intent-router.test.ts, context-pipeline.test.ts) | 28 reads | ~222082 tok |
+
+## Session: 2026-11-14 10:58
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 13:46 | Edited tests/bash-widget.test.ts | modified spawnBash() | ~124 |
+| 13:46 | Edited tests/instant-frame-parity.test.ts | 3→5 lines | ~48 |
+| 13:52 | bash -i tests failed in pre-push (tty job control): NO_TTY detached spawn; pty-harness full suite 1849/1849 | tests/helpers/shells.ts, tests/bash-widget.test.ts, tests/instant-frame-parity.test.ts | fixed (bug-538) | ~3000 |
+| 13:52 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_run_full_suite.md | — | ~256 |

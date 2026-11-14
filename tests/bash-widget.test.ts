@@ -52,7 +52,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
 import { paneInstantFrameBytes } from '../src/shared/instant-frame-spec.js';
-import { ciRequired, findBinary, findShell, shellVersionOf } from './helpers/shells.js';
+import { ciRequired, findBinary, findShell, NO_TTY, shellVersionOf } from './helpers/shells.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const adapterPath = join(__dirname, '..', 'shell', 'bash', 'queque.bash');
@@ -108,6 +108,7 @@ function spawnBash(bin: string, args: string[], env: NodeJS.ProcessEnv): Run {
     timeout: 10_000,
     env,
     stdio: ['ignore', 'pipe', 'pipe'],
+    ...NO_TTY,
   });
   return {
     stdout: result.stdout ?? '',
