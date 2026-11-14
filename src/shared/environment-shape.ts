@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import type { z } from 'zod';
+import type { ShellName } from '../contracts/shell.js';
 import {
   type ArchKind,
   DISTRO_IDS,
@@ -25,6 +26,13 @@ export interface EnvironmentShapeInput {
   nodeVersion?: string;
   /** The text of /etc/os-release, or null when it cannot be read. */
   readOsRelease?: () => string | null;
+  shell?: ShellName;
+  shellVersion?: string;
+}
+
+/** RED stub (11-05 Task 1): implemented in GREEN. */
+export function shellMajorMinor(_version: string | undefined): string {
+  throw new Error('shellMajorMinor not implemented');
 }
 
 /** Distro ids that can come from an os-release `ID=` line (`macos` is darwin only). */

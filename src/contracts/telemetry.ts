@@ -46,6 +46,9 @@ export type OsKind = (typeof OS_KINDS)[number];
 export const ARCH_KINDS = ['x64', 'arm64', 'other'] as const;
 export type ArchKind = (typeof ARCH_KINDS)[number];
 
+export const SHELL_KINDS = ['zsh', 'bash', 'fish'] as const;
+export type ShellKind = (typeof SHELL_KINDS)[number];
+
 export const DISTRO_IDS = [
   'macos',
   'ubuntu',
