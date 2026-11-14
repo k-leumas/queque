@@ -353,6 +353,14 @@ export function ensureSelectableCandidates(candidates: CandidateList): Candidate
 }
 
 /**
+ * Phase 11 D-06: one user-prompt line asking for the dialect named in the Shell context.
+ * It lives in the user prompt, not the system prompt, so the warm `claude -p` process
+ * (keyed on the system prompt) is shared by every shell.
+ */
+export const SHELL_SYNTAX_INSTRUCTION =
+  'Write every command in the syntax of the shell named in shellName.';
+
+/**
  * Builds the privacy-filtered user prompt for both the SDK and CLI adapters.
  */
 export function buildPrompt(envelope: ContextEnvelope): string {
