@@ -718,6 +718,65 @@ describe('doctorCommand', () => {
   });
 });
 
+describe('doctorCommand --shell', () => {
+  afterEach(() => {
+    process.exitCode = undefined;
+    vi.restoreAllMocks();
+  });
+
+  function capture(stream: NodeJS.WriteStream): () => string {
+    let out = '';
+    vi.spyOn(stream, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      out += String(chunk);
+      return true;
+    });
+    return () => out;
+  }
+
+  it('prints a bash-target report for shell bash and sets the exit code from it', async () => {
+    const stdout = capture(process.stdout);
+    await doctorCommand({ json: true, shell: 'bash' }, healthyDeps());
+    const parsed = doctorReportSchema.parse(JSON.parse(stdout()));
+    expect(parsed.checks[0]?.id).toBe('bash');
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('exits 1 for a bash below 5.0', async () => {
+    capture(process.stdout);
+    await doctorCommand(
+      { shell: 'bash' },
+      healthyDeps({ shellVersion: async () => '3.2.57(1)-release' }),
+    );
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('refuses fish as coming later: stderr, no report, exit 2', async () => {
+    const stdout = capture(process.stdout);
+    const stderr = capture(process.stderr);
+    await doctorCommand({ shell: 'fish' }, healthyDeps());
+    expect(stderr()).toBe(
+      'qq doctor: fish support is coming in a later release; supported now: zsh, bash\n',
+    );
+    expect(stdout()).toBe('');
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('refuses an unknown shell with the supported list, exit 2', async () => {
+    const stdout = capture(process.stdout);
+    const stderr = capture(process.stderr);
+    await doctorCommand({ shell: 'tcsh' }, healthyDeps());
+    expect(stderr()).toBe('qq doctor: unsupported shell; supported: zsh, bash\n');
+    expect(stdout()).toBe('');
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('keeps auto-detection without --shell', async () => {
+    const stdout = capture(process.stdout);
+    await doctorCommand({ json: true }, bashDeps());
+    expect(JSON.parse(stdout()).checks[0].id).toBe('bash');
+  });
+});
+
 describe('DOCTOR_CHECK_IDS (add, never rename)', () => {
   it('keeps the Phase 10 ids first and appends bash, fish and bash_profile', () => {
     expect(DOCTOR_CHECK_IDS.slice(0, 12)).toEqual(ZSH_IDS);

@@ -835,7 +835,10 @@ export function formatDoctorReport(report: DoctorReport): string {
  * code (1 only for hard blockers). Sets `process.exitCode`, never `process.exit`, so the
  * output flushes before the process ends.
  */
-export async function doctorCommand(options: { json?: boolean }, deps?: DoctorDeps): Promise<void> {
+export async function doctorCommand(
+  options: { json?: boolean; shell?: string },
+  deps?: DoctorDeps,
+): Promise<void> {
   const report = await runDoctorChecks(deps ?? defaultDoctorDeps());
   process.stdout.write(
     options.json ? `${JSON.stringify(report, null, 2)}\n` : formatDoctorReport(report),
