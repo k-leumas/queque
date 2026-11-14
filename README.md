@@ -21,19 +21,22 @@
 
 ```shell
 brew install k-leumas/tap/queque
-qq init zsh && source ~/.zshrc
+qq init
+source ~/.zshrc    # zsh
+source ~/.bashrc   # bash 5 or newer
 ```
 
-`qq init zsh` wires up the `??` keybinding and adds the QueQue source line to the end of `~/.zshrc` itself, so do not redirect its output into the file.
+`qq init` detects your shell, wires up the `??` keybinding and adds the QueQue source line to the end of your rc file itself, so nothing needs to be redirected into it.
 
-Or with npm (needs zsh, Node.js 24 or newer and jq):
+Or with npm (needs zsh or bash 5+, Node.js 24 or newer and jq):
 
 ```shell
 npm install -g @k-leumas/queque-cli
-qq init zsh && source ~/.zshrc
+qq init
+source ~/.zshrc    # or: source ~/.bashrc
 ```
 
-See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for the full requirements.
+On macOS, `/bin/bash` is 3.2, too old for `??`: bash users run `brew install bash` first. See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for the full requirements, the macOS bash notes and how to undo `qq init`.
 
 ## Choose a provider
 
@@ -57,7 +60,7 @@ See [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md) for filt
 
 ## More
 
-- [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md): requirements, Homebrew and npm.
+- [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md): requirements, Homebrew and npm, zsh and bash, undoing `qq init`.
 - [Choose a provider](https://github.com/k-leumas/queque/blob/main/docs/PROVIDERS.md): Claude Code login, API keys, OpenAI and Ollama (beta), restarting the daemon.
 - [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md): the picker, installed-tool awareness, Zellij.
 - [Privacy](https://github.com/k-leumas/queque/blob/main/docs/PRIVACY.md): what leaves your machine, debug logging, opt-in anonymous telemetry.
