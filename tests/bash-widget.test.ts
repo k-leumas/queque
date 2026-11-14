@@ -709,10 +709,16 @@ command sleep 0.5`,
       expect(existsSync(marker)).toBe(false);
     });
 
-    it.each([
-      ['a cancel result', 'cancel'],
-      ['a client crash (exit 3, no result)', 'crash'],
-    ])('b21: after %s the line is restored and the session dir is removed', (_name, mode) => {
+    it('b21: after a cancel result the line is restored and the session dir is removed', () => {
+      expectCleanExit('cancel');
+    });
+
+    it('b21: after a client crash (exit 3, no result) the line is restored, the dir removed', () => {
+      expectCleanExit('crash');
+    });
+
+    /** b21: one trigger with the writer active and the QQ_DEV_ROOT client in `mode`. */
+    function expectCleanExit(mode: 'cancel' | 'crash'): void {
       const root = fakeDevRoot();
       const log = join(scratch, `b21-${mode}.log`);
       const run = runInteractiveBash(
@@ -733,6 +739,6 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
       const session = sessionDirFromLog(log);
       expect(session).not.toBe('');
       expect(pollUntil(() => !existsSync(session), 3000)).toBe(true);
-    });
+    }
   },
 );
