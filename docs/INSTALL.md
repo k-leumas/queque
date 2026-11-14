@@ -42,7 +42,7 @@ source ~/.zshrc
 
 ### bash
 
-QueQue needs bash 5.0 or newer for the `??` trigger. `qq init bash` checks the bash you use and refuses an older one; an older bash that sources the script prints `queque: the ?? trigger needs bash 5.0+` and does nothing else.
+QueQue needs bash 5.0 or newer for the `??` trigger. `qq init bash` checks the bash you use and refuses an older one; an older bash that sources the script prints `queque: the ?? trigger needs bash 5.0+` once at startup, and typing `??` there keeps both `?` on the line and prints `queque: bash 5.0 or newer is needed for the ?? trigger` (on macOS with the `brew install bash` fix). On bash 3.2 a single `?` appears only after the next key you type; on bash 4.4 after half a second.
 
 ```shell
 qq init bash

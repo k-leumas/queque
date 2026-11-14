@@ -411,3 +411,57 @@ describe.each(PTY_SHELLS)('$name ?? in a PTY', (row) => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// bash below 5.0 (D-12 as amended in the 11-11 UAT): the startup line, then `??` warns and
+// both `?` stay on the line. Needs a bash < 5 at /bin/bash or /usr/bin/bash (macOS 3.2); CI's
+// Linux runners have none, and the `bash-versions` job checks 3.2 and 4.4 in Docker instead,
+// so this skips there the way bash-widget b2 does.
+// ---------------------------------------------------------------------------
+
+const oldBash =
+  ['/bin/bash', '/usr/bin/bash'].find((bin) => {
+    if (!existsSync(bin)) return false;
+    const version = shellVersionOf(bin);
+    return version !== null && version[0] < 5;
+  }) ?? null;
+
+describe.skipIf(oldBash === null || tmux === null)(
+  `bash below 5.0 ?? warning in a PTY (${oldBash ?? 'not found'})`,
+  { timeout: TEST_TIMEOUT_MS },
+  () => {
+    const row: PtyShell = { name: 'bash', bin: oldBash, adapter: 'shell/bash/queque.bash' };
+    const version = oldBash ? shellVersionOf(oldBash) : null;
+    const fix =
+      process.platform === 'darwin' ? ': brew install bash (or sudo port install bash)' : '';
+    const warning =
+      'queque: bash 5.0 or newer is needed for the ?? trigger ' +
+      `(this is bash ${version?.[0]}.${version?.[1]})${fix}`;
+
+    beforeAll(() => {
+      // The PTY_SHELLS beforeAll sets these up only when a bash 5 or zsh row is runnable.
+      if (scratch) return;
+      scratch = mkdtempSync(join(tmpdir(), 'qq-pty-'));
+      home = join(scratch, 'home');
+      mkdirSync(home, { recursive: true });
+    });
+
+    for (const mode of ['emacs', 'vi-insert'] as const) {
+      it(`${mode}: ?? prints the warning and keeps both ? on the line`, () => {
+        const session = startShell(row, { rc: mode === 'emacs' ? [] : ['set -o vi'] });
+        const startup = screenLines(session).filter((line) => line.includes('needs bash 5.0+'));
+        expect(startup).toHaveLength(1);
+        drive(session, 'type', "echo 'qq??");
+        waitForLine(session, (line) => line === warning);
+        waitForPromptLine(session, `${PROMPT}echo 'qq??`);
+        // A lone `?` waits for the next key on 3.2 (keyseq-timeout on 4.4), then self-inserts.
+        drive(session, 'type', "' 'x?y'");
+        waitForPromptLine(session, `${PROMPT}echo 'qq??' 'x?y'`);
+        drive(session, 'key', 'Enter');
+        waitForLine(session, (line) => line === 'qq?? x?y');
+        expect(screenLines(session).filter((line) => line === warning)).toHaveLength(1);
+        expect(readLog(session)).not.toContain('trigger fired');
+      });
+    }
+  },
+);
