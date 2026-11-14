@@ -17,7 +17,7 @@ import {
   doctorExitCode,
   doctorReportSchema,
 } from '../../contracts/doctor.js';
-import type { ShellName } from '../../contracts/shell.js';
+import { isShellName, type ShellName } from '../../contracts/shell.js';
 import { pingDaemonFetchCap, tryConnect } from '../../daemon/bootstrap.js';
 import { type DetectedProvider, detectProvider } from '../../providers/detect.js';
 import { loadProviderPin, type ProviderPinState } from '../../providers/provider-pin.js';
@@ -28,6 +28,7 @@ import {
   loginFileSourcesBashrc,
   parseShellVersion,
   type ShellSpec,
+  shippedShellNames,
   versionBelow,
 } from '../../shared/shell-registry.js';
 import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
@@ -831,15 +832,34 @@ export function formatDoctorReport(report: DoctorReport): string {
 }
 
 /**
- * `qq doctor [--json]`: prints the checklist or the JSON report to stdout and sets the exit
- * code (1 only for hard blockers). Sets `process.exitCode`, never `process.exit`, so the
- * output flushes before the process ends.
+ * `qq doctor [--json] [--shell <name>]`: prints the checklist or the JSON report to stdout and
+ * sets the exit code (1 only for hard blockers). `--shell` picks the target shell; a shell that
+ * is not shipped yet (fish) or not a shell name is a usage error: one line on stderr, no
+ * report, exit 2 (exit 1 stays reserved for hard blockers). The rejected value is never echoed.
+ * Sets `process.exitCode`, never `process.exit`, so the output flushes before the process ends.
  */
 export async function doctorCommand(
   options: { json?: boolean; shell?: string },
   deps?: DoctorDeps,
 ): Promise<void> {
-  const report = await runDoctorChecks(deps ?? defaultDoctorDeps());
+  const supported = shippedShellNames().join(', ');
+  let shell: ShellName | undefined;
+  if (options.shell !== undefined) {
+    if (!isShellName(options.shell)) {
+      process.stderr.write(`qq doctor: unsupported shell; supported: ${supported}\n`);
+      process.exitCode = 2;
+      return;
+    }
+    if (!getShellSpec(options.shell).shipped) {
+      process.stderr.write(
+        `qq doctor: ${options.shell} support is coming in a later release; supported now: ${supported}\n`,
+      );
+      process.exitCode = 2;
+      return;
+    }
+    shell = options.shell;
+  }
+  const report = await runDoctorChecks(deps ?? defaultDoctorDeps(), { shell });
   process.stdout.write(
     options.json ? `${JSON.stringify(report, null, 2)}\n` : formatDoctorReport(report),
   );

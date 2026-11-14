@@ -108,8 +108,12 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
   cli
     .command('doctor', 'Check this machine for problems that stop ??')
     .option('--json', 'Print the report as JSON')
-    .action(async (options: { json?: boolean }) => {
-      await doctorCommand({ json: options.json });
+    .option(
+      '--shell <name>',
+      'Check the ?? setup for this shell (zsh or bash; default: your login shell)',
+    )
+    .action(async (options: { json?: boolean; shell?: string }) => {
+      await doctorCommand({ json: options.json, shell: options.shell });
     });
 
   cli
