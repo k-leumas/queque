@@ -5,7 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { build, type Options } from 'tsup';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import tsupConfig from '../tsup.config.js';
-import { ciRequired, findBinary, findShell } from './helpers/shells.js';
+import { ciRequired, findBinary, findShell, shellVersionOf } from './helpers/shells.js';
 
 // ---------------------------------------------------------------------------
 // PTY round trips for every shell adapter (Phase 11 D-02, D-10; BASH-01).
@@ -84,6 +84,14 @@ interface Session {
   log: string;
 }
 
+/**
+ * Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line
+ * or nested-quote error message makes vitest's TAP output malformed (cerebrum 2026-10-08).
+ */
+function oneLine(text: string, lastLines = 12): string {
+  return text.trimEnd().split('\n').slice(-lastLines).join(' | ').replace(/["\\]/g, "'");
+}
+
 function drive(session: Session, ...args: string[]): string {
   const run = spawnSync('bash', [DRIVE, args[0] ?? '', session.server, ...args.slice(1)], {
     encoding: 'utf8',
@@ -91,7 +99,7 @@ function drive(session: Session, ...args: string[]): string {
     timeout: TEST_TIMEOUT_MS,
   });
   if (run.status !== 0) {
-    throw new Error(`drive.sh ${args.join(' ')} failed (${run.status}): ${run.stderr}`);
+    throw new Error(`drive.sh ${args.join(' ')} failed (${run.status}): ${oneLine(run.stderr)}`);
   }
   return run.stdout;
 }
@@ -111,7 +119,7 @@ function waitForLine(session: Session, match: (line: string) => boolean, seconds
     if (lines.some(match)) return lines;
     sleepMs(50);
   }
-  throw new Error(`timed out waiting for a matching line; last screen:\n${lines.join('\n')}`);
+  throw new Error(`timed out waiting for a matching line; screen: ${oneLine(lines.join('\n'))}`);
 }
 
 interface StartOptions {
@@ -186,20 +194,177 @@ afterAll(() => {
   if (scratch) rmSync(scratch, { recursive: true, force: true });
 });
 
+/** Polls the debug log until it contains `fixed` (the client has finished writing its result). */
+function waitForLog(session: Session, fixed: string, seconds = 20): void {
+  const deadline = Date.now() + seconds * 1000;
+  while (Date.now() < deadline) {
+    if (readLog(session).includes(fixed)) return;
+    sleepMs(50);
+  }
+  throw new Error(
+    `timed out waiting for '${fixed}' in the debug log: ${oneLine(readLog(session))}`,
+  );
+}
+
+/** The last non-empty screen line (the prompt line once the shell is idle). */
+function lastLine(lines: string[]): string {
+  return lines.filter((line) => line !== '').at(-1) ?? '';
+}
+
+/** Polls the screen until the last non-empty line equals `expected`. */
+function waitForPromptLine(session: Session, expected: string, seconds = 20): string[] {
+  const deadline = Date.now() + seconds * 1000;
+  let lines: string[] = [];
+  while (Date.now() < deadline) {
+    lines = screenLines(session);
+    if (lastLine(lines) === expected) return lines;
+    sleepMs(50);
+  }
+  throw new Error(
+    `timed out waiting for prompt '${expected}'; screen: ${oneLine(lines.join('\n'))}`,
+  );
+}
+
+/** No job-control notice (`[1] 12345`, `Done`) may reach the screen. */
+function expectNoJobNotice(session: Session): void {
+  const lines = screenLines(session);
+  expect(lines.filter((line) => /^\[\d+\]/.test(line) || /\bDone\b/.test(line))).toEqual([]);
+}
+
+const PASTE_SKIP_REASON = 'bracketed paste is off by default before 5.1';
+
 describe.each(PTY_SHELLS)('$name ?? in a PTY', (row) => {
-  describe.skipIf(!runnable(row))(`${row.name} (${row.bin ?? 'not found'})`, () => {
-    it(
-      'round-trip: echo qqtrace?? comes back into the line and runs on Enter',
-      () => {
-        const session = startShell(row);
-        drive(session, 'type', 'echo qqtrace??');
-        drive(session, 'wait', 'queque › echo qqtrace');
+  const version = row.bin ? shellVersionOf(row.bin) : null;
+  const pasteOk = version !== null && (version[0] > 5 || (version[0] === 5 && version[1] >= 1));
+  const viRc = row.name === 'zsh' ? 'bindkey -v' : 'set -o vi';
+  const title = `${row.name} (${row.bin ?? 'not found'})`;
+
+  describe.skipIf(!runnable(row))(title, { timeout: TEST_TIMEOUT_MS }, () => {
+    it('round-trip: echo qqtrace?? comes back into the line', () => {
+      const session = startShell(row);
+      drive(session, 'type', 'echo qqtrace??');
+      drive(session, 'wait', 'queque › echo qqtrace');
+      drive(session, 'key', 'Enter');
+      const lines = waitForLine(session, (line) => line === 'qqtrace');
+      expect(lines).toContain('qqtrace');
+      expect(readLog(session)).toContain('wrote replace-buffer result');
+      expectNoJobNotice(session);
+    });
+
+    it('cancel: echo keepme?? keeps the line and prints no summary', () => {
+      const session = startShell(row, { mode: 'cancel' });
+      drive(session, 'type', 'echo keepme??');
+      waitForLog(session, 'wrote cancel result');
+      const lines = waitForPromptLine(session, `${PROMPT}echo keepme`);
+      expect(lines.some((line) => line.includes('queque ›'))).toBe(false);
+      drive(session, 'key', 'Enter');
+      waitForLine(session, (line) => line === 'keepme');
+      expectNoJobNotice(session);
+    });
+
+    it('cancel mid-line: the cursor comes back to the split point', () => {
+      const session = startShell(row, { mode: 'cancel' });
+      drive(session, 'type', 'echo keepme tail');
+      drive(session, 'key', 'Left', 'Left', 'Left', 'Left', 'Left');
+      drive(session, 'type', '??');
+      waitForLog(session, 'wrote cancel result');
+      waitForPromptLine(session, `${PROMPT}echo keepme tail`);
+      drive(session, 'type', 'X');
+      drive(session, 'key', 'Enter');
+      // Typed at the restored cursor, not at the end of the line.
+      waitForLine(session, (line) => line === 'keepmeX tail');
+      expectNoJobNotice(session);
+    });
+
+    it('empty: ?? on an empty line reaches the client with no lbuffer', () => {
+      const session = startShell(row);
+      drive(session, 'type', '??');
+      // The fixture writes back `echo hello` only for an empty lbuffer.
+      waitForPromptLine(session, `${PROMPT}echo hello`);
+      expect(screenLines(session).some((line) => line.includes('queque ›'))).toBe(false);
+      drive(session, 'key', 'Enter');
+      waitForLine(session, (line) => line === 'hello');
+      expectNoJobNotice(session);
+    });
+
+    it('empty cancel: ?? on an empty line leaves exactly the prompt', () => {
+      const session = startShell(row, { mode: 'cancel' });
+      drive(session, 'type', '??');
+      waitForLog(session, 'wrote cancel result');
+      const lines = waitForPromptLine(session, PROMPT.trimEnd());
+      expect(lastLine(lines)).toBe('QQPTY>');
+      expectNoJobNotice(session);
+    });
+
+    it('multibyte: text before and after the cursor round-trips', () => {
+      const session = startShell(row);
+      drive(session, 'type', 'echo é😀 tail');
+      drive(session, 'key', 'Left', 'Left', 'Left', 'Left', 'Left');
+      drive(session, 'type', '??');
+      drive(session, 'wait', 'queque › echo é😀');
+      waitForPromptLine(session, `${PROMPT}echo é😀 tail`);
+      drive(session, 'type', 'X');
+      drive(session, 'key', 'Enter');
+      // The cursor sat at the character length of the new lbuffer.
+      waitForLine(session, (line) => line === 'é😀X tail');
+      expectNoJobNotice(session);
+    });
+
+    it('vi-insert: echo vimode?? round-trips in vi insert mode', () => {
+      const session = startShell(row, { rc: [viRc] });
+      drive(session, 'type', 'echo vimode??');
+      drive(session, 'wait', 'queque › echo vimode');
+      drive(session, 'key', 'Enter');
+      waitForLine(session, (line) => line === 'vimode');
+      expectNoJobNotice(session);
+    });
+
+    it('paste: a pasted echo pasted?? never fires the trigger', (ctx) => {
+      ctx.skip(!pasteOk, `${PASTE_SKIP_REASON} (${row.name} ${version?.join('.') ?? '?'})`);
+      const session = startShell(row);
+      drive(session, 'paste', 'echo pasted??');
+      drive(session, 'wait', 'echo pasted??');
+      drive(session, 'key', 'C-u');
+      drive(session, 'type', 'echo after');
+      drive(session, 'key', 'Enter');
+      waitForLine(session, (line) => line === 'after');
+      expect(screenLines(session).some((line) => line.includes('queque ›'))).toBe(false);
+      expect(readLog(session)).not.toContain('trigger fired');
+      expectNoJobNotice(session);
+    });
+
+    // bash only: zsh repaints the whole prompt itself (zle reset-prompt) and has no set -e
+    // hazard inside a widget, so these rows are not registered for zsh at all.
+    if (row.name === 'bash') {
+      it('prompt-multiline: the head of a two-line PS1 is reprinted', () => {
+        const session = startShell(row, { rc: ["PS1=$'QQTOP\\nQQPTY> '"] });
+        drive(session, 'type', 'echo multi??');
+        drive(session, 'wait', 'queque › echo multi');
+        const expected = ['queque › echo multi', 'echo multi', 'QQTOP', `${PROMPT}echo multi`];
+        const deadline = Date.now() + 20_000;
+        let tail: string[] = [];
+        while (Date.now() < deadline) {
+          tail = screenLines(session)
+            .filter((line) => line !== '')
+            .slice(-4);
+          if (tail.join('\n') === expected.join('\n')) break;
+          sleepMs(50);
+        }
+        expect(tail).toEqual(expected);
+        expectNoJobNotice(session);
+      });
+
+      it('errexit: a user set -e survives the round trip', () => {
+        const session = startShell(row, { rc: ['set -e'] });
+        drive(session, 'type', 'echo errexit??');
+        drive(session, 'wait', 'queque › echo errexit');
         drive(session, 'key', 'Enter');
-        const lines = waitForLine(session, (line) => line === 'qqtrace');
-        expect(lines).toContain('qqtrace');
-        expect(readLog(session)).toContain('wrote replace-buffer result');
-      },
-      TEST_TIMEOUT_MS,
-    );
+        waitForLine(session, (line) => line === 'errexit');
+        drive(session, 'type', 'echo alive');
+        drive(session, 'key', 'Enter');
+        waitForLine(session, (line) => line === 'alive');
+        expectNoJobNotice(session);
+      });
+    }
   });
 });
