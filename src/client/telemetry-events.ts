@@ -1,4 +1,5 @@
 import * as net from 'node:net';
+import type { ShellName } from '../contracts/shell.js';
 import {
   type ClientTelemetryEvent,
   clientTelemetryEventSchema,
@@ -51,6 +52,10 @@ export interface ReportClientTelemetryInput {
   statePath?: string;
   provider?: () => ProviderKind;
   environment?: () => EnvironmentShape | null;
+  /** The request's shell (Phase 11 D-11); absent from zsh widgets older than Phase 11. */
+  shell?: ShellName;
+  /** The request's raw shell version; the environment shape keeps major.minor only. */
+  shellVersion?: string;
   send?: (socketPath: string, events: ClientTelemetryEvent[]) => Promise<void>;
 }
 
