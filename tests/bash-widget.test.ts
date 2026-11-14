@@ -25,6 +25,11 @@
  *   b16 hostile aliases and a jq function corrupt neither the handoff nor the round trip
  *   b17 sourcing prewarms the daemon once, quietly; QQ_DAEMON_PREWARMED=1 skips it
  *   b21 the session dir is removed after a cancel result and after a client crash
+ *   b18 Zellij: the floating-pane argv (frame wrapper, never the query); inline without ZELLIJ
+ *   b19 Zellij: the FIFO line is applied, QQ_RESULT_FILE and the pane size are exported
+ *   b20 Zellij: a pane that never answers gives the prompt back after the read timeout
+ *   b22 Zellij: a failed mkfifo restores the line at once and launches nothing
+ *   b23 Zellij: a zellij run that exits non-zero restores the line at once (sentinel line)
  *
  * Every shell starts without ZELLIJ* or TMUX, and with QQ_DAEMON_PREWARMED=1 so sourcing never
  * starts a real daemon (b17 clears it). A missing bash 5 or jq skips locally and fails when CI
@@ -46,6 +51,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterAll, describe, expect, it } from 'vitest';
+import { paneInstantFrameBytes } from '../src/shared/instant-frame-spec.js';
 import { ciRequired, findBinary, findShell, shellVersionOf } from './helpers/shells.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -82,8 +88,17 @@ function cleanEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
   for (const key of ['ZELLIJ', 'ZELLIJ_PANE_ID', 'ZELLIJ_SESSION_NAME', 'TMUX', 'QQ_DEV_ROOT']) {
     delete env[key];
   }
-  delete env.QQ_DEBUG_LOG_FILE;
-  delete env.QQ_TOOL_AWARENESS;
+  // Adapter knobs a developer may export: every case starts from the defaults.
+  for (const key of [
+    'QQ_DEBUG_LOG_FILE',
+    'QQ_TOOL_AWARENESS',
+    'QQ_INSTANT_FRAME',
+    'QQ_PANE_WIDTH',
+    'QQ_PANE_HEIGHT',
+    'QQ_RESULT_FILE',
+  ]) {
+    delete env[key];
+  }
   return { ...env, QQ_DAEMON_PREWARMED: '1', ...extra };
 }
 
@@ -740,5 +755,182 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
       expect(session).not.toBe('');
       expect(pollUntil(() => !existsSync(session), 3000)).toBe(true);
     }
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Plan 11-07 (D-07): inside Zellij the unchanged client runs in a floating pane and the result
+// comes back through a FIFO. `zellij` is always a shell function here, checked with
+// `type -t zellij`, so no case can open a pane in a real session (cerebrum 2026-11-13).
+// ---------------------------------------------------------------------------
+
+/** The query every Zellij case types (its text must never reach the zellij argv). */
+const ZELLIJ_QUERY = 'find qqsecret files';
+
+/**
+ * The fake `zellij`: records its argv, the pane env and the pane frame file into $QQ_T_OUT,
+ * then acts per $QQ_T_ZMODE: `reply` writes a replace-buffer line into the --result-file FIFO
+ * from a background subshell, `silent` writes nothing (a dead pane), `fail` returns 1 at once.
+ */
+const ZELLIJ_FAKE = `zellij() {
+  local a prev='' res='' frame=''
+  printf '%s\\n' "$@" >"$QQ_T_OUT/argv"
+  command printenv QQ_RESULT_FILE >"$QQ_T_OUT/result-file-env"
+  command printenv QQ_PANE_WIDTH QQ_PANE_HEIGHT >"$QQ_T_OUT/pane-env"
+  for a in "$@"; do
+    [[ $prev == --result-file ]] && res=$a
+    [[ $prev == queque-instant-frame ]] && frame=$a
+    prev=$a
+  done
+  [[ -n $frame ]] && command cp -f "$frame" "$QQ_T_OUT/frame.txt"
+  case $QQ_T_ZMODE in
+    reply) ( printf '%s\\n' '{"kind":"replace-buffer","lbuffer":"ls -la","rbuffer":""}' >"$res" & ) ;;
+    fail) return 1 ;;
+  esac
+  return 0
+}
+echo "zellij=$(type -t zellij)"`;
+
+interface ZellijRun {
+  run: Run;
+  out: string;
+  root: string;
+  log: string;
+  session: string;
+  ms: number;
+}
+
+/** One `??` on `find qqsecret files?` with the fake zellij, ZELLIJ=0 unless `env` unsets it. */
+function runZellijTrigger(
+  mode: 'reply' | 'silent' | 'fail',
+  opts: { bin?: string; env?: NodeJS.ProcessEnv; before?: string } = {},
+): ZellijRun {
+  const out = mkdtempSync(join(scratch, 'zellij-out-'));
+  const root = fakeDevRoot();
+  const log = join(out, 'debug.log');
+  const run = runInteractiveBash(
+    `${ZELLIJ_FAKE}
+${opts.before ?? ''}
+READLINE_LINE='${ZELLIJ_QUERY}?'; READLINE_POINT=${ZELLIJ_QUERY.length + 1}
+t0=$EPOCHREALTIME
+_qq_question
+t1=$EPOCHREALTIME
+echo "line=[$READLINE_LINE] point=$READLINE_POINT"
+echo "ms=$(( (\${t1/./} - \${t0/./}) / 1000 ))"
+history 1`,
+    cleanEnv({
+      PATH: triggerPath(opts.bin ?? fakeBin({})),
+      ZELLIJ: '0',
+      QQ_DEV_ROOT: root,
+      QQ_DEBUG_LOG_FILE: log,
+      QQ_T_OUT: out,
+      QQ_T_ZMODE: mode,
+      ...opts.env,
+    }),
+  );
+  const ms = Number(/^ms=(\d+)$/m.exec(run.stdout)?.[1] ?? '99999');
+  return { run, out, root, log, session: sessionDirFromLog(log), ms };
+}
+
+const RESTORED = `line=[${ZELLIJ_QUERY}] point=${ZELLIJ_QUERY.length}`;
+
+describe.skipIf(bash5 === null || jq === null)(
+  'bash adapter: Zellij floating pane (bash 5)',
+  { timeout: TRIGGER_TIMEOUT_MS },
+  () => {
+    it('b18: zellij run gets the pane argv with the frame wrapper and never the query', () => {
+      const z = runZellijTrigger('reply');
+      expect(z.run.stdout).toContain('zellij=function\n');
+      expect(existsSync(join(z.out, 'argv'))).toBe(true);
+      const argv = fileLines(join(z.out, 'argv'));
+      expect(argv).toEqual([
+        'run',
+        '--floating',
+        '--close-on-exit',
+        '--width',
+        '80',
+        '--height',
+        '24',
+        '--name',
+        'qq',
+        '--',
+        '/bin/sh',
+        '-c',
+        'cat "$1" 2>/dev/null; shift; exec "$@"',
+        'queque-instant-frame',
+        `${z.session}/instant-frame.txt`,
+        'node',
+        `${z.root}/dist/cli/main.js`,
+        'client',
+        '--request-file',
+        `${z.session}/request.json`,
+        '--result-file',
+        `${z.session}/result.fifo`,
+      ]);
+      expect(argv?.some((arg) => arg.includes('qqsecret'))).toBe(false);
+    });
+
+    it('b18: with ZELLIJ unset the inline path runs and zellij is never called', () => {
+      // spawnSync drops undefined values, so this shell starts with no ZELLIJ at all.
+      const z = runZellijTrigger('reply', { env: { ZELLIJ: undefined } });
+      expect(z.run.stdout).toContain('zellij=function\n');
+      expect(existsSync(join(z.out, 'argv'))).toBe(false);
+      // The QQ_DEV_ROOT client answered cancel on the inline path.
+      expect(readFileSync(z.log, 'utf8')).toContain('client status=0');
+      expect(z.run.stdout).toContain(RESTORED);
+    });
+
+    it('b19: the FIFO line is applied, QQ_RESULT_FILE is the FIFO, the pane size is exported', () => {
+      const z = runZellijTrigger('reply');
+      expect(z.run.stdout).toContain('line=[ls -la] point=6');
+      expect(z.run.stdout).toContain(`queque › ${ZELLIJ_QUERY}`);
+      expect(z.run.stdout).toContain('ls -la\n');
+      const historyLine = z.run.stdout.trimEnd().split('\n').at(-1) ?? '';
+      expect(historyLine).toMatch(new RegExp(`^\\s*\\d+\\s+${ZELLIJ_QUERY}$`));
+      expect(fileLines(join(z.out, 'result-file-env'))).toEqual([`${z.session}/result.fifo`]);
+      expect(fileLines(join(z.out, 'pane-env'))).toEqual(['80', '24']);
+      expect(pollUntil(() => !existsSync(z.session), 3000)).toBe(true);
+    });
+
+    it('b19: QQ_PANE_WIDTH=100 gives --width 100 and a 98-column pane frame', () => {
+      const z = runZellijTrigger('reply', { env: { QQ_PANE_WIDTH: '100' } });
+      const argv = fileLines(join(z.out, 'argv')) ?? [];
+      expect(argv.slice(3, 7)).toEqual(['--width', '100', '--height', '24']);
+      expect(fileLines(join(z.out, 'pane-env'))).toEqual(['100', '24']);
+      const frame = readFileSync(join(z.out, 'frame.txt'), 'utf8');
+      expect(frame).toBe(paneInstantFrameBytes(ZELLIJ_QUERY, '98'));
+    });
+
+    it('b20: a pane that never answers gives the prompt back after the read timeout', () => {
+      const z = runZellijTrigger('silent', { before: 'QQ_RESULT_READ_TIMEOUT_S=1' });
+      expect(existsSync(join(z.out, 'argv'))).toBe(true);
+      expect(z.ms).toBeLessThan(5000);
+      expect(z.run.stdout).toContain(RESTORED);
+      expect(z.run.stdout).not.toContain('queque ›');
+      expect(z.session).not.toBe('');
+      expect(pollUntil(() => !existsSync(z.session), 3000)).toBe(true);
+    });
+
+    it('b22: a failed mkfifo restores the line, logs the reason and launches nothing', () => {
+      const z = runZellijTrigger('reply', { bin: fakeBin({ mkfifo: 'exit 1' }) });
+      expect(z.ms).toBeLessThan(2000);
+      expect(z.run.stdout).toContain(RESTORED);
+      expect(readFileSync(z.log, 'utf8')).toContain('mkfifo failed');
+      expect(existsSync(join(z.out, 'argv'))).toBe(false);
+      expect(z.session).not.toBe('');
+      expect(pollUntil(() => !existsSync(z.session), 3000)).toBe(true);
+    });
+
+    it('b23: a zellij run that fails at once restores the line well before the timeout', () => {
+      const z = runZellijTrigger('fail');
+      expect(z.run.stdout).toContain('zellij=function\n');
+      expect(existsSync(join(z.out, 'argv'))).toBe(true);
+      expect(z.ms).toBeLessThan(5000);
+      expect(z.run.stdout).toContain(RESTORED);
+      expect(z.run.stdout).not.toContain('queque ›');
+      expect(readFileSync(z.log, 'utf8')).toContain('zellij run failed');
+      expect(z.session).not.toBe('');
+      expect(pollUntil(() => !existsSync(z.session), 3000)).toBe(true);
+    });
   },
 );
