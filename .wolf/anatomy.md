@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-13T21:18:17.231Z
-> Files: 603 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T04:27:08.979Z
+> Files: 605 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -23,7 +23,9 @@
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/
 
+- `11-04-new-task23.txt` — its: initCommand (~2913 tok)
 - `fill.py` (~115 tok)
+- `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/
 
@@ -319,7 +321,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~7974 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~7983 tok)
 - `STATE.md` — Project State (~3580 tok)
 
 ## .planning/debug/
@@ -527,17 +529,17 @@
 
 ## .planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 
-- `11-01-PLAN.md` — Artifacts this phase produces (~10474 tok)
-- `11-02-PLAN.md` — Artifacts this phase produces (~5107 tok)
-- `11-03-PLAN.md` — Declares TOOL_HANDOFF_PENDING_BUDGET_MS (~4387 tok)
-- `11-04-PLAN.md` — Artifacts this phase produces (~7025 tok)
-- `11-05-PLAN.md` — Declares and (~3483 tok)
-- `11-06-PLAN.md` — Declares inlineInstantFrameBytes (~4753 tok)
-- `11-07-PLAN.md` — Declares does (~4995 tok)
-- `11-08-PLAN.md` — Artifacts this phase produces (~6120 tok)
-- `11-09-PLAN.md` — Artifacts this phase produces (~6310 tok)
-- `11-10-PLAN.md` — Declares entries (~3583 tok)
-- `11-11-PLAN.md` — Trust Boundaries (~2691 tok)
+- `11-01-PLAN.md` — Artifacts this phase produces (~12224 tok)
+- `11-02-PLAN.md` — Artifacts this phase produces (~5990 tok)
+- `11-03-PLAN.md` — Artifacts this phase produces (~7369 tok)
+- `11-04-PLAN.md` — Artifacts this phase produces (~8936 tok)
+- `11-05-PLAN.md` — Artifacts this phase produces (~6270 tok)
+- `11-06-PLAN.md` — Artifacts this phase produces (~7870 tok)
+- `11-07-PLAN.md` — Artifacts this phase produces (~8332 tok)
+- `11-08-PLAN.md` — Artifacts this phase produces (~7187 tok)
+- `11-09-PLAN.md` — Artifacts this phase produces (~7340 tok)
+- `11-10-PLAN.md` — Artifacts this phase produces (~6192 tok)
+- `11-11-PLAN.md` — Declared files are the .wolf/ records. If a Task 1 gate fails, the fix lands in the owning (~5913 tok)
 - `11-CONTEXT.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Context (~2667 tok)
 - `11-DISCUSS-CHECKPOINT.json` (~443 tok)
 - `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)

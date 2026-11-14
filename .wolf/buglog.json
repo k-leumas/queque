@@ -7562,6 +7562,342 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-13T21:18:04.454Z"
+    },
+    {
+      "id": "bug-456",
+      "timestamp": "2026-11-14T04:15:33.204Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-01-PLAN.md",
+      "root_cause": "Had ` result, a missing result file or malformed JSON ",
+      "fix": "Changed to ` result, a missing result file or malformed JSON ",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-11-14T04:16:09.521Z"
+    },
+    {
+      "id": "bug-457",
+      "timestamp": "2026-11-14T04:15:48.666Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-01-PLAN.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:15:48.666Z"
+    },
+    {
+      "id": "bug-458",
+      "timestamp": "2026-11-14T04:16:53.045Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-02-PLAN.md",
+      "root_cause": "Had `buildBaseContext`",
+      "fix": "Changed to `buildBaseContext({ ...normalizedFixture, shell: '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-14T04:17:21.158Z"
+    },
+    {
+      "id": "bug-459",
+      "timestamp": "2026-11-14T04:17:29.996Z",
+      "error_message": "Wrong reference: files should be tests",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-03-PLAN.md",
+      "root_cause": "Used \"files\" instead of \"tests\"",
+      "fix": "Changed files → tests",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-14T04:17:37.636Z"
+    },
+    {
+      "id": "bug-460",
+      "timestamp": "2026-11-14T04:17:41.424Z",
+      "error_message": "Missing await",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-03-PLAN.md",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:17:41.424Z"
+    },
+    {
+      "id": "bug-461",
+      "timestamp": "2026-11-14T04:17:51.006Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-03-PLAN.md",
+      "root_cause": "Had `annotateCandidates`",
+      "fix": "Changed to `ensureDaemon`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:17:51.006Z"
+    },
+    {
+      "id": "bug-462",
+      "timestamp": "2026-11-14T04:18:11.740Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-04-PLAN.md",
+      "root_cause": "Had \"Re-running init is idempotent: an rc file that al",
+      "fix": "Changed to \"Re-running init is idempotent: an rc file that al",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:18:11.740Z"
+    },
+    {
+      "id": "bug-463",
+      "timestamp": "2026-11-14T04:18:29.689Z",
+      "error_message": "Wrong reference: after should be behavior",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-04-PLAN.md",
+      "root_cause": "Used \"after\" instead of \"behavior\"",
+      "fix": "Changed after → behavior",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:18:29.689Z"
+    },
+    {
+      "id": "bug-464",
+      "timestamp": "2026-11-14T04:20:18.173Z",
+      "error_message": "Wrong reference: behavior should be SHELL_KINDS",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-05-PLAN.md",
+      "root_cause": "Used \"behavior\" instead of \"SHELL_KINDS\"",
+      "fix": "Changed behavior → SHELL_KINDS",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:20:18.173Z"
+    },
+    {
+      "id": "bug-465",
+      "timestamp": "2026-11-14T04:20:24.089Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-05-PLAN.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check) | Also: ## Review Dispositions Ledger; ### Round 1 — 9944899",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-14T04:20:42.695Z"
+    },
+    {
+      "id": "bug-466",
+      "timestamp": "2026-11-14T04:20:53.504Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-06-PLAN.md",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 4→8 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:20:53.504Z"
+    },
+    {
+      "id": "bug-467",
+      "timestamp": "2026-11-14T04:21:09.729Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-06-PLAN.md",
+      "root_cause": "Had `inlineScrollReserve`",
+      "fix": "Changed to `SAVE_CURSOR`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:21:09.729Z"
+    },
+    {
+      "id": "bug-468",
+      "timestamp": "2026-11-14T04:22:22.657Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-07-PLAN.md",
+      "root_cause": "Had `export QQ_RESULT_FILE`",
+      "fix": "Changed to `_qq_log '",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-11-14T04:22:34.390Z"
+    },
+    {
+      "id": "bug-469",
+      "timestamp": "2026-11-14T04:22:58.448Z",
+      "error_message": "Function not marked async",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-07-PLAN.md",
+      "root_cause": "Function uses await but wasn't declared async",
+      "fix": "Added async modifier",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:22:58.448Z"
+    },
+    {
+      "id": "bug-470",
+      "timestamp": "2026-11-14T04:23:15.530Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-08-PLAN.md",
+      "root_cause": "Had `ZSH_FAIL_BELOW`",
+      "fix": "Changed to `checkNode`",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-11-14T04:23:26.203Z"
+    },
+    {
+      "id": "bug-471",
+      "timestamp": "2026-11-14T04:23:20.809Z",
+      "error_message": "Wrong reference: acceptance_criteria should be grep",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-08-PLAN.md",
+      "root_cause": "Used \"acceptance_criteria\" instead of \"grep\"",
+      "fix": "Changed acceptance_criteria → grep",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:23:20.809Z"
+    },
+    {
+      "id": "bug-472",
+      "timestamp": "2026-11-14T04:23:58.588Z",
+      "error_message": "Significant refactor of ",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-09-PLAN.md",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 5→5 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:23:58.588Z"
+    },
+    {
+      "id": "bug-473",
+      "timestamp": "2026-11-14T04:24:34.852Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-10-PLAN.md",
+      "root_cause": "Had \"README stays at or under ~75 lines, no doc tells ",
+      "fix": "Changed to \"README stays at or under 78 lines (the ~75-line b",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-14T04:24:41.519Z"
+    },
+    {
+      "id": "bug-474",
+      "timestamp": "2026-11-14T04:25:18.527Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-11-PLAN.md",
+      "root_cause": "Had ` 3.2 prints the one-line refusal and keeps `",
+      "fix": "Changed to ` 3.2, started so that it reads `",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-11-14T04:25:23.488Z"
+    },
+    {
+      "id": "bug-475",
+      "timestamp": "2026-11-14T04:25:42.669Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-11-PLAN.md",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:25:42.669Z"
+    },
+    {
+      "id": "bug-476",
+      "timestamp": "2026-11-14T04:27:09.005Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-04-PLAN.md",
+      "root_cause": "Had `git diff --name-only HEAD~1 HEAD`",
+      "fix": "Changed to `git show --name-only --format= <this task'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T04:27:09.005Z"
     }
   ]
 }
