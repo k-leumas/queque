@@ -193,6 +193,7 @@
 - [2026-11-13] Plan checker reads any bare `D-NN` as a current-phase CONTEXT decision. Cite prior-phase decisions as "Phase 10 decision 16" or by source location (e.g. scripts/smoke-distro.sh:67-75), never as `D-16`. RESEARCH.md `## Open Questions` must carry `(RESOLVED)` in the heading, with a RESOLVED line per item naming the implementing plan/task, or the checker blocks.
 
 ## Do-Not-Repeat
+- [2026-11-13] /gsd-review: `~/.codex/config.toml` pins `gpt-5.5`, which a ChatGPT-account Codex rejects (400 model_not_found), so the codex lane stubs out in ~50 s. Use `gpt-5.6-terra` (`gpt-5.6-sol` is also rejected) via `codex exec --model`, or set `review.models.codex`. Ollama here has only ≤8B models: skip it for whole-phase reviews. Verify reviewer HIGHs against source: Codex claimed `zsh -d` skips ~/.zshrc (false: -d skips only /etc globals).
 - [2026-11-13] Claude Code here runs inside the user's Zellij session (`ZELLIJ_SESSION_NAME=tui`). Any harness that starts a shell with the QueQue adapter must `unset ZELLIJ ZELLIJ_PANE_ID ZELLIJ_SESSION_NAME` first, and fake `zellij` with a shell function checked via `type -t` (fish ignored a PATH fake) — otherwise it opens real floating panes in the user's session (happened 3× in spikes 005/007).
 - [2026-11-13] fish `read -t` is --tokenize, not a timeout; fish read has no timeout. Don't port zsh/bash `read -t N` to fish.
 - [2026-11-13] GSD spike commits use `docs(spike-NNN): [VERDICT] — …`, but this repo's commitlint rejects an upper-case subject (subject-case): write the verdict lower-case (`validated`).
