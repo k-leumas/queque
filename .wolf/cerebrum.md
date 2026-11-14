@@ -212,6 +212,10 @@
 - [2026-11-14] bash `( { ...; } </dev/null >/dev/null 2>&1 & )` inside bind -x gives no job notice (5.3 too); bash 5.3 `compgen -c` sees binaries created after the hash table was primed.
 - [2026-11-14] bash 5.3 `bind -m KEYMAP -X` prints `"?" "_qq_question"` (no colon); `bind -X` lists only bind -x bindings, readline functions come from `bind -p`; bash 3.2 has no -X and prints ESC[?1034h on the next line. `bash -ic` probes expand user aliases: use `builtin printf`/`builtin bind`/`command grep`.
 - [2026-11-14] A doctor report has one target shell: 12 rows for zsh and Linux bash, 13 for macOS bash; never compare checks.length with DOCTOR_CHECK_IDS.length (fish reserved, not emitted). In the Bash tool, `qq doctor --shell bash` sees /bin/bash 3.2 unless /opt/local/bin is first on PATH.
+- [2026-11-14] readline turns enable-bracketed-paste off when TERM is unset or dumb, so `qq doctor --shell bash` via `su -c` or TERM-less CI warns on the binding row though ? is bound; smokes run the bash doctor with TERM=xterm-256color.
+- [2026-11-14] Distro smoke drives both shells with one expect script: `expect smoke-distro.exp PASS [SHELL]`, prompt `QQSMOKE[%#$]`, Esc line `echo restored-$((6*7))??`. Official `bash:<tag>` images are alpine/busybox with bash at /usr/local/bin/bash; bash 3.2 has no `bind -X` (gate probes on version).
+- [2026-11-14] A new shell's checklist is shell/README.md and its gate is tests/shell-names-invariant.test.ts (Phase 12 flips SHELL_SPECS.fish.shipped and adds 'fish' to the shipped list). shell/ ships in the npm tarball; tests/docs-links.test.ts doesn't scan shell/README.md.
+- [2026-11-14] `qq init bash` probes the $SHELL bash before PATH bash: macOS with /bin/bash login shell refuses even with a newer bash installed (D-14); docs must not call chsh optional then.
 
 ## Do-Not-Repeat
 - [2026-11-13] Plan acceptance criteria must not use `git diff HEAD~1 HEAD` (or any relative `HEAD~N`): `verify.plan-structure` fails it as plan-criteria R6 (parallel sessions move HEAD). Name the commit: `git show --name-only --format= <sha>`. Also: adding a zod field with `.default()` makes it REQUIRED on the output type, so every hand-built literal typed as that schema's type (tests/intent-router.test.ts, tests/context-pipeline.test.ts for NormalizedRequest) needs the field or `pnpm typecheck` fails.
@@ -283,6 +287,7 @@
 - [2026-11-14] Key-link grep patterns need the call on one line; destructure inputs first if biome would wrap it.
 - [2026-11-14] A vitest RED target whose first assertion is `toContain` on a multi-line string breaks tap-flat (tdd-red-evidence invalid_record); assert a one-line scalar with toBe first.
 - [2026-11-14] The worktree Bash guard refuses `node "$S/script.mjs"` with a computed path; use a scratchpad .sh run with `sh FILE`.
+- [2026-11-14] In a worktree-isolated agent, `sh script.sh` that runs git is refused as too complex; run each git command as its own Bash call.
 
 ## Decision Log
 

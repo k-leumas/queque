@@ -404,7 +404,7 @@ Plans:
 **Goal:** Ship the literal `??` trigger and picker handoff in bash ≥5.0 (`bind -x`) with zsh parity (instant frame, tool awareness, inline + Zellij), and make every shared seam (request contract, tool handoff, lexer, `qq init`/`qq doctor`, telemetry, PTY harness) shell-aware for zsh/bash/fish so Phase 12 is adapter-only. Per spikes 004–005 in the `spike-findings-tui-llm` skill.
 **Requirements**: BASH-01
 **Depends on:** Phase 10
-**Plans:** 8/11 plans executed
+**Plans:** 10/11 plans executed
 
 Plans:
 
@@ -423,8 +423,8 @@ Plans:
 - [x] 11-08-PLAN.md — `qq doctor` per shell: bash version floor, bindings, bracketed paste, `bash_profile`, `--shell` (wave 3)
 
 **Wave 4** *(blocked on Wave 3 completion)*
-- [ ] 11-09-PLAN.md — Distro smoke bash pass, `bash-versions` CI job (3.2/4.4 refuse, 5.0 accept), Homebrew bash adapter (wave 4)
-- [ ] 11-10-PLAN.md — Shell-neutral docs, undo guidance, `shell/README.md` adapter contract, SHELL_NAMES invariant test (wave 4; depends on 02, 04, 05, 06, 07, 08)
+- [x] 11-09-PLAN.md — Distro smoke bash pass, `bash-versions` CI job (3.2/4.4 refuse, 5.0 accept), Homebrew bash adapter (wave 4)
+- [x] 11-10-PLAN.md — Shell-neutral docs, undo guidance, `shell/README.md` adapter contract, SHELL_NAMES invariant test (wave 4; depends on 02, 04, 05, 06, 07, 08)
 
 **Wave 5** *(blocked on Wave 4 completion)*
 - [ ] 11-11-PLAN.md — Phase gate with bash 5, OpenWolf records, human UAT on macOS Homebrew bash and green CI (wave 5)

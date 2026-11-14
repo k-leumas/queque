@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T13:50:27.133Z
-> Files: 701 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T14:09:58.535Z
+> Files: 723 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -74,6 +74,18 @@
 - `11-08-probe.sh` (~219 tok)
 - `11-08-red.sh` — usage: 11-08-red.sh <out-json> <test-file> <short-title> <qualified-name> <expected> <actual> (~324 tok)
 - `11-08-script-check.test.ts` — HOME: run (~385 tok)
+- `11-09-accept1.sh` (~259 tok)
+- `11-09-bash-versions-neg.sh` — Negative controls: the wrong expectation must fail on each side. (~115 tok)
+- `11-09-bash-versions.sh` — Runs the plan's Task 2 verify command: bash 3.2 and 4.4 refuse, 5.0 accepts. (~142 tok)
+- `11-09-brew-build.sh` — Builds only the image half of scripts/smoke-homebrew-docker.sh (no API key, no live (~190 tok)
+- `11-09-ci-offline.sh` — Offline workflow test: run ci.yml's own bash-versions `run:` body for each matrix row, and (~291 tok)
+- `11-09-edit-exp.py` — rep (~1566 tok)
+- `11-09-edit-formula.py` (~368 tok)
+- `11-09-formula-check.sh` — Offline checks for the Homebrew formula edits: lint, identical text, rendered caveats, (~428 tok)
+- `11-09-msg.txt` (~19 tok)
+- `11-09-paste-probe.sh` — Runs inside a distro container: does readline report bracketed paste off without TERM? (~98 tok)
+- `11-09-quote.sh` — Simulates the runner's as_user quoting for the bash PS1 line. (~98 tok)
+- `11-10-msg.txt` (~36 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
@@ -343,6 +355,23 @@
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
+## .claude/worktrees/agent-a0683766a13a0d567/.github/workflows/
+
+- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1850 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-09-SUMMARY.md` — Phase 11 Plan 09: Distro bash smoke, bash-versions CI and Homebrew bash adapter Summary (~3486 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/scripts/
+
+- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~2199 tok)
+- `smoke-distro.sh` (~980 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/scripts/ci/
+
+- `bash-version-check.sh` — Usage: bash-version-check.sh refuse|accept (~990 tok)
+
 ## .claude/worktrees/agent-a0f685ede72cc35a6/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 
 - `11-08-SUMMARY.md` — Phase 11 Plan 08: bash diagnostics in `qq doctor` Summary (~4292 tok)
@@ -493,6 +522,26 @@
 - `init-command.test.ts` — InitDeps: fakeInit (~4275 tok)
 - `registry-bootstrap.test.ts` — Declares adapters (~890 tok)
 - `shell-registry.test.ts` — Declares zsh (~2078 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/
+
+- `README.md` — Project documentation (~1187 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-10-SUMMARY.md` — Phase 11 Plan 10: Shell-neutral docs, the adapter contract and the SHELL_NAMES invariant Summary (~3304 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/docs/
+
+- `INSTALL.md` — Install (~668 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/shell/
+
+- `README.md` — Project documentation (~2654 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/tests/
+
+- `shell-names-invariant.test.ts` — SHELL_NAMES invariant (Phase 11 D-02, the "promote" decision): every shell QueQue knows must (~688 tok)
 
 ## .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 

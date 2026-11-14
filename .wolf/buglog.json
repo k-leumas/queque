@@ -8560,6 +8560,120 @@
         "tap",
         "vitest"
       ]
+    },
+    {
+      "id": "bug-518",
+      "timestamp": "2026-11-14T13:56:56.227Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-ae0e9549a31c00864/README.md",
+      "root_cause": "5 lines replaced/restructured",
+      "fix": "Rewrote 15\u219218 lines (5 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:56:56.227Z"
+    },
+    {
+      "id": "bug-519",
+      "timestamp": "2026-11-14T13:57:06.719Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a0683766a13a0d567/scripts/smoke-distro-runner.sh",
+      "root_cause": "6 lines replaced/restructured",
+      "fix": "Rewrote 14\u219221 lines (6 removed) | Also: as_user \"qq doctor --json >/out/doctor.json\"; as_user \"qq doctor >/out/doctor.txt 2>&1\" | Also: as_user \"qq doctor --shell bash --json >/out/docto; as_user \"qq doctor --shell bash >/out/doctor-bash.",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-11-14T13:59:23.239Z"
+    },
+    {
+      "id": "bug-520",
+      "timestamp": "2026-11-14T13:57:07.072Z",
+      "error_message": "Wrong reference: printf should be out",
+      "file": ".claude/worktrees/agent-a0683766a13a0d567/scripts/smoke-distro-runner.sh",
+      "root_cause": "Used \"printf\" instead of \"out\"",
+      "fix": "Changed printf \u2192 out",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:57:07.072Z"
+    },
+    {
+      "id": "bug-521",
+      "timestamp": "2026-11-14T14:03:00.636Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a0683766a13a0d567/scripts/ci/bash-version-check.sh",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 4\u21927 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "sh"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T14:03:00.636Z"
+    },
+    {
+      "id": "bug-522",
+      "timestamp": "2026-11-14T14:03:46.970Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-a0683766a13a0d567/.github/workflows/ci.yml",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "yml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T14:03:46.970Z"
+    },
+    {
+      "id": "bug-523",
+      "timestamp": "2026-11-14T14:12:00.453259+00:00",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T14:12:00.453259+00:00",
+      "error_message": "smoke-distro-runner exit 39: bash doctor binding row warn in the container",
+      "file": "scripts/smoke-distro-runner.sh",
+      "root_cause": "su -c leaves TERM unset; readline disables bracketed paste for a dumb terminal",
+      "fix": "run the bash doctor with TERM=xterm-256color (11-09)",
+      "tags": [
+        "smoke",
+        "bash",
+        "doctor",
+        "readline"
+      ]
+    },
+    {
+      "id": "bug-524",
+      "timestamp": "2026-11-14T14:12:00.453259+00:00",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T14:12:00.453259+00:00",
+      "error_message": "bash-version-check.sh refuse exited 2 on bash:3.2",
+      "file": "scripts/ci/bash-version-check.sh",
+      "root_cause": "bind -m emacs -X does not exist in bash 3.2",
+      "fix": "list bindings only in accept mode (11-09)",
+      "tags": [
+        "ci",
+        "bash",
+        "version",
+        "bind"
+      ]
     }
   ]
 }
