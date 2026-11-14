@@ -22,6 +22,8 @@
  * file directly (fuzz harness). Builtins come only from the caller (zsh handoff, D-02).
  */
 
+import type { ShellName } from '../contracts/shell.js';
+
 /** Classification of a command word. */
 export type CommandWordKind = 'external' | 'builtin' | 'placeholder' | 'dynamic' | 'path';
 
@@ -575,7 +577,12 @@ export function commandWords(
  * Safe entry point: returns the command words of `command`, or [] when the input is over
  * MAX_COMMAND_LENGTH or anything throws. Never throws.
  */
-export function extractCommandWords(command: string, builtins: ReadonlySet<string>): CommandWord[] {
+export function extractCommandWords(
+  command: string,
+  builtins: ReadonlySet<string>,
+  // RED stub (11-03 Task 2): the dialect is not read yet.
+  _shell: ShellName = 'zsh',
+): CommandWord[] {
   if (command.length > MAX_COMMAND_LENGTH) return [];
   try {
     return commandWords(lexHand(command), builtins);
