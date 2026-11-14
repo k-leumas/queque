@@ -374,6 +374,7 @@ export function buildPrompt(envelope: ContextEnvelope): string {
     'No markdown, no prose, no code fences. Raw JSON array only.',
     '',
     'The command should be safe to place back into a shell buffer.',
+    SHELL_SYNTAX_INSTRUCTION,
     '',
     'Shell context:',
     JSON.stringify(

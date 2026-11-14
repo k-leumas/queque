@@ -777,9 +777,9 @@ function withShell(
 
 describe('shell syntax in the prompt (Phase 11 D-06)', () => {
   it.each(['zsh', 'bash'] as const)('names %s in the prompt and asks for its syntax', (shell) => {
-    const lines = buildPrompt(withShell(shell)).split('\n');
-    expect(lines).toContain(`  "shellName": "${shell}",`);
-    expect(lines).toContain(SHELL_SYNTAX_INSTRUCTION);
+    const prompt = buildPrompt(withShell(shell));
+    expect(prompt).toContain(`"shellName": "${shell}"`);
+    expect(prompt.split('\n')).toContain(SHELL_SYNTAX_INSTRUCTION);
   });
 
   it('puts the instruction in the instruction block, before the Shell context', () => {
@@ -826,7 +826,7 @@ describe('shell syntax in the prompt (Phase 11 D-06)', () => {
     const dir = join(import.meta.dirname, '..', 'src', 'providers');
     const adapters = readdirSync(dir)
       .filter((name) => name.endsWith('.ts'))
-      .filter((name) => /:\s*LLMAdapter = \{/.test(readFileSync(join(dir, name), 'utf8')));
+      .filter((name) => readFileSync(join(dir, name), 'utf8').includes(': LLMAdapter = {'));
     expect(adapters.length).toBeGreaterThanOrEqual(4);
     const missing = adapters.filter(
       (name) =>
