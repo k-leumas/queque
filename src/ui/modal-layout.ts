@@ -1,4 +1,5 @@
 import type { CommandCandidate } from '../contracts/candidates.js';
+import { INSTANT_FRAME_VIEWPORT_LINES } from '../shared/instant-frame-spec.js';
 import { isDestructiveCommand } from '../shared/privacy-filter.js';
 import type { DisplayCandidate } from '../shared/tool-awareness.js';
 
@@ -124,15 +125,11 @@ export function filterCandidates<T extends DisplayCandidate>(
 }
 
 /**
- * Lines the inline (non-Zellij) client scrolls up before the modal renders, so prior terminal
- * content stays visible above it. Sized for the typical tallest modal: query header (1) +
- * filter (1) + content marginTop (1) + 3 two-line candidates with marginBottom (9) + the
- * destructive ⚠ footer (marginTop + line = 2) + the ⓘ legend (marginTop + line = 2) +
- * controls (marginTop + line = 2) = 18. The two footers are separate boxes with their own
- * margins, so each adds two lines. A fixed approximation written before candidates arrive:
- * 5-candidate lists, wrapped rows or a wrapped legend can exceed it.
+ * Lines the inline (non-Zellij) client scrolls up before the modal renders. The value and its
+ * sizing rationale live in src/shared/instant-frame-spec.ts (`INSTANT_FRAME_VIEWPORT_LINES`),
+ * which the shell adapters' instant frame must match.
  */
-export const MODAL_VIEWPORT_LINES = 18;
+export const MODAL_VIEWPORT_LINES = INSTANT_FRAME_VIEWPORT_LINES;
 
 /**
  * Where a streamed candidate list stands (09.1 D-05/D-08/D-16): `'arriving'` while more rows
