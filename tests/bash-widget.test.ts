@@ -325,97 +325,118 @@ describe('bash adapter: instant frame placement', () => {
     expect(body).toMatch(
       /if \[\[ -z \$\{ZELLIJ:-\} \]\]; then\n\s+_qq_paint_inline_instant_frame "\$QQ_ORIG_LBUFFER"/,
     );
-    // Both clear paths depend on a successful paint.
-    const clears = body.split('\n').filter((line) => line.includes("printf '\\e8\\e[J'"));
-    expect(clears).toHaveLength(2);
-    expect(body.match(/QQ_INSTANT_FRAME_PAINTED == 1/g)).toHaveLength(2);
+    // Every early stop after the paint clears it: mktemp failure, request.json failure, and a
+    // non-zero client exit (a client that exits 0 clears its own frame in its first write).
+    const clearAt = (from: number): number => body.indexOf('_qq_clear_instant_frame', from);
+    const mktempFailed = body.indexOf('mktemp -d failed');
+    const requestFailed = body.indexOf('request.json could not be written');
+    const clientFailed = body.indexOf('qq_client_status != 0');
+    expect(body.match(/_qq_clear_instant_frame/g)).toHaveLength(3);
+    expect(clearAt(mktemp)).toBeLessThan(mktempFailed);
+    expect(clearAt(mktempFailed)).toBeLessThan(requestFailed);
+    expect(clearAt(clientFailed)).toBeGreaterThan(clientFailed);
+    // The clear only restores a save the paint itself made.
+    const source = readFileSync(adapterPath, 'utf8');
+    const helper = source.slice(source.indexOf('_qq_clear_instant_frame() {'));
+    expect(helper.slice(0, helper.indexOf('\n}\n'))).toMatch(
+      /if \[\[ \$QQ_INSTANT_FRAME_PAINTED == 1 \]\]; then\n\s+printf '\\e8\\e\[J'/,
+    );
   });
 });
 
-describe.skipIf(bash5 === null || jq === null)('bash adapter: instant frame (bash 5)', () => {
-  it('b9: QQ_INSTANT_FRAME=0 leaves REPLY empty, writes no file and returns 0 everywhere', () => {
-    const dir = mkdtempSync(join(scratch, 'frame-off-'));
-    const run = runInteractiveBash(
-      `QQ_INSTANT_FRAME=0
+/** The trigger cases run jq, mktemp and the fake client in a `bash -i`: about 1 s each locally. */
+const TRIGGER_TIMEOUT_MS = 20_000;
+
+describe.skipIf(bash5 === null || jq === null)(
+  'bash adapter: instant frame (bash 5)',
+  {
+    timeout: TRIGGER_TIMEOUT_MS,
+  },
+  () => {
+    it('b9: QQ_INSTANT_FRAME=0 leaves REPLY empty, writes no file and returns 0 everywhere', () => {
+      const dir = mkdtempSync(join(scratch, 'frame-off-'));
+      const run = runInteractiveBash(
+        `QQ_INSTANT_FRAME=0
 trap 'echo TRAPPED' ERR
 _qq_instant_frame 'echo hi' 78; s1=$?; f=$REPLY
 _qq_inline_instant_frame_bytes 'echo hi' 78; s2=$?; b=$REPLY
 _qq_paint_inline_instant_frame 'echo hi'; s3=$?
 _qq_write_pane_instant_frame '${dir}' 'echo hi' 78; s4=$?
 echo "frame=[$f] bytes=[$b] status=$s1$s2$s3$s4 painted=$QQ_INSTANT_FRAME_PAINTED"`,
-    );
-    expect(run.stdout).toContain('frame=[] bytes=[] status=0000 painted=0\n');
-    expect(run.stdout).not.toContain('TRAPPED');
-    expect(run.stderr.trim()).toBe('');
-    expect(readdirSync(dir)).toEqual([]);
-  });
+      );
+      expect(run.stdout).toContain('frame=[] bytes=[] status=0000 painted=0\n');
+      expect(run.stdout).not.toContain('TRAPPED');
+      expect(run.stderr.trim()).toBe('');
+      expect(readdirSync(dir)).toEqual([]);
+    });
 
-  it('b9: the painter writes nothing when stdout is not a terminal or is closed', () => {
-    const run = runInteractiveBash(`trap 'echo TRAPPED' ERR
+    it('b9: the painter writes nothing when stdout is not a terminal or is closed', () => {
+      const run = runInteractiveBash(`trap 'echo TRAPPED' ERR
 printf 'A'; _qq_paint_inline_instant_frame 'echo hi'; s1=$?; printf 'B\\n'
 _qq_paint_inline_instant_frame 'echo hi' >&-; s2=$?
 echo "status=$s1$s2 painted=$QQ_INSTANT_FRAME_PAINTED"`);
-    expect(run.stdout).toContain('AB\n');
-    expect(run.stdout).toContain('status=00 painted=0\n');
-    expect(run.stdout).not.toContain('TRAPPED');
-    expect(run.stderr.trim()).toBe('');
-  });
+      expect(run.stdout).toContain('AB\n');
+      expect(run.stdout).toContain('status=00 painted=0\n');
+      expect(run.stdout).not.toContain('TRAPPED');
+      expect(run.stderr.trim()).toBe('');
+    });
 
-  it('b9: the pane writer writes the frame file and is silent for a missing dir', () => {
-    const dir = mkdtempSync(join(scratch, 'frame-pane-'));
-    const run = runInteractiveBash(`trap 'echo TRAPPED' ERR
+    it('b9: the pane writer writes the frame file and is silent for a missing dir', () => {
+      const dir = mkdtempSync(join(scratch, 'frame-pane-'));
+      const run = runInteractiveBash(`trap 'echo TRAPPED' ERR
 _qq_write_pane_instant_frame '${dir}' 'echo hi' 78; s1=$?
 _qq_write_pane_instant_frame /nonexistent/qq-instant-probe 'echo hi' 78; s2=$?
 echo "status=$s1$s2"`);
-    expect(run.stdout).toContain('status=00\n');
-    expect(run.stdout).not.toContain('TRAPPED');
-    expect(run.stderr.trim()).toBe('');
-    expect(readdirSync(dir)).toEqual(['instant-frame.txt']);
-    expect(readFileSync(join(dir, 'instant-frame.txt'), 'utf8').endsWith('\u001B[H')).toBe(true);
-    expect(existsSync('/nonexistent/qq-instant-probe')).toBe(false);
-  });
+      expect(run.stdout).toContain('status=00\n');
+      expect(run.stdout).not.toContain('TRAPPED');
+      expect(run.stderr.trim()).toBe('');
+      expect(readdirSync(dir)).toEqual(['instant-frame.txt']);
+      expect(readFileSync(join(dir, 'instant-frame.txt'), 'utf8').endsWith('\u001B[H')).toBe(true);
+      expect(existsSync('/nonexistent/qq-instant-probe')).toBe(false);
+    });
 
-  it('b9: a non-zero client exit after a paint clears the frame', () => {
-    const bin = fakeBin({ qq: 'exit 3' });
-    const run = runInteractiveBash(
-      `${PAINT_PROBE}
+    it('b9: a non-zero client exit after a paint clears the frame', () => {
+      const bin = fakeBin({ qq: 'exit 3' });
+      const run = runInteractiveBash(
+        `${PAINT_PROBE}
 READLINE_LINE='ask?'; READLINE_POINT=4
 _qq_question
 echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
-      cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
-    );
-    expect(run.status).toBe(0);
-    const paint = run.stdout.indexOf('PAINT[ask]');
-    expect(paint).toBeGreaterThanOrEqual(0);
-    expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
-    expect(run.stdout).toContain('line=[ask] point=3');
-  });
+        cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
+      );
+      expect(run.status).toBe(0);
+      const paint = run.stdout.indexOf('PAINT[ask]');
+      expect(paint).toBeGreaterThanOrEqual(0);
+      expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
+      expect(run.stdout).toContain('line=[ask] point=3');
+    });
 
-  it('b9: a client that exits 0 clears its own frame; the adapter prints no clear', () => {
-    const bin = fakeBin({ qq: 'exit 0' });
-    const run = runInteractiveBash(
-      `${PAINT_PROBE}
+    it('b9: a client that exits 0 clears its own frame; the adapter prints no clear', () => {
+      const bin = fakeBin({ qq: 'exit 0' });
+      const run = runInteractiveBash(
+        `${PAINT_PROBE}
 READLINE_LINE='ask?'; READLINE_POINT=4
 _qq_question`,
-      cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
-    );
-    expect(run.stdout).toContain('PAINT[ask]');
-    expect(run.stdout).not.toContain(FRAME_CLEAR);
-  });
+        cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
+      );
+      expect(run.stdout).toContain('PAINT[ask]');
+      expect(run.stdout).not.toContain(FRAME_CLEAR);
+    });
 
-  it('b9: a failed mktemp after a paint clears the frame and keeps the line', () => {
-    const bin = fakeBin({ qq: 'exit 0', mktemp: 'exit 1' });
-    const run = runInteractiveBash(
-      `${PAINT_PROBE}
+    it('b9: a failed mktemp after a paint clears the frame and keeps the line', () => {
+      const bin = fakeBin({ qq: 'exit 0', mktemp: 'exit 1' });
+      const run = runInteractiveBash(
+        `${PAINT_PROBE}
 READLINE_LINE='ask? tail'; READLINE_POINT=4
 _qq_question
 echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
-      cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
-    );
-    const paint = run.stdout.indexOf('PAINT[ask]');
-    expect(paint).toBeGreaterThanOrEqual(0);
-    expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
-    expect(run.stderr).toContain('queque: cannot create a temp dir in /tmp');
-    expect(run.stdout).toContain('line=[ask tail] point=3');
-  });
-});
+        cleanEnv({ PATH: `${bin}:/usr/bin:/bin`, QQ_DEBUG_LOG_FILE: join(scratch, 'b9.log') }),
+      );
+      const paint = run.stdout.indexOf('PAINT[ask]');
+      expect(paint).toBeGreaterThanOrEqual(0);
+      expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
+      expect(run.stderr).toContain('queque: cannot create a temp dir in /tmp');
+      expect(run.stdout).toContain('line=[ask tail] point=3');
+    });
+  },
+);
