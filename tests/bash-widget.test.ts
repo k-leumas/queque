@@ -16,14 +16,25 @@
  *   b7  qq missing: one message, line restored
  *   b8  instant frame placement: lookup, paint (outside Zellij), then mktemp (mirrors zsh z10)
  *   b9  instant frame kill switch, no paint without a terminal, pane file, the two clears
+ *   b10 tool handoff files: PATH tools, builtins, public functions and aliases (D-05)
+ *   b11 compgen landmine: no aliases and only `_` functions still give all three files
+ *   b12 a binary created after the hash table was primed is listed (SC-1 mirror)
+ *   b13 the writer runs detached: tools.pending at once, files and no marker later
+ *   b14 two-flag cleanup: whichever side finishes last removes the session dir once
+ *   b15 QQ_TOOL_AWARENESS=0 writes no marker and no files
+ *   b16 hostile aliases and a jq function corrupt neither the handoff nor the round trip
+ *   b17 sourcing prewarms the daemon once, quietly; QQ_DAEMON_PREWARMED=1 skips it
+ *   b21 the session dir is removed after a cancel result and after a client crash
  *
- * Every shell starts without ZELLIJ* or TMUX. A missing bash 5 or jq skips locally and fails
- * when CI is set.
+ * Every shell starts without ZELLIJ* or TMUX, and with QQ_DAEMON_PREWARMED=1 so sourcing never
+ * starts a real daemon (b17 clears it). A missing bash 5 or jq skips locally and fails when CI
+ * is set.
  */
 
 import { spawnSync } from 'node:child_process';
 import {
   existsSync,
+  mkdirSync,
   mkdtempSync,
   readdirSync,
   readFileSync,
@@ -72,7 +83,8 @@ function cleanEnv(extra: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
     delete env[key];
   }
   delete env.QQ_DEBUG_LOG_FILE;
-  return { ...env, ...extra };
+  delete env.QQ_TOOL_AWARENESS;
+  return { ...env, QQ_DAEMON_PREWARMED: '1', ...extra };
 }
 
 function spawnBash(bin: string, args: string[], env: NodeJS.ProcessEnv): Run {
@@ -99,11 +111,12 @@ function runBash(bin: string, script: string, env: NodeJS.ProcessEnv = cleanEnv(
 
 /** `bash -i -c` with the adapter sourced first. */
 function runInteractiveBash(script: string, env: NodeJS.ProcessEnv = cleanEnv()): Run {
-  return spawnBash(
-    bash5 ?? 'bash',
-    ['--noprofile', '--norc', '-i', '-c', `source '${adapterPath}'\n${script}`],
-    env,
-  );
+  return runRawInteractiveBash(`source '${adapterPath}'\n${script}`, env);
+}
+
+/** `bash -i -c` that sources nothing itself (the script decides where the adapter is sourced). */
+function runRawInteractiveBash(script: string, env: NodeJS.ProcessEnv = cleanEnv()): Run {
+  return spawnBash(bash5 ?? 'bash', ['--noprofile', '--norc', '-i', '-c', script], env);
 }
 
 /** Prints the line state the way every case asserts it. */
@@ -437,6 +450,289 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
       expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
       expect(run.stderr).toContain('queque: cannot create a temp dir in /tmp');
       expect(run.stdout).toContain('line=[ask tail] point=3');
+    });
+  },
+);
+
+// ---------------------------------------------------------------------------
+// Plan 11-07 (D-05): the installed-tool handoff, the two-flag cleanup, the daemon prewarm and
+// hostile shells. The client half (the tools.pending wait) is tests/tool-handoff.test.ts.
+// ---------------------------------------------------------------------------
+
+function sleepMs(ms: number): void {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+/** Polls `check` every 25 ms until it is true or `ms` has passed; returns the last result. */
+function pollUntil(check: () => boolean, ms: number): boolean {
+  const deadline = Date.now() + ms;
+  for (;;) {
+    if (check()) return true;
+    if (Date.now() >= deadline) return false;
+    sleepMs(25);
+  }
+}
+
+/** The non-empty lines of a handoff file, or null when the file does not exist. */
+function fileLines(path: string): string[] | null {
+  if (!existsSync(path)) return null;
+  return readFileSync(path, 'utf8')
+    .split('\n')
+    .filter((line) => line !== '');
+}
+
+/** The session dir the adapter logged (`[bash] tmpdir=…`), or '' when it logged none. */
+function sessionDirFromLog(log: string): string {
+  const text = existsSync(log) ? readFileSync(log, 'utf8') : '';
+  return /\[bash\] tmpdir=(\S+)/.exec(text)?.[1] ?? '';
+}
+
+const HANDOFF_FILES = ['commands.txt', 'builtins.txt', 'functions.txt'];
+
+/**
+ * Renames the real writer and wraps it with a delay, so a case can look at the session dir
+ * while the detached writer is certainly still running. The wrapper still runs the real scan.
+ */
+const SLOW_WRITER = (seconds: number): string =>
+  `source <(declare -f _qq_write_tool_handoff | command sed '1s/^_qq_write_tool_handoff/_qq_real_writer/')
+_qq_write_tool_handoff() { command sleep ${seconds}; _qq_real_writer "$@"; }`;
+
+/** The PATH every trigger case uses: fake tools, jq, node for a QQ_DEV_ROOT client, the system. */
+function triggerPath(bin: string): string {
+  return `${bin}:${dirname(process.execPath)}:/usr/bin:/bin`;
+}
+
+/**
+ * A QQ_DEV_ROOT whose dist/cli/main.js stands in for the client: QQ_T_MODE=crash exits 3
+ * without a result, anything else writes `{"kind":"cancel"}` to --result-file.
+ */
+function fakeDevRoot(): string {
+  const root = mkdtempSync(join(scratch, 'devroot-'));
+  mkdirSync(join(root, 'dist', 'cli'), { recursive: true });
+  writeFileSync(
+    join(root, 'dist', 'cli', 'main.js'),
+    `const args = process.argv.slice(2);
+if (process.env.QQ_T_MODE === 'crash') process.exit(3);
+require('node:fs').writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
+`,
+  );
+  return root;
+}
+
+/** A fake `qq` client that checks request.json with the real jq and writes a replace-buffer. */
+const REPLACE_CLIENT = `while [ $# -gt 0 ]; do
+  case "$1" in --request-file) req=$2; shift ;; --result-file) res=$2; shift ;; esac
+  shift
+done
+jq -e '.lbuffer == "list files"' "$req" >/dev/null || exit 9
+printf '%s\\n' '{"kind":"replace-buffer","lbuffer":"ls -la","rbuffer":""}' > "$res"`;
+
+describe.skipIf(bash5 === null || jq === null)(
+  'bash adapter: tool handoff, cleanup and prewarm (bash 5)',
+  { timeout: TRIGGER_TIMEOUT_MS },
+  () => {
+    it('b10: the writer lists PATH tools, builtins, public functions and aliases', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-'));
+      const bin = fakeBin({ qqprobe10: 'exit 0' });
+      const run = runInteractiveBash(
+        `alias ll='ls -l'
+myfn() { :; }
+_private() { :; }
+_qq_write_tool_handoff '${dir}'; echo "status=$?"`,
+        cleanEnv({ PATH: triggerPath(bin) }),
+      );
+      expect(run.stdout).toContain('status=0');
+      expect(run.stderr.trim()).toBe('');
+      expect(fileLines(join(dir, 'commands.txt'))).toContain('qqprobe10');
+      expect(fileLines(join(dir, 'builtins.txt'))).toContain('cd');
+      const functions = fileLines(join(dir, 'functions.txt'));
+      expect(functions).toContain('myfn');
+      expect(functions).toContain('ll');
+      expect(functions).not.toContain('_private');
+    });
+
+    it('b11: no aliases and only _ functions still give all three files', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-landmine-'));
+      const run = runInteractiveBash(
+        `unalias -a
+_only_private() { :; }
+_qq_write_tool_handoff '${dir}'; echo "status=$?"`,
+      );
+      expect(run.stdout).toContain('status=0');
+      expect(fileLines(join(dir, 'commands.txt'))?.length ?? 0).toBeGreaterThan(0);
+      expect(fileLines(join(dir, 'builtins.txt'))?.length ?? 0).toBeGreaterThan(0);
+      expect(fileLines(join(dir, 'functions.txt'))).toEqual([]);
+    });
+
+    it('b12: a binary created after the hash table was primed is listed', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-fresh-'));
+      const bin = fakeBin({ qqold12: 'exit 0' });
+      const run = runInteractiveBash(
+        `qqold12
+echo "hashed=$(hash | command grep -c qqold12)"
+command printf '#!/bin/sh\\nexit 0\\n' > '${bin}/qqnew12'
+command chmod 755 '${bin}/qqnew12'
+_qq_write_tool_handoff '${dir}'`,
+        cleanEnv({ PATH: triggerPath(bin) }),
+      );
+      // The hash table really held the older probe before the new binary appeared.
+      expect(run.stdout).toContain('hashed=1\n');
+      expect(fileLines(join(dir, 'commands.txt'))).toContain('qqnew12');
+    });
+
+    it('b13: the writer runs detached: tools.pending at once, then the files and no marker', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-async-'));
+      const run = runInteractiveBash(
+        `${SLOW_WRITER(1)}
+t0=$EPOCHREALTIME
+_qq_start_tool_handoff '${dir}'; st=$?
+t1=$EPOCHREALTIME
+[[ -e '${dir}/tools.pending' ]] && echo pending=yes
+echo "status=$st ms=$(( (\${t1/./} - \${t0/./}) / 1000 ))"`,
+      );
+      // A scalar on one line (not a multi-line toContain diff), so the TAP report stays valid.
+      const marker = /^pending=yes$/m.exec(run.stdout)?.[0] ?? run.stdout.trim();
+      expect(marker).toBe('pending=yes');
+      expect(run.stdout).toMatch(/status=0 ms=\d+/);
+      // The writer sleeps 1 s before it scans: a synchronous start would take at least that.
+      const ms = Number(/ms=(\d+)/.exec(run.stdout)?.[1] ?? '99999');
+      expect(ms).toBeLessThan(500);
+      expect(run.stderr.trim()).toBe('');
+      const done = pollUntil(
+        () =>
+          !existsSync(join(dir, 'tools.pending')) &&
+          HANDOFF_FILES.every((name) => existsSync(join(dir, name))),
+        3000,
+      );
+      expect(done).toBe(true);
+      // Nobody wrote `closed`, so the writer left the dir in place.
+      expect(existsSync(dir)).toBe(true);
+    });
+
+    it('b14: cleanup during the scan leaves the dir to the writer, which removes it', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-close-early-'));
+      const run = runInteractiveBash(
+        `${SLOW_WRITER(1)}
+_qq_start_tool_handoff '${dir}'
+_qq_cleanup '${dir}'
+[[ -d '${dir}' ]] && echo kept=yes
+[[ -e '${dir}/closed' ]] && echo closed=yes`,
+      );
+      expect(run.stdout).toContain('kept=yes');
+      expect(run.stdout).toContain('closed=yes');
+      expect(pollUntil(() => !existsSync(dir), 4000)).toBe(true);
+    });
+
+    it('b14: cleanup after the scan removes the dir at once', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-close-late-'));
+      const run = runInteractiveBash(
+        `_qq_start_tool_handoff '${dir}'
+for (( i = 0; i < 300; i++ )); do [[ -e '${dir}/tools.pending' ]] || break; command sleep 0.01; done
+[[ -e '${dir}/commands.txt' ]] && echo scanned=yes
+_qq_cleanup '${dir}'
+[[ -e '${dir}' ]] || echo gone=yes`,
+      );
+      expect(run.stdout).toContain('scanned=yes');
+      expect(run.stdout).toContain('gone=yes');
+    });
+
+    it('b15: QQ_TOOL_AWARENESS=0 writes no marker and no files', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-off-'));
+      const run = runInteractiveBash(
+        `QQ_TOOL_AWARENESS=0
+_qq_start_tool_handoff '${dir}'; s1=$?
+_qq_write_tool_handoff '${dir}'; s2=$?
+command sleep 0.3
+echo "status=$s1$s2"`,
+      );
+      expect(run.stdout).toContain('status=00');
+      expect(readdirSync(dir)).toEqual([]);
+    });
+
+    it('b16: hostile aliases and a jq function corrupt neither the handoff nor the round trip', () => {
+      const dir = mkdtempSync(join(scratch, 'handoff-hostile-'));
+      const bin = fakeBin({ qq: REPLACE_CLIENT });
+      const log = join(scratch, 'b16.log');
+      const run = runRawInteractiveBash(
+        `alias grep='grep --color=always'
+alias rm='rm -i'
+jq() { echo broken; }
+myfn() { :; }
+source '${adapterPath}'
+_qq_write_tool_handoff '${dir}'
+READLINE_LINE='list files?'; READLINE_POINT=11
+_qq_question
+echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
+        cleanEnv({ PATH: triggerPath(bin), QQ_DEBUG_LOG_FILE: log }),
+      );
+      for (const name of HANDOFF_FILES) {
+        expect(existsSync(join(dir, name)), name).toBe(true);
+        expect(readFileSync(join(dir, name), 'utf8').includes('\u001B'), name).toBe(false);
+      }
+      expect(fileLines(join(dir, 'functions.txt'))).toContain('myfn');
+      // The fake client exits 9 without a result unless request.json parsed with the real jq.
+      expect(run.stdout).toContain('line=[ls -la] point=6');
+      expect(run.stdout).not.toContain('remove');
+      expect(run.stderr).not.toContain('remove');
+      const session = sessionDirFromLog(log);
+      expect(session).not.toBe('');
+      expect(readFileSync(log, 'utf8')).toContain('tool handoff started');
+      expect(pollUntil(() => !existsSync(session), 3000)).toBe(true);
+    });
+
+    it('b17: sourcing prewarms the daemon once, prints nothing, and a second source does not', () => {
+      const marker = join(scratch, 'b17-prewarm.log');
+      const bin = fakeBin({ qq: `printf '%s\\n' "$*" >> '${marker}'` });
+      const env = cleanEnv({ PATH: triggerPath(bin) });
+      delete env.QQ_DAEMON_PREWARMED;
+      const run = runRawInteractiveBash(
+        `source '${adapterPath}'
+source '${adapterPath}'
+for (( i = 0; i < 100; i++ )); do [[ -s '${marker}' ]] && break; command sleep 0.05; done
+command sleep 0.5`,
+        env,
+      );
+      expect(run.stdout).toBe('');
+      expect(run.stderr.trim()).toBe('');
+      expect(fileLines(marker)).toEqual(['daemon --ensure']);
+    });
+
+    it('b17: QQ_DAEMON_PREWARMED=1 skips the prewarm', () => {
+      const marker = join(scratch, 'b17-skip.log');
+      const bin = fakeBin({ qq: `printf '%s\\n' "$*" >> '${marker}'` });
+      const run = runRawInteractiveBash(
+        `source '${adapterPath}'
+command sleep 0.5`,
+        cleanEnv({ PATH: triggerPath(bin), QQ_DAEMON_PREWARMED: '1' }),
+      );
+      expect(run.stdout).toBe('');
+      expect(existsSync(marker)).toBe(false);
+    });
+
+    it.each([
+      ['a cancel result', 'cancel'],
+      ['a client crash (exit 3, no result)', 'crash'],
+    ])('b21: after %s the line is restored and the session dir is removed', (_name, mode) => {
+      const root = fakeDevRoot();
+      const log = join(scratch, `b21-${mode}.log`);
+      const run = runInteractiveBash(
+        `READLINE_LINE='ask? tail'; READLINE_POINT=4
+_qq_question
+echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
+        cleanEnv({
+          PATH: triggerPath(fakeBin({})),
+          QQ_DEV_ROOT: root,
+          QQ_T_MODE: mode,
+          QQ_DEBUG_LOG_FILE: log,
+        }),
+      );
+      expect(run.stdout).toContain('line=[ask tail] point=3');
+      const text = readFileSync(log, 'utf8');
+      expect(text).toContain('tool handoff started');
+      expect(text).toContain(`client status=${mode === 'crash' ? 3 : 0}`);
+      const session = sessionDirFromLog(log);
+      expect(session).not.toBe('');
+      expect(pollUntil(() => !existsSync(session), 3000)).toBe(true);
     });
   },
 );

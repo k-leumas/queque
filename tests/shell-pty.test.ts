@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { build, type Options } from 'tsup';
@@ -19,7 +19,8 @@ import { ciRequired, findBinary, findShell, shellVersionOf } from './helpers/she
 // The client is the real tsup bundle built into a temp dir (QQ_DEV_ROOT), in fixture mode
 // (QQ_TEST_RESULT_MODE=replace-buffer-fixture writes the lbuffer back, or `echo hello` for an
 // empty one), so no model is called. The shells start without ZELLIJ* or TMUX, with a
-// throwaway HOME, QQ_DAEMON_PREWARMED=1, QQ_TELEMETRY=0 and QQ_INSTANT_FRAME=0 (frame bytes
+// throwaway HOME, QQ_DAEMON_PREWARMED=1 (handoff-quiet turns the prewarm back on in its rc),
+// QQ_TELEMETRY=0 and QQ_INSTANT_FRAME=0 (frame bytes
 // are guarded by the instant-frame parity test). Fixture mode still ensures the daemon, so a
 // local run replaces the developer's dev daemon once (the next real `??` replaces it back).
 //
@@ -231,6 +232,20 @@ function expectNoJobNotice(session: Session): void {
   expect(lines.filter((line) => /^\[\d+\]/.test(line) || /\bDone\b/.test(line))).toEqual([]);
 }
 
+/**
+ * The adapter started its tool scan (`tool handoff started`) and the session dir it logged
+ * (`[bash] tmpdir=…`) is gone within 3 s: the two-flag cleanup ran on whichever side was last.
+ */
+function expectSessionDirGone(session: Session): void {
+  const log = readLog(session);
+  expect(log).toContain('tool handoff started');
+  const dir = /\[bash\] tmpdir=(\S+)/.exec(log)?.[1] ?? '';
+  expect(dir).not.toBe('');
+  const deadline = Date.now() + 3000;
+  while (existsSync(dir) && Date.now() < deadline) sleepMs(25);
+  expect(existsSync(dir)).toBe(false);
+}
+
 const PASTE_SKIP_REASON = 'bracketed paste is off by default before 5.1';
 
 describe.each(PTY_SHELLS)('$name ?? in a PTY', (row) => {
@@ -364,6 +379,34 @@ describe.each(PTY_SHELLS)('$name ?? in a PTY', (row) => {
         drive(session, 'key', 'Enter');
         waitForLine(session, (line) => line === 'alive');
         expectNoJobNotice(session);
+      });
+
+      // Plan 11-07 (D-05): the detached tool scan and the source-time prewarm (on here) must
+      // print no job notice, and the session dir must still go once both sides are done.
+      it('handoff-quiet: the background scan and prewarm print no job notice', () => {
+        const session = startShell(row, { rc: ['QQ_DAEMON_PREWARMED=0'] });
+        drive(session, 'type', 'echo quiet??');
+        drive(session, 'wait', 'queque › echo quiet');
+        drive(session, 'key', 'Enter');
+        waitForLine(session, (line) => line === 'quiet');
+        drive(session, 'type', 'echo next');
+        drive(session, 'key', 'Enter');
+        waitForLine(session, (line) => line === 'next');
+        expectNoJobNotice(session);
+        expectSessionDirGone(session);
+      });
+
+      it('hostile-env: grep and rm aliases and a jq function do not break the round trip', () => {
+        const session = startShell(row, {
+          rc: ["alias grep='grep --color=always'", "alias rm='rm -i'", 'jq() { echo broken; }'],
+        });
+        drive(session, 'type', 'echo hostile??');
+        drive(session, 'wait', 'queque › echo hostile');
+        drive(session, 'key', 'Enter');
+        waitForLine(session, (line) => line === 'hostile');
+        expect(screenLines(session).filter((line) => /\bremove\b/.test(line))).toEqual([]);
+        expectNoJobNotice(session);
+        expectSessionDirGone(session);
       });
     }
   });
