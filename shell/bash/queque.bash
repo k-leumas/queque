@@ -12,9 +12,10 @@
 #   reads   <session>/result.json   cancel | replace-buffer | error
 #   writes  READLINE_LINE / READLINE_POINT only; nothing runs until the user presses Enter.
 #
-# This file mirrors shell/zsh/queque.zsh (the reference adapter). The instant frame is here
-# (plan 11-06); later sections (the tool handoff, the Zellij floating pane and the daemon
-# prewarm) are added in the same order as there.
+# This file mirrors shell/zsh/queque.zsh (the reference adapter): the instant frame (plan
+# 11-06), then the installed-tool handoff, the daemon prewarm and the Zellij floating pane
+# (plan 11-07). Where bash differs (a detached tool scan with a `tools.pending` marker), the
+# section comment says why.
 
 # Non-interactive shells (scp, rsync, `bash -c`) read ~/.bashrc too: print nothing, change nothing.
 [[ $- == *i* ]] || return 0 2>/dev/null || exit 0
@@ -43,9 +44,19 @@ _qq_log() {
   return 0
 }
 
+# _qq_cleanup dir  the adapter's half of the two-flag cleanup (D-05). The detached tool writer
+# may still be scanning, so the adapter writes `closed` and removes the dir only once the
+# writer's `tools.pending` marker is gone; otherwise the writer removes it when it sees
+# `closed`. Each side sets its own flag before it checks the other's, so whichever finishes
+# last removes the dir, and a second `rm -rf` is harmless. Every exit of `_qq_question` after
+# the session dir exists goes through here.
 _qq_cleanup() {
-  [[ -n ${1:-} && -d $1 ]] || return 0
-  command rm -rf -- "$1" 2>/dev/null
+  local dir=${1:-}
+  [[ -n $dir && -d $dir ]] || return 0
+  { : >"$dir/closed"; } 2>/dev/null
+  if [[ ! -e $dir/tools.pending ]]; then
+    command rm -rf -- "$dir" 2>/dev/null
+  fi
   return 0
 }
 
@@ -93,12 +104,11 @@ _qq_restore_line() {
 QQ_MODAL_VIEWPORT_LINES=18                 # mirrors INSTANT_FRAME_VIEWPORT_LINES (spec)
 QQ_MODAL_MAX_COLUMNS=80                    # mirrors MODAL_MAX_COLUMNS (spec, CandidateSelect)
 QQ_MODAL_PADDING_COLUMNS=1                 # mirrors the Modal paddingX on each side
-# shellcheck disable=SC2034 # read by the Zellij path (plan 11-07) and the parity test
 QQ_ZELLIJ_FRAME_COLUMNS=2                  # mirrors the floating pane border columns
 QQ_INSTANT_FRAME_ROWS_ABOVE_LOADING=2      # mirrors the FILTER row + the content marginTop
 QQ_INSTANT_FRAME_LOADING_TEXT='thinking…'  # mirrors INSTANT_FRAME_LOADING_TEXT (spec)
 QQ_INSTANT_FRAME_FILE='instant-frame.txt'  # mirrors INSTANT_FRAME_SPEC.frameFile
-# shellcheck disable=SC2016,SC2034 # Zellij pane wrapper (plan 11-07); /bin/sh expands it there
+# shellcheck disable=SC2016 # the Zellij pane wrapper; /bin/sh expands it there
 QQ_PANE_PAINT_SCRIPT='cat "$1" 2>/dev/null; shift; exec "$@"'
 QQ_INSTANT_FRAME_PAINTED=${QQ_INSTANT_FRAME_PAINTED:-0}
 
@@ -209,6 +219,101 @@ _qq_write_pane_instant_frame() {
   fi
   return 0
 }
+
+# ---------------------------------------------------------------------------
+# Installed-tool handoff (D-05; zsh `_qq_write_tool_handoff`, spike 005)
+# ---------------------------------------------------------------------------
+# Writes the names bash can resolve into the session dir, next to request.json, so the client
+# can flag candidates that use missing tools and steer the prompt to installed ones:
+#   commands.txt   `compgen -c` (every command name bash resolves, PATH included)
+#   builtins.txt   `compgen -b` (never flagged)
+#   functions.txt  functions without a leading `_`, plus alias names (one file, 09 D-01)
+# The scan costs about 85 ms in bash (8.8 ms in zsh), so it runs in a detached writer
+# alongside client startup. `tools.pending` is the contract with src/client/tool-handoff.ts:
+# the adapter creates it before the writer starts, the writer removes it last, and the client
+# waits up to 500 ms while it exists. The names stay unordered: the client puts them in a Set.
+# Never chain on compgen's exit status: `compgen -a` with no aliases and the public-function
+# filter with only `_` functions both exit 1. Only an empty commands.txt removes the three files
+# (failure means "no files", so the client shows no flags). Kill switch: QQ_TOOL_AWARENESS=0.
+
+# _qq_write_tool_handoff dir  the scan itself (synchronous; tests call it directly).
+_qq_write_tool_handoff() {
+  local dir=${1:-}
+  if [[ ${QQ_TOOL_AWARENESS:-} == 0 || -z $dir || ! -d $dir ]]; then
+    return 0
+  fi
+  # Kept per D-05. It runs in the detached writer, where it only resets that subshell's
+  # table; compgen scans PATH itself, which is what lists a tool installed after the shell
+  # started (bash-widget b12 proves that, not this line).
+  hash -r 2>/dev/null
+  { compgen -c >"$dir/commands.txt"; } 2>/dev/null
+  { compgen -b >"$dir/builtins.txt"; } 2>/dev/null
+  { compgen -A function | command grep -v '^_'; compgen -a; } >"$dir/functions.txt" 2>/dev/null
+  if [[ ! -s $dir/commands.txt ]]; then
+    command rm -f -- "$dir/commands.txt" "$dir/builtins.txt" "$dir/functions.txt" 2>/dev/null
+  fi
+  return 0
+}
+
+# _qq_start_tool_handoff dir  creates tools.pending, then starts the writer detached and
+# returns at once. Only the `( … & )` subshell form is silent inside a `bind -x` function: a
+# bare `&`, `& disown`, `set +m` or `wait` print `[1] PID` / `Done` into the user's terminal.
+# The writer's own half of the two-flag cleanup: remove the marker, then remove the dir if the
+# adapter already wrote `closed`.
+_qq_start_tool_handoff() {
+  local dir=${1:-}
+  if [[ ${QQ_TOOL_AWARENESS:-} == 0 || -z $dir || ! -d $dir ]]; then
+    return 0
+  fi
+  if ! { : >"$dir/tools.pending"; } 2>/dev/null; then
+    return 0
+  fi
+  ( {
+      _qq_write_tool_handoff "$dir"
+      command rm -f -- "$dir/tools.pending"
+      if [[ -e $dir/closed ]]; then
+        command rm -rf -- "$dir"
+      fi
+    } </dev/null >/dev/null 2>&1 & )
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# Daemon prewarm (zsh `_qq_prewarm_daemon`)
+# ---------------------------------------------------------------------------
+# Sourcing the adapter starts `qq daemon --ensure` once per shell in the background, so the
+# first `??` pays less startup cost. QQ_DAEMON_PREWARMED=1 (set here, or by a harness before
+# sourcing) skips it; a second source in the same shell keeps the 1.
+QQ_DAEMON_PREWARMED=${QQ_DAEMON_PREWARMED:-0}
+
+_qq_prewarm_daemon() {
+  if [[ $QQ_DAEMON_PREWARMED == 1 ]]; then
+    return 0
+  fi
+  QQ_DAEMON_PREWARMED=1
+  ( {
+      local qq_bin
+      if [[ -n ${QQ_DEV_ROOT:-} && -f ${QQ_DEV_ROOT}/dist/cli/main.js ]] \
+        && type -P node >/dev/null 2>&1; then
+        command node "${QQ_DEV_ROOT}/dist/cli/main.js" daemon --ensure
+      elif qq_bin=$(type -P qq 2>/dev/null) && [[ -n $qq_bin ]]; then
+        command "$qq_bin" daemon --ensure
+      fi
+    } </dev/null >/dev/null 2>&1 & )
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# Zellij floating pane (D-07)
+# ---------------------------------------------------------------------------
+# With $ZELLIJ set, `_qq_question` runs the unchanged client in a floating pane and reads its
+# one newline-terminated result line from a FIFO in the session dir. The FIFO read gives up
+# after QQ_RESULT_READ_TIMEOUT_S (zsh reads for 30 s too; the client's IPC wait is 26 s), so a
+# dead pane can never hang the shell. A launcher that exits non-zero writes the sentinel line
+# into the FIFO, which wakes the read at once. `zellij` is called without `command` (as in zsh)
+# so tests can fake it with a shell function.
+QQ_RESULT_READ_TIMEOUT_S=30
+QQ_ZELLIJ_LAUNCH_SENTINEL='QQ_LAUNCH_FAILED'
 
 # ---------------------------------------------------------------------------
 # Result application
@@ -359,22 +464,108 @@ _qq_question() {
     return 0
   fi
 
-  # Inline path: the client runs as a foreground child and writes a regular result file.
-  local result_file=$tmpdir/result.json
-  export QQ_RESULT_FILE=$result_file
-  local qq_client_status=0
-  command "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
-    2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" || qq_client_status=$?
-  _qq_log "client status=${qq_client_status}"
+  # The tool scan runs alongside client startup (D-05); the client waits on tools.pending.
+  _qq_start_tool_handoff "$tmpdir"
+  _qq_log "tool handoff started"
 
-  # A client that crashed (before or after Ink) cannot clear the instant frame. One that
-  # exited 0 already cleared it in its first visible write.
-  if (( qq_client_status != 0 )); then
-    _qq_clear_instant_frame
+  local qq_log_file=${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}
+
+  if [[ -n ${ZELLIJ:-} ]]; then
+    # ---- Zellij path (D-07): the client in a floating pane, the result through a FIFO ----
+    # No inline frame was painted on this path, so the setup failures below have nothing to
+    # clear; the pane frame file goes with the session dir.
+    local fifo=$tmpdir/result.fifo
+    if ! command mkfifo "$fifo" 2>/dev/null; then
+      _qq_log 'mkfifo failed'
+      _qq_restore_line
+      _qq_cleanup "$tmpdir"
+      return 0
+    fi
+    _qq_log "fifo=${fifo}"
+
+    # Read-write, opened before the pane starts: a plain `<"$fifo"` blocks in open() until a
+    # writer appears, so a pane that never starts would never let the read timeout begin.
+    # Holding the read end before the launch also keeps the sentinel from a launcher that
+    # fails at once (FIFO data is dropped when no end is open). The client writes one
+    # newline-terminated line, so `read` returns as soon as it lands.
+    local qq_fifo_fd
+    if ! { exec {qq_fifo_fd}<>"$fifo"; } 2>/dev/null; then
+      _qq_log 'fifo open failed'
+      _qq_restore_line
+      _qq_cleanup "$tmpdir"
+      return 0
+    fi
+
+    # The uncaughtException/unhandledRejection handlers in main.ts write a cancel result to
+    # QQ_RESULT_FILE even when an error escapes the client.
+    export QQ_RESULT_FILE=$fifo
+
+    # Pane size: QQ_PANE_WIDTH / QQ_PANE_HEIGHT, default 80x24 (exported for the client).
+    local qq_pane_width=${QQ_PANE_WIDTH:-80} qq_pane_height=${QQ_PANE_HEIGHT:-24}
+    export QQ_PANE_WIDTH=$qq_pane_width QQ_PANE_HEIGHT=$qq_pane_height
+
+    # Instant first frame (D-04): written to a file in the 0700 session dir; the pane wrapper
+    # cats it, then execs the unchanged client argv. A width that is not all digits (e.g. a
+    # percentage) falls back to the modal width.
+    local qq_frame_columns=0
+    if [[ $qq_pane_width =~ ^[0-9]+$ ]]; then
+      qq_frame_columns=$(( 10#$qq_pane_width - QQ_ZELLIJ_FRAME_COLUMNS ))
+    fi
+    _qq_write_pane_instant_frame "$tmpdir" "$QQ_ORIG_LBUFFER" "$qq_frame_columns"
+    local -a pane_cmd
+    if [[ -s $tmpdir/$QQ_INSTANT_FRAME_FILE ]]; then
+      pane_cmd=(/bin/sh -c "$QQ_PANE_PAINT_SCRIPT" queque-instant-frame
+        "$tmpdir/$QQ_INSTANT_FRAME_FILE" "${qq_cmd[@]}")
+    else
+      pane_cmd=("${qq_cmd[@]}")
+    fi
+    _qq_log "pane instant frame=${#pane_cmd[@]}"
+
+    # Launch detached and silent (the `( … & )` form). The launcher's copy of the read end is
+    # closed; `1<>` opens the FIFO without blocking, so the sentinel write never hangs.
+    ( {
+        exec {qq_fifo_fd}<&-
+        if ! zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" \
+          --name qq -- "${pane_cmd[@]}" client --request-file "$req_file" --result-file "$fifo" \
+          2>>"$qq_log_file"; then
+          { printf '%s\n' "$QQ_ZELLIJ_LAUNCH_SENTINEL" 1<>"$fifo"; } 2>/dev/null
+        fi
+      } </dev/null >/dev/null 2>&1 & )
+
+    local result=''
+    if ! IFS= read -r -t "$QQ_RESULT_READ_TIMEOUT_S" -u "$qq_fifo_fd" result; then
+      _qq_log "fifo read timed out"
+      result='{"kind":"cancel"}'
+    fi
+    exec {qq_fifo_fd}<&-
+    _qq_log "fifo read complete"
+
+    if [[ $result == "$QQ_ZELLIJ_LAUNCH_SENTINEL" ]]; then
+      _qq_log 'zellij run failed'
+      _qq_restore_line
+      _qq_cleanup "$tmpdir"
+      return 0
+    fi
+    _qq_apply_result_str "$result" || _qq_log "result not applied; line restored"
+  else
+    # ---- Inline path: the client runs as a foreground child and writes a result file ----
+    local result_file=$tmpdir/result.json
+    export QQ_RESULT_FILE=$result_file
+    local qq_client_status=0
+    command "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
+      2>>"$qq_log_file" || qq_client_status=$?
+    _qq_log "client status=${qq_client_status}"
+
+    # A client that crashed (before or after Ink) cannot clear the instant frame. One that
+    # exited 0 already cleared it in its first visible write.
+    if (( qq_client_status != 0 )); then
+      _qq_clear_instant_frame
+    fi
+
+    # A missing or malformed result keeps the original line and cursor.
+    _qq_apply_result "$result_file" || _qq_log "result not applied; line restored"
   fi
 
-  # A missing or malformed result keeps the original line and cursor.
-  _qq_apply_result "$result_file" || _qq_log "result not applied; line restored"
   _qq_cleanup "$tmpdir"
   return 0
 }
@@ -383,3 +574,6 @@ _qq_question() {
 # `?` would then wait for keyseq-timeout before it appears).
 bind -m emacs -x '"?": _qq_question'
 bind -m vi-insert -x '"?": _qq_question'
+
+# Warm the daemon once per interactive shell (non-interactive shells returned at the top).
+_qq_prewarm_daemon
