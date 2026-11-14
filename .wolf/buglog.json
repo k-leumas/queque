@@ -8059,6 +8059,250 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-14T13:03:53.560206Z"
+    },
+    {
+      "id": "bug-487",
+      "timestamp": "2026-11-14T13:06:02.513Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-abef3015cfebacee8/tests/shell-contract.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation | Also: import { buildBaseContext } from '../src/context/base-contex; import { baseContextSchema, normalizedRequestSchema } from '",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-14T13:06:03.552Z"
+    },
+    {
+      "id": "bug-488",
+      "timestamp": "2026-11-14T13:08:50.574Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-acce3f5bef6c7f99f/tests/shell-registry.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:08:50.574Z"
+    },
+    {
+      "id": "bug-489",
+      "timestamp": "2026-11-14T13:09:54.360Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-abef3015cfebacee8/src/providers/claude.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:09:54.360Z"
+    },
+    {
+      "id": "bug-490",
+      "timestamp": "2026-11-14T13:11:34.170Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-abef3015cfebacee8/tests/claude-provider.test.ts",
+      "root_cause": "Had '\\n'",
+      "fix": "Changed to \"shellName\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:11:34.170Z"
+    },
+    {
+      "id": "bug-491",
+      "timestamp": "2026-11-14T13:11:51.332Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-abef3015cfebacee8/tests/claude-provider.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:11:51.332Z"
+    },
+    {
+      "id": "bug-492",
+      "timestamp": "2026-11-14T13:12:18.699Z",
+      "error_message": "Null/undefined access in ",
+      "file": ".claude/worktrees/agent-acce3f5bef6c7f99f/tests/registry-bootstrap.test.ts",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:12:18.699Z"
+    },
+    {
+      "id": "bug-493",
+      "timestamp": "2026-11-14T13:12:37.570Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a12c46af7c526c5d0/src/client/instant-frame.ts",
+      "root_cause": "3 lines replaced/restructured",
+      "fix": "Rewrote 3\u21924 lines (3 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:12:37.570Z"
+    },
+    {
+      "id": "bug-494",
+      "timestamp": "2026-11-14T13:12:51.353Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a12c46af7c526c5d0/src/ui/modal-layout.ts",
+      "root_cause": "8 lines replaced/restructured",
+      "fix": "Rewrote 10\u21926 lines (8 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:12:51.353Z"
+    },
+    {
+      "id": "bug-495",
+      "timestamp": "2026-11-14T13:12:53.346Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a12c46af7c526c5d0/src/ui/modal-layout.ts",
+      "root_cause": "Had '../shared/privacy-filter.js'",
+      "fix": "Changed to '../shared/instant-frame-spec.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:12:53.346Z"
+    },
+    {
+      "id": "bug-496",
+      "timestamp": "2026-11-14T13:12:56.706Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-a12c46af7c526c5d0/src/ui/CandidateSelect.tsx",
+      "root_cause": "Had '../shared/privacy-filter.js'",
+      "fix": "Changed to '../shared/instant-frame-spec.js'",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "tsx"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:12:56.706Z"
+    },
+    {
+      "id": "bug-497",
+      "timestamp": "2026-11-14T13:15:27.691Z",
+      "error_message": "Type error",
+      "file": ".claude/worktrees/agent-a12c46af7c526c5d0/tests/bash-widget.test.ts",
+      "root_cause": "Missing or incorrect type annotation",
+      "fix": "Added type assertion/annotation",
+      "tags": [
+        "auto-detected",
+        "type-fix",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:15:27.691Z"
+    },
+    {
+      "id": "bug-498",
+      "timestamp": "2026-11-14T13:17:59.670Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-a12c46af7c526c5d0/tests/bash-widget.test.ts",
+      "root_cause": "4 lines replaced/restructured",
+      "fix": "Rewrote 5\u219217 lines (4 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:17:59.670Z"
+    },
+    {
+      "id": "bug-499",
+      "timestamp": "2026-11-14T13:29:57.568084+00:00",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:29:57.568084+00:00",
+      "error_message": "repeat 3 echo hi flagged '3' as a missing tool (zsh)",
+      "file": "src/shared/command-words.ts",
+      "root_cause": "repeat skipped as reserved word but its count then read as the command word",
+      "fix": "after a reserved repeat, skip the next word token (zsh table only) (11-03)",
+      "tags": [
+        "lexer",
+        "zsh",
+        "repeat",
+        "missing-tools"
+      ]
+    },
+    {
+      "id": "bug-500",
+      "timestamp": "2026-11-14T13:29:57.568084+00:00",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:29:57.568084+00:00",
+      "error_message": "command-words-fuzz crafted inputs >1 s and zsh-widget prewarm failed in full suite (wave 2 executors and post-merge gate)",
+      "file": "tests/command-words-fuzz.test.ts",
+      "root_cause": "timing budgets include Node startup; load avg 33-82 from parallel executors and a local Ollama llama-server",
+      "fix": "none needed; both files pass alone 96/96 at the wave 2 gate. Load flake",
+      "tags": [
+        "fuzz",
+        "flake",
+        "load",
+        "vitest",
+        "prewarm"
+      ],
+      "occurrences_note": "seen by 11-03, 11-04, 11-06 and the gate"
+    },
+    {
+      "id": "bug-501",
+      "timestamp": "2026-11-14T13:29:57.568084+00:00",
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-14T13:29:57.568084+00:00",
+      "error_message": "shellcheck SC2034 on QQ_ZELLIJ_FRAME_COLUMNS / QQ_PANE_PAINT_SCRIPT",
+      "file": "shell/bash/queque.bash",
+      "root_cause": "variables only read by plan 07's Zellij path",
+      "fix": "targeted disable with reason; 11-07 can drop it",
+      "tags": [
+        "shellcheck",
+        "bash",
+        "sc2034"
+      ]
     }
   ]
 }

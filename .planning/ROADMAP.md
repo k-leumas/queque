@@ -404,7 +404,7 @@ Plans:
 **Goal:** Ship the literal `??` trigger and picker handoff in bash ≥5.0 (`bind -x`) with zsh parity (instant frame, tool awareness, inline + Zellij), and make every shared seam (request contract, tool handoff, lexer, `qq init`/`qq doctor`, telemetry, PTY harness) shell-aware for zsh/bash/fish so Phase 12 is adapter-only. Per spikes 004–005 in the `spike-findings-tui-llm` skill.
 **Requirements**: BASH-01
 **Depends on:** Phase 10
-**Plans:** 1/11 plans executed
+**Plans:** 5/11 plans executed
 
 Plans:
 
@@ -412,10 +412,10 @@ Plans:
 - [x] 11-01-PLAN.md — Tracer: bash `??` → fixture client → buffer replaced, proven in a zsh+bash tmux PTY harness; edge cases; CI deps (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 11-02-PLAN.md — Shell identity reaches the base context and prompt (bash syntax for bash, D-06); zsh widget declares `shell` (wave 2)
-- [ ] 11-03-PLAN.md — Client tool handoff: `tools.pending` wait (500 ms), start-early/await-late, shell-aware lexer (wave 2)
-- [ ] 11-04-PLAN.md — Shell registry and `qq init [shell]`: detection, `~/.bashrc`, bash 5.0 gate, macOS hint (wave 2)
-- [ ] 11-06-PLAN.md — Instant frame: TS reference, cross-shell byte-parity test, bash painter (wave 2)
+- [x] 11-02-PLAN.md — Shell identity reaches the base context and prompt (bash syntax for bash, D-06); zsh widget declares `shell` (wave 2)
+- [x] 11-03-PLAN.md — Client tool handoff: `tools.pending` wait (500 ms), start-early/await-late, shell-aware lexer (wave 2)
+- [x] 11-04-PLAN.md — Shell registry and `qq init [shell]`: detection, `~/.bashrc`, bash 5.0 gate, macOS hint (wave 2)
+- [x] 11-06-PLAN.md — Instant frame: TS reference, cross-shell byte-parity test, bash painter (wave 2)
 
 **Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 11-05-PLAN.md — Telemetry `shell` / `shell_version` allow-listed fields (wave 3)

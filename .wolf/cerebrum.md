@@ -196,6 +196,16 @@
 - [2026-11-14] `qq client` exits via process.exit right after the command returns; an un-awaited `appendDebugLog` there is lost. Await any debug line a test synchronizes on.
 - [2026-11-14] vitest TAP (tap-flat) breaks on error messages with newlines or escaped double quotes; keep thrown test diagnostics single-line and quote-free for gsd `tdd-red-evidence`.
 - [2026-11-14] This Mac's bash 5 is MacPorts `/opt/local/bin/bash` (not on the Claude Bash tool PATH); run bash tests with `QQ_TEST_BASH=/opt/local/bin/bash`. `findShell` probes /opt/local/bin.
+- [2026-11-14] Shell-specific prompt cues belong in `buildPrompt` (user prompt); `buildSystemPrompt` must stay shell-independent because the warm `claude -p` process is keyed on the system-prompt argv (claude-prewarm.ts).
+- [2026-11-14] tests/claude-provider.test.ts statically requires every `: LLMAdapter = {` file in src/providers/ to call `buildPrompt(`; a new delegating adapter must join the test's `delegators` allow list.
+- [2026-11-14] An `expect` inside a mocked `ensureDaemon` never fails a runForegroundClient test (run-foreground catches ensureDaemon errors, WR-12); record a flag in the mock and assert after the run. Pin start-early/await-late with a marker only the later step removes, and mutation-check the test.
+- [2026-11-14] src/shared/command-words.ts may only use `import type`: the fuzz child imports the .ts directly with Node type stripping.
+- [2026-11-14] Per-shell facts live in src/shared/shell-registry.ts (`qq init [shell]`, `runInit(shellArg, deps)` injectable via InitDeps; tests never touch the real home). Doctor keeps its own ZSH_* copies until 11-08.
+- [2026-11-14] Non-interactive `bash --norc -c` still sources $BASH_ENV: strip BASH_ENV and ENV from any bash version probe env.
+- [2026-11-14] vitest tap-flat names tests `file > describe > test`; `check tdd-red-evidence` needs that as targetTest while `-t` takes the short title (qualified name to -t matches nothing, exits 0).
+- [2026-11-14] In the Bash tool `command -v node` prints `node` (nvm function); env -i scripts need `whence -p node`.
+- [2026-11-14] Instant frame (D-04): change src/shared/instant-frame-spec.ts, shell/zsh/queque.zsh and shell/bash/queque.bash together; tests/instant-frame-parity.test.ts fails on byte drift (fish adds an ADAPTERS row in Phase 12). src/shared must not import client/ui/cli/daemon (static guard there).
+- [2026-11-14] bash `local LC_ALL=C.UTF-8 2>/dev/null` in a function switches ${#var}/${var:o:n} to characters and restores on return. macOS [[:cntrl:]] strips C0/DEL/C1 but not U+2028 (glibc does) — keep cross-shell fixtures to C0, DEL, ESC, C1.
 
 ## Do-Not-Repeat
 - [2026-11-13] Plan acceptance criteria must not use `git diff HEAD~1 HEAD` (or any relative `HEAD~N`): `verify.plan-structure` fails it as plan-criteria R6 (parallel sessions move HEAD). Name the commit: `git show --name-only --format= <sha>`. Also: adding a zod field with `.default()` makes it REQUIRED on the output type, so every hand-built literal typed as that schema's type (tests/intent-router.test.ts, tests/context-pipeline.test.ts for NormalizedRequest) needs the field or `pnpm typecheck` fails.
@@ -261,6 +271,8 @@
 - [2026-10-29] Docker Desktop (macOS) bind mounts hide in-container uid/mode mismatches (files look root-owned and readable); reproduce GitHub-runner permission bugs on a named docker volume with a second container run as -u 1001.
 - [2026-11-14] Don't register shell-specific vitest rows with `it.skipIf(row.name !== 'bash')` inside a shared `describe.each` — it reports skips on the other shell and breaks "no skips under CI". Use `if (row.name === 'bash') { ... }`.
 - [2026-11-14] Keep `it('name', () => {` titles short and pass timeouts through describe options; a trailing timeout arg makes biome wrap the title and breaks grep-based acceptance criteria.
+- [2026-11-14] When an acceptance criterion greps a literal (`grep -cF "LLMAdapter = {"`), write that literal in the test; a regex spelling doesn't match grep -F.
+- [2026-11-14] Timing-budget tests (command-words-fuzz 1 s per-child kill incl. Node startup; zsh-widget prewarm 2.5 s poll; bash -i -c helper cases ~1 s each) fail when load avg >30 (parallel executors, or a local Ollama llama-server at ~600% CPU). Rerun the file alone before calling it a regression; give bash -i -c describes `{ timeout: 20_000 }`.
 
 ## Decision Log
 

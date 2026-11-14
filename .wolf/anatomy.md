@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T13:01:32.358Z
-> Files: 627 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T13:25:55.903Z
+> Files: 672 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -31,7 +31,29 @@
 - `11-01-probe.sh` (~308 tok)
 - `11-01-pty-tail.ts` — Declares version (~1748 tok)
 - `11-01-red.sh` — Declares fs (~396 tok)
+- `11-02-msg.txt` (~40 tok)
+- `11-02-red.mjs` — Usage: node 11-02-red.mjs <out.json> <targetFile> <targetTest> <expected> <actual> <-t pattern> (~226 tok)
+- `11-02-verify.sh` — Plan 11-02 plan-level verification, run from the worktree root. (~208 tok)
+- `11-02-zshjson.zsh` — Renders the widget's request heredoc shape and validates it with jq. (~99 tok)
+- `11-03-ac1.sh` — Declares TOOL_HANDOFF_PENDING_BUDGET_MS (~327 tok)
+- `11-03-ac2.sh` (~228 tok)
+- `11-03-msg.txt` (~47 tok)
+- `11-03-probe.mjs` — Declares root (~250 tok)
+- `11-03-red.mjs` — usage: node 11-03-red.mjs <outJson> <testFile> <pattern> <targetTest> <expected> <actual> <semantic> (~259 tok)
+- `11-03-verify.sh` (~139 tok)
+- `11-04-cli.sh` (~305 tok)
+- `11-04-msg.txt` (~16 tok)
 - `11-04-new-task23.txt` — its: initCommand (~2913 tok)
+- `11-04-red.sh` — usage: 11-04-red.sh <test-file> <test-name> <expected> <actual> <out.json> (~211 tok)
+- `11-06-ac1.sh` — Declares inlineInstantFrameBytes (~275 tok)
+- `11-06-ac2.sh` (~200 tok)
+- `11-06-flake.sh` (~182 tok)
+- `11-06-loc.sh` (~103 tok)
+- `11-06-mkred.cjs` — Builds a RED evidence record: node 11-06-mkred.cjs OUT_TXT RECORD_JSON COMMAND EXIT TARGET FILE EXPE (~151 tok)
+- `11-06-msg.txt` (~53 tok)
+- `11-06-precommit.sh` (~184 tok)
+- `11-06-run.sh` (~105 tok)
+- `11-06-selfcheck.sh` (~208 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
@@ -301,6 +323,41 @@
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
+## .claude/worktrees/agent-a12c46af7c526c5d0/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-06-SUMMARY.md` — Phase 11 Plan 06: Instant frame spec and bash painter Summary (~4569 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~4365 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/src/client/
+
+- `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1). (~1324 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/src/shared/
+
+- `instant-frame-spec.ts` — The instant first frame, as one TypeScript reference (Phase 11 D-04; quick 261011-jbh, LD-1). (~1792 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/src/ui/
+
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~5817 tok)
+- `LoadingSpinner.tsx` — FRAMES[0] is the loading text the shell adapters paint in the instant frame (Phase 11 D-04). (~188 tok)
+- `modal-layout.ts` — Mark that starts the explanation of a candidate using a tool zsh cannot resolve (D-08). (~2962 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~5244 tok)
+- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3392 tok)
+
+## .claude/worktrees/agent-a1536771d36d290f8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-03-SUMMARY.md` — Phase 11 Plan 03: Shell-aware tool handoff and command-word lexer Summary (~4510 tok)
+
+## .claude/worktrees/agent-a1536771d36d290f8/src/client/
+
+- `tool-handoff.ts` — Fixed sibling filenames a shell adapter's `??` widget writes next to request.json (~1371 tok)
+
 ## .claude/worktrees/agent-a3f8055ae191c3229/
 
 - `CONTRIBUTING.md` — Contributing (~1764 tok)
@@ -347,6 +404,42 @@
 ## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
 - `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~4329 tok)
+
+## .claude/worktrees/agent-abef3015cfebacee8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-02-SUMMARY.md` — Phase 11 Plan 02: shell identity in the context and prompt Summary (~3343 tok)
+
+## .claude/worktrees/agent-abef3015cfebacee8/src/providers/
+
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~5578 tok)
+
+## .claude/worktrees/agent-abef3015cfebacee8/tests/
+
+- `claude-provider.test.ts` — Text pieces emitted as `text` events, in order, before finalMessage settles. (~8603 tok)
+- `shell-contract.test.ts` — A request.json as a pre-Phase-11 zsh widget writes it: no `shell`, no `shellVersion`. (~1664 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~14461 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-04-SUMMARY.md` — Phase 11 Plan 04: Shell registry and `qq init [shell]` Summary (~3268 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/src/cli/commands/
+
+- `init.ts` — `qq init [shell]` (Phase 11 D-08, D-09, D-12, D-14): detect the login shell, gate bash below (~2620 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/src/registry/
+
+- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~806 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/src/shared/
+
+- `shell-registry.ts` — One per-shell registry (Phase 11 D-02, D-08): every fact `qq init` and `qq doctor` need about (~2170 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/tests/
+
+- `init-command.test.ts` — InitDeps: fakeInit (~4275 tok)
+- `registry-bootstrap.test.ts` — Declares adapters (~890 tok)
+- `shell-registry.test.ts` — Declares zsh (~2078 tok)
 
 ## .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
