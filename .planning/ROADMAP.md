@@ -404,12 +404,12 @@ Plans:
 **Goal:** Ship the literal `??` trigger and picker handoff in bash ≥5.0 (`bind -x`) with zsh parity (instant frame, tool awareness, inline + Zellij), and make every shared seam (request contract, tool handoff, lexer, `qq init`/`qq doctor`, telemetry, PTY harness) shell-aware for zsh/bash/fish so Phase 12 is adapter-only. Per spikes 004–005 in the `spike-findings-tui-llm` skill.
 **Requirements**: BASH-01
 **Depends on:** Phase 10
-**Plans:** 11 plans
+**Plans:** 1/11 plans executed
 
 Plans:
 
 **Wave 1**
-- [ ] 11-01-PLAN.md — Tracer: bash `??` → fixture client → buffer replaced, proven in a zsh+bash tmux PTY harness; edge cases; CI deps (wave 1)
+- [x] 11-01-PLAN.md — Tracer: bash `??` → fixture client → buffer replaced, proven in a zsh+bash tmux PTY harness; edge cases; CI deps (wave 1)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 11-02-PLAN.md — Shell identity reaches the base context and prompt (bash syntax for bash, D-06); zsh widget declares `shell` (wave 2)

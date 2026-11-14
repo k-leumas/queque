@@ -191,6 +191,11 @@
 - [2026-11-13] Phase 11 plan shape: tracer plan 11-01 (bash adapter inline path + zsh/bash tmux PTY harness + CI deps) alone in wave 1; parallel waves defer `.wolf/` writes to SUMMARY `## OpenWolf entries`, applied by the gate plan 11-11.
 - [2026-11-13] GSD plan-checker lists valid task types as auto/tdd/checkpoint:* and flags `type="tracer"`, but the planner contract (planner-mvp-mode.md) requires the leading task to be `tracer` and execute-plan.md gives it a halt-before-expansion gate. Keep `tracer` and answer the warning with REVISION_CONFLICT; switching to `auto` loses the gate.
 - [2026-11-13] Plan checker reads any bare `D-NN` as a current-phase CONTEXT decision. Cite prior-phase decisions as "Phase 10 decision 16" or by source location (e.g. scripts/smoke-distro.sh:67-75), never as `D-16`. RESEARCH.md `## Open Questions` must carry `(RESOLVED)` in the heading, with a RESOLVED line per item naming the implementing plan/task, or the checker blocks.
+- [2026-11-14] `bash -i -c` without a terminal prints `bash: cannot set terminal process group` and `bash: no job control in this shell` on stderr — filter them before asserting on adapter stderr (tests/bash-widget.test.ts).
+- [2026-11-14] bash `bind -x` clears the line before running the function and repaints only the last prompt line after — a multi-line PS1 head must be reprinted by the adapter (strip readline \001/\002 markers).
+- [2026-11-14] `qq client` exits via process.exit right after the command returns; an un-awaited `appendDebugLog` there is lost. Await any debug line a test synchronizes on.
+- [2026-11-14] vitest TAP (tap-flat) breaks on error messages with newlines or escaped double quotes; keep thrown test diagnostics single-line and quote-free for gsd `tdd-red-evidence`.
+- [2026-11-14] This Mac's bash 5 is MacPorts `/opt/local/bin/bash` (not on the Claude Bash tool PATH); run bash tests with `QQ_TEST_BASH=/opt/local/bin/bash`. `findShell` probes /opt/local/bin.
 
 ## Do-Not-Repeat
 - [2026-11-13] Plan acceptance criteria must not use `git diff HEAD~1 HEAD` (or any relative `HEAD~N`): `verify.plan-structure` fails it as plan-criteria R6 (parallel sessions move HEAD). Name the commit: `git show --name-only --format= <sha>`. Also: adding a zod field with `.default()` makes it REQUIRED on the output type, so every hand-built literal typed as that schema's type (tests/intent-router.test.ts, tests/context-pipeline.test.ts for NormalizedRequest) needs the field or `pnpm typecheck` fails.
@@ -254,6 +259,8 @@
 - [2026-10-29] Any test that spawns git must not inherit GIT_DIR / GIT_WORK_TREE / GIT_INDEX_FILE / GIT_COMMON_DIR etc.: git hooks (lefthook pre-push) run from a linked worktree export them, and `...process.env` then aims fixture `git init --bare`/`commit`/`branch` at the real repo (set core.bare=true on the shared .git/config). tests/setup/scrub-git-env.ts (vitest setupFiles) strips them; keep new vitest configs wired to it.
 - [2026-10-29] auto-revert's "green" commit = a push run whose WHOLE ci.yml run concluded success (green_runs() queries status=success) AND whose smoke legs passed; a run with green smoke but a red test-distro leg is not a candidate, and the lookup falls back to the merge base with main (a huge revert). User decision (GAP-3): keep the whole-run definition. Never assume smoke-only green when planning a revert drill.
 - [2026-10-29] Docker Desktop (macOS) bind mounts hide in-container uid/mode mismatches (files look root-owned and readable); reproduce GitHub-runner permission bugs on a named docker volume with a second container run as -u 1001.
+- [2026-11-14] Don't register shell-specific vitest rows with `it.skipIf(row.name !== 'bash')` inside a shared `describe.each` — it reports skips on the other shell and breaks "no skips under CI". Use `if (row.name === 'bash') { ... }`.
+- [2026-11-14] Keep `it('name', () => {` titles short and pass timeouts through describe options; a trailing timeout arg makes biome wrap the title and breaks grep-based acceptance criteria.
 
 ## Decision Log
 

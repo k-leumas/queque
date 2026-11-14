@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T04:27:08.979Z
-> Files: 605 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T13:01:32.358Z
+> Files: 627 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -23,6 +23,14 @@
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/
 
+- `11-01-ac1.sh` — Declares SHELL_NAMES (~403 tok)
+- `11-01-ac2.sh` — Declares shellVersionOf (~269 tok)
+- `11-01-ac3.sh` (~254 tok)
+- `11-01-env.sh` (~41 tok)
+- `11-01-msg.txt` (~57 tok)
+- `11-01-probe.sh` (~308 tok)
+- `11-01-pty-tail.ts` — Declares version (~1748 tok)
+- `11-01-red.sh` — Declares fs (~396 tok)
 - `11-04-new-task23.txt` — its: initCommand (~2913 tok)
 - `fill.py` (~115 tok)
 - `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
@@ -220,6 +228,7 @@
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
 - `project_target_audience.md` (~276 tok)
+- `reference_local_shells.md` (~242 tok)
 
 ## ../../.cursor/plans/
 
@@ -291,6 +300,49 @@
 - `fish-integration.md` — fish integration (`??` in fish 4.x) (~1142 tok)
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/
+
+- `CONTRIBUTING.md` — Contributing (~1764 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-01-SUMMARY.md` — Phase 11 Plan 01: bash `??` tracer and PTY harness Summary (~5170 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/
+
+- `install-distro-deps.sh` — Installs what QueQue needs on a fresh Linux distro image: git, zsh, bash, jq, expect, (~1339 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/shell/bash/
+
+- `queque.bash` — bash 5.0+ readline adapter: bind -x on ? (emacs+vi-insert), interactive guard, 'needs bash 5.0+' refusal, jq request.json shell:bash, inline qq client, READLINE_LINE/POINT apply with QQ_ORIG_POINT restore (~2434 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/src/cli/commands/
+
+- `client.ts` — Real client command handler. (~517 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~7035 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/src/contracts/
+
+- `shell.ts` — Every shell QueQue knows (Phase 11 D-02). A shell adapter lives at (~703 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~2980 tok)
+- `context-pipeline.test.ts` — Declares buildRequest (~1555 tok)
+- `intent-router.test.ts` — Declares makeRequest (~2127 tok)
+- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~4074 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/tests/helpers/
+
+- `shells.ts` — Searched after PATH: Homebrew (Apple silicon, Intel), MacPorts, then the system dirs. (~1140 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/tests/pty/
+
+- `drive.sh` — tests/pty/drive.sh: drive an interactive zsh or bash in a private tmux server (Phase 11 D-10). (~794 tok)
 
 ## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 

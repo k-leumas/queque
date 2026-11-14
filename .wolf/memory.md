@@ -3971,3 +3971,57 @@
 | 22:28 | Revised phase 11 plans 01-11 from cross-ai review (ledgers, 11-04 split to 3 tasks, 11-10 deps +06/+07, VALIDATION rows) | .planning/phases/11-*/11-*-PLAN.md, 11-VALIDATION.md, ROADMAP.md | validated (frontmatter + structure ok) | ~60000 |
 | 22:30 | Session end: 110 writes across 14 files (11-01-PLAN.md, 11-02-PLAN.md, 11-03-PLAN.md, 11-04-PLAN.md, 11-04-new-task23.txt) | 70 reads | ~209486 tok |
 | 22:30 | plan-phase 11 --reviews: planner revised 11 plans (8a73a97), checker passed first round | .planning/phases/11-*/ | ready to execute | ~20k |
+| 22:31 | Session end: 110 writes across 14 files (11-01-PLAN.md, 11-02-PLAN.md, 11-03-PLAN.md, 11-04-PLAN.md, 11-04-new-task23.txt) | 70 reads | ~209486 tok |
+
+## Session: 2026-11-14 23:25
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 06:36 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/reference_local_shells.md | — | ~227 |
+| 06:37 | Session end: 1 writes across 1 files (reference_local_shells.md) | 3 reads | ~12468 tok |
+| 06:38 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-env.sh | — | ~41 |
+| 06:38 | Session end: 2 writes across 2 files (reference_local_shells.md, 11-01-env.sh) | 8 reads | ~12512 tok |
+| 06:38 | Edited .claude/worktrees/agent-a3f8055ae191c3229/src/contracts/shell.ts | modified isShellName() | ~583 |
+| 06:38 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/intent-router.test.ts | 2→3 lines | ~18 |
+| 06:38 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/context-pipeline.test.ts | 2→3 lines | ~17 |
+| 06:38 | Edited .claude/worktrees/agent-a3f8055ae191c3229/src/cli/commands/client.ts | added nullish coalescing | ~90 |
+| 06:41 | Created .claude/worktrees/agent-a3f8055ae191c3229/shell/bash/queque.bash | — | ~2412 |
+| 06:42 | Created .claude/worktrees/agent-a3f8055ae191c3229/tests/pty/drive.sh | — | ~794 |
+| 06:42 | Created .claude/worktrees/agent-a3f8055ae191c3229/tests/helpers/shells.ts | — | ~1147 |
+| 06:42 | Created .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | — | ~1988 |
+| 06:43 | Edited .claude/worktrees/agent-a3f8055ae191c3229/src/client/run-foreground.ts | 1→3 lines | ~61 |
+| 06:43 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/helpers/shells.ts | inline fix | ~18 |
+| 06:43 | Edited .claude/worktrees/agent-a3f8055ae191c3229/shell/bash/queque.bash | 2→3 lines | ~52 |
+| 06:44 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-ac1.sh | — | ~403 |
+| 06:44 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-msg.txt | — | ~194 |
+| 06:45 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-probe.sh | — | ~308 |
+| 06:47 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | added optional chaining | ~2196 |
+| 06:47 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | inline fix | ~26 |
+| 06:48 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-pty-tail.ts | — | ~1748 |
+| 06:49 | Created .claude/worktrees/agent-a3f8055ae191c3229/tests/bash-widget.test.ts | — | ~2980 |
+| 06:51 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-red.sh | — | ~372 |
+| 06:52 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | modified oneLine() | ~188 |
+| 06:52 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | "timed out waiting for a m" → "timed out waiting for a m" | ~28 |
+| 06:52 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | inline fix | ~29 |
+| 06:52 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | 3→1 lines | ~30 |
+| 06:53 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | modified oneLine() | ~106 |
+| 06:53 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | inline fix | ~25 |
+| 06:53 | Edited .claude/worktrees/agent-a3f8055ae191c3229/tests/shell-pty.test.ts | inline fix | ~25 |
+| 06:54 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-red.sh | — | ~396 |
+| 06:54 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-msg.txt | — | ~172 |
+| 06:55 | Edited .claude/worktrees/agent-a3f8055ae191c3229/src/client/run-foreground.ts | 2→3 lines | ~66 |
+| 06:56 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-ac2.sh | — | ~269 |
+| 06:56 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-msg.txt | — | ~91 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/install-distro-deps.sh | 3→4 lines | ~74 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/install-distro-deps.sh | 1→2 lines | ~50 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/install-distro-deps.sh | inline fix | ~27 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/install-distro-deps.sh | inline fix | ~30 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/install-distro-deps.sh | inline fix | ~27 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/install-distro-deps.sh | "2,17p" → "2,18p" | ~7 |
+| 06:57 | Edited .claude/worktrees/agent-a3f8055ae191c3229/CONTRIBUTING.md | expanded (+14 lines) | ~458 |
+| 06:57 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-ac3.sh | — | ~254 |
+| 06:57 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-msg.txt | — | ~110 |
+| 07:01 | Created .claude/worktrees/agent-a3f8055ae191c3229/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-01-SUMMARY.md | — | ~5365 |
+| 07:01 | Edited .claude/worktrees/agent-a3f8055ae191c3229/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-01-SUMMARY.md | expanded (+11 lines) | ~172 |
+| 07:01 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-01-msg.txt | — | ~61 |
+| 07:03 | executed 11-01 (wave 1): bash adapter, PTY harness zsh+bash 18 rows, b1-b7, CI bash+tmux; merged b3458e4, gate green 1541 | shell/bash/queque.bash, tests/shell-pty.test.ts, ci | ok | ~20k |
