@@ -776,7 +776,8 @@ const ZELLIJ_FAKE = `zellij() {
   local a prev='' res='' frame=''
   printf '%s\\n' "$@" >"$QQ_T_OUT/argv"
   command printenv QQ_RESULT_FILE >"$QQ_T_OUT/result-file-env"
-  command printenv QQ_PANE_WIDTH QQ_PANE_HEIGHT >"$QQ_T_OUT/pane-env"
+  # One name per printenv: BSD printenv (macOS) prints only the first of several.
+  { command printenv QQ_PANE_WIDTH; command printenv QQ_PANE_HEIGHT; } >"$QQ_T_OUT/pane-env"
   for a in "$@"; do
     [[ $prev == --result-file ]] && res=$a
     [[ $prev == queque-instant-frame ]] && frame=$a
