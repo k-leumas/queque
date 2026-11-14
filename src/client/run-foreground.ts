@@ -516,7 +516,8 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });
-      void appendDebugLog('client', 'wrote cancel result', { resultFile });
+      // Awaited like the fixture line above: main.ts exits right after the command returns.
+      await appendDebugLog('client', 'wrote cancel result', { resultFile });
     }
   } finally {
     await ttyHandle?.close();
