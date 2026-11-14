@@ -37,6 +37,8 @@ const SHAPE: EnvironmentShape = {
   os: 'linux',
   arch: 'x64',
   distro: 'ubuntu',
+  shell: 'zsh',
+  shell_version: '5.9',
   zsh: '5.9',
   node_major: 24,
   zellij: false,

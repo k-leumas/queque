@@ -14,8 +14,9 @@ import {
  *
  * Every value is mapped onto the allow list in src/contracts/telemetry.ts before it leaves
  * this function: an os-release ID outside DISTRO_IDS becomes `other` (never the raw ID or
- * PRETTY_NAME), the zsh version is cut to major.minor, node to its major. Nothing else from
- * the environment is read. The daemon dedupes repeats per install.
+ * PRETTY_NAME), the shell version is cut to major.minor (never the `$BASH_VERSION` /
+ * `$ZSH_VERSION` build string), node to its major. Nothing else from the environment is read.
+ * The daemon dedupes repeats per install.
  */
 export type EnvironmentShape = z.infer<typeof environmentPayloadSchema>;
 
@@ -26,13 +27,10 @@ export interface EnvironmentShapeInput {
   nodeVersion?: string;
   /** The text of /etc/os-release, or null when it cannot be read. */
   readOsRelease?: () => string | null;
+  /** The request's shell (Phase 11 D-11); absent from zsh widgets older than Phase 11. */
   shell?: ShellName;
+  /** The raw `$BASH_VERSION` / `$ZSH_VERSION` from the request; only major.minor is kept. */
   shellVersion?: string;
-}
-
-/** RED stub (11-05 Task 1): implemented in GREEN. */
-export function shellMajorMinor(_version: string | undefined): string {
-  throw new Error('shellMajorMinor not implemented');
 }
 
 /** Distro ids that can come from an os-release `ID=` line (`macos` is darwin only). */
@@ -69,8 +67,11 @@ function linuxDistro(osRelease: string | null): DistroId {
   return id !== undefined && LINUX_DISTRO_IDS.has(id) ? (id as DistroId) : 'other';
 }
 
-/** `5.9` → `5.9`, `5.8.1` → `5.8`, anything not starting with digits.digits → `unknown`. */
-function zshMajorMinor(version: string | undefined): string {
+/**
+ * `5.9` → `5.9`, `5.8.1` → `5.8`, `5.2.21(1)-release` → `5.2`; anything not starting with
+ * digits.digits → `unknown`. Works for any shell's version string.
+ */
+export function shellMajorMinor(version: string | undefined): string {
   const match = /^(\d{1,2})\.(\d{1,2})(?![0-9])/.exec(version?.trim() ?? '');
   return match ? `${match[1]}.${match[2]}` : 'unknown';
 }
@@ -99,12 +100,20 @@ export function collectEnvironmentShape(
   if (major === null) {
     return null;
   }
+  // D-02 back-compat: only an old zsh widget sends no `shell` (every shipped adapter sends it
+  // and the request schema defaults it to zsh), so `unknown` would only mislabel zsh users.
+  const shell = input.shell ?? 'zsh';
+  // The zsh widget exports QQ_ZSH_VERSION="$ZSH_VERSION"; $ZSH_VERSION itself is not exported.
+  const shellVersion = shellMajorMinor(
+    input.shellVersion ?? (shell === 'zsh' ? env.QQ_ZSH_VERSION : undefined),
+  );
   const result = environmentPayloadSchema.safeParse({
     os,
     arch: archKind(input.arch ?? process.arch),
     distro,
-    // The widget exports QQ_ZSH_VERSION="$ZSH_VERSION"; $ZSH_VERSION itself is not exported.
-    zsh: zshMajorMinor(env.QQ_ZSH_VERSION),
+    shell,
+    shell_version: shellVersion,
+    zsh: shell === 'zsh' ? shellVersion : 'unknown',
     node_major: major,
     zellij: env.ZELLIJ !== undefined,
   });
