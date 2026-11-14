@@ -10,7 +10,7 @@ export function buildBaseContext(request: NormalizedRequest): BaseContext {
     cwd: request.cwd,
     ttyPath: request.ttyPath,
     shellPid: request.shellPid,
-    shellName: 'zsh',
+    shellName: request.shell,
     platform: process.platform,
     timestamp: new Date().toISOString(),
   };

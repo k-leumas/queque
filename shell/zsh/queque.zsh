@@ -412,6 +412,8 @@ qq-question-widget() {
   "ttyPath": $tty_json,
   "cwd": $cwd_json,
   "shellPid": $$,
+  "shell": "zsh",
+  "shellVersion": $(printf '%s' "$ZSH_VERSION" | jq -Rs .),
   "lbuffer": $(printf '%s' "$QQ_LBUFFER" | jq -Rs .),
   "rbuffer": $(printf '%s' "$QQ_RBUFFER"  | jq -Rs .)
 }
