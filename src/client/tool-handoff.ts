@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import * as path from 'node:path';
+import type { ShellName } from '../contracts/shell.js';
 import { appendDebugLog } from '../shared/debug-log.js';
 import type { ToolInventory } from '../shared/tool-awareness.js';
 
@@ -15,6 +16,11 @@ export const TOOL_HANDOFF_FILES = {
   builtins: 'builtins.txt',
   functions: 'functions.txt',
 } as const;
+
+// RED stubs (11-03 Task 1): the wait is not implemented yet.
+export const TOOL_HANDOFF_PENDING = 'tools.pending';
+export const TOOL_HANDOFF_PENDING_BUDGET_MS = 500;
+export const TOOL_HANDOFF_PENDING_POLL_MS = 10;
 
 function toNameSet(content: string): Set<string> {
   return new Set(content.split(/\r?\n/).filter((name) => name.length > 0));
@@ -35,7 +41,10 @@ function errorReason(error: unknown): string {
  * or commands.txt is empty. Debug logs carry a reason or counts only, never tool names (D-04).
  * Paths are only the fixed names inside `sessionDir`; nothing comes from request JSON.
  */
-export async function readToolHandoff(sessionDir: string): Promise<ToolInventory | null> {
+export async function readToolHandoff(
+  sessionDir: string,
+  _options: { shell?: ShellName; pendingBudgetMs?: number } = {},
+): Promise<ToolInventory | null> {
   if (process.env.QQ_TOOL_AWARENESS === '0') {
     void appendDebugLog('client', 'tool handoff unavailable', { reason: 'disabled' });
     return null;

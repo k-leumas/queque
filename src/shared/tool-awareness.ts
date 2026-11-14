@@ -1,4 +1,5 @@
 import type { CommandCandidate } from '../contracts/candidates.js';
+import type { ShellName } from '../contracts/shell.js';
 import { extractCommandWords, lexHand } from './command-words.js';
 
 /**
@@ -12,6 +13,7 @@ export interface ToolInventory {
   readonly builtins: ReadonlySet<string>;
   /** zsh function AND alias names from functions.txt (D-01 amended). */
   readonly functions: ReadonlySet<string>;
+  readonly shell?: ShellName;
 }
 
 /**
