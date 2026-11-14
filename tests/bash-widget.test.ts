@@ -8,7 +8,7 @@
  * covered by the PTY harness (tests/shell-pty.test.ts).
  *
  *   b1  non-interactive shells print nothing (bash 3.2 and 5)
- *   b2  bash below 5.0 refuses with one line and leaves `?` alone
+ *   b2  bash below 5.0 refuses with one line; `??` is a macro that warns (no `_qq_question`)
  *   b3  replace-buffer: line, cursor, summary, query in history (D-13)
  *   b4  cancel / error / malformed / empty lbuffer restore the line and the cursor
  *   b5  insertion only (the bash mirror of the zsh CMD-04 checks)
@@ -153,7 +153,8 @@ describe('bash adapter: shells that must not see the trigger', () => {
     }
   });
 
-  it.skipIf(oldBash === null)('b2: bash below 5.0 refuses with one line, ? untouched', () => {
+  it.skipIf(oldBash === null)('b2: bash below 5.0 refuses with one line, ?? warns', () => {
+    // TERM=dumb: readline would print the meta-key escape (smkm) on stdout at the first bind.
     const run = spawnBash(
       oldBash ?? 'bash',
       [
@@ -161,12 +162,28 @@ describe('bash adapter: shells that must not see the trigger', () => {
         '--norc',
         '-i',
         '-c',
-        `source '${adapterPath}'; type -t _qq_question || echo none`,
+        `source '${adapterPath}'; echo "rc=$?"; type -t _qq_question || echo none
+for m in emacs vi-insert; do echo "[$m]"; bind -m "$m" -s | grep -F '"??"'; done
+echo '[hint]'; _qq_old_bash_hint 2>&1`,
       ],
-      cleanEnv(),
+      cleanEnv({ TERM: 'dumb' }),
     );
     expect(run.status).toBe(0);
-    expect(run.stdout).toBe('none\n');
+    const version = shellVersionOf(oldBash ?? 'bash') ?? [0, 0];
+    const fix =
+      process.platform === 'darwin' ? ': brew install bash (or sudo port install bash)' : '';
+    expect(run.stdout.split('\n')).toEqual([
+      'rc=0',
+      'none',
+      '[emacs]',
+      String.raw`"??": "\C-v?\C-v?\C-x\C-q"`,
+      '[vi-insert]',
+      String.raw`"??": "\C-v?\C-v?\C-x\C-q"`,
+      '[hint]',
+      `queque: bash 5.0 or newer is needed for the ?? trigger (this is bash ${version[0]}.${version[1]})${fix}`,
+      '',
+    ]);
+    // Sourcing printed exactly the startup line; the hint above went to stdout via 2>&1.
     const lines = run.stderr.split('\n').filter((line) => line !== '');
     expect(lines).toHaveLength(1);
     expect(lines[0]).toContain('needs bash 5.0+');
@@ -251,9 +268,14 @@ ${SHOW}`);
     const historyCalls = code.split('\n').filter((line) => /\bhistory\s+-s\b/.test(line));
     expect(historyCalls).toHaveLength(1);
     expect(historyCalls[0]).toContain('"$QQ_ORIG_LBUFFER"');
-    // The only bindings are `?` in emacs and vi-insert.
+    // The only bindings are the bash < 5.0 `??` warning (macro + private chord, D-12 as amended
+    // in the 11-11 UAT) and `?` in emacs and vi-insert on 5.0+.
     const binds = code.split('\n').filter((line) => /^\s*bind\b/.test(line));
     expect(binds).toEqual([
+      String.raw`  bind -m emacs -x '"\C-x\C-q": _qq_old_bash_hint' 2>/dev/null`,
+      String.raw`  bind -m emacs '"??": "\C-v?\C-v?\C-x\C-q"' 2>/dev/null`,
+      String.raw`  bind -m vi-insert -x '"\C-x\C-q": _qq_old_bash_hint' 2>/dev/null`,
+      String.raw`  bind -m vi-insert '"??": "\C-v?\C-v?\C-x\C-q"' 2>/dev/null`,
       `bind -m emacs -x '"?": _qq_question'`,
       `bind -m vi-insert -x '"?": _qq_question'`,
     ]);
