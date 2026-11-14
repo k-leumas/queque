@@ -103,6 +103,13 @@ const ADAPTERS: Adapter[] = [
     argv: (script) => ['-f', '-c', script],
     source: 'shell/zsh/queque.zsh',
   },
+  {
+    shell: 'bash',
+    bin: ciRequired(findShell('bash', { min: [5, 0] }), 'bash 5.0+'),
+    // Interactive: the adapter returns at once in a non-interactive shell.
+    argv: (script) => ['--noprofile', '--norc', '-i', '-c', script],
+    source: 'shell/bash/queque.bash',
+  },
 ];
 
 const scratch = mkdtempSync(join(tmpdir(), 'qq-frame-parity-'));
