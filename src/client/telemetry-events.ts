@@ -145,9 +145,10 @@ export async function reportClientTelemetry(input: ReportClientTelemetryInput): 
       return;
     }
     const provider = input.provider ? input.provider() : resolveProviderKind();
+    const { shell, shellVersion } = input;
     const shape = input.environment
       ? input.environment()
-      : collectEnvironmentShape({ env: input.env });
+      : collectEnvironmentShape({ env: input.env, shell, shellVersion });
     const errors = input.errors ?? [];
 
     const events: ClientTelemetryEvent[] = [];

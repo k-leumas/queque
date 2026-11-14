@@ -521,7 +521,13 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
           }
         }
         // Gated on the client's own env and config, capped at 250 ms, never throws.
-        await reportClientTelemetry({ socketPath, record: outcome, errors: telemetryErrors });
+        await reportClientTelemetry({
+          socketPath,
+          record: outcome,
+          errors: telemetryErrors,
+          shell: request.shell,
+          shellVersion: request.shellVersion,
+        });
       }
     } else {
       await writeShellResult(resultFile, { kind: 'cancel' });
