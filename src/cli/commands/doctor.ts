@@ -17,6 +17,7 @@ import {
   doctorExitCode,
   doctorReportSchema,
 } from '../../contracts/doctor.js';
+import type { ShellName } from '../../contracts/shell.js';
 import { pingDaemonFetchCap, tryConnect } from '../../daemon/bootstrap.js';
 import { type DetectedProvider, detectProvider } from '../../providers/detect.js';
 import { loadProviderPin, type ProviderPinState } from '../../providers/provider-pin.js';
@@ -49,9 +50,13 @@ const ZSH_BINDINGS_TIMEOUT_MS = 5000;
 const EXIT_GRACE_MS = 100;
 const MAX_CAPTURE_CHARS = 64 * 1024;
 
-export interface ZshBindings {
-  emacs: string | null;
-  viins: string | null;
+/** What `?` runs in each keymap the adapter binds, plus the bash readline extras. */
+export interface ShellBindings {
+  keymaps: Record<string, string | null>;
+  /** bash `enable-bracketed-paste`; null when unknown or not applicable (zsh). */
+  bracketedPaste: boolean | null;
+  /** bash: ble.sh is loaded (it replaces readline). Always false for zsh. */
+  bleLoaded: boolean;
 }
 
 /** Everything doctor reads, injectable so tests never spawn or touch the real machine. */
@@ -64,9 +69,12 @@ export interface DoctorDeps {
   nodeVersion: string;
   qqVersion: string;
   which(name: string): string | null;
-  zshVersion(): Promise<string | null>;
-  zshBindings(): Promise<ZshBindings | null>;
-  readZshrc(): string | null;
+  shellVersion(shell: ShellName): Promise<string | null>;
+  shellBindings(shell: ShellName): Promise<ShellBindings | null>;
+  /** Reads a file relative to `homeDir`; null when it is missing or unreadable. */
+  readRc(relPath: string): string | null;
+  /** The passwd login shell (`os.userInfo().shell`), the fallback when `$SHELL` is not a shell. */
+  userShell?: string;
   probeTmp(): boolean;
   socketOwner(path: string): number | null;
   pingDaemon(path: string): Promise<'yes' | 'no' | 'unknown'>;
@@ -169,16 +177,22 @@ const BOUND_WIDGET = /^"\?" ([A-Za-z0-9_.:+-]{1,64})$/;
  * Parses the marker lines printed by the binding probe. Only `"?" <widget>` after a marker
  * counts; anything else the user's ~/.zshrc prints is ignored. Null when no marker appeared.
  */
-export function parseZshBindings(output: string): ZshBindings | null {
-  const result: ZshBindings = { emacs: null, viins: null };
+export function parseZshBindings(output: string): ShellBindings | null {
+  const keymaps: Record<string, string | null> = { emacs: null, viins: null };
   let seen = false;
   for (const match of output.matchAll(BINDING_LINE)) {
     seen = true;
     const keymap = match[1] as 'emacs' | 'viins';
     const widget = BOUND_WIDGET.exec(match[2]?.trim() ?? '');
-    result[keymap] = widget?.[1] ?? null;
+    keymaps[keymap] = widget?.[1] ?? null;
   }
-  return seen ? result : null;
+  return seen ? { keymaps, bracketedPaste: null, bleLoaded: false } : null;
+}
+
+export const BASH_BINDINGS_SCRIPT = '';
+
+export function parseBashBindings(_output: string): ShellBindings | null {
+  throw new Error('parseBashBindings: not implemented');
 }
 
 const BINDINGS_SCRIPT =
@@ -219,7 +233,7 @@ export function defaultDoctorDeps(): DoctorDeps {
     nodeVersion: process.versions.node,
     qqVersion: __QUEQUE_VERSION__,
     which: (name) => whichOnPath(name, env.PATH),
-    zshVersion: async () => {
+    shellVersion: async () => {
       const out = await captureStdout(
         'zsh',
         ['-fc', 'print -r -- $ZSH_VERSION'],
@@ -228,7 +242,7 @@ export function defaultDoctorDeps(): DoctorDeps {
       );
       return out?.trim() || null;
     },
-    zshBindings: async () => {
+    shellBindings: async () => {
       // QQ_DAEMON_PREWARMED=1 makes the sourced widget skip its daemon prewarm.
       const out = await captureStdout('zsh', ['-ic', BINDINGS_SCRIPT], ZSH_BINDINGS_TIMEOUT_MS, {
         ...env,
@@ -236,9 +250,9 @@ export function defaultDoctorDeps(): DoctorDeps {
       });
       return out === null ? null : parseZshBindings(out);
     },
-    readZshrc: () => {
+    readRc: (relPath) => {
       try {
-        return readFileSync(join(homeDir, '.zshrc'), 'utf8');
+        return readFileSync(join(homeDir, relPath), 'utf8');
       } catch {
         return null;
       }
@@ -302,7 +316,7 @@ async function checkZsh(deps: DoctorDeps): Promise<DoctorCheck> {
   if (deps.which('zsh') === null) {
     return fail('zsh', 'zsh not found on PATH', ZSH_INSTALL_HINT);
   }
-  const raw = await deps.zshVersion();
+  const raw = await deps.shellVersion('zsh');
   const parts = raw === null ? null : versionParts(raw);
   if (parts === null) {
     return warn('zsh', 'zsh is on PATH but its version could not be read', ZSH_INSTALL_HINT);
@@ -404,16 +418,16 @@ async function checkDaemon(deps: DoctorDeps): Promise<DoctorCheck> {
 }
 
 function checkIntegration(deps: DoctorDeps): DoctorCheck {
-  if (!hasShellIntegration(deps.readZshrc() ?? '', 'zsh')) {
+  if (!hasShellIntegration(deps.readRc('.zshrc') ?? '', 'zsh')) {
     return warn('integration', '~/.zshrc does not load QueQue', 'qq init zsh && source ~/.zshrc');
   }
   return ok('integration', '~/.zshrc loads QueQue');
 }
 
 async function checkBinding(deps: DoctorDeps): Promise<DoctorCheck> {
-  let bindings: ZshBindings | null;
+  let bindings: ShellBindings | null;
   try {
-    bindings = await deps.zshBindings();
+    bindings = await deps.shellBindings('zsh');
   } catch {
     bindings = null;
   }
@@ -422,7 +436,7 @@ async function checkBinding(deps: DoctorDeps): Promise<DoctorCheck> {
     return warn('binding', 'could not read the ? key bindings from an interactive zsh', hint);
   }
   for (const keymap of ['emacs', 'viins'] as const) {
-    const widget = bindings[keymap];
+    const widget = bindings.keymaps[keymap] ?? null;
     if (widget === null) {
       return warn('binding', `? has no readable binding in the ${keymap} keymap`, hint);
     }
@@ -552,6 +566,7 @@ function reportPlatform(platform: NodeJS.Platform): DoctorPlatform {
  */
 export async function runDoctorChecks(
   deps: DoctorDeps = defaultDoctorDeps(),
+  _options: { shell?: ShellName } = {},
 ): Promise<DoctorReport> {
   const [zsh, daemon, binding, provider] = await Promise.all([
     checkZsh(deps),
