@@ -8,8 +8,8 @@ import {
   rmSync,
   statSync,
 } from 'node:fs';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
+import { homedir, userInfo } from 'node:os';
+import { basename, join } from 'node:path';
 import {
   type DoctorCheck,
   type DoctorPlatform,
@@ -21,6 +21,15 @@ import type { ShellName } from '../../contracts/shell.js';
 import { pingDaemonFetchCap, tryConnect } from '../../daemon/bootstrap.js';
 import { type DetectedProvider, detectProvider } from '../../providers/detect.js';
 import { loadProviderPin, type ProviderPinState } from '../../providers/provider-pin.js';
+import {
+  BASH_WARN_BELOW,
+  detectShell,
+  getShellSpec,
+  loginFileSourcesBashrc,
+  parseShellVersion,
+  type ShellSpec,
+  versionBelow,
+} from '../../shared/shell-registry.js';
 import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
 import {
   readTelemetryState,
@@ -31,10 +40,14 @@ import {
 import { resolveTelemetryEndpoint } from '../../shared/telemetry-endpoint.js';
 import { hasShellIntegration } from './init.js';
 
-/** zsh below this version cannot run the widget: `zsh` fails (D-20). */
-export const ZSH_FAIL_BELOW = '5.0';
-/** zsh below this version is untested: `zsh` warns (D-20; 5.8 is Ubuntu 22.04, the oldest CI). */
-export const ZSH_WARN_BELOW = '5.8';
+// The version floors live in the shell registry (Phase 11 D-02); re-exported for callers that
+// imported them from doctor in Phase 10.
+export {
+  BASH_FAIL_BELOW,
+  BASH_WARN_BELOW,
+  ZSH_FAIL_BELOW,
+  ZSH_WARN_BELOW,
+} from '../../shared/shell-registry.js';
 
 /** Unix socket path limits from the Node docs (107 bytes on Linux, 103 on macOS). */
 export const SOCKET_PATH_MAX_BYTES = { linux: 107, darwin: 103 } as const;
@@ -43,9 +56,8 @@ const SOCKET_PATH_MAX_DEFAULT = 107;
 /** Node below this major is older than the supported LTS: `node` warns. */
 const NODE_WARN_BELOW_MAJOR = 24;
 
-const QQ_WIDGET = 'qq-question-widget';
-const ZSH_VERSION_TIMEOUT_MS = 3000;
-const ZSH_BINDINGS_TIMEOUT_MS = 5000;
+const SHELL_VERSION_TIMEOUT_MS = 3000;
+const SHELL_BINDINGS_TIMEOUT_MS = 5000;
 /** After `exit`, wait this long for `close`: a grandchild (e.g. gitstatusd) may hold stdout. */
 const EXIT_GRACE_MS = 100;
 const MAX_CAPTURE_CHARS = 64 * 1024;
@@ -189,10 +201,51 @@ export function parseZshBindings(output: string): ShellBindings | null {
   return seen ? { keymaps, bracketedPaste: null, bleLoaded: false } : null;
 }
 
-export const BASH_BINDINGS_SCRIPT = '';
+/**
+ * bash binding probe, run with `bash -ic` after the version gate (3.2 has no `bind -X`). For
+ * each keymap it prints the `bind -x` line for `?` or, failing that, the readline function from
+ * `bind -p` (so `self-insert` can be named). Builtins are called with `builtin` and grep with
+ * `command`, so the user's aliases cannot change the output. `BLE_VERSION` only decides a
+ * boolean; its value is never reported.
+ */
+export const BASH_BINDINGS_SCRIPT =
+  `for __qq_m in emacs vi-insert; do ` +
+  `builtin printf '__qq_%s__ %s\\n' "$__qq_m" ` +
+  `"$({ builtin bind -m "$__qq_m" -X; builtin bind -m "$__qq_m" -p; } 2>/dev/null ` +
+  `| command grep -m 1 -F '"?"')"; done; ` +
+  `builtin printf '__qq_paste__ %s\\n' ` +
+  `"$(builtin bind -v 2>/dev/null | command grep -F enable-bracketed-paste)"; ` +
+  `builtin printf '__qq_ble__ %s\\n' "\${BLE_VERSION:-}"`;
 
-export function parseBashBindings(_output: string): ShellBindings | null {
-  throw new Error('parseBashBindings: not implemented');
+// Not anchored at a line start: readline may print `ESC[?1034h` right before a marker.
+const BASH_MARKER = /__qq_(emacs|vi-insert|paste|ble)__ ?([^\n]*)/g;
+/** `"?" "_qq_question"` (bind -X; bash 5.3 prints no colon), `"?": self-insert` (bind -p). */
+const BASH_BOUND = /^"\?":?\s+"?([A-Za-z0-9_.:+-]{1,64})"?$/;
+const BASH_PASTE = /^set enable-bracketed-paste (on|off)$/;
+
+/**
+ * Parses the marker lines printed by `BASH_BINDINGS_SCRIPT`; anything else ~/.bashrc or
+ * readline prints is ignored. Null when no marker appeared.
+ */
+export function parseBashBindings(output: string): ShellBindings | null {
+  const keymaps: Record<string, string | null> = { emacs: null, 'vi-insert': null };
+  let bracketedPaste: boolean | null = null;
+  let bleLoaded = false;
+  let seen = false;
+  for (const match of output.matchAll(BASH_MARKER)) {
+    seen = true;
+    const marker = match[1];
+    const value = (match[2] ?? '').trim();
+    if (marker === 'paste') {
+      const paste = BASH_PASTE.exec(value);
+      bracketedPaste = paste ? paste[1] === 'on' : null;
+    } else if (marker === 'ble') {
+      bleLoaded = value !== '';
+    } else if (marker !== undefined) {
+      keymaps[marker] = BASH_BOUND.exec(value)?.[1] ?? null;
+    }
+  }
+  return seen ? { keymaps, bracketedPaste, bleLoaded } : null;
 }
 
 const BINDINGS_SCRIPT =
@@ -221,9 +274,38 @@ function lstatOwner(path: string): number | null {
   }
 }
 
+function passwdShell(): string | undefined {
+  try {
+    return userInfo().shell ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * Probe env: a non-interactive bash reads `$BASH_ENV` even with `--norc`, and `ENV` in POSIX
+ * mode, so both are dropped (cerebrum 2026-11-14).
+ */
+function probeEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+  const { BASH_ENV: _bashEnv, ENV: _env, ...rest } = env;
+  return rest;
+}
+
 export function defaultDoctorDeps(): DoctorDeps {
   const env = process.env;
   const homeDir = homedir();
+  const which = (name: string) => whichOnPath(name, env.PATH);
+  /** The binary `??` would run in: for bash the `$SHELL` bash, else the PATH one (D-12). */
+  const shellBinary = (shell: ShellName): string | null => {
+    const spec = getShellSpec(shell);
+    if (!spec.shipped) {
+      return null;
+    }
+    if (shell === 'bash' && env.SHELL && basename(env.SHELL) === 'bash') {
+      return env.SHELL;
+    }
+    return shell === 'zsh' ? 'zsh' : which(spec.binary);
+  };
   return {
     env,
     platform: process.platform,
@@ -232,23 +314,36 @@ export function defaultDoctorDeps(): DoctorDeps {
     socketPath: defaultSocketPath(),
     nodeVersion: process.versions.node,
     qqVersion: __QUEQUE_VERSION__,
-    which: (name) => whichOnPath(name, env.PATH),
-    shellVersion: async () => {
-      const out = await captureStdout(
-        'zsh',
-        ['-fc', 'print -r -- $ZSH_VERSION'],
-        ZSH_VERSION_TIMEOUT_MS,
-        env,
-      );
+    which,
+    shellVersion: async (shell) => {
+      const binary = shellBinary(shell);
+      if (binary === null) {
+        return null;
+      }
+      const args = [...getShellSpec(shell).versionArgs];
+      const out = await captureStdout(binary, args, SHELL_VERSION_TIMEOUT_MS, probeEnv(env));
       return out?.trim() || null;
     },
-    shellBindings: async () => {
-      // QQ_DAEMON_PREWARMED=1 makes the sourced widget skip its daemon prewarm.
-      const out = await captureStdout('zsh', ['-ic', BINDINGS_SCRIPT], ZSH_BINDINGS_TIMEOUT_MS, {
-        ...env,
+    shellBindings: async (shell) => {
+      const binary = shellBinary(shell);
+      if (binary === null) {
+        return null;
+      }
+      // `-ic` sources the user's real rc file (~/.zshrc or ~/.bashrc): whatever it prints, how
+      // slow it is, and, with the adapter installed, its source-time daemon prewarm. Contained:
+      // QQ_DAEMON_PREWARMED=1 makes the adapter skip the prewarm, stdin is ignored, the child is
+      // killed after the timeout, and stdout is only parsed for marker lines (stderr is
+      // discarded); none of it is ever printed. runDoctorChecks only calls this for bash once
+      // the version is 5.0 or newer.
+      const script = shell === 'bash' ? BASH_BINDINGS_SCRIPT : BINDINGS_SCRIPT;
+      const out = await captureStdout(binary, ['-ic', script], SHELL_BINDINGS_TIMEOUT_MS, {
+        ...probeEnv(env),
         QQ_DAEMON_PREWARMED: '1',
       });
-      return out === null ? null : parseZshBindings(out);
+      if (out === null) {
+        return null;
+      }
+      return shell === 'bash' ? parseBashBindings(out) : parseZshBindings(out);
     },
     readRc: (relPath) => {
       try {
@@ -257,6 +352,7 @@ export function defaultDoctorDeps(): DoctorDeps {
         return null;
       }
     },
+    userShell: passwdShell(),
     probeTmp: probeTmpDir,
     socketOwner: lstatOwner,
     pingDaemon: pingDaemonFetchCap,
@@ -273,28 +369,10 @@ export function defaultDoctorDeps(): DoctorDeps {
 
 // ---------------------------------------------------------------------------
 // Checks. Every summary and hint is fixed copy plus a version number, the socket path, a
-// widget name or the literal `~/.zshrc`: never an environment value, key, path under the
-// home directory or file content (D-18: the JSON lands in public revert PR bodies).
+// widget name or a `~/` rc literal (`~/.zshrc`, `~/.bashrc`, `~/.bash_profile`,
+// `~/.bash_login`, `~/.profile`, `~/.inputrc`): never an environment value, key, path under
+// the home directory or file content (D-18: the JSON lands in public revert PR bodies).
 // ---------------------------------------------------------------------------
-
-const VERSION_PREFIX = /^\d+(?:\.\d+)*/;
-
-function versionParts(text: string): number[] | null {
-  const match = VERSION_PREFIX.exec(text.trim());
-  return match ? match[0].split('.').map(Number) : null;
-}
-
-function versionBelow(version: number[], threshold: string): boolean {
-  const floor = threshold.split('.').map(Number);
-  for (let i = 0; i < Math.max(version.length, floor.length); i++) {
-    const a = version[i] ?? 0;
-    const b = floor[i] ?? 0;
-    if (a !== b) {
-      return a < b;
-    }
-  }
-  return false;
-}
 
 const ok = (id: DoctorCheck['id'], summary: string): DoctorCheck => ({ id, status: 'ok', summary });
 const warn = (id: DoctorCheck['id'], summary: string, hint: string): DoctorCheck => ({
@@ -310,29 +388,59 @@ const fail = (id: DoctorCheck['id'], summary: string, hint: string): DoctorCheck
   hint,
 });
 
-const ZSH_INSTALL_HINT = `install zsh ${ZSH_WARN_BELOW} or newer`;
+function installHint(spec: ShellSpec, platform: NodeJS.Platform): string {
+  if (spec.shell === 'bash') {
+    // D-14: macOS ships bash 3.2; Homebrew has a current one.
+    return platform === 'darwin'
+      ? `brew install bash (${BASH_WARN_BELOW} or newer), then make it your login shell`
+      : `install bash ${BASH_WARN_BELOW} or newer with your package manager`;
+  }
+  return `install ${spec.shell} ${spec.warnBelow} or newer`;
+}
 
-async function checkZsh(deps: DoctorDeps): Promise<DoctorCheck> {
-  if (deps.which('zsh') === null) {
-    return fail('zsh', 'zsh not found on PATH', ZSH_INSTALL_HINT);
+interface VersionResult {
+  check: DoctorCheck;
+  /** The parsed version, or null when the shell is missing or its version is unreadable. */
+  parts: number[] | null;
+}
+
+/** Before bash 5.1 readline's bracketed paste is off by default (and bash is untested). */
+const BASH_PASTE_DEFAULT_SINCE = '5.1';
+
+/**
+ * The target shell's version row (id `zsh` or `bash`): fails below `failBelow` (D-12, D-20),
+ * warns below `warnBelow`. Prints the parsed major.minor.patch only, never the raw build
+ * string (`5.2.21(1)-release`).
+ */
+async function checkShellVersion(deps: DoctorDeps, spec: ShellSpec): Promise<VersionResult> {
+  const id = spec.shell;
+  const hint = installHint(spec, deps.platform);
+  if (deps.which(spec.binary) === null) {
+    return { check: fail(id, `${id} not found on PATH`, hint), parts: null };
   }
-  const raw = await deps.shellVersion('zsh');
-  const parts = raw === null ? null : versionParts(raw);
+  let raw: string | null;
+  try {
+    raw = await deps.shellVersion(spec.shell);
+  } catch {
+    raw = null;
+  }
+  const parts = raw === null ? null : parseShellVersion(raw);
   if (parts === null) {
-    return warn('zsh', 'zsh is on PATH but its version could not be read', ZSH_INSTALL_HINT);
+    return { check: warn(id, `${id} is on PATH but its version could not be read`, hint), parts };
   }
-  const version = parts.join('.');
-  if (versionBelow(parts, ZSH_FAIL_BELOW)) {
-    return fail('zsh', `zsh ${version} is older than ${ZSH_FAIL_BELOW}`, ZSH_INSTALL_HINT);
+  const version = parts.slice(0, 3).join('.');
+  if (versionBelow(parts, spec.failBelow)) {
+    return { check: fail(id, `${id} ${version} is older than ${spec.failBelow}`, hint), parts };
   }
-  if (versionBelow(parts, ZSH_WARN_BELOW)) {
-    return warn(
-      'zsh',
-      `zsh ${version} is untested (oldest tested is ${ZSH_WARN_BELOW})`,
-      ZSH_INSTALL_HINT,
-    );
+  if (versionBelow(parts, spec.warnBelow)) {
+    const paste =
+      spec.shell === 'bash' && versionBelow(parts, BASH_PASTE_DEFAULT_SINCE)
+        ? `; bracketed paste is off by default before ${BASH_PASTE_DEFAULT_SINCE}`
+        : '';
+    const summary = `${id} ${version} is untested (oldest tested is ${spec.warnBelow}${paste})`;
+    return { check: warn(id, summary, hint), parts };
   }
-  return ok('zsh', `zsh ${version}`);
+  return { check: ok(id, `${id} ${version}`), parts };
 }
 
 function checkJq(deps: DoctorDeps): DoctorCheck {
@@ -417,34 +525,117 @@ async function checkDaemon(deps: DoctorDeps): Promise<DoctorCheck> {
   return ok('daemon', 'daemon not running; starts on the next ??');
 }
 
-function checkIntegration(deps: DoctorDeps): DoctorCheck {
-  if (!hasShellIntegration(deps.readRc('.zshrc') ?? '', 'zsh')) {
-    return warn('integration', '~/.zshrc does not load QueQue', 'qq init zsh && source ~/.zshrc');
+function readRcSafe(deps: DoctorDeps, relPath: string): string | null {
+  try {
+    return deps.readRc(relPath);
+  } catch {
+    return null;
   }
-  return ok('integration', '~/.zshrc loads QueQue');
 }
 
-async function checkBinding(deps: DoctorDeps): Promise<DoctorCheck> {
+/** The rc file is only regex-tested, never printed. */
+function checkIntegration(deps: DoctorDeps, spec: ShellSpec): DoctorCheck {
+  if (!hasShellIntegration(readRcSafe(deps, spec.rcFile) ?? '', spec.shell)) {
+    return warn(
+      'integration',
+      `${spec.rcDisplay} does not load QueQue`,
+      `qq init ${spec.shell} && source ${spec.rcDisplay}`,
+    );
+  }
+  return ok('integration', `${spec.rcDisplay} loads QueQue`);
+}
+
+const BASHRC_SOURCE_LINE = '[ -f ~/.bashrc ] && . ~/.bashrc';
+
+/**
+ * macOS terminals start login shells, which read the first of `~/.bash_profile`,
+ * `~/.bash_login`, `~/.profile` and skip `~/.bashrc` unless that file sources it (D-09).
+ * Read only: doctor never edits a login file. Only the `~/` literal of the file is printed.
+ */
+function checkBashProfile(deps: DoctorDeps): DoctorCheck {
+  const login = loginFileSourcesBashrc((relPath) => readRcSafe(deps, relPath));
+  if (login.file === null) {
+    return warn(
+      'bash_profile',
+      'no ~/.bash_profile, ~/.bash_login or ~/.profile; macOS login shells skip ~/.bashrc',
+      `add ${BASHRC_SOURCE_LINE} to ~/.bash_profile`,
+    );
+  }
+  if (!login.sourcesBashrc) {
+    return warn(
+      'bash_profile',
+      `${login.file} does not source ~/.bashrc; macOS login shells skip it`,
+      `add ${BASHRC_SOURCE_LINE} to ${login.file}`,
+    );
+  }
+  return ok('bash_profile', `${login.file} sources ~/.bashrc`);
+}
+
+function bindingHint(spec: ShellSpec): string {
+  return spec.shell === 'bash'
+    ? 'qq init bash && source ~/.bashrc, then check what rebinds ? later in ~/.bashrc'
+    : 'qq init zsh && source ~/.zshrc, then check plugins that rebind ?';
+}
+
+/**
+ * `?` must run the adapter's widget in every keymap it binds. bash also needs readline (not
+ * ble.sh, which replaces it; supporting ble.sh is out of scope) and bracketed paste, without
+ * which pasted text containing `??` opens QueQue. Skipped (warn) when the version row failed,
+ * and for bash also when its version is unreadable: bash 3.2 has no `bind -X`.
+ */
+async function checkBinding(
+  deps: DoctorDeps,
+  spec: ShellSpec,
+  version: VersionResult,
+): Promise<DoctorCheck> {
+  const hint = bindingHint(spec);
+  if (version.check.status === 'fail' || (spec.shell === 'bash' && version.parts === null)) {
+    return warn(
+      'binding',
+      `? key bindings not checked: ${spec.shell} ${spec.failBelow} or newer is needed first`,
+      installHint(spec, deps.platform),
+    );
+  }
   let bindings: ShellBindings | null;
   try {
-    bindings = await deps.shellBindings('zsh');
+    bindings = await deps.shellBindings(spec.shell);
   } catch {
     bindings = null;
   }
-  const hint = 'qq init zsh && source ~/.zshrc, then check plugins that rebind ?';
   if (bindings === null) {
-    return warn('binding', 'could not read the ? key bindings from an interactive zsh', hint);
+    return warn(
+      'binding',
+      `could not read the ? key bindings from an interactive ${spec.shell}`,
+      hint,
+    );
   }
-  for (const keymap of ['emacs', 'viins'] as const) {
+  if (bindings.bleLoaded) {
+    return warn(
+      'binding',
+      'ble.sh is loaded and replaces readline; the ?? trigger needs plain readline',
+      'start bash without ble.sh (remove it from ~/.bashrc) to use ??',
+    );
+  }
+  for (const keymap of spec.bindingKeymaps) {
     const widget = bindings.keymaps[keymap] ?? null;
     if (widget === null) {
       return warn('binding', `? has no readable binding in the ${keymap} keymap`, hint);
     }
-    if (widget !== QQ_WIDGET) {
+    if (widget !== spec.bindingWidget) {
       return warn('binding', `? is bound to ${widget} in the ${keymap} keymap`, hint);
     }
   }
-  return ok('binding', `? is bound to ${QQ_WIDGET} in emacs and viins`);
+  if (bindings.bracketedPaste === false) {
+    return warn(
+      'binding',
+      'bracketed paste is off, so pasting text that contains ?? opens QueQue',
+      'add set enable-bracketed-paste on to ~/.inputrc',
+    );
+  }
+  return ok(
+    'binding',
+    `? is bound to ${spec.bindingWidget} in ${spec.bindingKeymaps.join(' and ')}`,
+  );
 }
 
 function checkTerm(deps: DoctorDeps): DoctorCheck {
@@ -511,7 +702,7 @@ async function checkProvider(deps: DoctorDeps): Promise<DoctorCheck> {
 }
 
 function checkNode(deps: DoctorDeps): DoctorCheck {
-  const parts = versionParts(deps.nodeVersion);
+  const parts = parseShellVersion(deps.nodeVersion);
   if (parts === null) {
     return warn(
       'node',
@@ -560,27 +751,49 @@ function reportPlatform(platform: NodeJS.Platform): DoctorPlatform {
 }
 
 /**
- * Runs every check in `DOCTOR_CHECK_IDS` order. Only hard blockers that make `??`
- * impossible fail (D-17, D-19, D-20); everything else warns. The report is validated with
+ * The shell a report targets (D-08): `options.shell` > `$SHELL` > the passwd shell (via
+ * `detectShell`) > zsh. Only shipped shells are targets, so fish falls back to zsh until
+ * Phase 12.
+ */
+export function resolveDoctorShell(deps: DoctorDeps, requested?: ShellName): ShellName {
+  if (requested !== undefined && getShellSpec(requested).shipped) {
+    return requested;
+  }
+  const detected = detectShell({ env: deps.env, userShell: deps.userShell });
+  return detected !== null && getShellSpec(detected).shipped ? detected : 'zsh';
+}
+
+/**
+ * Runs the checks for one target shell: its version row (`zsh` or `bash`), then `jq`, `tmp`,
+ * `socket`, `daemon`, `integration`, `bash_profile` (bash on macOS only), `binding`, `term`,
+ * `locale`, `provider`, `node`, `telemetry`. Only hard blockers that make `??` impossible fail
+ * (D-12, D-17, D-19, D-20); everything else warns. The report is validated with
  * `doctorReportSchema` before it is returned.
  */
 export async function runDoctorChecks(
   deps: DoctorDeps = defaultDoctorDeps(),
-  _options: { shell?: ShellName } = {},
+  options: { shell?: ShellName } = {},
 ): Promise<DoctorReport> {
-  const [zsh, daemon, binding, provider] = await Promise.all([
-    checkZsh(deps),
+  const spec = getShellSpec(resolveDoctorShell(deps, options.shell));
+  const versionThenBinding = (async () => {
+    const version = await checkShellVersion(deps, spec);
+    return { version, binding: await checkBinding(deps, spec, version) };
+  })();
+  const [{ version, binding }, daemon, provider] = await Promise.all([
+    versionThenBinding,
     checkDaemon(deps),
-    checkBinding(deps),
     checkProvider(deps),
   ]);
+  const loginRow =
+    spec.shell === 'bash' && deps.platform === 'darwin' ? [checkBashProfile(deps)] : [];
   const checks: DoctorCheck[] = [
-    zsh,
+    version.check,
     checkJq(deps),
     checkTmp(deps),
     checkSocket(deps),
     daemon,
-    checkIntegration(deps),
+    checkIntegration(deps, spec),
+    ...loginRow,
     binding,
     checkTerm(deps),
     checkLocale(deps),
