@@ -14,7 +14,7 @@ This page is the contract a new adapter follows. When in doubt, read the zsh ada
 
 - One file, `shell/<name>/queque.<ext>`, sourced from the shell's rc file by `qq init`. All of the shell's quirks stay inside it.
 - Non-interactive shells that read the rc file (scp, rsync, `bash -c`) must print nothing and change nothing.
-- A shell version that cannot run the adapter refuses at source time with one line on stderr (bash: `queque: the ?? trigger needs bash 5.0+ (found …)`) and defines none of the trigger code. bash below 5.0 binds only a warning: typing `??` keeps both `?` on the line and prints `queque: bash 5.0 or newer is needed for the ?? trigger (this is bash 3.2)`, plus the `brew install bash` fix on macOS (a `??` macro plus a `bind -x` on the private chord `\C-x\C-q`). Keep the code above that check parseable by the oldest version you refuse.
+- A shell version that cannot run the adapter refuses at source time with one line on stderr (bash: `queque: the ?? trigger needs bash 5.0+ (found …)`) and binds nothing. Keep the code above that check parseable by the oldest version you refuse.
 - Call external tools through `command` (or the shell's equivalent), so a user's `alias rm='rm -i'` cannot change what the adapter runs. A user's `set -e` or similar must not leak in or out.
 - The adapter never runs the chosen command. It places it in the line; the user presses Enter (insertion-only).
 

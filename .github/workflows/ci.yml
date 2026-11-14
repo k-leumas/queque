@@ -89,9 +89,8 @@ jobs:
       images: '["ubuntu:22.04","ubuntu:24.04","debian:13","fedora:44","archlinux:latest","alpine:3.24"]'
 
   # Phase 11 D-12, the bash version policy: on the official Docker Hub `bash:<tag>` images,
-  # bash 3.2 and 4.4 must refuse the ?? trigger with one `needs bash 5.0+` line and bind only
-  # the `??` warning macro (no `_qq_question`; amended in the 11-11 UAT), bash 5.0 must bind
-  # `?` to `_qq_question`, and a non-interactive source must stay
+  # bash 3.2 and 4.4 must refuse the ?? trigger with one `needs bash 5.0+` line and bind
+  # nothing, bash 5.0 must bind `?` to `_qq_question`, and a non-interactive source must stay
   # silent on all three (scripts/ci/bash-version-check.sh). The repo is mounted read-only and
   # no secret is involved. Without Docker the `docker run` fails, so a leg never passes by
   # skipping.

@@ -21,32 +21,8 @@
 [[ $- == *i* ]] || return 0 2>/dev/null || exit 0
 
 # Only bash 3.2-parseable syntax above this point: macOS /bin/bash must reach the refusal.
-#
-# Below 5.0 (D-12, amended in the 11-11 UAT): one startup line, then `??` itself warns. The
-# `??` macro types each `?` through quoted-insert (\C-v), so both stay on the line and the
-# macro cannot fire itself again, then sends the private chord \C-x\C-q, which `bind -x` runs
-# as `_qq_old_bash_hint` (one line on stderr; readline redraws the prompt and the line).
-# \C-x\C-q is unbound by default in the emacs and vi-insert keymaps of bash 3.2, 4.4 and 5.x
-# (vi-insert self-inserts \C-x, which now waits for the key after it). A macro reaches readline
-# directly, so terminal flow control (\C-q = XON) never sees the chord.
-# Cost: a lone `?` shows only after the next key on 3.2 (readline waits to tell `?` from `??`),
-# or after keyseq-timeout (500 ms by default) on 4.4. Nothing of the 5.0+ adapter is defined.
 if (( BASH_VERSINFO[0] < 5 )); then
   printf 'queque: the ?? trigger needs bash 5.0+ (found %s)\n' "$BASH_VERSION" >&2
-  # The `qq init` copy family (src/cli/commands/init.ts); only major.minor, no build suffix.
-  QQ_OLD_BASH_HINT='queque: bash 5.0 or newer is needed for the ?? trigger'
-  QQ_OLD_BASH_HINT="$QQ_OLD_BASH_HINT (this is bash ${BASH_VERSINFO[0]}.${BASH_VERSINFO[1]})"
-  if [[ $OSTYPE == darwin* ]]; then
-    QQ_OLD_BASH_HINT="$QQ_OLD_BASH_HINT: brew install bash (or sudo port install bash)"
-  fi
-  _qq_old_bash_hint() {
-    printf '%s\n' "$QQ_OLD_BASH_HINT" >&2
-    return 0
-  }
-  bind -m emacs -x '"\C-x\C-q": _qq_old_bash_hint' 2>/dev/null
-  bind -m emacs '"??": "\C-v?\C-v?\C-x\C-q"' 2>/dev/null
-  bind -m vi-insert -x '"\C-x\C-q": _qq_old_bash_hint' 2>/dev/null
-  bind -m vi-insert '"??": "\C-v?\C-v?\C-x\C-q"' 2>/dev/null
   # shellcheck disable=SC2317 # reached when the file is run instead of sourced
   return 0 2>/dev/null || exit 0
 fi
