@@ -88,11 +88,44 @@ jobs:
     with:
       images: '["ubuntu:22.04","ubuntu:24.04","debian:13","fedora:44","archlinux:latest","alpine:3.24"]'
 
+  # Phase 11 D-12, the bash version policy: on the official Docker Hub `bash:<tag>` images,
+  # bash 3.2 and 4.4 must refuse the ?? trigger with one `needs bash 5.0+` line and bind
+  # nothing, bash 5.0 must bind `?` to `_qq_question`, and a non-interactive source must stay
+  # silent on all three (scripts/ci/bash-version-check.sh). The repo is mounted read-only and
+  # no secret is involved. Without Docker the `docker run` fails, so a leg never passes by
+  # skipping.
+  bash-versions:
+    needs: changes
+    if: needs.changes.outputs.code != 'false'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tag: '3.2'
+            expect: refuse
+          - tag: '4.4'
+            expect: refuse
+          - tag: '5.0'
+            expect: accept
+    name: bash-versions (bash ${{ matrix.tag }} ${{ matrix.expect }}s)
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check the adapter on bash ${{ matrix.tag }}
+        env:
+          TAG: ${{ matrix.tag }}
+          EXPECT: ${{ matrix.expect }}
+        run: |
+          docker run --rm -e QQ_DAEMON_PREWARMED=1 -v "$PWD:/w:ro" "bash:$TAG" \
+            sh /w/scripts/ci/bash-version-check.sh "$EXPECT"
+
   # The single required check: fails when any needed job failed or was cancelled, passes
   # when they succeeded or were skipped (doc-only changes).
   ci-ok:
     if: always()
-    needs: [changes, checks, distro]
+    needs: [changes, checks, distro, bash-versions]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
