@@ -165,11 +165,16 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
       shellPid: request.shellPid,
     });
 
-    // Installed-tool handoff from the widget (D-01). Read eagerly alongside request.json, not
-    // when candidates arrive: the session dir only lives until the widget's cleanup (Zellij
-    // pane timing). The inventory stays in this process — never sent over IPC (D-04).
-    const toolInventory =
-      resultMode === 'llm' ? await readToolHandoff(path.dirname(requestFile)) : null;
+    // Installed-tool handoff from the adapter (D-01). The read starts with request.json, not
+    // when candidates arrive: the session dir only lives until the adapter's cleanup (Zellij
+    // pane timing). It is awaited only right before the installed-tools steering chunk is
+    // built, so an adapter that scans slowly (marked with tools.pending, Phase 11 D-05) overlaps
+    // ensureDaemon, Ink setup and context gathering. readToolHandoff never throws, so the
+    // un-awaited start is safe. The inventory stays in this process — never sent over IPC (D-04).
+    const toolInventoryRead: Promise<ToolInventory | null> =
+      resultMode === 'llm'
+        ? readToolHandoff(path.dirname(requestFile), { shell: request.shell })
+        : Promise.resolve(null);
 
     // Ensure the daemon is reachable before we do anything interactive. A daemon that cannot
     // start (WR-12: e.g. a spawn failure) must not end the `??`: fetchCandidatesForUi then
@@ -266,7 +271,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             ttyReadStream.setRawMode(false);
           } catch {
             const msg =
-              '\r\nqueque: terminal does not support interactive mode\r\nRun ?? from an interactive ZSH session.\r\n';
+              '\r\nqueque: terminal does not support interactive mode\r\nRun ?? from an interactive shell.\r\n';
             ttyWriteStream.write(msg);
             await writeShellResult(resultFile, {
               kind: 'error',
@@ -292,7 +297,11 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             intent: decision.intent,
             confidence: decision.confidence,
           };
-          const envelope = withInstalledToolsChunk(await gatherContext(normalized), toolInventory);
+          const gathered = await gatherContext(normalized);
+          // Awaited here, after ensureDaemon and context gathering: this one inventory feeds the
+          // steering chunk below and every annotateCandidates call in the modal.
+          const toolInventory = await toolInventoryRead;
+          const envelope = withInstalledToolsChunk(gathered, toolInventory);
           void appendDebugLog('client', 'context gathered', {
             extraCount: envelope.extras.length,
           });
