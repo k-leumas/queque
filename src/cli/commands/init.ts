@@ -2,9 +2,10 @@ import { appendFileSync, existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-
+import type { ShellName } from '../../contracts/shell.js';
 import { bootstrapBuiltins } from '../../registry/bootstrap.js';
 import { listShellAdapters } from '../../registry/shell-adapters.js';
+import type { ShellSpec } from '../../shared/shell-registry.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -29,13 +30,39 @@ function _resolveScriptPath(shell: Shell): string {
  * Returns true when .zshrc already sources the queque shell script or contains
  * our integration marker — not merely any mention of "queque".
  */
-export function hasShellIntegration(existing: string, shell: Shell): boolean {
+export function hasShellIntegration(existing: string, shell: ShellName): boolean {
   if (/# queque shell integration/.test(existing)) {
     return true;
   }
 
   const scriptPattern = new RegExp(`source\\s+["'][^"']*queque\\.${shell.replace('.', '\\.')}["']`);
   return scriptPattern.test(existing);
+}
+
+// TDD RED stubs (11-04 Task 2): the public shape exists so typecheck passes; GREEN implements.
+export interface InitDeps {
+  home: string;
+  env: NodeJS.ProcessEnv;
+  platform: NodeJS.Platform;
+  userShell?: string;
+  which(name: string): string | null;
+  probeVersion(binary: string, args: readonly string[]): string | null;
+  readFile(path: string): string | null;
+  appendFile(path: string, text: string): void;
+  out(line: string): void;
+  err(line: string): void;
+  adapterPath?: (spec: ShellSpec) => string;
+}
+
+export function defaultInitDeps(): InitDeps {
+  throw new Error('not implemented');
+}
+
+export function runInit(
+  _shellArg: string | undefined,
+  _deps: InitDeps,
+): { exitCode: 0 | 1; wrote: boolean } {
+  return { exitCode: 1, wrote: false };
 }
 
 export function initCommand(shell: string): void {
