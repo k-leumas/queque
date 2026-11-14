@@ -1223,6 +1223,24 @@ describe('QQ_ZSH_VERSION export', () => {
 });
 
 // ---------------------------------------------------------------------------
+// Phase 11 D-02: request.json declares its shell, so zsh no longer relies on the
+// schema default (which exists only for widgets loaded before Phase 11).
+// ---------------------------------------------------------------------------
+
+describe('request.json shell fields', () => {
+  it('declares shell zsh and the jq-escaped zsh version inside the request heredoc', () => {
+    const body = questionWidgetBody();
+    const heredocStart = body.indexOf('cat > "$req_file" <<JSON');
+    const heredocEnd = body.indexOf('\nJSON\n', heredocStart);
+    expect(heredocStart).toBeGreaterThan(0);
+    expect(heredocEnd).toBeGreaterThan(heredocStart);
+    const heredoc = body.slice(heredocStart, heredocEnd);
+    expect(heredoc).toContain('"shell": "zsh",');
+    expect(heredoc).toContain(`"shellVersion": $(printf '%s' "$ZSH_VERSION" | jq -Rs .),`);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Phase 10 Defect 3: a failed `mktemp -d` (full or unwritable /tmp) must not turn the
 // session dir into `/`, so request.json and the tool handoff never land at the root.
 // ---------------------------------------------------------------------------
