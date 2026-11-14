@@ -1,0 +1,205 @@
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { build, type Options } from 'tsup';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import tsupConfig from '../tsup.config.js';
+import { ciRequired, findBinary, findShell } from './helpers/shells.js';
+
+// ---------------------------------------------------------------------------
+// PTY round trips for every shell adapter (Phase 11 D-02, D-10; BASH-01).
+//
+// Guards the promise that `??` behaves the same in every supported shell: the adapter reads
+// the live line, runs the unchanged `qq client`, and puts the result back into the line
+// without running it. Unit tests of the adapter helpers cannot see readline or ZLE redraws,
+// the key bindings or the terminal, so each test drives a real interactive shell in a private
+// tmux server (tests/pty/drive.sh).
+//
+// The client is the real tsup bundle built into a temp dir (QQ_DEV_ROOT), in fixture mode
+// (QQ_TEST_RESULT_MODE=replace-buffer-fixture writes the lbuffer back, or `echo hello` for an
+// empty one), so no model is called. The shells start without ZELLIJ* or TMUX, with a
+// throwaway HOME, QQ_DAEMON_PREWARMED=1, QQ_TELEMETRY=0 and QQ_INSTANT_FRAME=0 (frame bytes
+// are guarded by the instant-frame parity test). Fixture mode still ensures the daemon, so a
+// local run replaces the developer's dev daemon once (the next real `??` replaces it back).
+//
+// A missing shell, tmux or jq skips locally and fails when CI is set. Assertions are on
+// captured screen lines, never on timing.
+// ---------------------------------------------------------------------------
+
+const BUILD_TIMEOUT_MS = 180_000;
+const TEST_TIMEOUT_MS = 60_000;
+const ROOT = resolve(dirname(new URL(import.meta.url).pathname), '..');
+const DRIVE = join(ROOT, 'tests', 'pty', 'drive.sh');
+const PROMPT = 'QQPTY> ';
+
+interface PtyShell {
+  name: 'zsh' | 'bash';
+  bin: string | null;
+  adapter: string;
+}
+
+const tmux = ciRequired(findBinary('tmux'), 'tmux');
+const jq = ciRequired(findBinary('jq'), 'jq');
+
+const PTY_SHELLS: PtyShell[] = [
+  {
+    name: 'zsh',
+    bin: ciRequired(findShell('zsh', { min: [5, 0] }), 'zsh 5.0+'),
+    adapter: 'shell/zsh/queque.zsh',
+  },
+  {
+    name: 'bash',
+    bin: ciRequired(findShell('bash', { min: [5, 0] }), 'bash 5.0+'),
+    adapter: 'shell/bash/queque.bash',
+  },
+];
+
+function runnable(row: PtyShell): boolean {
+  return row.bin !== null && tmux !== null && jq !== null;
+}
+
+function baseConfig(): Options {
+  const config: unknown = tsupConfig;
+  if (Array.isArray(config) || typeof config === 'function' || config === null) {
+    throw new Error('tsup.config.ts must export a single options object');
+  }
+  return config as Options;
+}
+
+const UTF8_LOCALE = process.platform === 'darwin' ? 'en_US.UTF-8' : 'C.UTF-8';
+
+let scratch = '';
+let home = '';
+let serverCount = 0;
+const servers: string[] = [];
+
+function sleepMs(ms: number): void {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+interface Session {
+  server: string;
+  env: NodeJS.ProcessEnv;
+  log: string;
+}
+
+function drive(session: Session, ...args: string[]): string {
+  const run = spawnSync('bash', [DRIVE, args[0] ?? '', session.server, ...args.slice(1)], {
+    encoding: 'utf8',
+    env: session.env,
+    timeout: TEST_TIMEOUT_MS,
+  });
+  if (run.status !== 0) {
+    throw new Error(`drive.sh ${args.join(' ')} failed (${run.status}): ${run.stderr}`);
+  }
+  return run.stdout;
+}
+
+function screenLines(session: Session): string[] {
+  return drive(session, 'capture')
+    .split('\n')
+    .map((line) => line.trimEnd());
+}
+
+/** Polls the screen until a line satisfies `match`; returns the screen lines. */
+function waitForLine(session: Session, match: (line: string) => boolean, seconds = 20): string[] {
+  const deadline = Date.now() + seconds * 1000;
+  let lines: string[] = [];
+  while (Date.now() < deadline) {
+    lines = screenLines(session);
+    if (lines.some(match)) return lines;
+    sleepMs(50);
+  }
+  throw new Error(`timed out waiting for a matching line; last screen:\n${lines.join('\n')}`);
+}
+
+interface StartOptions {
+  mode?: 'replace-buffer-fixture' | 'cancel';
+  rc?: string[];
+}
+
+/** Starts `row`'s shell with the adapter sourced from a fresh rc file. */
+function startShell(row: PtyShell, opts: StartOptions = {}): Session {
+  serverCount += 1;
+  const server = `qq-pty-${process.pid}-${row.name}-${serverCount}`;
+  const rcdir = mkdtempSync(join(scratch, `${row.name}-rc-`));
+  const rc = [
+    `PS1='${PROMPT}'`,
+    'HISTFILE=/dev/null',
+    ...(opts.rc ?? []),
+    `source '${join(ROOT, row.adapter)}'`,
+    '',
+  ].join('\n');
+  writeFileSync(join(rcdir, row.name === 'zsh' ? '.zshrc' : 'bashrc'), rc);
+  const log = join(scratch, `${server}-debug.log`);
+  const env: NodeJS.ProcessEnv = {
+    PATH: `${dirname(process.execPath)}:${process.env.PATH ?? '/usr/bin:/bin'}`,
+    HOME: home,
+    TERM: 'xterm-256color',
+    LANG: UTF8_LOCALE,
+    LC_ALL: UTF8_LOCALE,
+    QQ_DEV_ROOT: scratch,
+    QQ_DAEMON_PREWARMED: '1',
+    QQ_TELEMETRY: '0',
+    QQ_INSTANT_FRAME: '0',
+    QQ_TEST_RESULT_MODE: opts.mode ?? 'replace-buffer-fixture',
+    QQ_DEBUG_LOG_FILE: log,
+    QQ_PTY_SHELL_BIN: row.bin ?? '',
+    BASH_SILENCE_DEPRECATION_WARNING: '1',
+  };
+  const session: Session = { server, env, log };
+  servers.push(server);
+  drive(session, 'start', row.name, rcdir);
+  drive(session, 'wait', PROMPT);
+  return session;
+}
+
+function readLog(session: Session): string {
+  try {
+    return readFileSync(session.log, 'utf8');
+  } catch {
+    return '';
+  }
+}
+
+beforeAll(async () => {
+  if (!PTY_SHELLS.some(runnable)) return;
+  scratch = mkdtempSync(join(tmpdir(), 'qq-pty-'));
+  home = join(scratch, 'home');
+  mkdirSync(home, { recursive: true });
+  await build({
+    ...baseConfig(),
+    config: false,
+    outDir: join(scratch, 'dist', 'cli'),
+    dts: false,
+    sourcemap: false,
+    clean: false,
+    silent: true,
+  });
+}, BUILD_TIMEOUT_MS);
+
+afterAll(() => {
+  for (const server of servers) {
+    spawnSync('bash', [DRIVE, 'stop', server], { encoding: 'utf8' });
+  }
+  if (scratch) rmSync(scratch, { recursive: true, force: true });
+});
+
+describe.each(PTY_SHELLS)('$name ?? in a PTY', (row) => {
+  describe.skipIf(!runnable(row))(`${row.name} (${row.bin ?? 'not found'})`, () => {
+    it(
+      'round-trip: echo qqtrace?? comes back into the line and runs on Enter',
+      () => {
+        const session = startShell(row);
+        drive(session, 'type', 'echo qqtrace??');
+        drive(session, 'wait', 'queque › echo qqtrace');
+        drive(session, 'key', 'Enter');
+        const lines = waitForLine(session, (line) => line === 'qqtrace');
+        expect(lines).toContain('qqtrace');
+        expect(readLog(session)).toContain('wrote replace-buffer result');
+      },
+      TEST_TIMEOUT_MS,
+    );
+  });
+});

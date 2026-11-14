@@ -32,7 +32,8 @@ function parseResultMode(mode: string | undefined): ResultMode {
 }
 
 export async function clientCommand(options: ClientCommandOptions): Promise<void> {
-  const resultMode = parseResultMode(options.resultMode);
+  /** QQ_TEST_RESULT_MODE: dev/test-only fallback read here so no shell adapter carries test code (see CONTRIBUTING.md); the flag wins. */
+  const resultMode = parseResultMode(options.resultMode ?? process.env.QQ_TEST_RESULT_MODE);
 
   void appendDebugLog('client', 'command start', {
     requestFile: options.requestFile,

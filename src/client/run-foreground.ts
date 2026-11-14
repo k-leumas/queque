@@ -196,7 +196,9 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         lbuffer: fixtureLbuffer,
         rbuffer: request.rbuffer,
       });
-      void appendDebugLog('client', 'wrote replace-buffer result', {
+      // Awaited: main.ts exits right after the command returns, which drops an
+      // un-awaited append (the PTY harness asserts this line).
+      await appendDebugLog('client', 'wrote replace-buffer result', {
         resultFile,
         lbufferLength: fixtureLbuffer.length,
         rbufferLength: request.rbuffer.length,
