@@ -98,10 +98,10 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
 
   cli
     .command(
-      'init <shell>',
-      'Add shell integration to ~/.zshrc (`qq init zsh && source ~/.zshrc`), or run `qq init provider` to pick OpenAI or Ollama',
+      'init [shell]',
+      'Add the ?? trigger to your shell rc file (detects zsh or bash; `qq init bash` picks one), or run `qq init provider` to pick OpenAI or Ollama',
     )
-    .action(async (shell: string) => {
+    .action(async (shell?: string) => {
       await dispatchInit(shell);
     });
 

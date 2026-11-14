@@ -68,7 +68,7 @@ const NO_CHANGES = 'No changes made.';
 const CLAUDE_AUTH_HINT =
   'If ?? says Claude is not authenticated, run `claude /login` or set ANTHROPIC_API_KEY (docs: https://code.claude.com/docs/en/authentication).';
 const OPENAI_KEY_MISSING =
-  'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to ~/.zshrc (before the queque source line) or put it in ~/.env.local, open a new terminal, and run `qq init provider` again.';
+  'OPENAI_API_KEY is not set. Add `export OPENAI_API_KEY=...` to your shell rc file (~/.zshrc or ~/.bashrc), before the queque source line, or put it in ~/.env.local, open a new terminal, and run `qq init provider` again.';
 
 /**
  * Opens the Ollama download page with the platform opener, without a shell. Spawn failures
