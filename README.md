@@ -30,17 +30,7 @@ source ~/.bashrc   # bash 5 or newer
 
 `qq init` detects your shell, wires up the `??` keybinding and adds the QueQue source line to the end of your rc file itself, so nothing needs to be redirected into it.
 
-Or with npm (needs zsh or bash 5+, Node.js 24 or newer and jq):
-
-```shell
-npm install -g @k-leumas/queque-cli
-qq init
-source ~/.zshrc    # or: source ~/.bashrc
-```
-
-On macOS, `/bin/bash` is 3.2, too old for `??`: bash users run `brew install bash` first.
-
-See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for the full requirements, the macOS bash notes and how to undo `qq init`.
+See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for installing with npm, the full requirements, the macOS bash notes and how to undo `qq init`.
 
 ## Choose a provider
 

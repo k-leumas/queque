@@ -16,6 +16,11 @@
       "count": 1,
       "tokens": 2700,
       "first_read": "2026-11-15T09:34:09.220Z"
+    },
+    "/Users/samuel/dev/tui-llm/README.md": {
+      "count": 1,
+      "tokens": 1250,
+      "first_read": "2026-11-15T10:02:37.094Z"
     }
   },
   "files_written": [
@@ -72,6 +77,12 @@
       "action": "create",
       "tokens": 1340,
       "at": "2026-11-15T09:37:40.951Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 49,
+      "at": "2026-11-15T10:02:39.654Z"
     }
   ],
   "edit_counts": {
@@ -79,9 +90,10 @@
     ".planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md": 4,
     ".claude/worktrees/agent-aaab7ee947be7d639/README.md": 2,
     "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/commit-msg.txt": 1,
-    ".claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md": 1
+    ".claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md": 1,
+    "README.md": 1
   },
-  "anatomy_hits": 3,
+  "anatomy_hits": 4,
   "anatomy_misses": 0,
   "repeated_reads_warned": 0,
   "cerebrum_warnings": 0,

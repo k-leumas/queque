@@ -1027,3 +1027,5 @@
 | 03:39 | Session end: 9 writes across 5 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 3 reads | ~21360 tok |
 | 03:44 | gsd-fast: zsh prewarm tests poll 10 s (was 2.5 s), helper timeout 15 s, describe 20 s; pre-push failures (bug-429); pty full suite 1874/1874 | tests/zsh-widget.test.ts | fixed | ~3k |
 | 03:45 | Session end: 9 writes across 5 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 3 reads | ~21360 tok |
+| 04:02 | Edited README.md | reduced (-10 lines) | ~46 |
+| 04:03 | gsd-fast: README Install condensed (npm block + macOS bash sentence removed, npm folded into See-Install link); pty full suite 1874/1874 | README.md | done | ~2k |

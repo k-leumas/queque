@@ -1,6 +1,6 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T09:06:37.704Z
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T10:02:39.618Z
 > Files: 769 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
@@ -347,7 +347,7 @@
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest Phase 10 scripts: smoke:distro, test:distro, test:live. (~499 tok)
-- `README.md` — Project documentation: H1, a shell badge row (zsh/bash `${failBelow}+` from SHELL_SPECS, fish coming soon) linking docs/INSTALL.md anchors, then a `Tests passing on:\` line over six static distro badges (alt = ci.yml image ref, CI runs link) plus a macOS badge (alt says tested by hand, links docs/INSTALL.md); no workflow-status badges. Then pitch, demo gif, Install (brew, then npm, one macOS bash 3.2 sentence, See-Install link; no support table), Choose a provider and Usage; absolute `https://github.com/k-leumas/queque/blob/main/` doc links (npm ships README alone) (quick 261030-fdr, 261115-3qz, 261115-4um) (~1250 tok)
+- `README.md` — Project documentation (~1111 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. Phase 10: `define` also bakes __QUEQUE_TELEMETRY_KEY__ (empty until plan 13, D-22) and __QUEQUE_TELEMETRY_HOST__ (`https://eu.i.posthog.com`, D-05). Quick 261030-tq3: __QUEQUE_BUILD_ID__ = `<version>+<commit>.<Date.now base36>`, computed once per tsup config load (watch rebuilds share one id). (~680 tok)
 - `vitest.config.ts` — Vitest base config: tests/**/*.test.ts(x), setupFiles scrub-git-env; defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_BUILD_ID__ ('0.0.0-test+test-build', quick 261030-tq3) and an inert telemetry key/host. vitest.live inherits `define`. (~230 tok)
