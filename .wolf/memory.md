@@ -978,3 +978,5 @@
 | 02:34 | Edited src/cli/commands/init.ts | modified hasShellIntegration() | ~263 |
 | 02:35 | Session end: 33 writes across 16 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 14 reads | ~69994 tok |
 | 11:30 | fix(11) WR-06: stripShellComments in shell-registry; hasShellIntegration + loginFileSourcesBashrc ignore commented lines, marker alone no longer counts; init/registry/doctor tests; full suite 1872 green | src/shared/shell-registry.ts, src/cli/commands/init.ts, tests | fixed | ~5k |
+| 02:37 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-REVIEW-FIX.md | — | ~2547 |
+| 02:40 | code-review --fix 11: WR-01..06 fixed (456e2ea..f308e2e), 1872 tests; pty full suite 1864/1872 at load 91 (known flakes + b12/b22 timing), 3 files rerun alone 144/144 | 11-REVIEW-FIX.md | done | ~4k |

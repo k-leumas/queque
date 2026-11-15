@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T08:22:50.292Z
-> Files: 770 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T08:37:34.267Z
+> Files: 768 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -837,6 +837,7 @@
 - `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
 - `11-PATTERNS.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Pattern Map (~4891 tok)
 - `11-RESEARCH.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Research (~17835 tok)
+- `11-REVIEW-FIX.md` — Phase 11: Code Review Fix Report (~2388 tok)
 - `11-REVIEW.md` — Phase 11: Code Review Report (~3548 tok)
 - `11-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2154 tok)
 - `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1816 tok)
