@@ -56,12 +56,17 @@ function runZsh(script: string): { stdout: string; stderr: string; status: numbe
   };
 }
 
-function runInteractiveZsh(script: string): { stdout: string; stderr: string; status: number } {
+function runInteractiveZsh(
+  script: string,
+  input?: string,
+): { stdout: string; stderr: string; status: number } {
   const result = spawnSync('zsh', ['-fi', '-c', script], {
     encoding: 'utf8',
     // Fits the prewarm tests' 10 s marker poll (bug-429).
     timeout: 15_000,
     env: { ...process.env, PATH: process.env.PATH },
+    // Bytes on the shell's stdin (a pipe here, the terminal in real use).
+    input,
   });
   return {
     stdout: result.stdout ?? '',
@@ -267,6 +272,45 @@ printf '%s\n' "$*" > "${marker}"
     rmSync(dir, { recursive: true, force: true });
     expect(status).toBe(0);
     expect(stdout).toContain('daemon --ensure');
+  });
+
+  // smoke-picker-race: in a real shell the prewarm's stdin is the terminal. Node saves the
+  // terminal settings of a tty stdin at startup and writes them back at exit, background job or
+  // not, so a prewarm still running when `??` opens the picker restores ZLE's settings over
+  // Ink's raw mode: Enter then arrives as LF, lands in FILTER and accepts nothing. The shell's
+  // stdin is a pipe with known bytes here; the fake qq copies its own stdin, which must be empty.
+  it('runs the background ensure with stdin from /dev/null, never the shell stdin', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-prewarm-stdin-'));
+    const binDir = join(dir, 'bin');
+    const stdinCopy = join(dir, 'prewarm-stdin');
+    const marker = join(dir, 'qq-invoked');
+    mkdirSync(binDir, { recursive: true });
+    writeFileSync(
+      join(binDir, 'qq'),
+      `#!/bin/sh
+cat > "${stdinCopy}"
+printf '%s\n' "$*" > "${marker}"
+`,
+      { encoding: 'utf8' },
+    );
+    chmodSync(join(binDir, 'qq'), 0o755);
+
+    const script = `
+      unset QQ_DEV_ROOT
+      PATH="${binDir}:$PATH"
+      source ${widgetPath}
+      for i in {1..200}; do
+        [[ -f "${marker}" ]] && break
+        sleep 0.05
+      done
+      [[ -f "${marker}" ]] && cat "${marker}"
+    `;
+    const { stdout, status } = runInteractiveZsh(script, 'SHELL-STDIN-BYTES\n');
+    const copied = existsSync(stdinCopy) ? readFileSync(stdinCopy, 'utf8') : 'no stdin copy';
+    rmSync(dir, { recursive: true, force: true });
+    expect(status).toBe(0);
+    expect(stdout).toContain('daemon --ensure');
+    expect(copied).toBe('');
   });
 });
 

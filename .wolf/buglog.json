@@ -9048,6 +9048,30 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-15T11:30:00Z"
+    },
+    {
+      "id": "bug-553",
+      "timestamp": "2026-11-15T11:30:00Z",
+      "error_message": "CI distro smoke intermittently fails on ubuntu legs: picker shows `tldr z3`, then redraws to `no matches \u2014 try a different query` with an invisible FILTER; exit 17 (no consent question) / exit 12 (no prompt redraw). Also auto-revert PRs #18-#29, #31.",
+      "file": "shell/zsh/queque.zsh",
+      "root_cause": "_qq_prewarm_daemon ran `qq daemon --ensure` in the background with the terminal as stdin. Node snapshots tty termios at startup and restores it at exit (even in the background). When ?? fired while the prewarm still ran, its exit put ZLE's termios (icrnl) back over Ink's raw mode, so Enter arrived as LF; Ink 7 names LF 'enter' (key.return false) and CandidateSelect appended it to the filter.",
+      "fix": "Prewarm subshell now also takes stdin from /dev/null (`) </dev/null >/dev/null 2>&1 &!`), matching the bash adapter. Regression test in tests/zsh-widget.test.ts (daemon prewarm: stdin from /dev/null); shell/README.md adapter contract states the rule for Node background jobs. Session .planning/debug/smoke-picker-race.md.",
+      "tags": [
+        "smoke",
+        "ci",
+        "zsh",
+        "termios",
+        "prewarm",
+        "ink",
+        "race",
+        "flaky"
+      ],
+      "related_bugs": [
+        "bug-429",
+        "bug-500"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T11:30:00Z"
     }
   ]
 }

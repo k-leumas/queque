@@ -21,6 +21,41 @@
       "count": 1,
       "tokens": 1250,
       "first_read": "2026-11-15T10:02:37.094Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md": {
+      "count": 2,
+      "tokens": 867,
+      "first_read": "2026-11-15T10:31:57.518Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
+      "count": 1,
+      "tokens": 4100,
+      "first_read": "2026-11-15T10:33:26.852Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
+      "count": 2,
+      "tokens": 5619,
+      "first_read": "2026-11-15T10:34:10.829Z"
+    },
+    "/Users/samuel/.claude/gsd-core/references/debugger-fix-acceptance.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-15T10:37:25.626Z"
+    },
+    "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-15T10:40:45.372Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts": {
+      "count": 2,
+      "tokens": 14186,
+      "first_read": "2026-11-15T10:43:05.659Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/README.md": {
+      "count": 1,
+      "tokens": 1110,
+      "first_read": "2026-11-15T10:47:15.798Z"
     }
   },
   "files_written": [
@@ -83,6 +118,96 @@
       "action": "edit",
       "tokens": 49,
       "at": "2026-11-15T10:02:39.654Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "create",
+      "tokens": 990,
+      "at": "2026-11-15T10:31:40.684Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 1070,
+      "at": "2026-11-15T10:37:44.340Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs",
+      "action": "create",
+      "tokens": 383,
+      "at": "2026-11-15T10:38:40.525Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs",
+      "action": "create",
+      "tokens": 449,
+      "at": "2026-11-15T10:40:53.778Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/probe.sh",
+      "action": "create",
+      "tokens": 98,
+      "at": "2026-11-15T10:40:56.611Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 565,
+      "at": "2026-11-15T10:43:38.855Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 990,
+      "at": "2026-11-15T10:44:02.144Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 215,
+      "at": "2026-11-15T10:44:02.609Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "action": "edit",
+      "tokens": 122,
+      "at": "2026-11-15T10:45:04.075Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "action": "edit",
+      "tokens": 512,
+      "at": "2026-11-15T10:45:04.526Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh",
+      "action": "edit",
+      "tokens": 192,
+      "at": "2026-11-15T10:45:19.960Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/README.md",
+      "action": "edit",
+      "tokens": 143,
+      "at": "2026-11-15T10:47:21.011Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/README.md",
+      "action": "edit",
+      "tokens": 109,
+      "at": "2026-11-15T10:47:39.771Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 544,
+      "at": "2026-11-15T10:47:58.397Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py",
+      "action": "create",
+      "tokens": 1558,
+      "at": "2026-11-15T10:48:52.752Z"
     }
   ],
   "edit_counts": {
@@ -91,11 +216,18 @@
     ".claude/worktrees/agent-aaab7ee947be7d639/README.md": 2,
     "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/commit-msg.txt": 1,
     ".claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md": 1,
-    "README.md": 1
+    "README.md": 1,
+    ".planning/debug/smoke-picker-race.md": 6,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/probe.sh": 1,
+    "tests/zsh-widget.test.ts": 2,
+    "shell/zsh/queque.zsh": 1,
+    "shell/README.md": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py": 1
   },
-  "anatomy_hits": 4,
-  "anatomy_misses": 0,
-  "repeated_reads_warned": 0,
+  "anatomy_hits": 9,
+  "anatomy_misses": 2,
+  "repeated_reads_warned": 3,
   "cerebrum_warnings": 0,
-  "stop_count": 10
+  "stop_count": 16
 }

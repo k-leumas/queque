@@ -1030,3 +1030,25 @@
 | 04:02 | Edited README.md | reduced (-10 lines) | ~46 |
 | 04:03 | gsd-fast: README Install condensed (npm block + macOS bash sentence removed, npm folded into See-Install link); pty full suite 1874/1874 | README.md | done | ~2k |
 | 04:04 | Session end: 10 writes across 5 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 4 reads | ~22659 tok |
+| 04:26 | Session end: 10 writes across 5 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 4 reads | ~22659 tok |
+| 04:31 | Created .planning/debug/smoke-picker-race.md | — | ~924 |
+| 04:31 | Session end: 11 writes across 6 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 5 reads | ~24516 tok |
+| 04:37 | Edited .planning/debug/smoke-picker-race.md | added 1 condition(s) | ~999 |
+| 04:38 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs | — | ~358 |
+| 04:40 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs | — | ~419 |
+| 04:40 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/probe.sh | — | ~92 |
+| 04:43 | Edited .planning/debug/smoke-picker-race.md | expanded (+26 lines) | ~527 |
+| 04:44 | Edited .planning/debug/smoke-picker-race.md | expanded (+28 lines) | ~924 |
+| 04:44 | Edited .planning/debug/smoke-picker-race.md | expanded (+12 lines) | ~200 |
+| 04:45 | Edited tests/zsh-widget.test.ts | modified runInteractiveZsh() | ~122 |
+| 04:45 | Edited tests/zsh-widget.test.ts | modified readFileSync() | ~512 |
+| 04:45 | Edited shell/zsh/queque.zsh | 8→12 lines | ~180 |
+| 04:47 | Edited shell/README.md | 2→3 lines | ~134 |
+| 04:47 | Edited shell/README.md | "</dev/null >/dev/null 2>&" → "qq daemon --ensure" | ~102 |
+| 04:47 | Edited .planning/debug/smoke-picker-race.md | expanded (+26 lines) | ~508 |
+| 04:48 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py | — | ~1558 |
+| 04:54 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
+| 04:55 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
+| 05:04 | gsd-debug smoke-picker-race: zsh prewarm stdin </dev/null (Node termios restore undid Ink raw mode); regression test red->green; pty suite 1875/1875; docker smoke 24.04 x3 + 22.04 x2 PASS | shell/zsh/queque.zsh, tests/zsh-widget.test.ts, shell/README.md | fixed (bug-553) | ~8k |
+| 05:06 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
+| 05:13 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
