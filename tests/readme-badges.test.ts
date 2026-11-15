@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -13,12 +13,6 @@ const CI_RUNS = `https://github.com/${REPO}/actions/workflows/ci.yml`;
 const REPO_BLOB = `https://github.com/${REPO}/blob/main/`;
 const INSTALL_DOC = `${REPO_BLOB}docs/INSTALL.md`;
 const TESTS_PASSING_LINE = /^Tests passing on:\\$/m;
-
-const WORKFLOW_BADGES: readonly { name: string; file: string }[] = [
-  { name: 'CI', file: 'ci.yml' },
-  { name: 'Nightly', file: 'nightly.yml' },
-  { name: 'Release', file: 'release.yaml' },
-];
 
 // Docker image name (the part before `:`) -> simple-icons logo slug.
 const LOGO_SLUGS = new Map<string, string>([
@@ -85,9 +79,8 @@ function staticBadgeParts(badge: Badge): string[] {
   return segment.split('-').map((part) => decodeURIComponent(part));
 }
 
-// The "Tests passing on:" row: static shields badges linking the CI runs page. The CI
-// workflow-status badge is excluded by its /github/actions/ path; the shell and macOS badges
-// link docs/INSTALL.md.
+// The "Tests passing on:" row is the static shields badges that link the CI runs page. The
+// shell and macOS badges link docs/INSTALL.md, so the href filter isolates the distro row.
 function distroBadges(): Badge[] {
   return readmeBadges().filter((b) => isStaticShieldsBadge(b) && b.href === CI_RUNS);
 }
@@ -97,32 +90,6 @@ function badgeMarkdown(badge: Badge): string {
 }
 
 describe('README badges', () => {
-  it('workflow status badges link to existing workflows on main', () => {
-    const badges = readmeBadges();
-    for (const { name, file } of WORKFLOW_BADGES) {
-      const matching = badges.filter((b) => b.alt === name);
-      expect(
-        matching.length,
-        `README must have exactly one "${name}" workflow badge; add it under the H1 in README.md`,
-      ).toBe(1);
-      const badge = matching[0] as Badge;
-      const url = new URL(badge.img);
-      expect(url.host, `${name} badge must be served by img.shields.io`).toBe('img.shields.io');
-      expect(url.pathname, `${name} badge must point at the ${file} workflow status`).toBe(
-        `/github/actions/workflow/status/${REPO}/${file}`,
-      );
-      expect(url.searchParams.get('branch'), `${name} badge must report branch main`).toBe('main');
-      expect(url.searchParams.get('label'), `${name} badge label must be "${name}"`).toBe(name);
-      expect(badge.href, `${name} badge must link to its workflow runs page`).toBe(
-        `https://github.com/${REPO}/actions/workflows/${file}`,
-      );
-      expect(
-        existsSync(resolve(WORKFLOWS, file)),
-        `.github/workflows/${file} must exist for the ${name} badge`,
-      ).toBe(true);
-    }
-  });
-
   it('distro badges equal the CI matrix', () => {
     const images = ciImages();
     expect(images.length, 'ci.yml images array must not be empty').toBeGreaterThan(0);
@@ -193,6 +160,10 @@ describe('README badges', () => {
         (macBadges[0] as Badge).href,
         'macOS is tested by hand, so its README badge must link docs/INSTALL.md, not CI',
       ).toBe(INSTALL_DOC);
+      expect(
+        (macBadges[0] as Badge).alt,
+        'macOS has no CI runner, so its README badge alt text must say "tested by hand"',
+      ).toContain('tested by hand');
     }
   });
 
@@ -206,7 +177,7 @@ describe('README badges', () => {
       });
       expect(
         matching.length,
-        `README must have exactly one "${name}" shell badge in the shell row under the workflow badges`,
+        `README must have exactly one "${name}" shell badge in the shell row under the H1`,
       ).toBe(1);
       const badge = matching[0] as Badge;
       const [, message = ''] = staticBadgeParts(badge);
@@ -235,44 +206,19 @@ describe('README badges', () => {
     }
   });
 
-  it('the Supported platforms table matches the shell registry', () => {
+  it('README has no workflow-status badges and no Supported platforms table', () => {
     const text = readmeText();
     expect(
+      /img\.shields\.io\/github\/actions\/workflow\/status\//.test(text),
+      'README.md must not show CI/Nightly/Release workflow-status badges; they were removed as noise',
+    ).toBe(false);
+    expect(
+      /\/actions\/workflows\/[^/\s)]+\.ya?ml\/badge/.test(text),
+      'README.md must not show GitHub-native workflow badges (.../actions/workflows/<file>/badge.svg)',
+    ).toBe(false);
+    expect(
       /^### Supported platforms$/m.test(text),
-      'README.md must have a `### Supported platforms` heading at the end of the Install section',
-    ).toBe(true);
-    const rows = text.split('\n').filter((line) => line.startsWith('| '));
-    const row = (label: string): string | undefined =>
-      rows.find((line) => line.startsWith(`| ${label} |`));
-    for (const name of SHELL_NAMES) {
-      const spec = SHELL_SPECS[name];
-      const line = row(name);
-      expect(line, `README Supported platforms table must have a "| ${name} |" row`).toBeDefined();
-      if (spec.shipped) {
-        expect(
-          line,
-          `README "| ${name} |" row must say "${spec.failBelow}+" (SHELL_SPECS failBelow)`,
-        ).toContain(`${spec.failBelow}+`);
-        expect(
-          line,
-          `README "| ${name} |" row must say "tested ${spec.warnBelow}+" (SHELL_SPECS warnBelow)`,
-        ).toContain(`tested ${spec.warnBelow}+`);
-      } else {
-        expect(line, `README "| ${name} |" row must say "Coming soon"`).toContain('Coming soon');
-      }
-    }
-    for (const label of ['macOS', 'Linux', 'Windows']) {
-      expect(
-        row(label),
-        `README Supported platforms table must have a "| ${label} |" row`,
-      ).toBeDefined();
-    }
-    const macRunner = runsOnValues().some((v) => /macos/i.test(v));
-    if (!macRunner) {
-      expect(
-        row('macOS'),
-        'README "| macOS |" row must say "tested by hand" while no workflow runs on macOS',
-      ).toContain('tested by hand');
-    }
+      'README.md must not bring back the Supported platforms table; the badge rows carry it',
+    ).toBe(false);
   });
 });
