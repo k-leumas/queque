@@ -200,13 +200,17 @@ _qq_prewarm_daemon() {
   fi
 
   QQ_DAEMON_PREWARMED=1
+  # stdin from /dev/null too, like the bash adapter: Node saves the terminal settings of a tty
+  # stdin at startup and writes them back at exit, even in the background. A prewarm still
+  # running when `??` opens the picker would put ZLE's settings back over Ink's raw mode, and
+  # Enter would arrive as LF and land in FILTER (smoke-picker-race).
   (
     if [[ -n "$QQ_DEV_ROOT" && -f "$QQ_DEV_ROOT/dist/cli/main.js" ]] && command -v node >/dev/null 2>&1; then
       command node "$QQ_DEV_ROOT/dist/cli/main.js" daemon --ensure
     elif command -v qq >/dev/null 2>&1; then
       command qq daemon --ensure
     fi
-  ) >/dev/null 2>&1 &!
+  ) </dev/null >/dev/null 2>&1 &!
 }
 #
 # How it works:

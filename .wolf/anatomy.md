@@ -1081,7 +1081,7 @@
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). QQ_RESULT_FILE and the pane size are `local -x`, scoped to the widget call (WR-03). Client stderr (inline and pane) goes to $tmpdir/client.err unless QQ_DEBUG_LOG_FILE is set (WR-04). (~5619 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). QQ_RESULT_FILE and the pane size are `local -x`, scoped to the widget call (WR-03). Client stderr (inline and pane) goes to $tmpdir/client.err unless QQ_DEBUG_LOG_FILE is set (WR-04).; the daemon prewarm runs fully detached from the terminal (`</dev/null >/dev/null 2>&1 &!`, bug-553) (~5619 tok)
 
 ## src/
 

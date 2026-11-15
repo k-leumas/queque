@@ -17,6 +17,7 @@ This page is the contract a new adapter follows. When in doubt, read the zsh ada
 - A shell version that cannot run the adapter refuses at source time with one line on stderr (bash: `queque: the ?? trigger needs bash 5.0+ (found …)`) and binds nothing. Keep the code above that check parseable by the oldest version you refuse.
 - Call external tools through `command` (or the shell's equivalent), so a user's `alias rm='rm -i'` cannot change what the adapter runs. A user's `set -e` or similar must not leak in or out.
 - The adapter never runs the chosen command. It places it in the line; the user presses Enter (insertion-only).
+- A background job that runs Node (the daemon prewarm `qq daemon --ensure`) gets none of the terminal: redirect stdin, stdout and stderr (`</dev/null >/dev/null 2>&1`). A Node process with the terminal on any of them writes back the terminal settings it saw at startup when it exits, even in the background, so it can undo the picker's raw mode and turn Enter into text in FILTER.
 
 ## The trigger
 
