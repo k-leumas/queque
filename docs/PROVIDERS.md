@@ -24,7 +24,7 @@ If `claude` is not on your `PATH` at all, the message starts with `QueQue: No AI
 
 **Anthropic API key.** QueQue looks for `ANTHROPIC_API_KEY` in this order:
 
-1. **Environment variable**: `export ANTHROPIC_API_KEY="sk-ant-..."` in your shell rc file (`~/.zshrc` or `~/.bashrc`), above the QueQue source line.
+1. **Environment variable**: `export ANTHROPIC_API_KEY="sk-ant-..."` in `~/.zshrc`, above the QueQue source line.
 2. **`.env.local` file**: a line `ANTHROPIC_API_KEY=sk-ant-...` in `~/.env.local`. QueQue reads only `~/.env.local` itself: never the directory you run `??` from and never a directory above your home directory, so a `.env.local` inside a project (or in `/tmp`) is not used. The background daemon reads the file once, when it starts.
 
 An empty or whitespace-only value counts as unset.
@@ -43,7 +43,7 @@ qq init provider
 
 It asks one question (Claude, OpenAI or Ollama), saves your answer to `~/.config/qq/provider.json`, and restarts the background daemon. Nothing is probed until you answer, and `??` never asks you to choose.
 
-- **OpenAI (beta)** needs `OPENAI_API_KEY` in your environment (`export OPENAI_API_KEY="sk-..."` in `~/.zshrc` or `~/.bashrc`, above the QueQue source line) or in `~/.env.local`. Set the key first, open a new terminal, then run `qq init provider`. QueQue never asks for the key and never stores it: `provider.json` only records that you chose OpenAI. The default model is `gpt-5.5`.
+- **OpenAI (beta)** needs `OPENAI_API_KEY` in your environment (`export OPENAI_API_KEY="sk-..."` in `~/.zshrc`, above the QueQue source line) or in `~/.env.local`. Set the key first, open a new terminal, then run `qq init provider`. QueQue never asks for the key and never stores it: `provider.json` only records that you chose OpenAI. The default model is `gpt-5.5`.
 - **Ollama (beta)** lists the models you have already pulled and pins the one you pick. If Ollama is not running, the picker prints the download link and `ollama serve`. If it has no models, the picker tells you to run `ollama pull`. When `provider.json` has a `baseUrl` (a remote server), the picker lists and keeps that server; to go back to Ollama on this machine, remove `baseUrl` from `provider.json`.
 
 Your choice sticks. If the chosen provider fails, `??` shows that provider's error; QueQue never switches to a different provider on its own. Run `qq init provider` again to switch, including back to Claude.
@@ -64,7 +64,7 @@ A background daemon answers `??` for every terminal. It starts with your first i
 
 - `qq init provider` restarts the daemon for you, so running it after exporting a new key is enough.
 
-- Put your `export` lines in your shell rc file (`~/.zshrc` or `~/.bashrc`) above the `# queque shell integration` block that `qq init` appended, so the daemon started during shell startup sees them.
+- Put your `export` lines in `~/.zshrc` above the `# queque shell integration` block that `qq init zsh` appended, so the daemon started during shell startup sees them.
 - After changing any of them, restart the daemon from a shell that has the new values:
 
 ```shell

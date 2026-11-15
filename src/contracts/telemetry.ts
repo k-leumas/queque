@@ -46,14 +46,6 @@ export type OsKind = (typeof OS_KINDS)[number];
 export const ARCH_KINDS = ['x64', 'arm64', 'other'] as const;
 export type ArchKind = (typeof ARCH_KINDS)[number];
 
-/**
- * Shells a `??` can come from (Phase 11 D-11). Declared here because this file is the allow
- * list; it repeats SHELL_NAMES in src/contracts/shell.ts on purpose, and the tests pin the two
- * lists equal. No `unknown`: the request schema already defaults a missing shell to zsh.
- */
-export const SHELL_KINDS = ['zsh', 'bash', 'fish'] as const;
-export type ShellKind = (typeof SHELL_KINDS)[number];
-
 export const DISTRO_IDS = [
   'macos',
   'ubuntu',
@@ -90,19 +82,12 @@ const errorFields = {
   provider: providerKind,
 };
 
-/** A shell version cut to major.minor (`5.9`, `5.2`), never a build string, or `unknown`. */
-const majorMinor = z.union([z.string().regex(/^\d{1,2}\.\d{1,2}$/), z.literal('unknown')]);
-
 const environmentFields = {
   os: z.enum(OS_KINDS),
   arch: z.enum(ARCH_KINDS),
   distro: z.enum(DISTRO_IDS),
-  /** The shell the `??` came from (Phase 11 D-11). */
-  shell: z.enum(SHELL_KINDS),
-  /** That shell's major.minor: `5.2`, never `5.2.21(1)-release`; or `unknown`. */
-  shell_version: majorMinor,
-  /** zsh major.minor when shell is zsh, else `unknown`. Kept from phase 10: add, do not rename. */
-  zsh: majorMinor,
+  /** zsh major.minor only: `5.9`, never `5.9-dev-1` or a build string. */
+  zsh: z.union([z.string().regex(/^\d{1,2}\.\d{1,2}$/), z.literal('unknown')]),
   node_major: z.number().int().min(18).max(99),
   zellij: z.boolean(),
 };

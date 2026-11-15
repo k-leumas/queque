@@ -37,8 +37,6 @@ const SHAPE: EnvironmentShape = {
   os: 'linux',
   arch: 'x64',
   distro: 'ubuntu',
-  shell: 'zsh',
-  shell_version: '5.9',
   zsh: '5.9',
   node_major: 24,
   zellij: false,
@@ -242,64 +240,6 @@ describe('reportClientTelemetry gate', () => {
     });
   });
 
-  /** The raw `$BASH_VERSION` of bash 5.2 and an rc path: neither may reach an event. */
-  const BASH_BUILD = '5.2.21(1)-release';
-  const RAW_NEEDLES = ['5.2.21', '(1)-release', 'release', '.bashrc'];
-
-  it('reports a bash request as bash from the default environment shape', async () => {
-    const send = vi.fn(async (_socketPath: string, _events: ClientTelemetryEvent[]) => {});
-    await reportClientTelemetry({
-      socketPath: '/tmp/qq-test.sock',
-      record,
-      env: { BASH_VERSION: BASH_BUILD, QQ_RC_FILE: '/home/alice/.bashrc' },
-      statePath: enabledPath,
-      provider: () => 'claude-cli',
-      send,
-      shell: 'bash',
-      shellVersion: BASH_BUILD,
-    });
-    const events = send.mock.calls[0]?.[1];
-    expect(events?.[0]?.event).toBe('qq_environment');
-    const properties = events?.[0]?.properties as Record<string, unknown> | undefined;
-    expect(properties?.shell).toBe('bash');
-    expect(events?.[0]?.properties).toMatchObject({ shell_version: '5.2', zsh: 'unknown' });
-    const serialized = JSON.stringify(events);
-    for (const needle of RAW_NEEDLES) {
-      expect(serialized).not.toContain(needle);
-    }
-  });
-
-  it('reports zsh from QQ_ZSH_VERSION when the request names no shell', async () => {
-    const send = vi.fn(async (_socketPath: string, _events: ClientTelemetryEvent[]) => {});
-    await reportClientTelemetry({
-      socketPath: '/tmp/qq-test.sock',
-      record,
-      env: { QQ_ZSH_VERSION: '5.9' },
-      statePath: enabledPath,
-      provider: () => 'claude-cli',
-      send,
-    });
-    expect(send.mock.calls[0]?.[1][0]?.properties).toMatchObject({
-      shell: 'zsh',
-      shell_version: '5.9',
-      zsh: '5.9',
-    });
-  });
-
-  it('builds nothing for a bash request when telemetry is off', async () => {
-    const send = vi.fn(async (_socketPath: string, _events: ClientTelemetryEvent[]) => {});
-    await reportClientTelemetry({
-      socketPath: '/tmp/qq-unused.sock',
-      record,
-      env: {},
-      statePath: disabledPath,
-      send,
-      shell: 'bash',
-      shellVersion: BASH_BUILD,
-    });
-    expect(send).not.toHaveBeenCalled();
-  });
-
   it('skips the environment event when the shape is null', async () => {
     const { send, input } = deps(enabledPath);
     await reportClientTelemetry({
@@ -428,12 +368,10 @@ describe('sendTelemetryEvents', () => {
     const providerError = withErrorKind(new Error('ENOENT /home/alice/proj/x'), 'provider_missing');
     const env: NodeJS.ProcessEnv = {
       QQ_ZSH_VERSION: '5.9',
-      BASH_VERSION: '5.2.21(1)-release',
       PWD: request.cwd,
       HOME: '/home/alice',
       USER: 'alice',
       QQ_LBUFFER: request.lbuffer,
-      QQ_RC_FILE: '/home/alice/.bashrc',
     };
 
     await reportClientTelemetry({
@@ -447,8 +385,6 @@ describe('sendTelemetryEvents', () => {
       environment: () =>
         collectEnvironmentShape({
           env,
-          shell: 'bash',
-          shellVersion: '5.2.21(1)-release',
           platform: 'linux',
           arch: 'x64',
           nodeVersion: 'v24.14.1',
@@ -474,41 +410,9 @@ describe('sendTelemetryEvents', () => {
       'qq_query_outcome',
     ]);
     expect(sent.batch[1]?.properties).toMatchObject({ error_kind: 'provider_missing' });
-    const needles = ['secret-token-xyz', '/home/alice', 'kubectl', 'ENOENT', 'alice'];
-    for (const needle of [...needles, '5.2.21', '(1)-release', 'release', '.bashrc']) {
+    for (const needle of ['secret-token-xyz', '/home/alice', 'kubectl', 'ENOENT', 'alice']) {
       expect(body).not.toContain(needle);
     }
     expect(buffer.snapshot().lastSent).toBe(body);
-  });
-
-  // D-11 wire canary: the bytes the daemon POSTs to PostHog for a bash `??`, built by the
-  // default environment branch (nothing injected), carry the enum and major.minor only.
-  it('posts shell bash and major.minor, never the raw bash version, on the wire', async () => {
-    server = await startDaemonServer(socketPath, { telemetry: buffer });
-    await reportClientTelemetry({
-      socketPath,
-      record: { outcome: 'accepted', candidateCount: 1 },
-      env: { BASH_VERSION: '5.2.21(1)-release', QQ_RC_FILE: '/home/alice/.bashrc' },
-      statePath: enabledPath,
-      provider: () => 'claude-cli',
-      shell: 'bash',
-      shellVersion: '5.2.21(1)-release',
-    });
-    await vi.waitFor(() => {
-      const pending = buffer.snapshot().pending;
-      expect(pending).not.toBeNull();
-      expect(JSON.parse(pending as string).batch).toHaveLength(2);
-    });
-    await buffer.flush();
-
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-    const body = String(fetchImpl.mock.calls[0]?.[1]?.body);
-    expect(body).toContain('"shell":"bash"');
-    expect(body).toContain('"shell_version":"5.2"');
-    expect(body).toContain('"zsh":"unknown"');
-    for (const needle of ['5.2.21', '(1)-release', '-release', '.bashrc', 'alice']) {
-      expect(body).not.toContain(needle);
-    }
-    expect(body).not.toMatch(/\d+\.\d+\.\d+\(\d+\)/);
   });
 });

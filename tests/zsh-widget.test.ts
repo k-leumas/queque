@@ -59,8 +59,7 @@ function runZsh(script: string): { stdout: string; stderr: string; status: numbe
 function runInteractiveZsh(script: string): { stdout: string; stderr: string; status: number } {
   const result = spawnSync('zsh', ['-fi', '-c', script], {
     encoding: 'utf8',
-    // Fits the prewarm tests' 10 s marker poll (bug-429).
-    timeout: 15_000,
+    timeout: 5000,
     env: { ...process.env, PATH: process.env.PATH },
   });
   return {
@@ -202,9 +201,7 @@ describe('?? trigger: cancel restores pre-trigger buffer', () => {
   });
 });
 
-// The background ensure call can take seconds to start when the suite runs files in parallel
-// (pre-push hook, bug-429/bug-500), so poll up to 10 s; the loop exits as soon as the marker lands.
-describe('daemon prewarm', { timeout: 20_000 }, () => {
+describe('daemon prewarm', () => {
   it('starts a background ensure call once in interactive shells', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-prewarm-'));
     const devRoot = join(dir, 'repo');
@@ -227,7 +224,7 @@ printf '%s\n' "$*" > "${marker}"
       QQ_DEV_ROOT="${devRoot}"
       PATH="${binDir}:$PATH"
       source ${widgetPath}
-      for i in {1..200}; do
+      for i in {1..50}; do
         [[ -f "${marker}" ]] && break
         sleep 0.05
       done
@@ -257,7 +254,7 @@ printf '%s\n' "$*" > "${marker}"
       unset QQ_DEV_ROOT
       PATH="${binDir}:$PATH"
       source ${widgetPath}
-      for i in {1..200}; do
+      for i in {1..50}; do
         [[ -f "${marker}" ]] && break
         sleep 0.05
       done
@@ -1226,24 +1223,6 @@ describe('QQ_ZSH_VERSION export', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Phase 11 D-02: request.json declares its shell, so zsh no longer relies on the
-// schema default (which exists only for widgets loaded before Phase 11).
-// ---------------------------------------------------------------------------
-
-describe('request.json shell fields', () => {
-  it('declares shell zsh and the jq-escaped zsh version inside the request heredoc', () => {
-    const body = questionWidgetBody();
-    const heredocStart = body.indexOf('cat > "$req_file" <<JSON');
-    const heredocEnd = body.indexOf('\nJSON\n', heredocStart);
-    expect(heredocStart).toBeGreaterThan(0);
-    expect(heredocEnd).toBeGreaterThan(heredocStart);
-    const heredoc = body.slice(heredocStart, heredocEnd);
-    expect(heredoc).toContain('"shell": "zsh",');
-    expect(heredoc).toContain(`"shellVersion": $(printf '%s' "$ZSH_VERSION" | jq -Rs .),`);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // Phase 10 Defect 3: a failed `mktemp -d` (full or unwritable /tmp) must not turn the
 // session dir into `/`, so request.json and the tool handoff never land at the root.
 // ---------------------------------------------------------------------------
@@ -1284,122 +1263,6 @@ describe('mktemp failure', () => {
       expect(stdout).toContain('lbuffer=echo hi\n');
       expect(stdout).toContain('rbuffer= | tail\n');
       expect(stderr).not.toContain('request.json');
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 11-REVIEW WR-03: QQ_RESULT_FILE and the pane size are `local -x`, so the client (and the
-// Zellij pane) inherit them but the user's shell keeps none of them after `??`. A stale
-// exported path would let any later crashing `qq` write into a deleted session dir.
-// ---------------------------------------------------------------------------
-
-describe('session env scope (WR-03)', () => {
-  it('scopes QQ_RESULT_FILE and the pane size to the widget call on both paths', () => {
-    const body = questionWidgetBody();
-    expect(body).not.toMatch(/export QQ_(RESULT_FILE|PANE_WIDTH|PANE_HEIGHT)/);
-    expect(body.match(/local -x QQ_RESULT_FILE=/g)).toHaveLength(2);
-    expect(body).toContain('local -x QQ_PANE_WIDTH="$qq_pane_width"');
-    expect(body).toContain('local -x QQ_PANE_HEIGHT="$qq_pane_height"');
-  });
-
-  it('the inline client gets QQ_RESULT_FILE; the shell has no trace of it afterwards', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'qq-env-scope-'));
-    try {
-      const devRoot = join(dir, 'repo');
-      const cliDir = join(devRoot, 'dist', 'cli');
-      const envOut = join(dir, 'client-env');
-      mkdirSync(cliDir, { recursive: true });
-      writeFileSync(
-        join(cliDir, 'main.js'),
-        `const fs = require('node:fs');
-const args = process.argv.slice(2);
-if (args[0] === 'client') {
-  fs.writeFileSync(${JSON.stringify(envOut)}, String(process.env.QQ_RESULT_FILE));
-  fs.writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
-}
-`,
-      );
-      const script = [
-        'unset ZELLIJ',
-        'QQ_INSTANT_FRAME=0',
-        'QQ_DEV_ROOT="$1"',
-        'zle() { : }',
-        'LBUFFER="ask?"',
-        'RBUFFER=""',
-        'qq-question-widget',
-        // biome-ignore lint/suspicious/noTemplateCurlyInString: zsh source text, not a JS template
-        'print -r -- "after=[${QQ_RESULT_FILE-unset}] env=[$(printenv QQ_RESULT_FILE)]"',
-        'print -r -- "lbuffer=$LBUFFER"',
-      ].join('\n');
-      const { stdout } = runZshArgs(script, [devRoot], {
-        QQ_RESULT_FILE: undefined,
-        QQ_DEBUG_LOG_FILE: undefined,
-      });
-
-      expect(readFileSync(envOut, 'utf8')).toMatch(/^\/tmp\/qq-sess\.[A-Za-z0-9]+\/result\.json$/);
-      expect(stdout).toContain('after=[unset] env=[]\n');
-      expect(stdout).toContain('lbuffer=ask\n');
-    } finally {
-      rmSync(dir, { recursive: true, force: true });
-    }
-  });
-});
-
-// ---------------------------------------------------------------------------
-// 11-REVIEW WR-04: the client's stderr was appended to /tmp/qq-<uid>-debug.log, a fixed path
-// in world-writable /tmp that another local user can pre-create as a symlink or a FIFO.
-// Without QQ_DEBUG_LOG_FILE it now goes to client.err in the 0700 session dir.
-// ---------------------------------------------------------------------------
-
-describe('client stderr target (WR-04)', () => {
-  it('never appends to the fixed /tmp debug log path; both launches use the session dir', () => {
-    const body = questionWidgetBody();
-    // biome-ignore lint/suspicious/noTemplateCurlyInString: shell source text, not a JS template
-    expect(body).not.toContain('/tmp/qq-${UID}-debug.log');
-    expect(body.match(/2>>"\$\{QQ_DEBUG_LOG_FILE:-\$tmpdir\/client\.err\}"/g)).toHaveLength(2);
-  });
-
-  it('the inline client writes its stderr into <session>/client.err', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'qq-client-err-'));
-    try {
-      const devRoot = join(dir, 'repo');
-      const cliDir = join(devRoot, 'dist', 'cli');
-      const errOut = join(dir, 'client-err');
-      const mark = `qq-zsh-stderr-${process.pid}-${Date.now()}`;
-      mkdirSync(cliDir, { recursive: true });
-      writeFileSync(
-        join(cliDir, 'main.js'),
-        `const fs = require('node:fs');
-const path = require('node:path');
-const args = process.argv.slice(2);
-if (args[0] === 'client') {
-  process.stderr.write(${JSON.stringify(`${mark}\n`)});
-  const errFile = path.join(path.dirname(args[args.indexOf('--request-file') + 1]), 'client.err');
-  fs.writeFileSync(${JSON.stringify(errOut)}, fs.existsSync(errFile) ? fs.readFileSync(errFile, 'utf8') : 'missing');
-  fs.writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
-}
-`,
-      );
-      const script = [
-        'unset ZELLIJ',
-        'QQ_INSTANT_FRAME=0',
-        'QQ_DEV_ROOT="$1"',
-        'zle() { : }',
-        'LBUFFER="ask?"',
-        'RBUFFER=""',
-        'qq-question-widget',
-        'print -r -- "lbuffer=$LBUFFER"',
-      ].join('\n');
-      const { stdout } = runZshArgs(script, [devRoot], { QQ_DEBUG_LOG_FILE: undefined });
-
-      expect(stdout).toContain('lbuffer=ask\n');
-      expect(readFileSync(errOut, 'utf8')).toBe(`${mark}\n`);
-      const fixedLog = `/tmp/qq-${process.getuid?.() ?? ''}-debug.log`;
-      const fixedText = existsSync(fixedLog) ? readFileSync(fixedLog, 'utf8') : '';
-      expect(fixedText.includes(mark)).toBe(false);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

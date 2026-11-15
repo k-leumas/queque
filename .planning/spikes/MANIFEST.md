@@ -20,25 +20,6 @@ installed earlier in the same shell session.
 - Don't send the full `$commands` list to the model: about 33× the input tokens and no better
   at avoiding missing tools (spike 003, partial).
 
-### multi-shell-trigger
-Bring the literal `??` trigger to bash and fish with the same feel as zsh: the first `?` inserts
-instantly, the second opens the picker with the text before the cursor as context, and the chosen
-command lands back in the live buffer (Esc restores). The spike decides whether bash ships next
-and whether fish comes back onto the roadmap.
-
-**Requirements:**
-
-- Same single-key approach as zsh: bind `?` and inspect the character before the cursor. No
-  two-key `??` sequence binding (it delays every lone `?` by `keyseq-timeout`).
-- bash 3.2 (macOS `/bin/bash`) must be refused with one clear line, leaving `?` untouched.
-- A pasted `??` must not open the picker.
-- bash support targets 5.0+ (`READLINE_POINT` counts characters from 5.0; bytes in 4.x).
-- The unchanged `qq client` is the picker for every shell; only the buffer read/write and the
-  result read differ per shell. A result read must time out (30 s) so a dead pane can't hang
-  the shell — in fish that needs a guard, because `read -t` there means `--tokenize`.
-- After the picker, every line of a multi-line prompt must be redrawn (bash: `${PS1@P}` head;
-  fish: pad by prompt height).
-
 ## Spikes
 
 | # | Idea | Name | Type | Validates | Verdict | Tags |
@@ -46,7 +27,3 @@ and whether fish comes back onto the roadmap.
 | 001 | installed-only-commands | zsh-commands-handoff | standard | Given a live zsh session, when the ?? widget hands $commands to the client, then the list is current and costs < 10 ms | VALIDATED | zsh, zle, freshness, startup-latency |
 | 002 | installed-only-commands | candidate-binary-check | standard | Given a model-suggested command, when every program it runs is extracted and classified, then installed/builtin/missing are correct, fast, and never hang | VALIDATED | shell-parsing, tokenizer, flagging, robustness |
 | 003 | installed-only-commands | prompt-steering | comparison | Given real ?? queries, when the prompt carries nothing / installed∩catalog / full list / full list cached, then compare missing-tool rate, steering, tokens, latency | PARTIAL | prompt, steering, tokens, prompt-caching |
-| 004 | multi-shell-trigger | bash-readline-trigger | standard | Given interactive bash in a pty, when the user types `foo??` (emacs/vi-insert, multibyte, mid-line, pasted), then the trigger fires correctly and writes back to READLINE_LINE | VALIDATED (bash ≥5.0; 4.x untested) | bash, readline, bind-x, multibyte, bracketed-paste |
-| 006 | multi-shell-trigger | fish-commandline-trigger | standard | Given interactive fish 4.x, when the user types `foo??` (default/vi insert, multibyte, multi-line, pasted), then bind + commandline fire and write back correctly | VALIDATED (fish 4.9; 3.x untested) | fish, commandline, bind, multibyte, paste |
-| 005 | multi-shell-trigger | bash-tui-handoff | standard | Given the trigger fires in bind -x, when the real qq Ink picker runs (inline + Zellij), then keys reach it, the pick lands in READLINE_LINE, Esc restores, the prompt redraws | VALIDATED (bash 5.3, Zellij by hand) | bash, bind-x, ink, tty, zellij, fifo, tool-handoff |
-| 007 | multi-shell-trigger | fish-tui-handoff | standard | Given the fish binding fires, when the Ink picker runs (inline + Zellij), then the pick lands via commandline, Esc restores, repaint is clean | VALIDATED (fish 4.9, Zellij by hand after FIFO fix) | fish, ink, tty, zellij, fifo, repaint |

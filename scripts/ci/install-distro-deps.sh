@@ -1,8 +1,7 @@
 #!/bin/sh
-# Installs what QueQue needs on a fresh Linux distro image: git, zsh, bash, jq, expect,
-# procps, su, tmux (the shell PTY harness) and Node 24 (plus pnpm unless --no-pnpm).
-# Shared by the CI distro legs, scripts/smoke-distro-runner.sh and local runs. POSIX sh,
-# runs as root.
+# Installs what QueQue needs on a fresh Linux distro image: git, zsh, jq, expect,
+# procps, su and Node 24 (plus pnpm unless --no-pnpm). Shared by the CI distro legs,
+# scripts/smoke-distro-runner.sh and local runs. POSIX sh, runs as root.
 #
 # Usage: sh scripts/ci/install-distro-deps.sh [--no-pnpm]
 #
@@ -23,7 +22,7 @@ for arg in "$@"; do
   case "$arg" in
     --no-pnpm) WITH_PNPM=0 ;;
     -h | --help)
-      sed -n '2,18p' "$0"
+      sed -n '2,17p' "$0"
       exit 0
       ;;
     *)
@@ -94,19 +93,18 @@ DISTRO_ID=${ID:-unknown}
 
 case "$DISTRO_ID" in
   alpine)
-    # The alpine base image has no bash (the PTY harness runs the bash adapter legs).
-    retry apk add --no-cache git zsh bash jq expect procps tmux nodejs npm || die 3 "apk add failed"
+    retry apk add --no-cache git zsh jq expect procps nodejs npm || die 3 "apk add failed"
     ;;
   ubuntu | debian)
     export DEBIAN_FRONTEND=noninteractive
     retry apt-get update || die 3 "apt-get update failed"
     retry apt-get install -y --no-install-recommends \
-      git ca-certificates curl xz-utils zsh jq expect procps tmux || die 3 "apt-get install failed"
+      git ca-certificates curl xz-utils zsh jq expect procps || die 3 "apt-get install failed"
     install_node_tarball
     ;;
   fedora)
     # util-linux provides su, which newer fedora:latest base images no longer ship.
-    retry dnf -y install git-core zsh jq expect procps-ng shadow-utils util-linux tmux nodejs24 nodejs24-npm ||
+    retry dnf -y install git-core zsh jq expect procps-ng shadow-utils util-linux nodejs24 nodejs24-npm ||
       die 3 "dnf install failed"
     if ! command -v node >/dev/null 2>&1; then
       ln -sf "$(command -v node-24)" /usr/local/bin/node || die 3 "node-24 not found"
@@ -115,7 +113,7 @@ case "$DISTRO_ID" in
     ;;
   arch)
     # Rolling distro: partial upgrades are unsupported, so -Syu.
-    retry pacman -Syu --noconfirm --needed git zsh jq expect procps-ng tmux nodejs-lts-krypton npm ||
+    retry pacman -Syu --noconfirm --needed git zsh jq expect procps-ng nodejs-lts-krypton npm ||
       die 3 "pacman install failed"
     ;;
   *)

@@ -22,7 +22,7 @@ import {
   type ModelTurn,
 } from './structured-output.js';
 
-/** Same budget as Claude: the shell adapter reads the FIFO for 30s and the IPC client waits 26s. */
+/** Same budget as Claude: zsh reads the FIFO for 30s and the IPC client waits 26s. */
 export const OLLAMA_TIMEOUT_MS = 25_000;
 
 /**

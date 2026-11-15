@@ -8,7 +8,7 @@ QueQue is built around registries so new shells, providers, context sources, and
 |----------|----------|---------|------------------|
 | Context providers | `registerContextProvider()` | `listContextProviders()` | `git-context`, `filesystem-context` |
 | Provider backends | `registerProviderBackend()` | `getProviderAdapter()` | `claude` (SDK), `claude-cli` (Claude default composite), `ollama` (beta), `openai` (beta) |
-| Shell adapters | `registerShellAdapter()` | `listShellAdapters()` | `zsh`, `bash` (fish planned; contract: [shell/README.md](../shell/README.md)) |
+| Shell adapters | `registerShellAdapter()` | `listShellAdapters()` | `zsh` |
 | Storage hooks | `registerStorageHook()` | `listStorageHooks()` | `noop` (no persistence) |
 
 Built-ins wire up in `src/registry/bootstrap.ts`. Production code should resolve through registries — not import adapters directly.
@@ -80,12 +80,10 @@ Suggestions favour tools that are installed, whichever provider answers.
 - In-TUI refinement loop for low-confidence queries
 - Workaround today: `Esc` → edit query → `??` again
 
-### Shell adapters (Phase 10, Phase 11)
+### Cross-OS zsh
 
-- One adapter script per shell: `shell/zsh/queque.zsh` and `shell/bash/queque.bash` (bash 5.0+); fish follows in Phase 12
-- `qq init` detects the shell and resolves its adapter from Homebrew (`/opt/homebrew`, `/usr/local`, Linuxbrew) or the npm package; per-shell facts live in `src/shared/shell-registry.ts`
-- Shared seams: `shell` and `shellVersion` in the request, `SHELL_SPECS`, the `SHELL_KINDS` telemetry allow list, per-shell doctor checks, the instant-frame spec and the `tools.pending` handoff marker
-- A new shell follows the adapter contract in [shell/README.md](../shell/README.md) and must pass `tests/shell-names-invariant.test.ts`
+- `qq init zsh` resolves `queque.zsh` from Homebrew (`/opt/homebrew`, `/usr/local`, Linuxbrew) or npm package
+- Future: additional shell adapters via `registerShellAdapter()`
 
 ### Plugins (post-MVP)
 
