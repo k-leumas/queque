@@ -430,6 +430,14 @@ _qq_question() {
   fi
   _qq_log "qq_cmd=${qq_cmd[*]}"
 
+  # jq writes request.json and reads the result. Without it the request write fails after the
+  # paint, so check first and say why (WR-02). type -P, like `command jq`, ignores functions.
+  if ! type -P jq >/dev/null 2>&1; then
+    _qq_log "jq not found"
+    printf '%s\n' 'queque: jq not found — install jq (see: qq doctor)' >&2
+    return 0
+  fi
+
   # Instant first frame (D-04): paint the header and the loading row now, before mktemp, jq
   # and Node, so the modal shows something at once (zsh paints at the same point). The Zellij
   # pane gets its frame through a file instead. QQ_ORIG_LBUFFER is this adapter's name for the

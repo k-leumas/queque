@@ -8943,6 +8943,25 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-15T10:25:00Z"
+    },
+    {
+      "id": "bug-541",
+      "timestamp": "2026-11-15T10:35:00Z",
+      "error_message": "11-REVIEW WR-02: with jq missing, bash ?? flashed the instant frame, swallowed both ? and said nothing (reason only in the debug log)",
+      "file": "shell/bash/queque.bash",
+      "root_cause": "the instant frame is painted before jq runs; the failed `jq -n` request write cleared the frame and returned silently, while every other fixable setup failure (qq not found, mktemp) prints one stderr line",
+      "fix": "check `type -P jq` right after the qq lookup and before the paint; print `queque: jq not found \u2014 install jq (see: qq doctor)` and return with the line restored. bash-widget b25 (PATH without jq, a jq function defined) and the b8 ordering pin",
+      "tags": [
+        "bash",
+        "jq",
+        "silent-failure",
+        "setup-failure",
+        "phase-11",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T10:35:00Z"
     }
   ]
 }

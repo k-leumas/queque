@@ -950,3 +950,7 @@
 | 02:22 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/bug-wr01.json | — | ~288 |
 | 10:25 | fix(11) WR-01: bash locale fallback wrapped in { } 2>/dev/null, no setlocale warning; b24 added; full suite 1850 green | shell/bash/queque.bash, tests/bash-widget.test.ts | fixed | ~3k |
 | 02:23 | Session end: 12 writes across 11 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 13 reads | ~64303 tok |
+| 02:24 | Edited tests/bash-widget.test.ts | modified must() | ~323 |
+| 02:24 | Edited shell/bash/queque.bash | expanded (+8 lines) | ~110 |
+| 02:24 | Edited tests/bash-widget.test.ts | 6→9 lines | ~149 |
+| 10:35 | fix(11) WR-02: bash ?? checks type -P jq before the instant frame, prints one stderr line; b25 + b8 order pin; full suite 1851 green | shell/bash/queque.bash, tests/bash-widget.test.ts | fixed | ~3k |

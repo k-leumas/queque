@@ -14,6 +14,7 @@
  *   b5  insertion only (the bash mirror of the zsh CMD-04 checks)
  *   b6  a user's `set -e` survives the trigger
  *   b7  qq missing: one message, line restored
+ *   b25 jq missing: one message before any paint, line restored, no client
  *   b8  instant frame placement: lookup, paint (outside Zellij), then mktemp (mirrors zsh z10)
  *   b9  instant frame kill switch, no paint without a terminal, pane file, the two clears
  *   b10 tool handoff files: PATH tools, builtins, public functions and aliases (D-05)
@@ -303,6 +304,26 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
     expect(run.stderr).toContain('queque: qq not found — run: qq init bash && source ~/.bashrc');
     expect(run.stdout).toContain('line=[ask me tail] point=6');
   });
+
+  it('b25: jq missing: one line on stderr before any paint, line kept, no client (WR-02)', () => {
+    // A PATH with a qq but no jq (macOS ships /usr/bin/jq, so no system dirs either). A jq
+    // shell function must not count: the adapter always runs `command jq`.
+    const bin = mkdtempSync(join(scratch, 'bin-nojq-'));
+    const marker = join(scratch, 'b25-client-started');
+    writeFileSync(join(bin, 'qq'), `#!/bin/sh\n: > '${marker}'\n`, { mode: 0o755 });
+    const run = runInteractiveBash(
+      `${PAINT_PROBE}
+jq() { :; }
+READLINE_LINE='ask? tail'; READLINE_POINT=4
+_qq_question; st=$?
+echo "status=$st line=[$READLINE_LINE] point=$READLINE_POINT"`,
+      cleanEnv({ PATH: bin }),
+    );
+    expect(run.stderr).toContain('queque: jq not found — install jq (see: qq doctor)');
+    expect(run.stdout).not.toContain('PAINT[');
+    expect(run.stdout).toContain('status=0 line=[ask tail] point=3');
+    expect(existsSync(marker)).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -345,11 +366,14 @@ describe('bash adapter: instant frame placement', () => {
     const body = questionBody();
     const lookup = body.indexOf('type -P qq');
     const notFound = body.indexOf('queque: qq not found');
+    const jqMissing = body.indexOf('queque: jq not found');
     const paint = body.indexOf('_qq_paint_inline_instant_frame "$QQ_ORIG_LBUFFER"');
     const mktemp = body.indexOf('mktemp -d');
     expect(lookup).toBeGreaterThan(0);
     expect(notFound).toBeGreaterThan(lookup);
-    expect(paint).toBeGreaterThan(notFound);
+    // The jq check runs before the paint, so a missing jq has no frame to clear (WR-02).
+    expect(jqMissing).toBeGreaterThan(notFound);
+    expect(paint).toBeGreaterThan(jqMissing);
     expect(mktemp).toBeGreaterThan(paint);
     // Painted only when ZELLIJ is empty (the Zellij pane gets its frame through a file).
     expect(body).toMatch(
