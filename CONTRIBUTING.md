@@ -109,8 +109,6 @@ tail -f /tmp/qq-debug.log
 
 If you want to change the location, point `QQ_DEBUG_LOG_FILE` somewhere else before sourcing your shell config.
 
-The shell adapters also send the client's raw stderr (crash messages) to `QQ_DEBUG_LOG_FILE` when it is set. Without it, that stderr goes to `client.err` in the private session dir and is removed with it, so set `QQ_DEBUG_LOG_FILE` when you chase a client crash.
-
 The interactive shell hook also prewarms the daemon once per shell session, so the first `??` does not pay the full startup cost.
 
 ## Shell Adapter Tests (PTY Harness)
@@ -121,7 +119,7 @@ They need zsh 5.0+, bash 5.0+, `jq` and `tmux`. macOS ships `/bin/bash` 3.2, so 
 
 | Variable | Description |
 |---|---|
-| `QQ_TEST_RESULT_MODE` | Dev and test only. Makes `qq client` behave as if `--result-mode` were passed: `cancel` or `replace-buffer-fixture` (writes the typed text back, or `echo hello` for an empty line). Any other value, empty included, is ignored (the real `llm` path). The `--result-mode` flag wins. Never set it in a real shell. |
+| `QQ_TEST_RESULT_MODE` | Dev and test only. Makes `qq client` behave as if `--result-mode` were passed: `cancel`, `replace-buffer-fixture` (writes the typed text back, or `echo hello` for an empty line) or `llm`. The `--result-mode` flag wins. Never set it in a real shell. |
 | `QQ_TEST_BASH` | Absolute path of the bash the tests use (otherwise the first bash 5.0+ on `PATH`, then in the Homebrew, MacPorts and system directories). |
 | `QQ_TEST_ZSH` | Absolute path of the zsh the tests use, found the same way. |
 

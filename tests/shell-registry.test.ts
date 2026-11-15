@@ -12,7 +12,6 @@ import {
   resolveAdapterPath,
   SHELL_SPECS,
   shippedShellNames,
-  stripShellComments,
   versionBelow,
   ZSH_FAIL_BELOW,
   ZSH_WARN_BELOW,
@@ -161,17 +160,6 @@ describe('loginFileSourcesBashrc()', () => {
     expect(loginFileSourcesBashrc(reader({}))).toEqual({ file: null, sourcesBashrc: false });
   });
 
-  it('does not count a commented-out source line (WR-06)', () => {
-    for (const text of ['# . ~/.bashrc\n', '  #source ~/.bashrc\n', 'echo # . ~/.bashrc\n']) {
-      expect(loginFileSourcesBashrc(reader({ '.bash_profile': text })), text).toEqual({
-        file: '~/.bash_profile',
-        sourcesBashrc: false,
-      });
-    }
-    const trailing = '[ -f ~/.bashrc ] && . ~/.bashrc  # load the interactive config\n';
-    expect(loginFileSourcesBashrc(reader({ '.bash_profile': trailing })).sourcesBashrc).toBe(true);
-  });
-
   it('matches the usual source spellings', () => {
     for (const line of [
       '. ~/.bashrc',
@@ -190,19 +178,6 @@ describe('loginFileSourcesBashrc()', () => {
     for (const line of ['# see ~/.bashrc', 'cp ~/.bashrc ~/.bashrc.bak', 'echo ~/.bashrc.d']) {
       expect(BASHRC_SOURCE_RE.test(line), line).toBe(false);
     }
-  });
-});
-
-describe('stripShellComments() (WR-06)', () => {
-  it('drops whole-line and trailing comments, keeps quoted and mid-word #', () => {
-    expect(stripShellComments('# a\n  # b\nx=1 # c\ny;# d\n')).toBe('\n  \nx=1 \ny;\n');
-    expect(stripShellComments(`echo "a # b" 'c # d' e#f\n`)).toBe(`echo "a # b" 'c # d' e#f\n`);
-    expect(stripShellComments('echo "it\\"s # x" # y')).toBe('echo "it\\"s # x" ');
-  });
-
-  it('keeps the line count, so line-anchored patterns still see one line per line', () => {
-    const text = 'a\n# b\nc\n';
-    expect(stripShellComments(text).split('\n')).toHaveLength(text.split('\n').length);
   });
 });
 

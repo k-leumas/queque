@@ -14,7 +14,6 @@
  *   b5  insertion only (the bash mirror of the zsh CMD-04 checks)
  *   b6  a user's `set -e` survives the trigger
  *   b7  qq missing: one message, line restored
- *   b25 jq missing: one message before any paint, line restored, no client
  *   b8  instant frame placement: lookup, paint (outside Zellij), then mktemp (mirrors zsh z10)
  *   b9  instant frame kill switch, no paint without a terminal, pane file, the two clears
  *   b10 tool handoff files: PATH tools, builtins, public functions and aliases (D-05)
@@ -31,9 +30,6 @@
  *   b20 Zellij: a pane that never answers gives the prompt back after the read timeout
  *   b22 Zellij: a failed mkfifo restores the line at once and launches nothing
  *   b23 Zellij: a zellij run that exits non-zero restores the line at once (sentinel line)
- *   b26 QQ_RESULT_FILE and the pane size reach the client but are not left in the shell
- *   b27 the client stderr goes to client.err in the session dir (QQ_DEBUG_LOG_FILE when set)
- *   b24 no UTF-8 locale: the instant-frame locale fallback prints no setlocale warning
  *
  * Every shell starts without ZELLIJ* or TMUX, and with QQ_DAEMON_PREWARMED=1 so sourcing never
  * starts a real daemon (b17 clears it). A missing bash 5 or jq skips locally and fails when CI
@@ -306,26 +302,6 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
     expect(run.stderr).toContain('queque: qq not found — run: qq init bash && source ~/.bashrc');
     expect(run.stdout).toContain('line=[ask me tail] point=6');
   });
-
-  it('b25: jq missing: one line on stderr before any paint, line kept, no client (WR-02)', () => {
-    // A PATH with a qq but no jq (macOS ships /usr/bin/jq, so no system dirs either). A jq
-    // shell function must not count: the adapter always runs `command jq`.
-    const bin = mkdtempSync(join(scratch, 'bin-nojq-'));
-    const marker = join(scratch, 'b25-client-started');
-    writeFileSync(join(bin, 'qq'), `#!/bin/sh\n: > '${marker}'\n`, { mode: 0o755 });
-    const run = runInteractiveBash(
-      `${PAINT_PROBE}
-jq() { :; }
-READLINE_LINE='ask? tail'; READLINE_POINT=4
-_qq_question; st=$?
-echo "status=$st line=[$READLINE_LINE] point=$READLINE_POINT"`,
-      cleanEnv({ PATH: bin }),
-    );
-    expect(run.stderr).toContain('queque: jq not found — install jq (see: qq doctor)');
-    expect(run.stdout).not.toContain('PAINT[');
-    expect(run.stdout).toContain('status=0 line=[ask tail] point=3');
-    expect(existsSync(marker)).toBe(false);
-  });
 });
 
 // ---------------------------------------------------------------------------
@@ -368,14 +344,11 @@ describe('bash adapter: instant frame placement', () => {
     const body = questionBody();
     const lookup = body.indexOf('type -P qq');
     const notFound = body.indexOf('queque: qq not found');
-    const jqMissing = body.indexOf('queque: jq not found');
     const paint = body.indexOf('_qq_paint_inline_instant_frame "$QQ_ORIG_LBUFFER"');
     const mktemp = body.indexOf('mktemp -d');
     expect(lookup).toBeGreaterThan(0);
     expect(notFound).toBeGreaterThan(lookup);
-    // The jq check runs before the paint, so a missing jq has no frame to clear (WR-02).
-    expect(jqMissing).toBeGreaterThan(notFound);
-    expect(paint).toBeGreaterThan(jqMissing);
+    expect(paint).toBeGreaterThan(notFound);
     expect(mktemp).toBeGreaterThan(paint);
     // Painted only when ZELLIJ is empty (the Zellij pane gets its frame through a file).
     expect(body).toMatch(
@@ -494,21 +467,6 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
       expect(run.stderr).toContain('queque: cannot create a temp dir in /tmp');
       expect(run.stdout).toContain('line=[ask tail] point=3');
     });
-
-    it('b24: with no UTF-8 locale the fallback prints no setlocale warning (WR-01)', () => {
-      // Both fallback locales renamed to names no host has: the real function then runs the
-      // path a glibc image without C.UTF-8 and en_US.UTF-8 takes.
-      const run = runInteractiveBash(
-        `source <(declare -f _qq_instant_frame | command sed 's/C\\.UTF-8/zz_ZZ.UTF-8/; s/en_US\\.UTF-8/yy_YY.UTF-8/')
-echo "renamed=$(declare -f _qq_instant_frame | command grep -c -e zz_ZZ -e yy_YY)"
-_qq_instant_frame 'echo hi' 78; st=$?
-echo "status=$st frame=\${#REPLY}"`,
-        cleanEnv({ LC_ALL: 'C', LC_CTYPE: 'C', LANG: 'C' }),
-      );
-      expect(run.stdout).toContain('renamed=2\n');
-      expect(run.stdout).toMatch(/status=0 frame=[1-9]/);
-      expect(run.stderr.trim()).toBe('');
-    });
   },
 );
 
@@ -562,10 +520,7 @@ function triggerPath(bin: string): string {
 
 /**
  * A QQ_DEV_ROOT whose dist/cli/main.js stands in for the client: QQ_T_MODE=crash exits 3
- * without a result, anything else writes `{"kind":"cancel"}` to --result-file. With
- * QQ_T_ENV_OUT set it first records the QQ_RESULT_FILE it inherited into that file. With
- * QQ_T_ERR_MARK set it writes that line to stderr, then copies <session>/client.err (or
- * `missing`) into QQ_T_ERR_OUT.
+ * without a result, anything else writes `{"kind":"cancel"}` to --result-file.
  */
 function fakeDevRoot(): string {
   const root = mkdtempSync(join(scratch, 'devroot-'));
@@ -573,13 +528,6 @@ function fakeDevRoot(): string {
   writeFileSync(
     join(root, 'dist', 'cli', 'main.js'),
     `const args = process.argv.slice(2);
-if (process.env.QQ_T_ENV_OUT) require('node:fs').writeFileSync(process.env.QQ_T_ENV_OUT, String(process.env.QQ_RESULT_FILE));
-if (process.env.QQ_T_ERR_MARK) {
-  const fs = require('node:fs');
-  process.stderr.write(process.env.QQ_T_ERR_MARK + '\\n');
-  const errFile = require('node:path').join(require('node:path').dirname(args[args.indexOf('--request-file') + 1]), 'client.err');
-  fs.writeFileSync(process.env.QQ_T_ERR_OUT, fs.existsSync(errFile) ? fs.readFileSync(errFile, 'utf8') : 'missing');
-}
 if (process.env.QQ_T_MODE === 'crash') process.exit(3);
 require('node:fs').writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
 `,
@@ -785,70 +733,6 @@ command sleep 0.5`,
       expectCleanExit('crash');
     });
 
-    it('b26: QQ_RESULT_FILE reaches the inline client but not the shell after ?? (WR-03)', () => {
-      const envOut = join(scratch, 'b26-inline-env');
-      const log = join(scratch, 'b26-inline.log');
-      const run = runInteractiveBash(
-        `READLINE_LINE='ask?'; READLINE_POINT=4
-_qq_question
-echo "after=[\${QQ_RESULT_FILE-unset}] env=[$(command printenv QQ_RESULT_FILE)]"`,
-        cleanEnv({
-          PATH: triggerPath(fakeBin({})),
-          QQ_DEV_ROOT: fakeDevRoot(),
-          QQ_T_ENV_OUT: envOut,
-          QQ_DEBUG_LOG_FILE: log,
-        }),
-      );
-      const session = sessionDirFromLog(log);
-      expect(session).not.toBe('');
-      expect(readFileSync(envOut, 'utf8')).toBe(`${session}/result.json`);
-      expect(run.stdout).toContain('after=[unset] env=[]\n');
-    });
-
-    it('b27: client stderr goes to the 0700 session dir, never a fixed /tmp path (WR-04)', () => {
-      const body = questionBody();
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: shell source text, not a JS template
-      expect(body).not.toContain('/tmp/qq-${UID}-debug.log');
-      // biome-ignore lint/suspicious/noTemplateCurlyInString: shell source text, not a JS template
-      expect(body).toContain('local qq_log_file=${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}');
-      // Both launches (the Zellij launcher and the inline client) use that one variable.
-      expect(body.match(/2>>"\$qq_log_file"/g)).toHaveLength(2);
-
-      const mark = `qq-b27-stderr-${process.pid}-${Date.now()}`;
-      const errOut = join(scratch, 'b27-client-err');
-      const run = runInteractiveBash(
-        `READLINE_LINE='ask?'; READLINE_POINT=4
-_qq_question
-echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
-        cleanEnv({
-          PATH: triggerPath(fakeBin({})),
-          QQ_DEV_ROOT: fakeDevRoot(),
-          QQ_T_ERR_MARK: mark,
-          QQ_T_ERR_OUT: errOut,
-        }),
-      );
-      expect(run.stdout).toContain('line=[ask] point=3');
-      expect(readFileSync(errOut, 'utf8')).toBe(`${mark}\n`);
-      const fixedLog = `/tmp/qq-${process.getuid?.() ?? ''}-debug.log`;
-      const fixedText = existsSync(fixedLog) ? readFileSync(fixedLog, 'utf8') : '';
-      expect(fixedText.includes(mark)).toBe(false);
-
-      // QQ_DEBUG_LOG_FILE still collects the client's stderr when a developer sets it.
-      const log = join(scratch, 'b27-debug.log');
-      runInteractiveBash(
-        `READLINE_LINE='ask?'; READLINE_POINT=4
-_qq_question`,
-        cleanEnv({
-          PATH: triggerPath(fakeBin({})),
-          QQ_DEV_ROOT: fakeDevRoot(),
-          QQ_T_ERR_MARK: `${mark}-log`,
-          QQ_T_ERR_OUT: join(scratch, 'b27-client-err-log'),
-          QQ_DEBUG_LOG_FILE: log,
-        }),
-      );
-      expect(readFileSync(log, 'utf8')).toContain(`${mark}-log\n`);
-    });
-
     /** b21: one trigger with the writer active and the QQ_DEV_ROOT client in `mode`. */
     function expectCleanExit(mode: 'cancel' | 'crash'): void {
       const root = fakeDevRoot();
@@ -921,7 +805,7 @@ interface ZellijRun {
 /** One `??` on `find qqsecret files?` with the fake zellij, ZELLIJ=0 unless `env` unsets it. */
 function runZellijTrigger(
   mode: 'reply' | 'silent' | 'fail',
-  opts: { bin?: string; env?: NodeJS.ProcessEnv; before?: string; after?: string } = {},
+  opts: { bin?: string; env?: NodeJS.ProcessEnv; before?: string } = {},
 ): ZellijRun {
   const out = mkdtempSync(join(scratch, 'zellij-out-'));
   const root = fakeDevRoot();
@@ -935,7 +819,6 @@ _qq_question
 t1=$EPOCHREALTIME
 echo "line=[$READLINE_LINE] point=$READLINE_POINT"
 echo "ms=$(( (\${t1/./} - \${t0/./}) / 1000 ))"
-${opts.after ?? ''}
 history 1`,
     cleanEnv({
       PATH: triggerPath(opts.bin ?? fakeBin({})),
@@ -1009,22 +892,6 @@ describe.skipIf(bash5 === null || jq === null)(
       expect(fileLines(join(z.out, 'result-file-env'))).toEqual([`${z.session}/result.fifo`]);
       expect(fileLines(join(z.out, 'pane-env'))).toEqual(['80', '24']);
       expect(pollUntil(() => !existsSync(z.session), 3000)).toBe(true);
-    });
-
-    it('b26: the pane sees QQ_RESULT_FILE and the size; the shell keeps none of it (WR-03)', () => {
-      const after = `echo "after=[\${QQ_RESULT_FILE-unset}|\${QQ_PANE_WIDTH-unset}|\${QQ_PANE_HEIGHT-unset}]"
-echo "env=[$(command printenv QQ_RESULT_FILE)|$(command printenv QQ_PANE_WIDTH)|$(command printenv QQ_PANE_HEIGHT)]"`;
-      const z = runZellijTrigger('reply', { after });
-      expect(fileLines(join(z.out, 'result-file-env'))).toEqual([`${z.session}/result.fifo`]);
-      expect(fileLines(join(z.out, 'pane-env'))).toEqual(['80', '24']);
-      expect(z.run.stdout).toContain('after=[unset|unset|unset]\n');
-      expect(z.run.stdout).toContain('env=[||]\n');
-
-      // A width the user exported stays exactly as it was.
-      const kept = runZellijTrigger('reply', { after, env: { QQ_PANE_WIDTH: '100' } });
-      expect(fileLines(join(kept.out, 'pane-env'))).toEqual(['100', '24']);
-      expect(kept.run.stdout).toContain('after=[unset|100|unset]\n');
-      expect(kept.run.stdout).toContain('env=[|100|]\n');
     });
 
     it('b19: QQ_PANE_WIDTH=100 gives --width 100 and a 98-column pane frame', () => {

@@ -31,27 +31,9 @@ function parseResultMode(mode: string | undefined): ResultMode {
   return 'cancel';
 }
 
-/** The QQ_TEST_RESULT_MODE values that may change the result: the fixture modes. */
-const TEST_ENV_MODES: ReadonlySet<string> = new Set(['cancel', 'replace-buffer-fixture']);
-
-/**
- * The flag wins and keeps parseResultMode's rules. QQ_TEST_RESULT_MODE is a dev/test-only
- * fallback (see CONTRIBUTING.md), read here so no shell adapter carries test code. Only a
- * fixture name counts: an empty or stale value leaked into a real shell must not turn every
- * `??` into a silent cancel (11-REVIEW WR-05).
- */
-export function resolveResultMode(
-  flag: string | undefined,
-  envMode: string | undefined,
-): ResultMode {
-  if (flag !== undefined) return parseResultMode(flag);
-  if (envMode === undefined || TEST_ENV_MODES.has(envMode)) return parseResultMode(envMode);
-  void appendDebugLog('client', `ignored QQ_TEST_RESULT_MODE "${envMode}" (not a fixture mode)`);
-  return 'llm';
-}
-
 export async function clientCommand(options: ClientCommandOptions): Promise<void> {
-  const resultMode = resolveResultMode(options.resultMode, process.env.QQ_TEST_RESULT_MODE);
+  /** QQ_TEST_RESULT_MODE: dev/test-only fallback read here so no shell adapter carries test code (see CONTRIBUTING.md); the flag wins. */
+  const resultMode = parseResultMode(options.resultMode ?? process.env.QQ_TEST_RESULT_MODE);
 
   void appendDebugLog('client', 'command start', {
     requestFile: options.requestFile,

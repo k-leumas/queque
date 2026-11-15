@@ -20,13 +20,8 @@ describe('hasShellIntegration', () => {
     );
   });
 
-  it('needs the source line: the marker comment alone is not an integration (WR-06)', () => {
-    // init always writes the marker and the source line together; a marker with no active
-    // source line means the user deleted or commented out the line that loads QueQue.
-    expect(hasShellIntegration('# queque shell integration\n', 'zsh')).toBe(false);
-    expect(hasShellIntegration('# queque shell integration\nsource "/p/queque.zsh"\n', 'zsh')).toBe(
-      true,
-    );
+  it('returns true when the integration marker comment is present', () => {
+    expect(hasShellIntegration('# queque shell integration\n', 'zsh')).toBe(true);
   });
 
   for (const shell of ['zsh', 'bash'] as const) {
@@ -53,25 +48,6 @@ describe('hasShellIntegration', () => {
         expect(hasShellIntegration(`# see queque.${shell}\n`, shell)).toBe(false);
         expect(hasShellIntegration(`cp ${p} /tmp\n`, shell)).toBe(false);
         expect(hasShellIntegration(`source "${p}.bak"\n`, shell)).toBe(false);
-      });
-
-      it('ignores a commented-out source line (WR-06)', () => {
-        for (const line of [
-          `# source "${p}"`,
-          `#source ${p}`,
-          `   # . ${p}`,
-          `# queque shell integration\n# source "${p}"`,
-          `echo hi # source "${p}"`,
-          `true;# . ${p}`,
-        ]) {
-          expect(hasShellIntegration(`${line}\n`, shell), line).toBe(false);
-        }
-      });
-
-      it('still counts a source line with a trailing comment or a # inside its path', () => {
-        expect(hasShellIntegration(`source "${p}" # queque\n`, shell)).toBe(true);
-        expect(hasShellIntegration(`source "/opt/a #b/queque.${shell}"\n`, shell)).toBe(true);
-        expect(hasShellIntegration(`source /opt/a#b/queque.${shell}\n`, shell)).toBe(true);
       });
     });
   }
@@ -209,20 +185,6 @@ describe('runInit() detection and rc writes', () => {
     expect(f.files.get(BASHRC)).toBe(after);
     expect(f.appended).toEqual([BASHRC]);
     expect(f.err).toContain('queque: shell integration already present in ~/.bashrc');
-  });
-
-  it('a commented-out integration in ~/.bashrc is added again (WR-06)', () => {
-    const bashrc = '\n# queque shell integration\n# source "/pkg/shell/bash/queque.bash"\n';
-    const f = fakeInit({
-      env: { SHELL: '/usr/local/bin/bash' },
-      files: { [BASHRC]: bashrc },
-      versions: { '/usr/local/bin/bash': '5.2.21(1)-release' },
-    });
-    expect(runInit(undefined, f.deps)).toEqual({ exitCode: 0, wrote: true });
-    expect(f.files.get(BASHRC)).toBe(
-      `${bashrc}\n# queque shell integration\nsource "${BASH_ADAPTER}"\n`,
-    );
-    expect(f.err).not.toContain('queque: shell integration already present in ~/.bashrc');
   });
 
   it('a dot-source line already in ~/.bashrc is not duplicated', () => {

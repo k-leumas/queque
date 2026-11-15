@@ -123,13 +123,11 @@ _qq_instant_frame() {
   # would come out short (› and … are 3 bytes) and a typed multibyte character could be cut in
   # half. Count characters in a UTF-8 locale for this function only (`local` restores it on
   # return). If none exists the assignment changes nothing; its warning goes to /dev/null.
-  # `local` is a builtin, so its redirect covers it. A bare assignment ignores its own
-  # redirect, so the second one sits in a `{ }` group (WR-01).
   local probe='›'
   if (( ${#probe} != 1 )); then
     local LC_ALL=C.UTF-8 2>/dev/null
     if (( ${#probe} != 1 )); then
-      { LC_ALL=en_US.UTF-8; } 2>/dev/null
+      LC_ALL=en_US.UTF-8 2>/dev/null
     fi
   fi
   local lbuffer=${1//[[:cntrl:]]/}
@@ -430,14 +428,6 @@ _qq_question() {
   fi
   _qq_log "qq_cmd=${qq_cmd[*]}"
 
-  # jq writes request.json and reads the result. Without it the request write fails after the
-  # paint, so check first and say why (WR-02). type -P, like `command jq`, ignores functions.
-  if ! type -P jq >/dev/null 2>&1; then
-    _qq_log "jq not found"
-    printf '%s\n' 'queque: jq not found — install jq (see: qq doctor)' >&2
-    return 0
-  fi
-
   # Instant first frame (D-04): paint the header and the loading row now, before mktemp, jq
   # and Node, so the modal shows something at once (zsh paints at the same point). The Zellij
   # pane gets its frame through a file instead. QQ_ORIG_LBUFFER is this adapter's name for the
@@ -478,10 +468,7 @@ _qq_question() {
   _qq_start_tool_handoff "$tmpdir"
   _qq_log "tool handoff started"
 
-  # The client's stderr: QQ_DEBUG_LOG_FILE when a developer sets it, else a file in the 0700
-  # session dir that goes with it. Never a fixed /tmp name: `2>>` follows a symlink or blocks
-  # on a FIFO another local user could create there first (WR-04).
-  local qq_log_file=${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}
+  local qq_log_file=${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}
 
   if [[ -n ${ZELLIJ:-} ]]; then
     # ---- Zellij path (D-07): the client in a floating pane, the result through a FIFO ----
@@ -510,14 +497,12 @@ _qq_question() {
     fi
 
     # The uncaughtException/unhandledRejection handlers in main.ts write a cancel result to
-    # QQ_RESULT_FILE even when an error escapes the client. `local -x`: the launcher and the
-    # pane inherit it, the user's shell does not keep a path into a deleted dir (WR-03).
-    local -x QQ_RESULT_FILE=$fifo
+    # QQ_RESULT_FILE even when an error escapes the client.
+    export QQ_RESULT_FILE=$fifo
 
-    # Pane size: QQ_PANE_WIDTH / QQ_PANE_HEIGHT, default 80x24 (exported for the client, for
-    # this call only; a value the user exported is back as it was afterwards).
+    # Pane size: QQ_PANE_WIDTH / QQ_PANE_HEIGHT, default 80x24 (exported for the client).
     local qq_pane_width=${QQ_PANE_WIDTH:-80} qq_pane_height=${QQ_PANE_HEIGHT:-24}
-    local -x QQ_PANE_WIDTH=$qq_pane_width QQ_PANE_HEIGHT=$qq_pane_height
+    export QQ_PANE_WIDTH=$qq_pane_width QQ_PANE_HEIGHT=$qq_pane_height
 
     # Instant first frame (D-04): written to a file in the 0700 session dir; the pane wrapper
     # cats it, then execs the unchanged client argv. A width that is not all digits (e.g. a
@@ -565,7 +550,7 @@ _qq_question() {
   else
     # ---- Inline path: the client runs as a foreground child and writes a result file ----
     local result_file=$tmpdir/result.json
-    local -x QQ_RESULT_FILE=$result_file
+    export QQ_RESULT_FILE=$result_file
     local qq_client_status=0
     command "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
       2>>"$qq_log_file" || qq_client_status=$?

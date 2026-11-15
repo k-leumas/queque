@@ -180,42 +180,6 @@ export function versionBelow(version: readonly number[], threshold: string): boo
   return false;
 }
 
-/** One line without its comment: the first unquoted `#` that starts a word, to the end. */
-function stripLineComment(line: string): string {
-  let quote: '"' | "'" | null = null;
-  for (let i = 0; i < line.length; i++) {
-    const c = line[i];
-    if (quote === "'") {
-      if (c === "'") quote = null;
-      continue;
-    }
-    if (c === '\\') {
-      i++;
-      continue;
-    }
-    if (quote === '"') {
-      if (c === '"') quote = null;
-      continue;
-    }
-    if (c === '"' || c === "'") {
-      quote = c;
-    } else if (c === '#' && (i === 0 || /[\s;&|()]/.test(line[i - 1] ?? ''))) {
-      return line.slice(0, i);
-    }
-  }
-  return line;
-}
-
-/**
- * Rc-file text with shell comments removed line by line (11-REVIEW WR-06), so a source line the
- * user commented out to disable QueQue no longer counts as installed. A `#` inside quotes or in
- * the middle of a word stays. The line count is unchanged. Quotes that span lines are not
- * tracked: each line starts unquoted, which is enough for source lines.
- */
-export function stripShellComments(text: string): string {
-  return text.split('\n').map(stripLineComment).join('\n');
-}
-
 /** A login bash reads the first of these that exists (bash INVOCATION). */
 export const BASH_LOGIN_FILES = ['.bash_profile', '.bash_login', '.profile'] as const;
 
@@ -229,7 +193,7 @@ export const BASHRC_SOURCE_RE =
 /**
  * Whether a login bash would load `~/.bashrc` (D-09). macOS terminals start login shells, which
  * skip `~/.bashrc` unless the first login file sources it. Read only: init prints a hint and
- * never edits a login file. Commented-out lines do not count (WR-06).
+ * never edits a login file.
  */
 export function loginFileSourcesBashrc(readRc: (relPath: string) => string | null): {
   file: string | null;
@@ -238,10 +202,7 @@ export function loginFileSourcesBashrc(readRc: (relPath: string) => string | nul
   for (const relPath of BASH_LOGIN_FILES) {
     const text = readRc(relPath);
     if (text !== null) {
-      return {
-        file: `~/${relPath}`,
-        sourcesBashrc: BASHRC_SOURCE_RE.test(stripShellComments(text)),
-      };
+      return { file: `~/${relPath}`, sourcesBashrc: BASHRC_SOURCE_RE.test(text) };
     }
   }
   return { file: null, sourcesBashrc: false };

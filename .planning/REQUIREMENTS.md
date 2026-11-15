@@ -122,7 +122,7 @@ IDs and scope defined in `.planning/phases/10-linux-distro-ci-harness-and-anonym
 | P10-PREWARM | Phase 10 | Complete |
 | P10-FIX | Phase 10 | Complete |
 | ZSHX-01 | Phase 10 | Complete |
-| BASH-01 | Phase 11 | Complete |
+| BASH-01 | Phase 11 | Pending |
 | FISH-01 | Phase 12 | Pending |
 
 **Coverage:**
