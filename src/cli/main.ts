@@ -98,22 +98,18 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
 
   cli
     .command(
-      'init [shell]',
-      'Add the ?? trigger to your shell rc file (detects zsh or bash; `qq init bash` picks one), or run `qq init provider` to pick OpenAI or Ollama',
+      'init <shell>',
+      'Add shell integration to ~/.zshrc (`qq init zsh && source ~/.zshrc`), or run `qq init provider` to pick OpenAI or Ollama',
     )
-    .action(async (shell?: string) => {
+    .action(async (shell: string) => {
       await dispatchInit(shell);
     });
 
   cli
     .command('doctor', 'Check this machine for problems that stop ??')
     .option('--json', 'Print the report as JSON')
-    .option(
-      '--shell <name>',
-      'Check the ?? setup for this shell (zsh or bash; default: your login shell)',
-    )
-    .action(async (options: { json?: boolean; shell?: string }) => {
-      await doctorCommand({ json: options.json, shell: options.shell });
+    .action(async (options: { json?: boolean }) => {
+      await doctorCommand({ json: options.json });
     });
 
   cli

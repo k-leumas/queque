@@ -32,10 +32,7 @@ export const OPENAI_CHAT_COMPLETIONS_URL = 'https://api.openai.com/v1/chat/compl
 /** Default model when the pin has no `model` (current per the OpenAI API reference). */
 export const OPENAI_DEFAULT_MODEL = 'gpt-5.5';
 
-/**
- * Same budget as Claude and Ollama: the shell adapter reads the FIFO for 30s and the IPC client
- * waits 26s.
- */
+/** Same budget as Claude and Ollama: zsh reads the FIFO for 30s and the IPC client waits 26s. */
 export const OPENAI_TIMEOUT_MS = 25_000;
 
 /** `reasoning_effort` on the first request: little thinking, so the answer fits the cap. */

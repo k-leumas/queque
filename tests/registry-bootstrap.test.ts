@@ -38,13 +38,6 @@ describe('bootstrapBuiltins()', () => {
     expect(listShellAdapters().map((adapter) => adapter.id)).toContain('zsh');
   });
 
-  it('registers the bash shell adapter', () => {
-    bootstrapBuiltins();
-    const adapters = listShellAdapters();
-    expect(adapters.map((adapter) => adapter.id)).toContain('bash');
-    expect(adapters.find((adapter) => adapter.id === 'bash')?.shell).toBe('bash');
-  });
-
   it('registers the noop and memory storage hooks', () => {
     bootstrapBuiltins();
     const hookIds = listStorageHooks().map((hook) => hook.id);

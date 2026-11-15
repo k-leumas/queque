@@ -5,7 +5,6 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import type { ShellName } from '../src/contracts/shell.js';
 import {
   annotateCandidates,
   buildInstallForm,
@@ -22,13 +21,12 @@ import {
 } from '../src/shared/tool-awareness.js';
 
 function inv(
-  parts: { commands?: string[]; builtins?: string[]; functions?: string[]; shell?: ShellName } = {},
+  parts: { commands?: string[]; builtins?: string[]; functions?: string[] } = {},
 ): ToolInventory {
   return {
     commands: new Set(parts.commands ?? []),
     builtins: new Set(parts.builtins ?? []),
     functions: new Set(parts.functions ?? []),
-    ...(parts.shell === undefined ? {} : { shell: parts.shell }),
   };
 }
 
@@ -71,20 +69,6 @@ describe('missingTools', () => {
     expect(missingTools('<editor> ~/.zshrc', empty)).toEqual([]);
     expect(missingTools('$EDITOR x', empty)).toEqual([]);
     expect(missingTools('./scripts/deploy.sh', empty)).toEqual([]);
-  });
-
-  it('reads the inventory shell: noglob is a zsh precommand, a missing command in bash', () => {
-    const tools = { commands: ['fd'], builtins: ['cd', 'echo'] };
-    expect(missingTools('noglob fd', inv({ ...tools, shell: 'zsh' })).join(' ')).toBe('');
-    expect(missingTools('noglob fd', inv({ ...tools, shell: 'bash' })).join(' ')).toBe('noglob');
-  });
-
-  it('treats an inventory without a shell as zsh', () => {
-    const tools = { commands: ['fd'], builtins: ['cd', 'echo'] };
-    expect(missingTools('noglob fd', inv(tools))).toEqual([]);
-    expect(missingTools('repeat 3 fd', inv(tools))).toEqual(
-      missingTools('repeat 3 fd', inv({ ...tools, shell: 'zsh' })),
-    );
   });
 
   it('flags a tool installed by an earlier step of the same command (D-06)', () => {

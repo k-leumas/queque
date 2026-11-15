@@ -7,7 +7,6 @@
  */
 import { spawnSync } from 'node:child_process';
 import { beforeAll, describe, expect, it } from 'vitest';
-import type { ShellName } from '../src/contracts/shell.js';
 import {
   type CommandWord,
   extractCommandWords,
@@ -198,92 +197,5 @@ describe('lexHand token contract (frozen for 09-04)', () => {
 
   it('a bare comment is a single comment token with no word', () => {
     expect(lexHand('# c')).toEqual([{ t: 'comment', v: '# c' }]);
-  });
-});
-
-describe('shell dialects (Phase 11 D-02)', () => {
-  let bashBuiltins: ReadonlySet<string> = new Set();
-
-  beforeAll(() => {
-    // The bash adapter hands off `compgen -b`; read it from a real bash, never a hardcoded list.
-    const r = spawnSync('bash', ['--norc', '--noprofile', '-c', 'compgen -b'], {
-      encoding: 'utf8',
-    });
-    expect(r.error).toBeUndefined();
-    expect(r.status).toBe(0);
-    bashBuiltins = new Set(
-      r.stdout
-        .split('\n')
-        .map((line) => line.trim())
-        .filter((line) => line.length > 0),
-    );
-    expect(bashBuiltins.has('cd')).toBe(true);
-    expect(bashBuiltins.has('noglob')).toBe(false);
-  });
-
-  function builtinsFor(shell: ShellName): ReadonlySet<string> {
-    return shell === 'zsh' ? builtins : bashBuiltins;
-  }
-
-  /** `word:kind` for every command word, joined, so a mismatch reports on one line. */
-  function wordsIn(cmd: string, shell: ShellName): string {
-    return extractCommandWords(cmd, builtinsFor(shell), shell)
-      .map((w) => `${w.word}:${w.kind}`)
-      .join(' ');
-  }
-
-  const SHARED_CASES: ReadonlyArray<{ cmd: string; want: string }> = [
-    { cmd: 'for f in *; do ls "$f"; done', want: 'ls:external' },
-    { cmd: 'if true; then fd; fi', want: 'true:builtin fd:external' },
-    { cmd: 'time rg x', want: 'rg:external' },
-    { cmd: 'coproc cat', want: 'cat:external' },
-    { cmd: 'select x in a; do echo; done', want: 'echo:builtin' },
-    { cmd: 'while read l; do wc -l; done', want: 'read:builtin wc:external' },
-  ];
-
-  describe.each(['zsh', 'bash', 'fish'] as const)('%s', (shell) => {
-    it.each(SHARED_CASES)('$cmd', ({ cmd, want }) => {
-      expect(wordsIn(cmd, shell)).toBe(want);
-    });
-  });
-
-  it('defaults to zsh, so existing callers are unchanged', () => {
-    for (const cmd of ['noglob rm -rf x', 'repeat 3 echo hi', 'nocorrect mv a b']) {
-      expect(extractCommandWords(cmd, builtins)).toEqual(extractCommandWords(cmd, builtins, 'zsh'));
-    }
-  });
-
-  it('noglob is a zsh precommand but an ordinary command word in bash', () => {
-    expect(wordsIn('noglob rm -rf x', 'zsh')).toBe('rm:external');
-    expect(wordsIn('noglob rm -rf x', 'bash')).toBe('noglob:external');
-  });
-
-  it('nocorrect is a zsh precommand but an ordinary command word in bash', () => {
-    expect(wordsIn('nocorrect mv a b', 'zsh')).toBe('mv:external');
-    expect(wordsIn('nocorrect mv a b', 'bash')).toBe('nocorrect:external');
-  });
-
-  it('repeat N runs the next word in zsh; in bash repeat is the command word', () => {
-    expect(wordsIn('repeat 3 echo hi', 'zsh')).toBe('echo:builtin');
-    expect(wordsIn('repeat 3 echo hi', 'bash')).toBe('repeat:external');
-  });
-
-  it('foreach and end are command words in bash, without a hang or a throw', () => {
-    const words = extractCommandWords('foreach x (a b) ls; end', bashBuiltins, 'bash');
-    expect(words).toContainEqual({ word: 'foreach', kind: 'external' });
-    expect(words).toContainEqual({ word: 'end', kind: 'external' });
-  });
-
-  it('fish reads like bash until Phase 12 adds its own words', () => {
-    const cases = [
-      ...SHARED_CASES.map((c) => c.cmd),
-      'noglob rm -rf x',
-      'nocorrect mv a b',
-      'repeat 3 echo hi',
-      'foreach x (a b) ls; end',
-    ];
-    for (const cmd of cases) {
-      expect(wordsIn(cmd, 'fish')).toBe(wordsIn(cmd, 'bash'));
-    }
   });
 });

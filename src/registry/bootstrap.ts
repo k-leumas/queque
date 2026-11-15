@@ -34,13 +34,6 @@ export function bootstrapBuiltins(): void {
     shell: 'zsh',
     description: 'zsh ZLE widget adapter (Phase 2 built-in)',
   });
-  // Registered in the same commit that moved init's rc write to the shell registry: the old
-  // initCommand appended to ~/.zshrc for every accepted shell (11-04, review concern Cursor HIGH).
-  registerShellAdapter({
-    id: 'bash',
-    shell: 'bash',
-    description: 'bash readline bind -x adapter (Phase 11)',
-  });
 
   registerStorageHook({
     id: 'noop',

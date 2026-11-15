@@ -1,17 +1,15 @@
 # QueQue — copy-pasting shell commands is dead
 
-[![zsh 5.0+](https://img.shields.io/badge/zsh-5.0%2B-F15A24?logo=zsh&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#zsh)
-[![bash 5.0+](https://img.shields.io/badge/bash-5.0%2B-4EAA25?logo=gnubash&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#bash)
-[![fish coming soon (Phase 12)](https://img.shields.io/badge/fish-coming%20soon%20%28Phase%2012%29-lightgrey?logo=fishshell&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#set-up-your-shell)
+[![CI](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/ci.yml?branch=main&label=CI&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![Nightly](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/nightly.yml?branch=main&label=Nightly&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/nightly.yml)
+[![Release](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/release.yaml?branch=main&label=Release&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/release.yaml)
 
-Tests passing on:\
-[![ubuntu:22.04](https://img.shields.io/badge/Ubuntu%2022.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
-[![ubuntu:24.04](https://img.shields.io/badge/Ubuntu%2024.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
-[![debian:13](https://img.shields.io/badge/Debian%2013-A81D33?logo=debian&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
-[![fedora:44](https://img.shields.io/badge/Fedora%2044-51A2DA?logo=fedora&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
-[![archlinux:latest](https://img.shields.io/badge/Arch%20Linux%20latest-1793D1?logo=archlinux&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
-[![alpine:3.24](https://img.shields.io/badge/Alpine%203.24-0D597F?logo=alpinelinux&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
-[![macOS (tested by hand)](https://img.shields.io/badge/macOS-000000?logo=apple&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md)
+[![tested on ubuntu:22.04](https://img.shields.io/badge/tested%20on-Ubuntu%2022.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on ubuntu:24.04](https://img.shields.io/badge/tested%20on-Ubuntu%2024.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on debian:13](https://img.shields.io/badge/tested%20on-Debian%2013-A81D33?logo=debian&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on fedora:44](https://img.shields.io/badge/tested%20on-Fedora%2044-51A2DA?logo=fedora&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on archlinux:latest](https://img.shields.io/badge/tested%20on-Arch%20Linux%20latest-1793D1?logo=archlinux&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
+[![tested on alpine:3.24](https://img.shields.io/badge/tested%20on-Alpine%203.24-0D597F?logo=alpinelinux&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
 
 **Before:** Google it → copy → paste → tweak → pray.
 
@@ -23,14 +21,19 @@ Tests passing on:\
 
 ```shell
 brew install k-leumas/tap/queque
-qq init
-source ~/.zshrc    # zsh
-source ~/.bashrc   # bash 5 or newer
+qq init zsh && source ~/.zshrc
 ```
 
-`qq init` detects your shell, wires up the `??` keybinding and adds the QueQue source line to the end of your rc file itself, so nothing needs to be redirected into it.
+`qq init zsh` wires up the `??` keybinding and adds the QueQue source line to the end of `~/.zshrc` itself, so do not redirect its output into the file.
 
-See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for installing with npm, the full requirements, the macOS bash notes and how to undo `qq init`.
+Or with npm (needs zsh, Node.js 24 or newer and jq):
+
+```shell
+npm install -g @k-leumas/queque-cli
+qq init zsh && source ~/.zshrc
+```
+
+See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for the full requirements.
 
 ## Choose a provider
 
@@ -54,7 +57,7 @@ See [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md) for filt
 
 ## More
 
-- [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md): requirements, Homebrew and npm, zsh and bash, undoing `qq init`.
+- [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md): requirements, Homebrew and npm.
 - [Choose a provider](https://github.com/k-leumas/queque/blob/main/docs/PROVIDERS.md): Claude Code login, API keys, OpenAI and Ollama (beta), restarting the daemon.
 - [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md): the picker, installed-tool awareness, Zellij.
 - [Privacy](https://github.com/k-leumas/queque/blob/main/docs/PRIVACY.md): what leaves your machine, debug logging, opt-in anonymous telemetry.

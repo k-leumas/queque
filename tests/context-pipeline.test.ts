@@ -22,7 +22,6 @@ function buildRequest(overrides: Partial<NormalizedRequest> = {}): NormalizedReq
     shellPid: 1234,
     lbuffer: 'fix src/index.ts',
     rbuffer: '',
-    shell: 'zsh',
     intent: 'codebase',
     confidence: 1,
     ...overrides,

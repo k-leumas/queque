@@ -7,10 +7,9 @@ Usage: scripts/smoke-distro.sh IMAGE [--out DIR]
 
 Builds this checkout, packs it with `pnpm pack`, and installs the tarball with
 `npm install -g` inside a fresh IMAGE container (e.g. alpine:3.24, debian:13).
-A non-root user then types `??` into a real zsh PTY, then a real bash PTY,
-driven by expect, against the installed adapters, client, daemon and Ink TUI.
-Only the model is fake: the `claude` on PATH runs
-tests/fixtures/fake-claude-stream.mjs. No API key or
+A non-root user then types `??` into a real zsh PTY driven by expect, against
+the installed widget, client, daemon and Ink TUI. Only the model is fake: the
+`claude` on PATH runs tests/fixtures/fake-claude-stream.mjs. No API key or
 token is read or passed into the container.
 
 Arguments:
@@ -81,10 +80,8 @@ OUT_DIR="${OUT_DIR:-${QQ_SMOKE_OUT:-${TMPDIR:-/tmp}/qq-smoke-$SLUG}}"
 mkdir -p "$OUT_DIR"
 OUT_DIR="$(cd "$OUT_DIR" && pwd)"
 # The runner collects doctor only when /out/doctor.json is missing, so a report left by an
-# earlier local run would be shipped as this run's (WR-06): clear it with the logs. The same
-# goes for the bash pass's doctor-bash.json/txt and bashrc.txt (pty-*.log covers
-# pty-bash-default.log).
-rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR"/{qq-debug.log,image.txt,df.txt,zshrc.txt,bashrc.txt,doctor.json,doctor.txt,doctor-bash.json,doctor-bash.txt}
+# earlier local run would be shipped as this run's (WR-06): clear it with the logs.
+rm -f "$OUT_DIR"/pty-*.log "$OUT_DIR"/{qq-debug.log,image.txt,df.txt,zshrc.txt,doctor.json,doctor.txt}
 
 cd "$ROOT_DIR"
 
@@ -110,16 +107,10 @@ if [[ $rc -eq 0 ]]; then
   echo "smoke-distro: PASS $IMAGE"
 else
   echo "smoke-distro: FAIL $IMAGE (exit $rc)"
-  for log in "$OUT_DIR/pty-default.log" "$OUT_DIR/pty-c-locale.log" "$OUT_DIR/pty-consent.log" \
-    "$OUT_DIR/pty-bash-default.log"; do
+  for log in "$OUT_DIR/pty-default.log" "$OUT_DIR/pty-c-locale.log" "$OUT_DIR/pty-consent.log"; do
     [[ -f "$log" ]] || continue
     echo "--- last 40 lines of $(basename "$log") ---"
     tail -n 40 "$log"
-  done
-  for file in "$OUT_DIR/doctor-bash.txt" "$OUT_DIR/bashrc.txt"; do
-    [[ -f "$file" ]] || continue
-    echo "--- $(basename "$file") ---"
-    cat "$file"
   done
 fi
 echo "smoke-distro: artifacts in $OUT_DIR"

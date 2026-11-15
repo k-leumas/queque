@@ -342,19 +342,6 @@ describe('dispatchInit()', () => {
     expect(shell).toHaveBeenCalledWith('zsh');
     expect(provider).not.toHaveBeenCalled();
   });
-
-  it('dispatchInit passes bash and a missing shell to initCommand', async () => {
-    const provider = vi.fn().mockResolvedValue(undefined);
-    const shell = vi.fn();
-
-    await dispatchInit('bash', { provider, shell });
-    expect(shell).toHaveBeenLastCalledWith('bash');
-
-    await dispatchInit(undefined, { provider, shell });
-    expect(shell).toHaveBeenCalledTimes(2);
-    expect(shell.mock.calls[1]?.[0]).toBeUndefined();
-    expect(provider).not.toHaveBeenCalled();
-  });
 });
 
 describe('picker failure paths (nothing written)', () => {
@@ -365,7 +352,6 @@ describe('picker failure paths (nothing written)', () => {
     expect(fs.existsSync(pinFile)).toBe(false);
     expect(output).toContain('OPENAI_API_KEY');
     expect(output).toContain('export');
-    expect(output.includes('~/.zshrc or ~/.bashrc')).toBe(true);
     expect(restartDaemon).not.toHaveBeenCalled();
   });
 
