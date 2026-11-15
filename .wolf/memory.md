@@ -980,3 +980,20 @@
 | 11:30 | fix(11) WR-06: stripShellComments in shell-registry; hasShellIntegration + loginFileSourcesBashrc ignore commented lines, marker alone no longer counts; init/registry/doctor tests; full suite 1872 green | src/shared/shell-registry.ts, src/cli/commands/init.ts, tests | fixed | ~5k |
 | 02:37 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-REVIEW-FIX.md | — | ~2547 |
 | 02:40 | code-review --fix 11: WR-01..06 fixed (456e2ea..f308e2e), 1872 tests; pty full suite 1864/1872 at load 91 (known flakes + b12/b22 timing), 3 files rerun alone 144/144 | 11-REVIEW-FIX.md | done | ~4k |
+| 02:42 | Session end: 34 writes across 17 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 14 reads | ~72723 tok |
+| 02:47 | Created .planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md | — | ~5772 |
+| 02:48 | Edited .planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md | trailer() → kind() | ~63 |
+| 02:48 | Edited .planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md | "^docs(quick-261115-3qz): " → "$(git log -1 --format=%s)" | ~110 |
+| 02:49 | Session end: 37 writes across 18 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 14 reads | ~79092 tok |
+| 02:50 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md | 6→8 lines | ~304 |
+| 02:50 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/3qz-msg-t1.txt | — | ~115 |
+| 02:51 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts | added 2 import(s) | ~48 |
+| 02:51 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts | added 3 condition(s) | ~885 |
+| 02:51 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts | 3→4 lines | ~50 |
+| 02:51 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md | 3→7 lines | ~208 |
+| 02:51 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md | expanded (+11 lines) | ~155 |
+| 02:52 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/3qz-msg-t2.txt | — | ~118 |
+| 02:53 | Created .claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md | — | ~1096 |
+| 02:54 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md | 3→5 lines | ~78 |
+| 02:54 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md | inline fix | ~12 |
+| 08:55 | quick 261115-3qz: README shell badge row, "Tests passing on:" distro+macOS row, Supported platforms table; badge test tied to ci.yml and SHELL_SPECS | README.md, tests/readme-badges.test.ts | done, 48d3385 + b22e860, full suite 1875/1875 green | ~4100 |

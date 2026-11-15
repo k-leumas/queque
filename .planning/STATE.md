@@ -5,10 +5,10 @@ current_phase: 11
 current_phase_name: Multi-shell trigger support (bash, fish-ready)
 status: executing
 stopped_at: Phase 11 context gathered
-last_updated: "2026-11-14T12:36:09.933Z"
+last_updated: "2026-11-15T08:55:38.345Z"
 last_activity: 2026-11-14
 last_activity_desc: Phase 11 execution started
-state_head: a188de747ee028bc9f2dbc23588a0521adf2af38
+state_head: 7b75ddbe01cd399fa2649fe4729cfa3b8dce4aa4
 progress:
   total_phases: 15
   completed_phases: 8
@@ -183,10 +183,11 @@ None yet.
 | 261030-fdr | Minimal README for new users; detail moved to docs/INSTALL, PROVIDERS, USAGE, PRIVACY, CONFIGURATION | 2026-10-30 | c857dbe | [261030-fdr-reformat-the-readme-minimal-move-the-res](./quick/261030-fdr-reformat-the-readme-minimal-move-the-res/) |
 | 261030-tq3 | Replace a daemon from another qq build (build id in pong), add qq daemon --restart, report a silent daemon accurately | 2026-10-30 | 332b484 | [261030-tq3-restart-outdated-daemon-and-report-a-dae](./quick/261030-tq3-restart-outdated-daemon-and-report-a-dae/) |
 | 261105-ix8 | Weekly tap clone stats workflow: snapshots homebrew-tap clone traffic to the stats branch, minus publishing-run clones | 2026-11-05 | 27e495e | [261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo](./quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/) |
+| 261115-3qz | README support matrix: shell badges, Tests passing on row with macOS, Supported platforms table | 2026-11-15 | 7b75ddb | [261115-3qz-readme-support-matrix-shell-and-os-badge](./quick/261115-3qz-readme-support-matrix-shell-and-os-badge/) |
 
 ## Session Continuity
 
-Last activity: 2026-10-21 - Completed quick task 261021-sya: strip credentials from changelog repository links
+Last activity: 2026-11-15 - Completed quick task 261115-3qz: README support matrix (shell badges, Tests passing on row, Supported platforms table)
 
 Last session: 2026-11-13T20:05:04.333Z
 Stopped at: Phase 11 context gathered

@@ -71,6 +71,21 @@
       "count": 1,
       "tokens": 1820,
       "first_read": "2026-11-15T08:33:56.083Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md": {
+      "count": 1,
+      "tokens": 5467,
+      "first_read": "2026-11-15T08:49:28.631Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md": {
+      "count": 1,
+      "tokens": 1700,
+      "first_read": "2026-11-15T08:50:29.700Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts": {
+      "count": 2,
+      "tokens": 1450,
+      "first_read": "2026-11-15T08:51:17.594Z"
     }
   },
   "files_written": [
@@ -277,6 +292,90 @@
       "action": "create",
       "tokens": 2729,
       "at": "2026-11-15T08:37:34.285Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md",
+      "action": "create",
+      "tokens": 6184,
+      "at": "2026-11-15T08:47:52.839Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md",
+      "action": "edit",
+      "tokens": 68,
+      "at": "2026-11-15T08:48:04.938Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md",
+      "action": "edit",
+      "tokens": 117,
+      "at": "2026-11-15T08:48:15.031Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md",
+      "action": "edit",
+      "tokens": 325,
+      "at": "2026-11-15T08:50:41.065Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/3qz-msg-t1.txt",
+      "action": "create",
+      "tokens": 123,
+      "at": "2026-11-15T08:50:52.773Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts",
+      "action": "edit",
+      "tokens": 48,
+      "at": "2026-11-15T08:51:32.603Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts",
+      "action": "edit",
+      "tokens": 885,
+      "at": "2026-11-15T08:51:33.170Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts",
+      "action": "edit",
+      "tokens": 50,
+      "at": "2026-11-15T08:51:47.290Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md",
+      "action": "edit",
+      "tokens": 223,
+      "at": "2026-11-15T08:51:47.830Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md",
+      "action": "edit",
+      "tokens": 166,
+      "at": "2026-11-15T08:51:48.431Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/3qz-msg-t2.txt",
+      "action": "create",
+      "tokens": 127,
+      "at": "2026-11-15T08:52:16.943Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md",
+      "action": "create",
+      "tokens": 1174,
+      "at": "2026-11-15T08:53:31.059Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md",
+      "action": "edit",
+      "tokens": 83,
+      "at": "2026-11-15T08:54:09.448Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md",
+      "action": "edit",
+      "tokens": 12,
+      "at": "2026-11-15T08:54:11.001Z"
     }
   ],
   "edit_counts": {
@@ -296,11 +395,17 @@
     "src/cli/commands/client.ts": 1,
     "src/shared/shell-registry.ts": 3,
     "src/cli/commands/init.ts": 1,
-    ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-REVIEW-FIX.md": 1
+    ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-REVIEW-FIX.md": 1,
+    ".planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-PLAN.md": 3,
+    ".claude/worktrees/agent-a8dbb2d34afbd0c5a/README.md": 3,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/3qz-msg-t1.txt": 1,
+    ".claude/worktrees/agent-a8dbb2d34afbd0c5a/tests/readme-badges.test.ts": 3,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/3qz-msg-t2.txt": 1,
+    ".claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md": 3
   },
-  "anatomy_hits": 12,
+  "anatomy_hits": 15,
   "anatomy_misses": 2,
-  "repeated_reads_warned": 11,
+  "repeated_reads_warned": 12,
   "cerebrum_warnings": 0,
-  "stop_count": 11
+  "stop_count": 13
 }
