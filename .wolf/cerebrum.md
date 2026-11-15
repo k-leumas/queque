@@ -16,7 +16,7 @@
 - [2026-10-12] FILTER starts empty. The lbuffer shows only in the `queque ›` header. Text typed during `thinking…` becomes the whole filter.
 - [2026-10-12] The changelog is written for scanning: Features / Bug Fixes / Deprecations, with commit lists inside `<details>`. A missing ANTHROPIC_API_KEY must not fail a release.
 - [2026-10-10] Mark load-flaky timing tests as flaky and rerun them on an idle machine. Don't loosen their guards.
-- [2026-11-15] The README should show supported shells and OSes at a glance: badges under one "Tests passing on:" line, a macOS badge (tested by hand), and a short support table.
+- [2026-11-15] The README shows supported shells and OSes at a glance with badges only: a shell badge row and a "Tests passing on:" distro + macOS row (macOS tested by hand, badge links docs/INSTALL.md). No CI/Nightly/Release status badges and no support table (user: "they take up space but aren't actually useful"); the macOS bash 3.2 note is one Install sentence. tests/readme-badges.test.ts guards both rows against ci.yml and SHELL_SPECS and fails if either removed item comes back; update the fish badge in the same commit when Phase 12 ships fish.
 - Prefer simple solutions: on an unsupported environment, do nothing and print one clear line (final D-12: old bash gets no bindings).
 
 ## Key Learnings
