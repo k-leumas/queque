@@ -2,6 +2,9 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
+import { SHELL_NAMES } from '../src/contracts/shell.js';
+import { SHELL_SPECS } from '../src/shared/shell-registry.js';
+
 const ROOT = resolve(__dirname, '..');
 const README = resolve(ROOT, 'README.md');
 const WORKFLOWS = resolve(ROOT, '.github', 'workflows');
@@ -190,6 +193,86 @@ describe('README badges', () => {
         (macBadges[0] as Badge).href,
         'macOS is tested by hand, so its README badge must link docs/INSTALL.md, not CI',
       ).toBe(INSTALL_DOC);
+    }
+  });
+
+  it('shell badges match the shell registry', () => {
+    const badges = readmeBadges().filter(isStaticShieldsBadge);
+    for (const name of SHELL_NAMES) {
+      const spec = SHELL_SPECS[name];
+      const matching = badges.filter((b) => {
+        const parts = staticBadgeParts(b);
+        return parts.length === 3 && parts[0] === name;
+      });
+      expect(
+        matching.length,
+        `README must have exactly one "${name}" shell badge in the shell row under the workflow badges`,
+      ).toBe(1);
+      const badge = matching[0] as Badge;
+      const [, message = ''] = staticBadgeParts(badge);
+      if (spec.shipped) {
+        const version = `${spec.failBelow}+`;
+        expect(badge.alt, `README ${name} badge alt text must be "${name} ${version}"`).toBe(
+          `${name} ${version}`,
+        );
+        expect(message, `README ${name} badge must show "${version}" (SHELL_SPECS failBelow)`).toBe(
+          version,
+        );
+        expect(
+          badge.href.startsWith(`${INSTALL_DOC}#`),
+          `README ${name} badge must link a docs/INSTALL.md section`,
+        ).toBe(true);
+      } else {
+        expect(
+          message.startsWith('coming soon'),
+          `README ${name} badge must say "coming soon" while ${name} is not shipped`,
+        ).toBe(true);
+        expect(
+          badge.alt.startsWith(`${name} coming soon`),
+          `README ${name} badge alt text must start with "${name} coming soon"`,
+        ).toBe(true);
+      }
+    }
+  });
+
+  it('the Supported platforms table matches the shell registry', () => {
+    const text = readmeText();
+    expect(
+      /^### Supported platforms$/m.test(text),
+      'README.md must have a `### Supported platforms` heading at the end of the Install section',
+    ).toBe(true);
+    const rows = text.split('\n').filter((line) => line.startsWith('| '));
+    const row = (label: string): string | undefined =>
+      rows.find((line) => line.startsWith(`| ${label} |`));
+    for (const name of SHELL_NAMES) {
+      const spec = SHELL_SPECS[name];
+      const line = row(name);
+      expect(line, `README Supported platforms table must have a "| ${name} |" row`).toBeDefined();
+      if (spec.shipped) {
+        expect(
+          line,
+          `README "| ${name} |" row must say "${spec.failBelow}+" (SHELL_SPECS failBelow)`,
+        ).toContain(`${spec.failBelow}+`);
+        expect(
+          line,
+          `README "| ${name} |" row must say "tested ${spec.warnBelow}+" (SHELL_SPECS warnBelow)`,
+        ).toContain(`tested ${spec.warnBelow}+`);
+      } else {
+        expect(line, `README "| ${name} |" row must say "Coming soon"`).toContain('Coming soon');
+      }
+    }
+    for (const label of ['macOS', 'Linux', 'Windows']) {
+      expect(
+        row(label),
+        `README Supported platforms table must have a "| ${label} |" row`,
+      ).toBeDefined();
+    }
+    const macRunner = runsOnValues().some((v) => /macos/i.test(v));
+    if (!macRunner) {
+      expect(
+        row('macOS'),
+        'README "| macOS |" row must say "tested by hand" while no workflow runs on macOS',
+      ).toContain('tested by hand');
     }
   });
 });

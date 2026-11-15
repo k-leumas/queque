@@ -4,6 +4,10 @@
 [![Nightly](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/nightly.yml?branch=main&label=Nightly&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/nightly.yml)
 [![Release](https://img.shields.io/github/actions/workflow/status/k-leumas/queque/release.yaml?branch=main&label=Release&logo=githubactions&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/release.yaml)
 
+[![zsh 5.0+](https://img.shields.io/badge/zsh-5.0%2B-F15A24?logo=zsh&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#zsh)
+[![bash 5.0+](https://img.shields.io/badge/bash-5.0%2B-4EAA25?logo=gnubash&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#bash)
+[![fish coming soon (Phase 12)](https://img.shields.io/badge/fish-coming%20soon%20%28Phase%2012%29-lightgrey?logo=fishshell&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#set-up-your-shell)
+
 Tests passing on:\
 [![ubuntu:22.04](https://img.shields.io/badge/Ubuntu%2022.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
 [![ubuntu:24.04](https://img.shields.io/badge/Ubuntu%2024.04-E95420?logo=ubuntu&logoColor=white)](https://github.com/k-leumas/queque/actions/workflows/ci.yml)
@@ -38,7 +42,18 @@ qq init
 source ~/.zshrc    # or: source ~/.bashrc
 ```
 
-On macOS, `/bin/bash` is 3.2, too old for `??`: bash users run `brew install bash` first. See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for the full requirements, the macOS bash notes and how to undo `qq init`.
+See [Install](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md) for the full requirements, the macOS bash notes and how to undo `qq init`.
+
+### Supported platforms
+
+| Platform | Support |
+| --- | --- |
+| zsh | 5.0+ (tested 5.8+) |
+| bash | 5.0+ (tested 5.1+). bash 3.2 and 4.x print one line and bind nothing. macOS `/bin/bash` is 3.2, so run `brew install bash` first. |
+| fish | Coming soon (Phase 12) |
+| macOS | Via Homebrew, tested by hand |
+| Linux | CI on Ubuntu 22.04 and 24.04, Debian 13, Fedora 44, Arch Linux and Alpine 3.24 |
+| Windows | Not supported |
 
 ## Choose a provider
 
