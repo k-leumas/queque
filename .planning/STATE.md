@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-15T09:38:25.954Z"
+last_updated: "2026-11-15T09:44:49.452Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: 7ec301cd3d1c3652f6d57e0444f2599b32790081
+state_head: ca22ea933633253bb36945a01d43eff8422b8c29
 progress:
   total_phases: 15
   completed_phases: 8
@@ -187,7 +187,9 @@ None yet.
 | 261105-ix8 | Weekly tap clone stats workflow: snapshots homebrew-tap clone traffic to the stats branch, minus publishing-run clones | 2026-11-05 | 27e495e | [261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo](./quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/) |
 | 261115-3qz | README support matrix: shell badges, Tests passing on row with macOS, Supported platforms table | 2026-11-15 | 7b75ddb | [261115-3qz-readme-support-matrix-shell-and-os-badge](./quick/261115-3qz-readme-support-matrix-shell-and-os-badge/) |
 | 261115-4um | README: drop CI/Nightly/Release badges and the Supported platforms table; macOS bash note back in Install | 2026-11-15 | 7ec301c | [261115-4um-readme-remove-workflow-badges-and-suppor](./quick/261115-4um-readme-remove-workflow-badges-and-suppor/) |
+| 36 | zsh prewarm tests poll 10 s instead of 2.5 s (pre-push flake, bug-429) | 2026-11-15 | ca22ea9 | — |
 Last activity: 2026-11-15 - Completed quick task 261115-4um: README drops workflow badges and the Supported platforms table
+
 ## Session Continuity
 
 Last activity: 2026-11-15 - Completed quick task 261115-3qz: README support matrix (shell badges, Tests passing on row, Supported platforms table)
