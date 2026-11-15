@@ -1,6 +1,5 @@
 import { Box, Text, useInput, useStdin, useStdout } from 'ink';
 import { type ReactElement, useEffect, useRef, useState } from 'react';
-import { MODAL_MAX_COLUMNS } from '../shared/instant-frame-spec.js';
 import { isDestructiveCommand } from '../shared/privacy-filter.js';
 import type { DisplayCandidate } from '../shared/tool-awareness.js';
 import { ControlsLine } from './ControlsLine.js';
@@ -35,8 +34,8 @@ const DESTRUCTIVE_WARNING_MARK = '⚠';
 /** Footer copy when the selected candidate matches a destructive command pattern. */
 const DESTRUCTIVE_WARNING_TEXT = `${DESTRUCTIVE_WARNING_MARK} review carefully — this command may be destructive`;
 
-/** Modal max width — keep in sync with Modal.tsx; the instant frame shares it (spec). */
-const MODAL_MAX_WIDTH = MODAL_MAX_COLUMNS;
+/** Modal max width — keep in sync with Modal.tsx. */
+const MODAL_MAX_WIDTH = 80;
 
 /** Horizontal padding inside Modal (paddingX={1} on each side). */
 const MODAL_PADDING_X = 2;

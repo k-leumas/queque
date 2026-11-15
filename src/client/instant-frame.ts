@@ -1,10 +1,9 @@
 /**
  * Instant first frame takeover (quick 261011-jbh, LD-1).
  *
- * The shell adapter paints a `queque › <lbuffer>` header and a `thinking…` row the moment `??`
- * fires, before Node starts (`_qq_paint_inline_instant_frame` in shell/zsh/queque.zsh and
- * shell/bash/queque.bash, or the Zellij pane wrapper that cats `instant-frame.txt`). The bytes
- * are pinned by the shared reference src/shared/instant-frame-spec.ts. This module lets the Ink client take that
+ * The zsh widget paints a `queque › <lbuffer>` header and a `thinking…` row the moment `??`
+ * fires, before Node starts (shell/zsh/queque.zsh `_qq_paint_inline_instant_frame`, or the
+ * Zellij pane wrapper that cats `instant-frame.txt`). This module lets the Ink client take that
  * surface over in its own first frame: `armInstantFrameTakeover` wraps the client's tty write
  * stream once and inserts a surface clear into the first write that carries visible text, so
  * the clear and Ink's frame land in one write (inside Ink's synchronized update when present).
@@ -18,19 +17,15 @@
  * - Zellij: the pane clear is absolute (`CSI H` + `CSI J`) on a pane the client owns.
  */
 import { stripVTControlCharacters } from 'node:util';
-import { CURSOR_HOME, ERASE_BELOW, RESTORE_CURSOR } from '../shared/instant-frame-spec.js';
 
-// The escape constants and the inline reserve live in the shared reference (Phase 11 D-04) that
-// every shell adapter's native painter must match. They are re-exported here so run-foreground.ts
-// and the tests keep importing them from the client module.
-export {
-  CURSOR_HOME,
-  ERASE_BELOW,
-  inlineScrollReserve,
-  RESTORE_CURSOR,
-  SAVE_CURSOR,
-} from '../shared/instant-frame-spec.js';
-
+/** `ESC 7`: save the cursor position. */
+export const SAVE_CURSOR = '\u001B7';
+/** `ESC 8`: restore the cursor position saved by the last `ESC 7`. */
+export const RESTORE_CURSOR = '\u001B8';
+/** `CSI J`: erase from the cursor to the end of the screen. */
+export const ERASE_BELOW = '\u001B[J';
+/** `CSI H`: move the cursor to the top-left cell. */
+export const CURSOR_HOME = '\u001B[H';
 /** `CSI ?2026 h`: begin a synchronized update (Ink wraps every frame in one). */
 export const SYNC_UPDATE_BEGIN = '\u001B[?2026h';
 
@@ -50,10 +45,14 @@ export interface TakeoverStream {
   write(chunk: unknown, ...rest: unknown[]): unknown;
 }
 
-// `inlineScrollReserve` (re-exported above) is the inline scroll reserve the client writes at
-// the start of its llm branch. Every adapter's inline paint starts with exactly these bytes; the
-// drift guard is now tests/instant-frame-parity.test.ts (tests/zsh-widget.test.ts z5 still
-// asserts the reserve prefix).
+/**
+ * The inline scroll reserve: `lines` newlines scroll just enough history up for the modal,
+ * `CSI <lines> A` + `\r` return to the reserve top, and `ESC 7` saves it. The widget's inline
+ * paint starts with exactly these bytes (tests/zsh-widget.test.ts z5 guards the drift).
+ */
+export function inlineScrollReserve(lines: number): string {
+  return `${'\n'.repeat(lines)}\u001B[${lines}A\r${SAVE_CURSOR}`;
+}
 
 /** True when the chunk draws something: text left after removing escapes and whitespace. */
 function hasVisibleText(chunk: unknown): boolean {

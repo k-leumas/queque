@@ -6,7 +6,7 @@ import {
   TOOL_NAME_MAX_LENGTH,
   TOOL_NAME_RE,
 } from '../shared/tool-catalog.js';
-import { SHELL_NAMES, shellRequestSchema } from './shell.js';
+import { shellRequestSchema } from './shell.js';
 
 /** Plain tool names only: no spaces, paths, quotes or shell syntax, at most 64 chars each. */
 const toolNamesSchema = z.array(z.string().max(TOOL_NAME_MAX_LENGTH).regex(TOOL_NAME_RE));
@@ -64,11 +64,8 @@ export const baseContextSchema = z.object({
   cwd: z.string(),
   ttyPath: z.string(),
   shellPid: z.number().int().positive(),
-  /**
-   * The shell the adapter reported (`request.shell`, Phase 11 D-02). An enum, so a
-   * free-form value never reaches a provider prompt.
-   */
-  shellName: z.enum(SHELL_NAMES),
+  /** Hardcoded 'zsh' for Phase 2 — cross-shell support is v2 scope. */
+  shellName: z.literal('zsh'),
   platform: z.string(),
   timestamp: z.string(),
 });

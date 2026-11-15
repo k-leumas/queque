@@ -412,8 +412,6 @@ qq-question-widget() {
   "ttyPath": $tty_json,
   "cwd": $cwd_json,
   "shellPid": $$,
-  "shell": "zsh",
-  "shellVersion": $(printf '%s' "$ZSH_VERSION" | jq -Rs .),
   "lbuffer": $(printf '%s' "$QQ_LBUFFER" | jq -Rs .),
   "rbuffer": $(printf '%s' "$QQ_RBUFFER"  | jq -Rs .)
 }
@@ -434,16 +432,13 @@ JSON
 
     # Export FIFO path so uncaughtException/unhandledRejection handlers in main.ts
     # can write a cancel result even if the error escapes the Promise block.
-    # `local -x`: the pane inherits it, the user's shell does not keep a path into a
-    # deleted session dir after the widget returns (WR-03).
-    local -x QQ_RESULT_FILE="$fifo_path"
+    export QQ_RESULT_FILE="$fifo_path"
 
     # Pane dimensions — override with QQ_PANE_WIDTH / QQ_PANE_HEIGHT (defaults 80×24).
-    # Exported for this call only; a value the user exported is back afterwards.
     local qq_pane_width="${QQ_PANE_WIDTH:-80}"
     local qq_pane_height="${QQ_PANE_HEIGHT:-24}"
-    local -x QQ_PANE_WIDTH="$qq_pane_width"
-    local -x QQ_PANE_HEIGHT="$qq_pane_height"
+    export QQ_PANE_WIDTH="$qq_pane_width"
+    export QQ_PANE_HEIGHT="$qq_pane_height"
 
     # Instant first frame (LD-1): the frame goes to a file in the 0700 session
     # dir; the pane wrapper cats it, then execs the unchanged client argv. A
@@ -461,14 +456,11 @@ JSON
     fi
     _qq_log "pane instant frame=${#pane_cmd[@]}"
 
-    # Launch the floating pane backgrounded+disowned (D-06). Its stderr, like the
-    # inline client's, goes to QQ_DEBUG_LOG_FILE or else client.err in the 0700 session
-    # dir: never a fixed /tmp name another local user could pre-create as a symlink or a
-    # FIFO (WR-04).
+    # Launch the floating pane backgrounded+disowned (D-06).
     # Launch at config height; qq client shrinks the pane once content is rendered.
     zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" --name "qq" -- \
       "${pane_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
-      2>>"${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}" &!
+      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
 
     # Block on FIFO read with a 30 s timeout (D-05).
     local result='{"kind":"cancel"}'
@@ -480,14 +472,14 @@ JSON
   else
     # ---- Inline path: foreground child writes to a regular temp file ----
     local result_file="$tmpdir/result.json"
-    local -x QQ_RESULT_FILE="$result_file"
+    export QQ_RESULT_FILE="$result_file"
     _qq_log "inline mode result_file=${result_file}"
 
     # Run the client as a foreground child. ZLE yields the terminal so Ink
     # can open /dev/tty and render the selection UI inline.
     local qq_client_status=0
     "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
-      2>>"${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}" || qq_client_status=$?
+      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" || qq_client_status=$?
 
     # A client that crashed (before or after Ink) cannot clear the instant
     # frame: restore the widget's own fresh save (the reserve top) and erase.

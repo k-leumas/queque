@@ -18,7 +18,6 @@ Turn natural-language intent into a shell command that feels native to the termi
 - ✓ `zsh` support is stable on major Linux distros (ubuntu 22.04/24.04, debian 13, fedora 44, arch, alpine 3.24): CI runs the test suite and a real-PTY smoke per distro on every push and PR, nightly on `:latest`, with an auto-revert PR on a red smoke — Phase 10
 - ✓ `qq doctor` (and `--json`) diagnoses an install without leaking env values — Phase 10
 - ✓ Opt-in, anonymous usage/error reporting: one-time consent, strict allow-listed events, no IP, GeoIP or person profile (verified in PostHog EU) — Phase 10
-- ✓ `bash` 5.0+ gets the same `??` trigger and picker handoff as zsh (instant frame, installed-tool awareness, inline and Zellij); `qq init`/`qq doctor` detect the shell, bash 3.2/4.x prints one line and binds nothing, and the request contract, tool handoff, lexer, telemetry and PTY harness are shell-aware so fish (Phase 12) is adapter-only — Phase 11
 
 ### Active
 
@@ -36,7 +35,7 @@ Turn natural-language intent into a shell command that feels native to the termi
 
 - Public plugin marketplace in v1 — extension seams matter now, but third-party loading can wait until the core UX is stable.
 - Direct command execution in v1 — insertion-only is safer and preserves user control.
-- fish support before Phase 12 — zsh and bash 5.0+ ship (bash since Phase 11); fish follows in Phase 12 as an adapter only, with shared code kept shell-agnostic and shell quirks inside per-shell adapters.
+- Multi-shell support in v1 — `zsh` first (macOS and, since Phase 10, Linux); bash and fish stay out of scope.
 - Persistent history by default — privacy-forward defaults matter more than convenience in the first release.
 
 ## Context
@@ -78,8 +77,6 @@ The product is meant to be used during development of the product itself. Daily-
 | Linux CI is a container matrix (test-distro + real-PTY smoke against the `pnpm pack` tarball with a fake `claude`), gated by one required `ci-ok` check | One required check keeps branch protection stable while the matrix grows; the fake model keeps CI free of API spend | ✓ Good — Phase 10 |
 | A red smoke on push opens one auto-revert PR rather than reverting main directly | Keeps a human in the loop on main; one flaky leg can still open a PR (seen 2026-10-30, PR #17) | ⚠️ Revisit — retry a failed smoke once before reverting |
 | Telemetry is opt-in, PostHog EU `/batch/`, strict allow list, `$geoip_disable` + no person profiles; builds ship an empty key until the user bakes one | Privacy-forward default; key baking deferred by user decision (keep-empty, 2026-10-30) | — Pending (key bake todo) |
-| bash below 5.0 prints one startup line and binds nothing (D-12) | Workarounds on bash 3.2 delayed typing `?`; a no-op plus a clear line is simpler | ✓ Kept after a reverted experiment — Phase 11 |
-| README states supported shells/OSes at a glance (shell badges, "Tests passing on:" distro + macOS row, support table) | Users should see what is supported before installing; a test ties it to CI and SHELL_SPECS | ✓ Quick 261115-3qz |
 
 ## Evolution
 
@@ -99,4 +96,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-11-15 after Phase 11 (bash 5.0+ trigger and shell-aware shared seams)*
+*Last updated: 2026-10-30 after Phase 10 (Linux distro CI harness, qq doctor, opt-in anonymous telemetry)*

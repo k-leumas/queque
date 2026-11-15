@@ -1,10 +1,9 @@
 /**
- * readToolHandoff — reads the shell-written session-dir handoff into a ToolInventory, waiting
- * (bounded) while an adapter's `tools.pending` marker says a background scan is still writing.
+ * readToolHandoff — reads the zsh-written session-dir handoff into a ToolInventory.
  * Real temp dirs written by the test; only the debug log is mocked (to capture what is logged).
  */
 
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,13 +13,7 @@ vi.mock('../src/shared/debug-log.js', () => ({
 }));
 
 const { appendDebugLog } = await import('../src/shared/debug-log.js');
-const {
-  readToolHandoff,
-  TOOL_HANDOFF_FILES,
-  TOOL_HANDOFF_PENDING,
-  TOOL_HANDOFF_PENDING_BUDGET_MS,
-  TOOL_HANDOFF_PENDING_POLL_MS,
-} = await import('../src/client/tool-handoff.js');
+const { readToolHandoff, TOOL_HANDOFF_FILES } = await import('../src/client/tool-handoff.js');
 
 const FIXTURE_NAMES = ['qqsecretcmd', 'qqothercmd', 'qqsecretfn', 'qqsecretalias'];
 
@@ -137,107 +130,5 @@ describe('readToolHandoff', () => {
     for (const name of [...FIXTURE_NAMES, 'echo']) {
       expect(logged).not.toContain(name);
     }
-  });
-
-  it('tags the inventory with the shell it came from (zsh by default)', async () => {
-    writeHandoff(dir);
-    const zsh = await readToolHandoff(dir);
-    expect(zsh?.shell).toBe('zsh');
-    const bash = await readToolHandoff(dir, { shell: 'bash' });
-    expect(bash?.shell).toBe('bash');
-  });
-});
-
-describe('readToolHandoff: tools.pending marker (D-05)', () => {
-  let dir: string;
-  let savedAwareness: string | undefined;
-  const timers: ReturnType<typeof setTimeout>[] = [];
-
-  /** Writes the files and removes the marker after `ms`, like a detached adapter writer. */
-  function finishLater(ms: number, files: Array<keyof typeof TOOL_HANDOFF_FILES> = []): void {
-    timers.push(
-      setTimeout(() => {
-        if (files.length > 0) writeHandoff(dir);
-        for (const key of Object.keys(TOOL_HANDOFF_FILES) as Array<
-          keyof typeof TOOL_HANDOFF_FILES
-        >) {
-          if (!files.includes(key)) rmSync(join(dir, TOOL_HANDOFF_FILES[key]), { force: true });
-        }
-        rmSync(join(dir, TOOL_HANDOFF_PENDING), { force: true });
-      }, ms),
-    );
-  }
-
-  beforeEach(() => {
-    dir = mkdtempSync(join(tmpdir(), 'qq-handoff-pending-'));
-    savedAwareness = process.env.QQ_TOOL_AWARENESS;
-    delete process.env.QQ_TOOL_AWARENESS;
-    vi.mocked(appendDebugLog).mockClear();
-  });
-
-  afterEach(() => {
-    for (const timer of timers.splice(0)) clearTimeout(timer);
-    if (savedAwareness === undefined) {
-      delete process.env.QQ_TOOL_AWARENESS;
-    } else {
-      process.env.QQ_TOOL_AWARENESS = savedAwareness;
-    }
-    rmSync(dir, { recursive: true, force: true });
-  });
-
-  it('names the marker and pins the budget and poll interval', () => {
-    expect(TOOL_HANDOFF_PENDING).toBe('tools.pending');
-    expect(TOOL_HANDOFF_PENDING_BUDGET_MS).toBe(500);
-    expect(TOOL_HANDOFF_PENDING_POLL_MS).toBe(10);
-  });
-
-  it('waits for the marker to go and then reads the files the writer left', async () => {
-    writeFileSync(join(dir, TOOL_HANDOFF_PENDING), '');
-    finishLater(50, ['commands', 'builtins', 'functions']);
-    const started = Date.now();
-    const inventory = await readToolHandoff(dir, { shell: 'bash' });
-    const elapsed = Date.now() - started;
-    expect(inventory?.commands.has('qqsecretcmd')).toBe(true);
-    expect(inventory?.shell).toBe('bash');
-    expect(elapsed).toBeLessThan(TOOL_HANDOFF_PENDING_BUDGET_MS);
-  });
-
-  it('gives up after the budget with reason pending-timeout and logs no tool name', async () => {
-    writeHandoff(dir);
-    writeFileSync(join(dir, TOOL_HANDOFF_PENDING), '');
-    const started = Date.now();
-    const inventory = await readToolHandoff(dir, { pendingBudgetMs: 100 });
-    const elapsed = Date.now() - started;
-    expect(inventory).toBeNull();
-    expect(elapsed).toBeGreaterThanOrEqual(90);
-    expect(vi.mocked(appendDebugLog)).toHaveBeenCalledWith('client', 'tool handoff unavailable', {
-      reason: 'pending-timeout',
-    });
-    const logged = JSON.stringify(vi.mocked(appendDebugLog).mock.calls);
-    for (const name of FIXTURE_NAMES) {
-      expect(logged).not.toContain(name);
-    }
-    expect(existsSync(join(dir, TOOL_HANDOFF_PENDING))).toBe(true);
-  });
-
-  it('QQ_TOOL_AWARENESS=0 returns null at once without waiting on a marker', async () => {
-    writeHandoff(dir);
-    writeFileSync(join(dir, TOOL_HANDOFF_PENDING), '');
-    process.env.QQ_TOOL_AWARENESS = '0';
-    const started = Date.now();
-    await expect(readToolHandoff(dir)).resolves.toBeNull();
-    expect(Date.now() - started).toBeLessThan(50);
-    expect(vi.mocked(appendDebugLog)).toHaveBeenCalledWith('client', 'tool handoff unavailable', {
-      reason: 'disabled',
-    });
-  });
-
-  it('a marker removed without commands.txt degrades to ENOENT', async () => {
-    writeFileSync(join(dir, TOOL_HANDOFF_PENDING), '');
-    finishLater(30, ['builtins', 'functions']);
-    await expect(readToolHandoff(dir)).resolves.toBeNull();
-    expect(vi.mocked(appendDebugLog)).toHaveBeenCalledWith('client', 'tool handoff unavailable', {
-      reason: 'ENOENT',
-    });
   });
 });
