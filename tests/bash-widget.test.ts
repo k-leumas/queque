@@ -32,6 +32,7 @@
  *   b22 Zellij: a failed mkfifo restores the line at once and launches nothing
  *   b23 Zellij: a zellij run that exits non-zero restores the line at once (sentinel line)
  *   b26 QQ_RESULT_FILE and the pane size reach the client but are not left in the shell
+ *   b27 the client stderr goes to client.err in the session dir (QQ_DEBUG_LOG_FILE when set)
  *   b24 no UTF-8 locale: the instant-frame locale fallback prints no setlocale warning
  *
  * Every shell starts without ZELLIJ* or TMUX, and with QQ_DAEMON_PREWARMED=1 so sourcing never
@@ -562,7 +563,9 @@ function triggerPath(bin: string): string {
 /**
  * A QQ_DEV_ROOT whose dist/cli/main.js stands in for the client: QQ_T_MODE=crash exits 3
  * without a result, anything else writes `{"kind":"cancel"}` to --result-file. With
- * QQ_T_ENV_OUT set it first records the QQ_RESULT_FILE it inherited into that file.
+ * QQ_T_ENV_OUT set it first records the QQ_RESULT_FILE it inherited into that file. With
+ * QQ_T_ERR_MARK set it writes that line to stderr, then copies <session>/client.err (or
+ * `missing`) into QQ_T_ERR_OUT.
  */
 function fakeDevRoot(): string {
   const root = mkdtempSync(join(scratch, 'devroot-'));
@@ -571,6 +574,12 @@ function fakeDevRoot(): string {
     join(root, 'dist', 'cli', 'main.js'),
     `const args = process.argv.slice(2);
 if (process.env.QQ_T_ENV_OUT) require('node:fs').writeFileSync(process.env.QQ_T_ENV_OUT, String(process.env.QQ_RESULT_FILE));
+if (process.env.QQ_T_ERR_MARK) {
+  const fs = require('node:fs');
+  process.stderr.write(process.env.QQ_T_ERR_MARK + '\\n');
+  const errFile = require('node:path').join(require('node:path').dirname(args[args.indexOf('--request-file') + 1]), 'client.err');
+  fs.writeFileSync(process.env.QQ_T_ERR_OUT, fs.existsSync(errFile) ? fs.readFileSync(errFile, 'utf8') : 'missing');
+}
 if (process.env.QQ_T_MODE === 'crash') process.exit(3);
 require('node:fs').writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
 `,
@@ -794,6 +803,50 @@ echo "after=[\${QQ_RESULT_FILE-unset}] env=[$(command printenv QQ_RESULT_FILE)]"
       expect(session).not.toBe('');
       expect(readFileSync(envOut, 'utf8')).toBe(`${session}/result.json`);
       expect(run.stdout).toContain('after=[unset] env=[]\n');
+    });
+
+    it('b27: client stderr goes to the 0700 session dir, never a fixed /tmp path (WR-04)', () => {
+      const body = questionBody();
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: shell source text, not a JS template
+      expect(body).not.toContain('/tmp/qq-${UID}-debug.log');
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: shell source text, not a JS template
+      expect(body).toContain('local qq_log_file=${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}');
+      // Both launches (the Zellij launcher and the inline client) use that one variable.
+      expect(body.match(/2>>"\$qq_log_file"/g)).toHaveLength(2);
+
+      const mark = `qq-b27-stderr-${process.pid}-${Date.now()}`;
+      const errOut = join(scratch, 'b27-client-err');
+      const run = runInteractiveBash(
+        `READLINE_LINE='ask?'; READLINE_POINT=4
+_qq_question
+echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
+        cleanEnv({
+          PATH: triggerPath(fakeBin({})),
+          QQ_DEV_ROOT: fakeDevRoot(),
+          QQ_T_ERR_MARK: mark,
+          QQ_T_ERR_OUT: errOut,
+        }),
+      );
+      expect(run.stdout).toContain('line=[ask] point=3');
+      expect(readFileSync(errOut, 'utf8')).toBe(`${mark}\n`);
+      const fixedLog = `/tmp/qq-${process.getuid?.() ?? ''}-debug.log`;
+      const fixedText = existsSync(fixedLog) ? readFileSync(fixedLog, 'utf8') : '';
+      expect(fixedText.includes(mark)).toBe(false);
+
+      // QQ_DEBUG_LOG_FILE still collects the client's stderr when a developer sets it.
+      const log = join(scratch, 'b27-debug.log');
+      runInteractiveBash(
+        `READLINE_LINE='ask?'; READLINE_POINT=4
+_qq_question`,
+        cleanEnv({
+          PATH: triggerPath(fakeBin({})),
+          QQ_DEV_ROOT: fakeDevRoot(),
+          QQ_T_ERR_MARK: `${mark}-log`,
+          QQ_T_ERR_OUT: join(scratch, 'b27-client-err-log'),
+          QQ_DEBUG_LOG_FILE: log,
+        }),
+      );
+      expect(readFileSync(log, 'utf8')).toContain(`${mark}-log\n`);
     });
 
     /** b21: one trigger with the writer active and the QQ_DEV_ROOT client in `mode`. */

@@ -1344,3 +1344,61 @@ if (args[0] === 'client') {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// 11-REVIEW WR-04: the client's stderr was appended to /tmp/qq-<uid>-debug.log, a fixed path
+// in world-writable /tmp that another local user can pre-create as a symlink or a FIFO.
+// Without QQ_DEBUG_LOG_FILE it now goes to client.err in the 0700 session dir.
+// ---------------------------------------------------------------------------
+
+describe('client stderr target (WR-04)', () => {
+  it('never appends to the fixed /tmp debug log path; both launches use the session dir', () => {
+    const body = questionWidgetBody();
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: shell source text, not a JS template
+    expect(body).not.toContain('/tmp/qq-${UID}-debug.log');
+    expect(body.match(/2>>"\$\{QQ_DEBUG_LOG_FILE:-\$tmpdir\/client\.err\}"/g)).toHaveLength(2);
+  });
+
+  it('the inline client writes its stderr into <session>/client.err', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-client-err-'));
+    try {
+      const devRoot = join(dir, 'repo');
+      const cliDir = join(devRoot, 'dist', 'cli');
+      const errOut = join(dir, 'client-err');
+      const mark = `qq-zsh-stderr-${process.pid}-${Date.now()}`;
+      mkdirSync(cliDir, { recursive: true });
+      writeFileSync(
+        join(cliDir, 'main.js'),
+        `const fs = require('node:fs');
+const path = require('node:path');
+const args = process.argv.slice(2);
+if (args[0] === 'client') {
+  process.stderr.write(${JSON.stringify(`${mark}\n`)});
+  const errFile = path.join(path.dirname(args[args.indexOf('--request-file') + 1]), 'client.err');
+  fs.writeFileSync(${JSON.stringify(errOut)}, fs.existsSync(errFile) ? fs.readFileSync(errFile, 'utf8') : 'missing');
+  fs.writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
+}
+`,
+      );
+      const script = [
+        'unset ZELLIJ',
+        'QQ_INSTANT_FRAME=0',
+        'QQ_DEV_ROOT="$1"',
+        'zle() { : }',
+        'LBUFFER="ask?"',
+        'RBUFFER=""',
+        'qq-question-widget',
+        'print -r -- "lbuffer=$LBUFFER"',
+      ].join('\n');
+      const { stdout } = runZshArgs(script, [devRoot], { QQ_DEBUG_LOG_FILE: undefined });
+
+      expect(stdout).toContain('lbuffer=ask\n');
+      expect(readFileSync(errOut, 'utf8')).toBe(`${mark}\n`);
+      const fixedLog = `/tmp/qq-${process.getuid?.() ?? ''}-debug.log`;
+      const fixedText = existsSync(fixedLog) ? readFileSync(fixedLog, 'utf8') : '';
+      expect(fixedText.includes(mark)).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

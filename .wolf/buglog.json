@@ -8983,6 +8983,30 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-15T10:50:00Z"
+    },
+    {
+      "id": "bug-550",
+      "timestamp": "2026-11-15T11:05:00Z",
+      "error_message": "11-REVIEW WR-04: both adapters appended the client's stderr to the fixed /tmp/qq-${UID}-debug.log with 2>> on every ??",
+      "file": "shell/zsh/queque.zsh",
+      "root_cause": "a predictable name in world-writable /tmp: `2>>` follows a symlink (stderr appended to e.g. ~/.bashrc) or blocks on a FIFO another local user pre-created (hangs the bind -x / ZLE widget); macOS has no fs.protected_symlinks. Copied from the zsh widget into bash",
+      "fix": "default the redirect to $tmpdir/client.err in the 0700 session dir (QQ_DEBUG_LOG_FILE still wins) in bash (qq_log_file, both launches) and zsh (inline + Zellij). Trade-off: without QQ_DEBUG_LOG_FILE the raw client stderr goes away with the session dir (CONTRIBUTING says so). Tests: bash-widget b27, zsh-widget 'client stderr target (WR-04)'",
+      "tags": [
+        "bash",
+        "zsh",
+        "tmp",
+        "symlink",
+        "fifo",
+        "stderr",
+        "security",
+        "phase-11",
+        "code-review"
+      ],
+      "related_bugs": [
+        "bug-549"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T11:05:00Z"
     }
   ]
 }

@@ -109,6 +109,8 @@ tail -f /tmp/qq-debug.log
 
 If you want to change the location, point `QQ_DEBUG_LOG_FILE` somewhere else before sourcing your shell config.
 
+The shell adapters also send the client's raw stderr (crash messages) to `QQ_DEBUG_LOG_FILE` when it is set. Without it, that stderr goes to `client.err` in the private session dir and is removed with it, so set `QQ_DEBUG_LOG_FILE` when you chase a client crash.
+
 The interactive shell hook also prewarms the daemon once per shell session, so the first `??` does not pay the full startup cost.
 
 ## Shell Adapter Tests (PTY Harness)

@@ -478,7 +478,10 @@ _qq_question() {
   _qq_start_tool_handoff "$tmpdir"
   _qq_log "tool handoff started"
 
-  local qq_log_file=${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}
+  # The client's stderr: QQ_DEBUG_LOG_FILE when a developer sets it, else a file in the 0700
+  # session dir that goes with it. Never a fixed /tmp name: `2>>` follows a symlink or blocks
+  # on a FIFO another local user could create there first (WR-04).
+  local qq_log_file=${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}
 
   if [[ -n ${ZELLIJ:-} ]]; then
     # ---- Zellij path (D-07): the client in a floating pane, the result through a FIFO ----

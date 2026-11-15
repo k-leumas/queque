@@ -461,11 +461,14 @@ JSON
     fi
     _qq_log "pane instant frame=${#pane_cmd[@]}"
 
-    # Launch the floating pane backgrounded+disowned (D-06).
+    # Launch the floating pane backgrounded+disowned (D-06). Its stderr, like the
+    # inline client's, goes to QQ_DEBUG_LOG_FILE or else client.err in the 0700 session
+    # dir: never a fixed /tmp name another local user could pre-create as a symlink or a
+    # FIFO (WR-04).
     # Launch at config height; qq client shrinks the pane once content is rendered.
     zellij run --floating --close-on-exit --width "$qq_pane_width" --height "$qq_pane_height" --name "qq" -- \
       "${pane_cmd[@]}" client --request-file "$req_file" --result-file "$fifo_path" \
-      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" &!
+      2>>"${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}" &!
 
     # Block on FIFO read with a 30 s timeout (D-05).
     local result='{"kind":"cancel"}'
@@ -484,7 +487,7 @@ JSON
     # can open /dev/tty and render the selection UI inline.
     local qq_client_status=0
     "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
-      2>>"${QQ_DEBUG_LOG_FILE:-/tmp/qq-${UID}-debug.log}" || qq_client_status=$?
+      2>>"${QQ_DEBUG_LOG_FILE:-$tmpdir/client.err}" || qq_client_status=$?
 
     # A client that crashed (before or after Ink) cannot clear the instant
     # frame: restore the widget's own fresh save (the reserve top) and erase.
