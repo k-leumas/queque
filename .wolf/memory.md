@@ -969,3 +969,5 @@
 | 02:29 | Edited tests/bash-widget.test.ts | added optional chaining | ~552 |
 | 02:30 | Edited shell/bash/queque.bash | 1→4 lines | ~84 |
 | 11:05 | fix(11) WR-04: client stderr defaults to $tmpdir/client.err (0700) in bash and zsh, not /tmp/qq-UID-debug.log; b27 + zsh client stderr target; CONTRIBUTING note; full suite 1858 green | shell/bash/queque.bash, shell/zsh/queque.zsh, CONTRIBUTING.md, tests | fixed | ~5k |
+| 02:32 | Edited src/cli/commands/client.ts | added 2 condition(s) | ~303 |
+| 11:15 | fix(11) WR-05: client resolveResultMode ignores empty/unknown QQ_TEST_RESULT_MODE (only cancel/replace-buffer-fixture count); tests + CONTRIBUTING; full suite 1862 green | src/cli/commands/client.ts, tests/client-result.test.ts, CONTRIBUTING.md | fixed | ~3k |

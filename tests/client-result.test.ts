@@ -5,6 +5,7 @@ import * as path from 'node:path';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { resolveResultMode } from '../src/cli/commands/client.js';
 import { TOOL_HANDOFF_FILES, TOOL_HANDOFF_PENDING } from '../src/client/tool-handoff.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
 import { abortError, type FetchOptions } from '../src/providers/provider.js';
@@ -1745,5 +1746,35 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
     await runForegroundClient({ requestFile, resultFile, resultMode });
     expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 11-REVIEW WR-05: QQ_TEST_RESULT_MODE is a test hook in the shipped client. Only the two
+// fixture names may change the result; an empty or stale value must never turn every `??`
+// into a silent cancel. The --result-mode flag keeps its own rules (unknown means cancel).
+// ---------------------------------------------------------------------------
+
+describe('resolveResultMode (WR-05)', () => {
+  it('no flag and no env var is the real llm path', () => {
+    expect(resolveResultMode(undefined, undefined)).toBe('llm');
+  });
+
+  it('the env var selects only the two fixture modes the PTY tests use', () => {
+    expect(resolveResultMode(undefined, 'cancel')).toBe('cancel');
+    expect(resolveResultMode(undefined, 'replace-buffer-fixture')).toBe('replace-buffer-fixture');
+    expect(resolveResultMode(undefined, 'llm')).toBe('llm');
+  });
+
+  it('an empty, stale or unknown env value is ignored, never a cancel', () => {
+    for (const value of ['', ' ', 'replace-buffer', 'CANCEL', 'fixture', '1']) {
+      expect(resolveResultMode(undefined, value), JSON.stringify(value)).toBe('llm');
+    }
+  });
+
+  it('the --result-mode flag wins over the env var and keeps unknown-means-cancel', () => {
+    expect(resolveResultMode('llm', 'cancel')).toBe('llm');
+    expect(resolveResultMode('replace-buffer-fixture', 'cancel')).toBe('replace-buffer-fixture');
+    expect(resolveResultMode('bogus', undefined)).toBe('cancel');
   });
 });

@@ -9007,6 +9007,26 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-11-15T11:05:00Z"
+    },
+    {
+      "id": "bug-551",
+      "timestamp": "2026-11-15T11:15:00Z",
+      "error_message": "11-REVIEW WR-05: an empty or stale QQ_TEST_RESULT_MODE leaked into a real shell turned every ?? into a silent cancel",
+      "file": "src/cli/commands/client.ts",
+      "root_cause": "clientCommand passed process.env.QQ_TEST_RESULT_MODE straight to parseResultMode, which maps anything but undefined/llm/cancel/replace-buffer-fixture (empty string included) to cancel and only debug-logs it",
+      "fix": "new exported resolveResultMode(flag, envMode): the --result-mode flag keeps parseResultMode's rules; the env var counts only for the fixture names cancel / replace-buffer-fixture, any other value is debug-logged and ignored (llm). shell-pty tests still drive both fixture modes. tests/client-result.test.ts 'resolveResultMode (WR-05)'; CONTRIBUTING row updated",
+      "tags": [
+        "client",
+        "test-hook",
+        "env",
+        "QQ_TEST_RESULT_MODE",
+        "silent-cancel",
+        "phase-11",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T11:15:00Z"
     }
   ]
 }
