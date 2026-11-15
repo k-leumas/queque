@@ -1005,3 +1005,5 @@
 | Time | Action | File(s) | Outcome | ~Tokens |
 |------|--------|---------|---------|--------|
 | 03:05 | Drafted update-notifier GSD todo | .planning/todos/pending/2026-11-15-update-notifier.md | created | ~1500 |
+| 03:06 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VERIFICATION.md | — | ~5852 |
+| 03:08 | verifier phase 11: 81/82 + README line-budget override accepted by user -> passed | 11-VERIFICATION.md | passed | ~3k |
