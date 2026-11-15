@@ -1008,3 +1008,5 @@
 | 03:06 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VERIFICATION.md | — | ~5852 |
 | 03:08 | verifier phase 11: 81/82 + README line-budget override accepted by user -> passed | 11-VERIFICATION.md | passed | ~3k |
 | 03:08 | phase.complete 11: ROADMAP/STATE/REQUIREMENTS updated (BASH-01 Complete); 11 summary-path warnings are command strings/home paths, not missing files | .planning/ | done | ~2k |
+| 03:09 | transition: PROJECT.md evolved after Phase 11 (bash validated, D-12 + README decisions); phase 11 done | .planning/PROJECT.md | done | ~2k |
+| 03:09 | Session end: 1 writes across 1 files (11-VERIFICATION.md) | 0 reads | ~6270 tok |

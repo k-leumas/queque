@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T08:37:34.267Z
-> Files: 768 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T09:06:37.704Z
+> Files: 769 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -841,6 +841,7 @@
 - `11-REVIEW.md` — Phase 11: Code Review Report (~3548 tok)
 - `11-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2154 tok)
 - `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1816 tok)
+- `11-VERIFICATION.md` — Phase 11: Multi-shell trigger support (bash, fish-ready): Verification Report (~5486 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
