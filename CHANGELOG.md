@@ -1,3 +1,16 @@
+## [0.10.1](https://github.com/k-leumas/queque/compare/v0.10.0...v0.10.1) (2026-11-15)
+
+### Bug Fixes
+
+- Fixed an issue where QueQue's background warm-up process could interfere with your shell's input, which could cause typing or command execution to behave oddly right after opening a new terminal session.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **zsh:** detach the daemon prewarm from the terminal's stdin (#33) ([34c776c](https://github.com/k-leumas/queque/commit/34c776c3e6ece2ed4c82aa66b1d4e5512e00afc2))
+
+</details>
+
 # [0.10.0](https://github.com/k-leumas/queque/compare/v0.9.2...v0.10.0) (2026-11-15)
 
 ### Features
