@@ -1,3 +1,17 @@
+# [0.10.0](https://github.com/k-leumas/queque/compare/v0.9.2...v0.10.0) (2026-11-15)
+
+### Features
+
+- QueQue now works in Bash 5, so typing ?? on the command line brings up suggestions in Bash shells, not just zsh.
+- The setup and doctor commands now recognize and configure Bash alongside zsh, making it easier to get the ?? trigger working in either shell.
+
+<details>
+<summary>Detailed changes</summary>
+
+* bash 5 support for the ?? trigger (#30) ([2862cde](https://github.com/k-leumas/queque/commit/2862cde8cc0f24f521af29f11b3659846c4c725f))
+
+</details>
+
 ## [0.9.2](https://github.com/k-leumas/queque/compare/v0.9.1...v0.9.2) (2026-11-05)
 
 ## [0.9.1](https://github.com/k-leumas/queque/compare/v0.9.0...v0.9.1) (2026-11-03)
