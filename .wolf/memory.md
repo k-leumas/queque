@@ -4310,3 +4310,4 @@
 | 01:51 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-msg.txt | — | ~103 |
 | 14:10 | wrote and committed 11-11 SUMMARY (gate 1849/1849, macOS bash UAT approved route A, CI 43634554226 green, 3 deviations; flagged stray .wolf/anatomy.md.orig) | .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-11-SUMMARY.md | committed c2fe2d0 | ~6k |
 | 01:52 | removed stray .wolf/anatomy.md.orig (committed by mistake in 69e3e81); reverted a truncated OpenWolf anatomy rescan; 11-11 tracking complete | .wolf/, .planning/ | done | ~2k |
+| 01:54 | validate-phase 11: 0 gaps, nyquist_compliant true, VALIDATION.md validated | .planning/phases/11-*/11-VALIDATION.md | done | ~4k |
