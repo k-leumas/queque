@@ -938,3 +938,6 @@
 | 01:54 | Session end: 5 writes across 5 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 2 reads | ~13884 tok |
 | 02:01 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-SECURITY.md | — | ~2297 |
 | 02:01 | secure-phase 11: 42/42 threats closed (2 accepted), threats_open 0; wrote 11-SECURITY.md | .planning/phases/11-*/11-SECURITY.md | done | ~6k |
+| 02:02 | Session end: 6 writes across 6 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 3 reads | ~24173 tok |
+| 02:13 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-REVIEW.md | — | ~3785 |
+| 02:14 | code review phase 11: 70 files, 0 critical / 6 warning / 6 info; disposition ledger all open | .planning/phases/11-*/11-REVIEW.md | done | ~5k |
