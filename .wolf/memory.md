@@ -954,3 +954,14 @@
 | 02:24 | Edited shell/bash/queque.bash | expanded (+8 lines) | ~110 |
 | 02:24 | Edited tests/bash-widget.test.ts | 6→9 lines | ~149 |
 | 10:35 | fix(11) WR-02: bash ?? checks type -P jq before the instant frame, prints one stderr line; b25 + b8 order pin; full suite 1851 green | shell/bash/queque.bash, tests/bash-widget.test.ts | fixed | ~3k |
+| 02:26 | Edited tests/bash-widget.test.ts | added 1 condition(s) | ~200 |
+| 02:26 | Edited tests/bash-widget.test.ts | added nullish coalescing | ~269 |
+| 02:26 | Edited tests/bash-widget.test.ts | 2→2 lines | ~30 |
+| 02:26 | Edited tests/bash-widget.test.ts | added nullish coalescing | ~23 |
+| 02:26 | Edited tests/bash-widget.test.ts | expanded (+16 lines) | ~320 |
+| 02:26 | Edited shell/bash/queque.bash | 7→9 lines | ~170 |
+| 02:27 | Edited shell/bash/queque.bash | 2→2 lines | ~22 |
+| 02:27 | Edited shell/zsh/queque.zsh | 9→12 lines | ~187 |
+| 02:27 | Edited shell/zsh/queque.zsh | 2→2 lines | ~23 |
+| 02:28 | Edited tests/zsh-widget.test.ts | 2→3 lines | ~63 |
+| 10:50 | fix(11) WR-03: QQ_RESULT_FILE + pane size local -x in bash and zsh (no stale exports after ??); b26 + zsh session env scope; full suite 1855 green | shell/bash/queque.bash, shell/zsh/queque.zsh, shell/README.md, tests | fixed | ~5k |

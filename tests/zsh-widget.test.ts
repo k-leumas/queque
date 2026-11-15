@@ -1286,3 +1286,61 @@ describe('mktemp failure', () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// 11-REVIEW WR-03: QQ_RESULT_FILE and the pane size are `local -x`, so the client (and the
+// Zellij pane) inherit them but the user's shell keeps none of them after `??`. A stale
+// exported path would let any later crashing `qq` write into a deleted session dir.
+// ---------------------------------------------------------------------------
+
+describe('session env scope (WR-03)', () => {
+  it('scopes QQ_RESULT_FILE and the pane size to the widget call on both paths', () => {
+    const body = questionWidgetBody();
+    expect(body).not.toMatch(/export QQ_(RESULT_FILE|PANE_WIDTH|PANE_HEIGHT)/);
+    expect(body.match(/local -x QQ_RESULT_FILE=/g)).toHaveLength(2);
+    expect(body).toContain('local -x QQ_PANE_WIDTH="$qq_pane_width"');
+    expect(body).toContain('local -x QQ_PANE_HEIGHT="$qq_pane_height"');
+  });
+
+  it('the inline client gets QQ_RESULT_FILE; the shell has no trace of it afterwards', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'qq-env-scope-'));
+    try {
+      const devRoot = join(dir, 'repo');
+      const cliDir = join(devRoot, 'dist', 'cli');
+      const envOut = join(dir, 'client-env');
+      mkdirSync(cliDir, { recursive: true });
+      writeFileSync(
+        join(cliDir, 'main.js'),
+        `const fs = require('node:fs');
+const args = process.argv.slice(2);
+if (args[0] === 'client') {
+  fs.writeFileSync(${JSON.stringify(envOut)}, String(process.env.QQ_RESULT_FILE));
+  fs.writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
+}
+`,
+      );
+      const script = [
+        'unset ZELLIJ',
+        'QQ_INSTANT_FRAME=0',
+        'QQ_DEV_ROOT="$1"',
+        'zle() { : }',
+        'LBUFFER="ask?"',
+        'RBUFFER=""',
+        'qq-question-widget',
+        // biome-ignore lint/suspicious/noTemplateCurlyInString: zsh source text, not a JS template
+        'print -r -- "after=[${QQ_RESULT_FILE-unset}] env=[$(printenv QQ_RESULT_FILE)]"',
+        'print -r -- "lbuffer=$LBUFFER"',
+      ].join('\n');
+      const { stdout } = runZshArgs(script, [devRoot], {
+        QQ_RESULT_FILE: undefined,
+        QQ_DEBUG_LOG_FILE: undefined,
+      });
+
+      expect(readFileSync(envOut, 'utf8')).toMatch(/^\/tmp\/qq-sess\.[A-Za-z0-9]+\/result\.json$/);
+      expect(stdout).toContain('after=[unset] env=[]\n');
+      expect(stdout).toContain('lbuffer=ask\n');
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});

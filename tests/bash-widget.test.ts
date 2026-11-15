@@ -31,6 +31,7 @@
  *   b20 Zellij: a pane that never answers gives the prompt back after the read timeout
  *   b22 Zellij: a failed mkfifo restores the line at once and launches nothing
  *   b23 Zellij: a zellij run that exits non-zero restores the line at once (sentinel line)
+ *   b26 QQ_RESULT_FILE and the pane size reach the client but are not left in the shell
  *   b24 no UTF-8 locale: the instant-frame locale fallback prints no setlocale warning
  *
  * Every shell starts without ZELLIJ* or TMUX, and with QQ_DAEMON_PREWARMED=1 so sourcing never
@@ -560,7 +561,8 @@ function triggerPath(bin: string): string {
 
 /**
  * A QQ_DEV_ROOT whose dist/cli/main.js stands in for the client: QQ_T_MODE=crash exits 3
- * without a result, anything else writes `{"kind":"cancel"}` to --result-file.
+ * without a result, anything else writes `{"kind":"cancel"}` to --result-file. With
+ * QQ_T_ENV_OUT set it first records the QQ_RESULT_FILE it inherited into that file.
  */
 function fakeDevRoot(): string {
   const root = mkdtempSync(join(scratch, 'devroot-'));
@@ -568,6 +570,7 @@ function fakeDevRoot(): string {
   writeFileSync(
     join(root, 'dist', 'cli', 'main.js'),
     `const args = process.argv.slice(2);
+if (process.env.QQ_T_ENV_OUT) require('node:fs').writeFileSync(process.env.QQ_T_ENV_OUT, String(process.env.QQ_RESULT_FILE));
 if (process.env.QQ_T_MODE === 'crash') process.exit(3);
 require('node:fs').writeFileSync(args[args.indexOf('--result-file') + 1], '{"kind":"cancel"}\\n');
 `,
@@ -773,6 +776,26 @@ command sleep 0.5`,
       expectCleanExit('crash');
     });
 
+    it('b26: QQ_RESULT_FILE reaches the inline client but not the shell after ?? (WR-03)', () => {
+      const envOut = join(scratch, 'b26-inline-env');
+      const log = join(scratch, 'b26-inline.log');
+      const run = runInteractiveBash(
+        `READLINE_LINE='ask?'; READLINE_POINT=4
+_qq_question
+echo "after=[\${QQ_RESULT_FILE-unset}] env=[$(command printenv QQ_RESULT_FILE)]"`,
+        cleanEnv({
+          PATH: triggerPath(fakeBin({})),
+          QQ_DEV_ROOT: fakeDevRoot(),
+          QQ_T_ENV_OUT: envOut,
+          QQ_DEBUG_LOG_FILE: log,
+        }),
+      );
+      const session = sessionDirFromLog(log);
+      expect(session).not.toBe('');
+      expect(readFileSync(envOut, 'utf8')).toBe(`${session}/result.json`);
+      expect(run.stdout).toContain('after=[unset] env=[]\n');
+    });
+
     /** b21: one trigger with the writer active and the QQ_DEV_ROOT client in `mode`. */
     function expectCleanExit(mode: 'cancel' | 'crash'): void {
       const root = fakeDevRoot();
@@ -845,7 +868,7 @@ interface ZellijRun {
 /** One `??` on `find qqsecret files?` with the fake zellij, ZELLIJ=0 unless `env` unsets it. */
 function runZellijTrigger(
   mode: 'reply' | 'silent' | 'fail',
-  opts: { bin?: string; env?: NodeJS.ProcessEnv; before?: string } = {},
+  opts: { bin?: string; env?: NodeJS.ProcessEnv; before?: string; after?: string } = {},
 ): ZellijRun {
   const out = mkdtempSync(join(scratch, 'zellij-out-'));
   const root = fakeDevRoot();
@@ -859,6 +882,7 @@ _qq_question
 t1=$EPOCHREALTIME
 echo "line=[$READLINE_LINE] point=$READLINE_POINT"
 echo "ms=$(( (\${t1/./} - \${t0/./}) / 1000 ))"
+${opts.after ?? ''}
 history 1`,
     cleanEnv({
       PATH: triggerPath(opts.bin ?? fakeBin({})),
@@ -932,6 +956,22 @@ describe.skipIf(bash5 === null || jq === null)(
       expect(fileLines(join(z.out, 'result-file-env'))).toEqual([`${z.session}/result.fifo`]);
       expect(fileLines(join(z.out, 'pane-env'))).toEqual(['80', '24']);
       expect(pollUntil(() => !existsSync(z.session), 3000)).toBe(true);
+    });
+
+    it('b26: the pane sees QQ_RESULT_FILE and the size; the shell keeps none of it (WR-03)', () => {
+      const after = `echo "after=[\${QQ_RESULT_FILE-unset}|\${QQ_PANE_WIDTH-unset}|\${QQ_PANE_HEIGHT-unset}]"
+echo "env=[$(command printenv QQ_RESULT_FILE)|$(command printenv QQ_PANE_WIDTH)|$(command printenv QQ_PANE_HEIGHT)]"`;
+      const z = runZellijTrigger('reply', { after });
+      expect(fileLines(join(z.out, 'result-file-env'))).toEqual([`${z.session}/result.fifo`]);
+      expect(fileLines(join(z.out, 'pane-env'))).toEqual(['80', '24']);
+      expect(z.run.stdout).toContain('after=[unset|unset|unset]\n');
+      expect(z.run.stdout).toContain('env=[||]\n');
+
+      // A width the user exported stays exactly as it was.
+      const kept = runZellijTrigger('reply', { after, env: { QQ_PANE_WIDTH: '100' } });
+      expect(fileLines(join(kept.out, 'pane-env'))).toEqual(['100', '24']);
+      expect(kept.run.stdout).toContain('after=[unset|100|unset]\n');
+      expect(kept.run.stdout).toContain('env=[|100|]\n');
     });
 
     it('b19: QQ_PANE_WIDTH=100 gives --width 100 and a 98-column pane frame', () => {

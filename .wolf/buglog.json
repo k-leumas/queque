@@ -8962,6 +8962,27 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-15T10:35:00Z"
+    },
+    {
+      "id": "bug-549",
+      "timestamp": "2026-11-15T10:50:00Z",
+      "error_message": "11-REVIEW WR-03: QQ_RESULT_FILE, QQ_PANE_WIDTH and QQ_PANE_HEIGHT stayed exported in the user's shell after every ?? (bash and zsh)",
+      "file": "shell/bash/queque.bash",
+      "root_cause": "`export` inside the trigger function outlives the call, so every later command inherited a path into a deleted /tmp/qq-sess.* dir; main.ts crash handlers writeFileSync a cancel there for any crashing qq subcommand, and a local user could recreate the dir with a symlink or FIFO (copied from the zsh widget)",
+      "fix": "`local -x` in both adapters (bash _qq_question, zsh qq-question-widget) for QQ_RESULT_FILE on both paths and the pane size: children still inherit, the shell's own value is restored on return. Tests: bash-widget b26 (inline and Zellij, a user-exported QQ_PANE_WIDTH survives), zsh-widget 'session env scope (WR-03)'. shell/README.md tells adapter authors to scope the export",
+      "tags": [
+        "bash",
+        "zsh",
+        "env-leak",
+        "QQ_RESULT_FILE",
+        "local-x",
+        "security",
+        "phase-11",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T10:50:00Z"
     }
   ]
 }

@@ -1070,16 +1070,16 @@
 
 ## shell/
 
-- `README.md` — Shell adapter contract for authors (Phase 11 D-01/D-02, 11-10): trigger rules, session dir, request.json fields (`shell`, `shellVersion`), result kinds, cursor restore, history, the Zellij timeout and setup failures, the tool handoff (`tools.pending`, two-flag `closed` cleanup), instant-frame parity, and the new-shell checklist gated by tests/shell-names-invariant.test.ts. (~2670 tok)
+- `README.md` — Shell adapter contract for authors (Phase 11 D-01/D-02, 11-10): trigger rules, session dir, request.json fields (`shell`, `shellVersion`), result kinds, cursor restore, history, the Zellij timeout and setup failures, the tool handoff (`tools.pending`, two-flag `closed` cleanup), instant-frame parity, and the new-shell checklist gated by tests/shell-names-invariant.test.ts. Adapters scope the QQ_RESULT_FILE export to the trigger call. (~2670 tok)
 
 ## shell/bash/
 
-- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). en_US.UTF-8 locale fallback is `{ LC_ALL=…; } 2>/dev/null`, so no setlocale warning leaks (WR-01). A missing jq (type -P) prints `queque: jq not found` before the paint (WR-02). (~6400 tok)
+- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). en_US.UTF-8 locale fallback is `{ LC_ALL=…; } 2>/dev/null`, so no setlocale warning leaks (WR-01). A missing jq (type -P) prints `queque: jq not found` before the paint (WR-02). QQ_RESULT_FILE and the pane size are `local -x` (not left in the shell, WR-03). (~6400 tok)
 
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). (~5619 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). QQ_RESULT_FILE and the pane size are `local -x`, scoped to the widget call (WR-03). (~5619 tok)
 
 ## src/
 

@@ -507,12 +507,14 @@ _qq_question() {
     fi
 
     # The uncaughtException/unhandledRejection handlers in main.ts write a cancel result to
-    # QQ_RESULT_FILE even when an error escapes the client.
-    export QQ_RESULT_FILE=$fifo
+    # QQ_RESULT_FILE even when an error escapes the client. `local -x`: the launcher and the
+    # pane inherit it, the user's shell does not keep a path into a deleted dir (WR-03).
+    local -x QQ_RESULT_FILE=$fifo
 
-    # Pane size: QQ_PANE_WIDTH / QQ_PANE_HEIGHT, default 80x24 (exported for the client).
+    # Pane size: QQ_PANE_WIDTH / QQ_PANE_HEIGHT, default 80x24 (exported for the client, for
+    # this call only; a value the user exported is back as it was afterwards).
     local qq_pane_width=${QQ_PANE_WIDTH:-80} qq_pane_height=${QQ_PANE_HEIGHT:-24}
-    export QQ_PANE_WIDTH=$qq_pane_width QQ_PANE_HEIGHT=$qq_pane_height
+    local -x QQ_PANE_WIDTH=$qq_pane_width QQ_PANE_HEIGHT=$qq_pane_height
 
     # Instant first frame (D-04): written to a file in the 0700 session dir; the pane wrapper
     # cats it, then execs the unchanged client argv. A width that is not all digits (e.g. a
@@ -560,7 +562,7 @@ _qq_question() {
   else
     # ---- Inline path: the client runs as a foreground child and writes a result file ----
     local result_file=$tmpdir/result.json
-    export QQ_RESULT_FILE=$result_file
+    local -x QQ_RESULT_FILE=$result_file
     local qq_client_status=0
     command "${qq_cmd[@]}" client --request-file "$req_file" --result-file "$result_file" \
       2>>"$qq_log_file" || qq_client_status=$?

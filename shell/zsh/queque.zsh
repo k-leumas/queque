@@ -434,13 +434,16 @@ JSON
 
     # Export FIFO path so uncaughtException/unhandledRejection handlers in main.ts
     # can write a cancel result even if the error escapes the Promise block.
-    export QQ_RESULT_FILE="$fifo_path"
+    # `local -x`: the pane inherits it, the user's shell does not keep a path into a
+    # deleted session dir after the widget returns (WR-03).
+    local -x QQ_RESULT_FILE="$fifo_path"
 
     # Pane dimensions — override with QQ_PANE_WIDTH / QQ_PANE_HEIGHT (defaults 80×24).
+    # Exported for this call only; a value the user exported is back afterwards.
     local qq_pane_width="${QQ_PANE_WIDTH:-80}"
     local qq_pane_height="${QQ_PANE_HEIGHT:-24}"
-    export QQ_PANE_WIDTH="$qq_pane_width"
-    export QQ_PANE_HEIGHT="$qq_pane_height"
+    local -x QQ_PANE_WIDTH="$qq_pane_width"
+    local -x QQ_PANE_HEIGHT="$qq_pane_height"
 
     # Instant first frame (LD-1): the frame goes to a file in the 0700 session
     # dir; the pane wrapper cats it, then execs the unchanged client argv. A
@@ -474,7 +477,7 @@ JSON
   else
     # ---- Inline path: foreground child writes to a regular temp file ----
     local result_file="$tmpdir/result.json"
-    export QQ_RESULT_FILE="$result_file"
+    local -x QQ_RESULT_FILE="$result_file"
     _qq_log "inline mode result_file=${result_file}"
 
     # Run the client as a foreground child. ZLE yields the terminal so Ink

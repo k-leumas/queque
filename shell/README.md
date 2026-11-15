@@ -47,7 +47,7 @@ Written into the session dir with a JSON tool (`jq -n --arg …`, or `jq -Rs .` 
 
 The line travels as two strings, never as a buffer plus a cursor index: Node counts UTF-16 units and shells count characters.
 
-Then run `qq client --request-file <dir>/request.json --result-file <file>`, and export `QQ_RESULT_FILE=<file>` first so the client's crash handlers can still write a cancel.
+Then run `qq client --request-file <dir>/request.json --result-file <file>`, and export `QQ_RESULT_FILE=<file>` to the client first so its crash handlers can still write a cancel. Scope that export to the trigger call (bash and zsh use `local -x`): left in the user's shell it points into a deleted session dir, and any later `qq` that crashes would write there.
 
 ## Results
 
