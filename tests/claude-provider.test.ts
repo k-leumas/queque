@@ -1,9 +1,11 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { buildBaseContext } from '../src/context/base-context.js';
 import type { CommandCandidate } from '../src/contracts/candidates.js';
 import type { ContextEnvelope } from '../src/contracts/request.js';
+import { normalizedRequestSchema } from '../src/contracts/request.js';
 import {
   buildPrompt,
   claudeAdapter,
@@ -11,6 +13,7 @@ import {
   QUEQUE_SYSTEM,
   resetAnthropicClientCache,
   SDK_MAX_TOKENS,
+  SHELL_SYNTAX_INSTRUCTION,
   sdkOutputConfig,
   TRUNCATED_RESPONSE_MESSAGE,
 } from '../src/providers/claude.js';
@@ -755,5 +758,80 @@ describe('SDK effort as output_config (D-03)', () => {
       (call) => call[0] === 'provider' && call[1] === 'request start',
     );
     expect((start?.[2] as { effort?: string } | undefined)?.effort).toBe('none');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Phase 11 D-06: every provider asks for the current shell's syntax through the
+// shared user prompt; the system prompt stays shell-independent so the warm
+// `claude -p` process (keyed on it) is reused across shells.
+// ---------------------------------------------------------------------------
+
+function withShell(
+  shellName: ContextEnvelope['base']['shellName'],
+  extras: ContextEnvelope['extras'] = [],
+): ContextEnvelope {
+  const envelope = buildEnvelope(extras);
+  return { ...envelope, base: { ...envelope.base, shellName } };
+}
+
+describe('shell syntax in the prompt (Phase 11 D-06)', () => {
+  it.each(['zsh', 'bash'] as const)('names %s in the prompt and asks for its syntax', (shell) => {
+    const prompt = buildPrompt(withShell(shell));
+    expect(prompt).toContain(`"shellName": "${shell}"`);
+    expect(prompt.split('\n')).toContain(SHELL_SYNTAX_INSTRUCTION);
+  });
+
+  it('puts the instruction in the instruction block, before the Shell context', () => {
+    const lines = buildPrompt(withShell('bash')).split('\n');
+    const safe = lines.indexOf('The command should be safe to place back into a shell buffer.');
+    const instruction = lines.indexOf(SHELL_SYNTAX_INSTRUCTION);
+    expect(safe).toBeGreaterThanOrEqual(0);
+    expect(instruction).toBeGreaterThan(safe);
+    expect(instruction).toBeLessThan(lines.indexOf('Shell context:'));
+  });
+
+  it('carries bash from a normalized request through buildBaseContext into the prompt', () => {
+    const request = normalizedRequestSchema.parse({
+      version: 1,
+      ttyPath: '/dev/ttys001',
+      cwd: '/repo',
+      shellPid: 1234,
+      lbuffer: 'list files',
+      rbuffer: '',
+      shell: 'bash',
+      shellVersion: '5.3.0(1)-release',
+      intent: 'general',
+      confidence: 0.5,
+    });
+    const prompt = buildPrompt({ base: buildBaseContext(request), extras: [] });
+    expect(prompt).toContain('"shellName": "bash"');
+    expect(prompt).toContain(SHELL_SYNTAX_INSTRUCTION);
+    expect(prompt).not.toContain('5.3.0');
+  });
+
+  it('keeps the system prompt identical for a zsh and a bash request', () => {
+    expect(buildSystemPrompt(withShell('bash'))).toBe(buildSystemPrompt(withShell('zsh')));
+    const tools: ContextEnvelope['extras'] = [
+      { kind: 'installed-tools', payload: { tools: ['fd', 'rg'] } },
+    ];
+    expect(buildSystemPrompt(withShell('bash', tools))).toBe(
+      buildSystemPrompt(withShell('zsh', tools)),
+    );
+  });
+
+  it('every provider adapter builds its user prompt through buildPrompt', () => {
+    // Adapters that hand the envelope to another adapter instead of prompting a model.
+    const delegators = new Set(['claude-default.ts']);
+    const dir = join(import.meta.dirname, '..', 'src', 'providers');
+    const adapters = readdirSync(dir)
+      .filter((name) => name.endsWith('.ts'))
+      .filter((name) => readFileSync(join(dir, name), 'utf8').includes(': LLMAdapter = {'));
+    expect(adapters.length).toBeGreaterThanOrEqual(4);
+    const missing = adapters.filter(
+      (name) =>
+        !delegators.has(name) && !readFileSync(join(dir, name), 'utf8').includes('buildPrompt('),
+    );
+    expect(missing).toEqual([]);
   });
 });

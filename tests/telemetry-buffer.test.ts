@@ -35,6 +35,8 @@ const ENVIRONMENT = {
     os: 'linux',
     arch: 'x64',
     distro: 'ubuntu',
+    shell: 'zsh',
+    shell_version: '5.9',
     zsh: '5.9',
     node_major: 22,
     zellij: false,

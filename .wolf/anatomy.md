@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-10-30T17:12:54.398Z
-> Files: 557 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T10:02:39.618Z
+> Files: 769 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -20,6 +20,97 @@
 - `p91-raw.mjs` — Phase 09.1 research probe: spawn /usr/local/bin/claude with arbitrary args, optionally write a (~747 tok)
 - `p91-sum.mjs` — Summarize p91-raw dumps: stage times relative to spawn (cold) or stdin write (warm). (~640 tok)
 - `prespawn-probe.mjs` — Measures a PRE-SPAWNED `claude -p` (what a daemon-side warm process would look like): (~907 tok)
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/
+
+- `11-01-ac1.sh` — Declares SHELL_NAMES (~403 tok)
+- `11-01-ac2.sh` — Declares shellVersionOf (~269 tok)
+- `11-01-ac3.sh` (~254 tok)
+- `11-01-env.sh` (~41 tok)
+- `11-01-msg.txt` (~57 tok)
+- `11-01-probe.sh` (~308 tok)
+- `11-01-pty-tail.ts` — Declares version (~1748 tok)
+- `11-01-red.sh` — Declares fs (~396 tok)
+- `11-02-msg.txt` (~40 tok)
+- `11-02-red.mjs` — Usage: node 11-02-red.mjs <out.json> <targetFile> <targetTest> <expected> <actual> <-t pattern> (~226 tok)
+- `11-02-verify.sh` — Plan 11-02 plan-level verification, run from the worktree root. (~208 tok)
+- `11-02-zshjson.zsh` — Renders the widget's request heredoc shape and validates it with jq. (~99 tok)
+- `11-03-ac1.sh` — Declares TOOL_HANDOFF_PENDING_BUDGET_MS (~327 tok)
+- `11-03-ac2.sh` (~228 tok)
+- `11-03-msg.txt` (~47 tok)
+- `11-03-probe.mjs` — Declares root (~250 tok)
+- `11-03-red.mjs` — usage: node 11-03-red.mjs <outJson> <testFile> <pattern> <targetTest> <expected> <actual> <semantic> (~259 tok)
+- `11-03-verify.sh` (~139 tok)
+- `11-04-cli.sh` (~305 tok)
+- `11-04-msg.txt` (~16 tok)
+- `11-04-new-task23.txt` — its: initCommand (~2913 tok)
+- `11-04-red.sh` — usage: 11-04-red.sh <test-file> <test-name> <expected> <actual> <out.json> (~211 tok)
+- `11-05-full.sh` (~226 tok)
+- `11-05-guard.sh` (~150 tok)
+- `11-05-msg.txt` (~16 tok)
+- `11-05-red.sh` — usage: 11-05-red.sh <test-file> <-t pattern> <targetTest> <expected> <actual> <record-name> (~287 tok)
+- `11-06-ac1.sh` — Declares inlineInstantFrameBytes (~275 tok)
+- `11-06-ac2.sh` (~200 tok)
+- `11-06-flake.sh` (~182 tok)
+- `11-06-loc.sh` (~103 tok)
+- `11-06-mkred.cjs` — Builds a RED evidence record: node 11-06-mkred.cjs OUT_TXT RECORD_JSON COMMAND EXIT TARGET FILE EXPE (~151 tok)
+- `11-06-msg.txt` (~53 tok)
+- `11-06-precommit.sh` (~184 tok)
+- `11-06-run.sh` (~105 tok)
+- `11-06-selfcheck.sh` (~208 tok)
+- `11-07-ac1.sh` (~242 tok)
+- `11-07-ac2.sh` (~248 tok)
+- `11-07-mkred.mjs` — usage: node 11-07-mkred.mjs <tapOut> <exitCode> <command> <targetTest> <expected> <actual> <semantic (~175 tok)
+- `11-07-msg.txt` (~49 tok)
+- `11-07-probe.sh` (~126 tok)
+- `11-07-red1.sh` (~331 tok)
+- `11-07-red2.sh` — Declares was (~374 tok)
+- `11-07-selfcheck.sh` (~152 tok)
+- `11-07-time.sh` (~254 tok)
+- `11-08-ac1.sh` — Declares BASH_BINDINGS_SCRIPT (~264 tok)
+- `11-08-green.py` — zsh below this version cannot run the widget: `zsh` fails (D-20). (~5479 tok)
+- `11-08-live53.sh` (~57 tok)
+- `11-08-msg.txt` (~33 tok)
+- `11-08-probe.sh` (~219 tok)
+- `11-08-red.sh` — usage: 11-08-red.sh <out-json> <test-file> <short-title> <qualified-name> <expected> <actual> (~324 tok)
+- `11-08-script-check.test.ts` — HOME: run (~385 tok)
+- `11-09-accept1.sh` (~259 tok)
+- `11-09-bash-versions-neg.sh` — Negative controls: the wrong expectation must fail on each side. (~115 tok)
+- `11-09-bash-versions.sh` — Runs the plan's Task 2 verify command: bash 3.2 and 4.4 refuse, 5.0 accepts. (~142 tok)
+- `11-09-brew-build.sh` — Builds only the image half of scripts/smoke-homebrew-docker.sh (no API key, no live (~190 tok)
+- `11-09-ci-offline.sh` — Offline workflow test: run ci.yml's own bash-versions `run:` body for each matrix row, and (~291 tok)
+- `11-09-edit-exp.py` — rep (~1566 tok)
+- `11-09-edit-formula.py` (~368 tok)
+- `11-09-formula-check.sh` — Offline checks for the Homebrew formula edits: lint, identical text, rendered caveats, (~428 tok)
+- `11-09-msg.txt` (~19 tok)
+- `11-09-paste-probe.sh` — Runs inside a distro container: does readline report bracketed paste off without TERM? (~98 tok)
+- `11-09-quote.sh` — Simulates the runner's as_user quoting for the bash PS1 line. (~98 tok)
+- `11-10-msg.txt` (~36 tok)
+- `11-11-anatomy.md` — anatomy.md (~28543 tok)
+- `11-11-gate.sh` — Declares r (~409 tok)
+- `11-11-initdry.sh` (~247 tok)
+- `11-11-mkpatch.sh` (~229 tok)
+- `11-11-pre.sh` (~125 tok)
+- `11-11-rcdry.sh` (~195 tok)
+- `11-11-wolf.sh` — Declares b (~416 tok)
+- `11-11fix-binds.sh` — usage: 11-11fix-binds.sh BASHBIN (~68 tok)
+- `11-11fix-chord.sh` — inside bash:TAG: how do bind -p/-P/-X show a bind -x chord per keymap? (~106 tok)
+- `11-11fix-docker-all.sh` (~96 tok)
+- `11-11fix-docker-binds.sh` — run inside bash:TAG image: sh /s/11-11fix-docker-binds.sh (~78 tok)
+- `11-11fix-docker44.sh` — A "bash binary" for drive.sh that runs bash:${QQ_FIX_TAG:-4.4} in Docker with a TTY. (~108 tok)
+- `11-11fix-gate.sh` — Full gate for the 11-11 fix, bash 5.3 present. (~184 tok)
+- `11-11fix-lone.sh` — usage: 11-11fix-lone.sh REPO BASHBIN  -- when does a lone ? appear? (~217 tok)
+- `11-11fix-msg.txt` (~297 tok)
+- `11-11fix-mutate.sh` — usage: 11-11fix-mutate.sh REPO  -- builds two mutated /w trees in the scratchpad (~226 tok)
+- `11-11fix-probe.sh` — usage: 11-11fix-probe.sh BASHBIN ADAPTER (~146 tok)
+- `11-11fix-screen.sh` — usage: 11-11fix-screen.sh REPO BASHBIN [vi] (~184 tok)
+- `11-11fix-vt.sh` — usage: 11-11fix-vt.sh [vitest args...]  -- runs vitest with MacPorts bash 5.3 and CI=true (~81 tok)
+- `11-11fix2-b2.sh` (~159 tok)
+- `11-11fix2-proto.sh` (~210 tok)
+- `11-11fix2-rc` (~69 tok)
+- `11-11fix2-rc2` (~96 tok)
+- `fill.py` (~115 tok)
+- `validate-11.sh` — Validate frontmatter and plan structure for every phase 11 plan. (~121 tok)
 
 ## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/5f8c39f4-ea02-4042-a818-11b667419ae1/scratchpad/
 
@@ -210,10 +301,12 @@
 - `feedback_no_coauthored.md` (~148 tok)
 - `feedback_no_stub_in_smoke_tests.md` (~267 tok)
 - `feedback_rebase_wolf_conflicts.md` (~225 tok)
+- `feedback_run_full_suite.md` (~269 tok)
 - `feedback_terminology.md` (~163 tok)
 - `feedback_wolf_commit.md` (~221 tok)
 - `MEMORY.md` — Memory Index (~247 tok)
-- `project_target_audience.md` (~202 tok)
+- `project_target_audience.md` (~276 tok)
+- `reference_local_shells.md` (~242 tok)
 
 ## ../../.cursor/plans/
 
@@ -250,11 +343,11 @@
 - `biome.json` (~213 tok)
 - `CHANGELOG.md` — User-facing release notes: Features / Bug Fixes / Deprecations highlights with conventional-commit lists under `<details>` (LLM-written from the changeset at release). Unreleased = v0.5.0..HEAD. (~2200 tok)
 - `CLAUDE.md` — OpenWolf (~1668 tok)
-- `CONTRIBUTING.md` — Contributing: dev setup, live debug log (always-on `/tmp/qq-<uid>-debug.log`), Claude Provider env table (key optional, `claude -p` login route, QQ_MODEL `claude-sonnet-5` SDK route only) (~1450 tok)
+- `CONTRIBUTING.md` — Contributing: dev setup, live debug log (always-on `/tmp/qq-<uid>-debug.log`), Claude Provider env table (key optional, `claude -p` login route, QQ_MODEL `claude-sonnet-5` SDK route only) Client raw stderr reaches QQ_DEBUG_LOG_FILE only when set (else session-dir client.err). QQ_TEST_RESULT_MODE: only the two fixture names count. (~1450 tok)
 - `lefthook.yml` (~320 tok)
 - `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
 - `package.json` — Node.js package manifest Phase 10 scripts: smoke:distro, test:distro, test:live. (~499 tok)
-- `README.md` — Project documentation; under the H1 a live CI/Nightly/Release status badge row and a static `tested on` distro badge row that must equal the ci.yml `images:` array (tests/readme-badges.test.ts). Then pitch, demo gif, short Install (brew, then npm), Choose a provider and Usage steps (66 lines, at most 75); detail lives in docs/INSTALL, PROVIDERS, USAGE, PRIVACY, CONFIGURATION.md; links repo docs only through absolute `https://github.com/k-leumas/queque/blob/main/` URLs (npm ships README alone); ends with a More list of all five docs plus System design, Extensions and Contributing (quick 261030-fdr) (~1700 tok)
+- `README.md` — Project documentation: H1, a shell badge row (zsh/bash `${failBelow}+` from SHELL_SPECS, fish coming soon) linking docs/INSTALL.md anchors, then a `Tests passing on:\` line over six static distro badges (alt = ci.yml image ref, CI runs link) plus a macOS badge (tested by hand, links docs/INSTALL.md); no workflow-status badges. Then pitch, demo gif, Install (brew block only, then one See-Install sentence pointing npm users, requirements, macOS bash notes and undo at docs/INSTALL.md; no support table), Choose a provider and Usage; absolute `https://github.com/k-leumas/queque/blob/main/` doc links (npm ships README alone) (quick 261030-fdr, 261115-3qz, 261115-4um) (~1110 tok)
 - `tsconfig.json` — TypeScript configuration (~180 tok)
 - `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. Phase 10: `define` also bakes __QUEQUE_TELEMETRY_KEY__ (empty until plan 13, D-22) and __QUEQUE_TELEMETRY_HOST__ (`https://eu.i.posthog.com`, D-05). Quick 261030-tq3: __QUEQUE_BUILD_ID__ = `<version>+<commit>.<Date.now base36>`, computed once per tsup config load (watch rebuilds share one id). (~680 tok)
 - `vitest.config.ts` — Vitest base config: tests/**/*.test.ts(x), setupFiles scrub-git-env; defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_BUILD_ID__ ('0.0.0-test+test-build', quick 261030-tq3) and an inert telemetry key/host. vitest.live inherits `define`. (~230 tok)
@@ -278,13 +371,222 @@
 
 ## .claude/skills/spike-findings-tui-llm/references/
 
+- `bash-integration.md` — blueprint: bash ≥5.0 ?? adapter (bind -x, READLINE_*, compgen handoff, Zellij FIFO, PS1 head) (~1300 tok)
+- `bash-integration.md` — bash integration (`??` in bash ≥5.0) (~1173 tok)
 - `candidate-command-check.md` — Candidate Command Check (flag suggestions that use missing tools) (~1016 tok)
+- `fish-integration.md` — blueprint: fish 4.x ?? adapter (bind/commandline, string collect, cat+guard FIFO read, repaint padding) (~1300 tok)
+- `fish-integration.md` — fish integration (`??` in fish 4.x) (~1142 tok)
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/.github/workflows/
+
+- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1850 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-09-SUMMARY.md` — Phase 11 Plan 09: Distro bash smoke, bash-versions CI and Homebrew bash adapter Summary (~3486 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/scripts/
+
+- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~2199 tok)
+- `smoke-distro.sh` (~980 tok)
+
+## .claude/worktrees/agent-a0683766a13a0d567/scripts/ci/
+
+- `bash-version-check.sh` — Usage: bash-version-check.sh refuse|accept (~990 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-08-SUMMARY.md` — Phase 11 Plan 08: bash diagnostics in `qq doctor` Summary (~4292 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/src/cli/
+
+- `main.ts` — Exports main (~1576 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/src/cli/commands/
+
+- `doctor.ts` — Unix socket path limits from the Node docs (107 bytes on Linux, 103 on macOS). (~8634 tok)
+
+## .claude/worktrees/agent-a0f685ede72cc35a6/tests/
+
+- `doctor.test.ts` — The zsh target's twelve rows, in order (Phase 10; unchanged by Phase 11). (~12044 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-06-SUMMARY.md` — Phase 11 Plan 06: Instant frame spec and bash painter Summary (~4569 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~4365 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/src/client/
+
+- `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1). (~1324 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/src/shared/
+
+- `instant-frame-spec.ts` — The instant first frame, as one TypeScript reference (Phase 11 D-04; quick 261011-jbh, LD-1). (~1792 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/src/ui/
+
+- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~5817 tok)
+- `LoadingSpinner.tsx` — FRAMES[0] is the loading text the shell adapters paint in the instant frame (Phase 11 D-04). (~188 tok)
+- `modal-layout.ts` — Mark that starts the explanation of a candidate using a tool zsh cannot resolve (D-08). (~2962 tok)
+
+## .claude/worktrees/agent-a12c46af7c526c5d0/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~5244 tok)
+- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3392 tok)
+
+## .claude/worktrees/agent-a1536771d36d290f8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-03-SUMMARY.md` — Phase 11 Plan 03: Shell-aware tool handoff and command-word lexer Summary (~4510 tok)
+
+## .claude/worktrees/agent-a1536771d36d290f8/src/client/
+
+- `tool-handoff.ts` — Fixed sibling filenames a shell adapter's `??` widget writes next to request.json (~1371 tok)
+
+## .claude/worktrees/agent-a1b3b715f798c3738/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~7482 tok)
+
+## .claude/worktrees/agent-a337e7a5046250a2b/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-07-SUMMARY.md` — Phase 11 Plan 07: bash tool handoff, prewarm and Zellij pane Summary (~4802 tok)
+
+## .claude/worktrees/agent-a337e7a5046250a2b/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~6770 tok)
+
+## .claude/worktrees/agent-a337e7a5046250a2b/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11317 tok)
+- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~4650 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/
+
+- `CONTRIBUTING.md` — Contributing (~1764 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-01-SUMMARY.md` — Phase 11 Plan 01: bash `??` tracer and PTY harness Summary (~5170 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/
+
+- `install-distro-deps.sh` — Installs what QueQue needs on a fresh Linux distro image: git, zsh, bash, jq, expect, (~1339 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/shell/bash/
+
+- `queque.bash` — bash 5.0+ readline adapter: bind -x on ? (emacs+vi-insert), interactive guard, 'needs bash 5.0+' refusal, jq request.json shell:bash, inline qq client, READLINE_LINE/POINT apply with QQ_ORIG_POINT restore (~2434 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/src/cli/commands/
+
+- `client.ts` — Real client command handler. (~517 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/src/client/
+
+- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~7035 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/src/contracts/
+
+- `shell.ts` — Every shell QueQue knows (Phase 11 D-02). A shell adapter lives at (~703 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~2980 tok)
+- `context-pipeline.test.ts` — Declares buildRequest (~1555 tok)
+- `intent-router.test.ts` — Declares makeRequest (~2127 tok)
+- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~4074 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/tests/helpers/
+
+- `shells.ts` — Searched after PATH: Homebrew (Apple silicon, Intel), MacPorts, then the system dirs. (~1140 tok)
+
+## .claude/worktrees/agent-a3f8055ae191c3229/tests/pty/
+
+- `drive.sh` — tests/pty/drive.sh: drive an interactive zsh or bash in a private tmux server (Phase 11 D-10). (~794 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/.github/workflows/
+
+- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1870 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/
+
+- `bash-version-check.sh` — Usage: bash-version-check.sh refuse|accept (~1427 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/shell/bash/
+
+- `queque.bash` — shellcheck shell=bash (~7181 tok)
+
+## .claude/worktrees/agent-a42288e8a0c40af47/tests/
+
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11679 tok)
+- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~5384 tok)
+
+## .claude/worktrees/agent-a69c0cacb81a465ce/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-05-SUMMARY.md` — Phase 11 Plan 05: Shell-aware telemetry environment Summary (~3753 tok)
 
 ## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
 - `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~4329 tok)
+
+## .claude/worktrees/agent-abef3015cfebacee8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-02-SUMMARY.md` — Phase 11 Plan 02: shell identity in the context and prompt Summary (~3343 tok)
+
+## .claude/worktrees/agent-abef3015cfebacee8/src/providers/
+
+- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~5578 tok)
+
+## .claude/worktrees/agent-abef3015cfebacee8/tests/
+
+- `claude-provider.test.ts` — Text pieces emitted as `text` events, in order, before finalMessage settles. (~8603 tok)
+- `shell-contract.test.ts` — A request.json as a pre-Phase-11 zsh widget writes it: no `shell`, no `shellVersion`. (~1664 tok)
+- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~14461 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-04-SUMMARY.md` — Phase 11 Plan 04: Shell registry and `qq init [shell]` Summary (~3268 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/src/cli/commands/
+
+- `init.ts` — `qq init [shell]` (Phase 11 D-08, D-09, D-12, D-14): detect the login shell, gate bash below (~2620 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/src/registry/
+
+- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~806 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/src/shared/
+
+- `shell-registry.ts` — One per-shell registry (Phase 11 D-02, D-08): every fact `qq init` and `qq doctor` need about (~2170 tok)
+
+## .claude/worktrees/agent-acce3f5bef6c7f99f/tests/
+
+- `init-command.test.ts` — InitDeps: fakeInit (~4275 tok)
+- `registry-bootstrap.test.ts` — Declares adapters (~890 tok)
+- `shell-registry.test.ts` — Declares zsh (~2078 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/
+
+- `README.md` — Project documentation (~1187 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-10-SUMMARY.md` — Phase 11 Plan 10: Shell-neutral docs, the adapter contract and the SHELL_NAMES invariant Summary (~3304 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/docs/
+
+- `INSTALL.md` — Install (~668 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/shell/
+
+- `README.md` — Project documentation (~2654 tok)
+
+## .claude/worktrees/agent-ae0e9549a31c00864/tests/
+
+- `shell-names-invariant.test.ts` — SHELL_NAMES invariant (Phase 11 D-02, the "promote" decision): every shell QueQue knows must (~688 tok)
 
 ## .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
@@ -311,7 +613,7 @@
 - `HANDOFF.json` — Declares correctly (~1406 tok)
 - `PROJECT.md` — QueQue (~1525 tok)
 - `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~7270 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~7983 tok)
 - `STATE.md` — Project State (~3580 tok)
 
 ## .planning/debug/
@@ -517,6 +819,30 @@
 - `10-VERIFICATION.md` — Phase 10: Linux distro CI harness and anonymous telemetry Verification Report (~3689 tok)
 - `COVERAGE.md` — API Coverage — PostHog Cloud EU public capture API, and the GitHub REST API (via `gh` in CI) (~735 tok)
 
+## .planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+
+- `11-01-PLAN.md` — Artifacts this phase produces (~12224 tok)
+- `11-02-PLAN.md` — Artifacts this phase produces (~5990 tok)
+- `11-03-PLAN.md` — Artifacts this phase produces (~7369 tok)
+- `11-04-PLAN.md` — Artifacts this phase produces (~8936 tok)
+- `11-05-PLAN.md` — Artifacts this phase produces (~6270 tok)
+- `11-06-PLAN.md` — Artifacts this phase produces (~7870 tok)
+- `11-07-PLAN.md` — Artifacts this phase produces (~8332 tok)
+- `11-08-PLAN.md` — Artifacts this phase produces (~7187 tok)
+- `11-09-PLAN.md` — Artifacts this phase produces (~7340 tok)
+- `11-10-PLAN.md` — Artifacts this phase produces (~6192 tok)
+- `11-11-PLAN.md` — Declared files are the .wolf/ records. If a Task 1 gate fails, the fix lands in the owning (~5913 tok)
+- `11-CONTEXT.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Context (~2667 tok)
+- `11-DISCUSS-CHECKPOINT.json` (~443 tok)
+- `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
+- `11-PATTERNS.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Pattern Map (~4891 tok)
+- `11-RESEARCH.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Research (~17835 tok)
+- `11-REVIEW-FIX.md` — Phase 11: Code Review Fix Report (~2388 tok)
+- `11-REVIEW.md` — Phase 11: Code Review Report (~3548 tok)
+- `11-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2154 tok)
+- `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1816 tok)
+- `11-VERIFICATION.md` — Phase 11: Multi-shell trigger support (bash, fish-ready): Verification Report (~5486 tok)
+
 ## .planning/quick/20260522-selection-summary-and-history/
 
 - `PLAN.md` — Quick Task: Selection Summary and History (~824 tok)
@@ -684,14 +1010,42 @@
 - `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1696 tok)
 - `README.md` — Project documentation (~1195 tok)
 
+## .planning/spikes/004-bash-readline-trigger/
+
+- `README.md` — spike 004: bash `bind -x` ?? trigger, VALIDATED on 5.0+ (~1100 tok)
+- `README.md` — Project documentation (~1191 tok)
+- `spike.bash` — stub bash adapter: `?` binding, READLINE_LINE/POINT, 3.2 guard (~350 tok)
+
+## .planning/spikes/005-bash-tui-handoff/
+
+- `drive.sh` — private-tmux driver: fixture / llm-pick / llm-esc / prompt-multiline (~550 tok)
+- `queque.bash` — full bash adapter port of qq-question-widget (handoff, FIFO, prompt-head reprint) (~1200 tok)
+- `README.md` — spike 005: bash → Ink picker handoff, inline + Zellij, VALIDATED (~900 tok)
+- `README.md` — Project documentation (~911 tok)
+
+## .planning/spikes/006-fish-commandline-trigger/
+
+- `drive.sh` — private-tmux driver for fish trigger cases (~450 tok)
+- `README.md` — spike 006: fish bind + commandline ?? trigger, VALIDATED on 4.x (~900 tok)
+- `README.md` — Project documentation (~881 tok)
+- `spike.fish` — stub fish adapter (~300 tok)
+
+## .planning/spikes/007-fish-tui-handoff/
+
+- `drive.sh` — private-tmux driver for fish picker scenarios (~600 tok)
+- `queque.fish` — full fish adapter (PATH handoff, FIFO cat + timeout guard, repaint padding) (~1400 tok)
+- `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1538 tok)
+- `README.md` — spike 007: fish → Ink picker handoff, inline + Zellij, VALIDATED (~950 tok)
+- `README.md` — Project documentation (~820 tok)
+
 ## docs/
 
 - `config.example.json` — Example `~/.config/qq/config.json` incl. `"effort": "low"` (09.1-02). (~61 tok)
 - `CONFIGURATION.md` — Configuration reference, moved verbatim from the README (quick 261030-fdr): the `config.json` field table (`effort`, `privacy.*`, `safety.destructiveCommandPatterns`), links config.example.json, PROVIDERS.md#after-changing-your-key-or-settings and SYSTEM_DESIGN.md. (~700 tok)
 - `EXTENSIONS.md` — QueQue Extension Seams (~2376 tok)
-- `INSTALL.md` — Install (quick 261030-fdr): Homebrew, Install via npm with the old README Requirements bullets and npm block, Set up zsh with the `qq init zsh` do-not-redirect note. (~300 tok)
-- `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
+- `INSTALL.md` — Install (quick 261030-fdr; Phase 11 11-10): Homebrew, npm, `qq init` for zsh and bash, the bash 5.0 floor and Homebrew bash, optional chsh, the `~/.bash_profile` line, `qq doctor`, undoing `qq init` (remove the two QueQue lines). (~800 tok)
 - `PRIVACY.md` — Privacy defaults, moved verbatim from the README (quick 261030-fdr): insertion-only, what leaves the machine per provider, what is never sent, debug logging, user config; plus a source-checked Anonymous telemetry section (consent prompt text, env overrides, the three allow-listed events, install id, PostHog Cloud EU batches dropped on failure, `qq telemetry status|on|off|show`). (~1700 tok)
+- `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
 - `RELEASING.md` — Release Process (~1426 tok)
 - `SYSTEM_DESGN.md` — System Design (~3530 tok)
 - `SYSTEM_DESIGN.md` — System Design; the IPC paragraph covers the streaming reply sequence (`candidate` rows, `candidates` done signal), the three pong flags, abort on socket close and D-16 (09.1-03). Source links are `../`-relative (quick 261030-fdr). (~2900 tok)
@@ -711,14 +1065,23 @@
 ## scripts/ci/
 
 - `auto-revert.sh` — D-15 smoke auto-revert (bash, env-only inputs REPO, BRANCH, HEAD_SHA, BEFORE_SHA, RUN_ID, RUN_URL, ARTIFACTS_DIR, GH_TOKEN). Last green = branch push run with smoke passed, then first-parent ancestor by head_sha, then the before SHA, then the merge base with main; else ::warning::. Restores the tree on `auto-revert/<branch, / to ->` with workflow files kept at HEAD (GITHUB_TOKEN cannot push them), force-pushes, then gh pr edit+comment if open else create. Body: failing jobs, run URL, doctor.json and log tails, sanitized, 60000-char cap (10-07). (~3562 tok)
+- `bash-version-check.sh` — `bash-version-check.sh refuse|accept`, the Phase 11 D-12 check inside one official `bash:<tag>` image (repo at /w, read-only): a non-interactive source is silent; refuse = one `needs bash 5.0+` line and no `_qq_question`; accept = function defined and `?` in `bind -m emacs -X`. POSIX sh (busybox); run by the ci.yml `bash-versions` job on bash:3.2, 4.4 (refuse) and 5.0 (accept) (11-09). (~930 tok)
 - `code-changed.mjs` — CI doc-only path filter: `isDocOnlyPath` (`*.md`, LICENSE, .planning/, .wolf/, docs/, .github/ISSUE_TEMPLATE/), `codeChanged(paths)`. Base is QQ_CHANGES_BASE (non-zero, present), else resolveBaseRef().mergeBase. Writes `code=true|false` to $GITHUB_OUTPUT and fails open to true; exits 1 only if $GITHUB_OUTPUT is unwritable (10-05). (~790 tok)
 - `install-distro-deps.sh` — POSIX sh, run as root: installs git, zsh, jq, expect, procps and Node 24 per /etc/os-release ID (apk on alpine; nodejs.org tarball checked against SHASUMS256.txt on ubuntu/debian; dnf nodejs24 on fedora; pacman nodejs-lts-krypton on arch), plus pnpm from packageManager unless --no-pnpm. Exits 2 unsupported distro, 3 install failure, 64 usage (10-01). (~1156 tok)
 - `test-in-distro.sh` — `test-in-distro.sh IMAGE [vitest args]`: pipes `git archive HEAD` into `docker run`, then install-distro-deps, `pnpm install --frozen-lockfile`, and `pnpm test:run` or `vitest run ARGS`. D-16: without Docker it warns and exits 0 locally, exits 1 with CI set (10-01). (~450 tok)
 
+## shell/
+
+- `README.md` — Shell adapter contract for authors (Phase 11 D-01/D-02, 11-10): trigger rules, session dir, request.json fields (`shell`, `shellVersion`), result kinds, cursor restore, history, the Zellij timeout and setup failures, the tool handoff (`tools.pending`, two-flag `closed` cleanup), instant-frame parity, and the new-shell checklist gated by tests/shell-names-invariant.test.ts. Adapters scope the QQ_RESULT_FILE export to the trigger call. (~2670 tok)
+
+## shell/bash/
+
+- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). en_US.UTF-8 locale fallback is `{ LC_ALL=…; } 2>/dev/null`, so no setlocale warning leaks (WR-01). A missing jq (type -P) prints `queque: jq not found` before the paint (WR-02). QQ_RESULT_FILE and the pane size are `local -x` (not left in the shell, WR-03). Client stderr goes to $tmpdir/client.err unless QQ_DEBUG_LOG_FILE is set (WR-04). (~6400 tok)
+
 ## shell/zsh/
 
 - `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~5619 tok)
+- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). QQ_RESULT_FILE and the pane size are `local -x`, scoped to the widget call (WR-03). Client stderr (inline and pane) goes to $tmpdir/client.err unless QQ_DEBUG_LOG_FILE is set (WR-04). (~5619 tok)
 
 ## src/
 
@@ -731,11 +1094,11 @@
 
 ## src/cli/commands/
 
-- `client.ts` — Real client command handler. (~394 tok)
+- `client.ts` — Real client command handler. resolveResultMode: the flag wins; QQ_TEST_RESULT_MODE counts only for cancel / replace-buffer-fixture, anything else is ignored (WR-05). (~394 tok)
 - `daemon.ts` — Daemon command handler: `--ensure` path or `startDaemonServer`; `enablePrewarm()` after the server starts (daemon-only, never at module top level or in `--ensure`); exported `trackConnections(server)` (Set of open sockets via `connection`) and `shutdownDaemon(server, connections, {exit, graceMs})` (WR-03: `disablePrewarm()` so an in-flight refill spawns nothing, destroys open sockets so their turns abort, then exits after `SIGKILL_GRACE_MS`+100 when any were in flight); SIGTERM/SIGINT call it (09.1-05). Phase 10: creates and starts the telemetry buffer; shutdownDaemon flushes it synchronously with a 1 s bound (10-06). Quick 261030-tq3: `--restart` (wins over --ensure) calls restartDaemon at call time, prints `daemon restarted`; errors reach main.ts's catch. (~600 tok)
-- `doctor.ts` — `qq doctor [--json]`: injectable DoctorDeps (defaultDoctorDeps spawns zsh -fc / zsh -ic with stdin ignored, resolving on exit + grace; PATH scan; /tmp mkdtemp probe; lstat owner; pingDaemonFetchCap; loadProviderPin; detectProvider; telemetryStatus), runDoctorChecks (12 checks, D-17/D-19/D-20: jq and zsh < 5.0 fail, zsh 5.0-5.7 warn; `telemetry` last, always ok), parseZshBindings, formatDoctorReport (✓/⚠/✗ + ` — fix:`), doctorCommand (sets process.exitCode). Output is fixed copy only: it goes into public revert PR bodies (10-03, 10-09). (~4749 tok)
+- `doctor.ts` — `qq doctor [--json] [--shell <name>]` (Phase 11 11-08: one target shell per report, registry-driven; 12 rows for zsh and Linux bash, 13 with `bash_profile` on macOS bash; DoctorDeps.shellVersion/shellBindings/readRc/userShell, `BASH_BINDINGS_SCRIPT`, `parseBashBindings`, `resolveDoctorShell`, `runDoctorChecks(deps?, {shell?})`). Pre-phase-11 notes: injectable DoctorDeps (defaultDoctorDeps spawns zsh -fc / zsh -ic with stdin ignored, resolving on exit + grace; PATH scan; /tmp mkdtemp probe; lstat owner; pingDaemonFetchCap; loadProviderPin; detectProvider; telemetryStatus), runDoctorChecks (12 checks, D-17/D-19/D-20: jq and zsh < 5.0 fail, zsh 5.0-5.7 warn; `telemetry` last, always ok), parseZshBindings, formatDoctorReport (✓/⚠/✗ + ` — fix:`), doctorCommand (sets process.exitCode). Output is fixed copy only: it goes into public revert PR bodies (10-03, 10-09). (~4749 tok)
 - `init-provider.ts` — `qq init provider` picker on /dev/tty (Claude, OpenAI, Ollama; Enter = 1). writeProviderPin then restartDaemon; dead ends print next step and exit 1. Exports PROVIDER_MENU, OLLAMA_DOWNLOAD_URL, runProviderPicker(io, deps), providerInitCommand, dispatchInit. (~2900 tok)
-- `init.ts` — Returns true when .zshrc already sources the queque shell script or contains (~732 tok)
+- `init.ts` — `qq init [shell]` (Phase 11 11-04): auto-detects the shell (arg, $SHELL, user shell) via src/shared/shell-registry.ts; bash gate probes the $SHELL bash first, else the PATH bash, refusing below 5.0 (`bash 5+ needed: brew install bash` on darwin); appends the marker + `source <adapter>` to ~/.zshrc or ~/.bashrc only (never ~/.bash_profile); macOS login-shell hint when ~/.bash_profile does not source ~/.bashrc. Exports InitDeps, defaultInitDeps, runInit(shellArg, deps), initCommand, hasShellIntegration. hasShellIntegration needs an active (uncommented) source line; the marker alone no longer counts (WR-06). (~2300 tok)
 - `telemetry.ts` — `qq telemetry [status|on|off|show]` (D-06, D-09, D-12, D-22): injectable TelemetryCliDeps, requestDaemonOnce(socketPath, request, timeoutMs=500) (one-shot, schema-validated, null on error/close/timeout), telemetryCommand(action, deps). Prints state, variable names and the endpoint host only; show prints the daemon bodies byte for byte; off also sends telemetry-reset (10-09). Quick 261030-tq3: `socketConnectable` dep (tryConnect, read at call time) is probed only after a null reply; a connectable socket prints `the daemon did not answer (it may be outdated)` + `restart it: qq daemon --restart` (show and off); a wrong-kind reply also gets the restart hint. (~2400 tok)
 
 ## src/client/
@@ -745,7 +1108,7 @@
 - `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~6967 tok)
 - `telemetry-consent.ts` — D-09 one-time consent ask: CONSENT_PROMPT (`... [y/N] `), CONSENT_TIMEOUT_MS = 30_000, shouldAskTelemetryConsent({outcome, state, blockedBy, hasTty}) (accepted, never asked, no env gate, tty), askTelemetryConsent({input, output}, timeoutMs) on the tty streams: raw mode, first character of the first chunk, only y/Y is yes, settles once, then raw off, pause, listener removed, timer cleared, every wrapped row erased. Never stdout, never rejects (10-11). (~1135 tok)
 - `telemetry-events.ts` — Client telemetry: TELEMETRY_CLIENT_SEND_MS = 250, QueryOutcomeRecord, buildQueryOutcomeEvent/buildErrorEvent/buildEnvironmentEvent (strict-schema parsed, enums and counts only), sendTelemetryEvents (fire-and-forget socket lines, never rejects), reportClientTelemetry (gates on effectiveTelemetry in the client env first; environment, errors, outcome; never throws) (10-10). (~1482 tok)
-- `tool-handoff.ts` — readToolHandoff(sessionDir) reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
+- `tool-handoff.ts` — readToolHandoff(sessionDir, { shell, pendingBudgetMs }) waits while `tools.pending` exists (TOOL_HANDOFF_PENDING_POLL_MS 10, TOOL_HANDOFF_PENDING_BUDGET_MS 500, then null with reason `pending-timeout`) and tags the inventory with `shell` (11-03). Earlier: reads commands/builtins/functions.txt into a ToolInventory or null (QQ_TOOL_AWARENESS=0, missing, empty); counts-only logs; TOOL_HANDOFF_FILES (~735 tok)
 - `zellij-pane-resize.ts` — Zellij floating-pane sizing: `readMaxZellijPaneHeight` (QQ_PANE_HEIGHT, default 24), `resolveZellijPaneHeight` (content + 2 frame rows `ZELLIJ_FLOATING_FRAME_LINES` + 1 Ink cursor row `INK_TRAILING_CURSOR_ROWS`, min 6, capped), `formatZellijPaneId`; `syncZellijFloatingPaneHeight` runs a serialized latest-wins queue: one `zellij action change-floating-pane-coordinates` at a time, heights requested meanwhile collapse to the newest, slot released on exit, on child error (no crash when zellij is missing) or after `RESIZE_SETTLE_TIMEOUT_MS` (2000, kills the hung action; timer unref'd); `resetZellijPaneHeightCache` (tests only). (~1900 tok)
 
 ## src/context/
@@ -755,10 +1118,10 @@
 ## src/contracts/
 
 - `candidates.ts` — Zod schemas: commandCandidateSchema, candidateListSchema (~104 tok)
-- `doctor.ts` — `qq doctor --json` contract (D-18): DOCTOR_CHECK_IDS (12, stable: add, never rename; `telemetry` last), DOCTOR_STATUSES ok/warn/fail, strict doctorReportSchema `{version:1, ok, qqVersion, platform, checks}`, doctorExitCode (1 iff a check failed) (10-03, 10-09). (~501 tok)
+- `doctor.ts` — `qq doctor --json` contract (D-18; Phase 11 11-08 adds ids `bash`, `fish` (reserved, not emitted until Phase 12) and `bash_profile`): DOCTOR_CHECK_IDS (12, stable: add, never rename; `telemetry` last), DOCTOR_STATUSES ok/warn/fail, strict doctorReportSchema `{version:1, ok, qqVersion, platform, checks}`, doctorExitCode (1 iff a check failed) (10-03, 10-09). (~501 tok)
 - `ipc.ts` — IPC request/response zod schemas: `fetch-candidates` with optional `stream: true`, streamed `{kind:'candidate'}` row kind, `{kind:'candidates'}` done signal; pong capability flags `fetchCandidates`, `installedTools`, `streamCandidates` (09.1-03). Phase 10: telemetry-event/telemetry-show/telemetry-reset requests, the telemetry-buffer response, the informational pong `telemetry` flag, fetch-error `errorKind` (10-06). Quick 261030-tq3: pong `build` = z.string().max(128).optional().catch(undefined) (malformed reads as another build, never a rejected pong). (~650 tok)
 - `request.ts` — Intent/base-context/envelope schemas; `contextChunkSchema` incl. the lenient `installed-tools` variant (filters non-catalog names, rejects non-name strings and > 512 entries) and the client-side `strictInstalledToolsChunkSchema`. (~1500 tok)
-- `shell.ts` — Shell request — sent from the zsh widget to the qq client. (~426 tok)
+- `shell.ts` — Shell request — sent from the shell adapter (zsh, bash) to the qq client. Phase 11 11-01: `SHELL_NAMES = ['zsh','bash','fish']`, `ShellName`, `isShellName`; `shellRequestSchema.shell` (default zsh) and `shellVersion` (max 40); `version: 1` unchanged. (~600 tok)
 - `telemetry.ts` — Telemetry allow list (D-10, D-11): strict zod schemas for qq_query_outcome / qq_error / qq_environment (client, wire, batch) and the enums ERROR_KINDS, PROVIDER_KINDS, QUERY_OUTCOMES, OS_KINDS, ARCH_KINDS, DISTRO_IDS, TELEMETRY_EVENTS, TELEMETRY_LIB, TELEMETRY_BATCH_MAX. No latency, no free-form strings (10-04). (~1638 tok)
 
 ## src/daemon/
@@ -801,8 +1164,10 @@
 - `debug-log.ts` — Exports debugLogPath, appendDebugLog (~229 tok)
 - `env-file.ts` — Returns a usable secret string, or undefined when the value is missing, empty, (~1050 tok)
 - `environment-shape.ts` — collectEnvironmentShape(input?) maps platform/arch/os-release ID/QQ_ZSH_VERSION/node major/ZELLIJ onto the telemetry enums; an unknown ID becomes `other`; returns null if the shape would not validate. Injectable env, platform, arch, nodeVersion, readOsRelease (10-10). (~868 tok)
+- `instant-frame-spec.ts` — D-04 instant-frame reference shared by every adapter (11-06): escape constants, `inlineScrollReserve`, `INSTANT_FRAME_VIEWPORT_LINES` (18), `INSTANT_FRAME_LOADING_TEXT`, `MODAL_MAX_COLUMNS`, `INSTANT_FRAME_SPEC`, and the oracle `instantFrameRows` / `inlineInstantFrameBytes` / `paneInstantFrameBytes`. Imports nothing from client or ui; src/client/instant-frame.ts re-exports from it. Change it together with both adapters (tests/instant-frame-parity.test.ts). (~1570 tok)
 - `privacy-filter.ts` — Returns true when a file path segment should not be sent to providers or logs. (~717 tok)
 - `qq-config.ts` — Built-in sensitive path patterns — always applied; user config adds more. Phase 10: also exports telemetryConfigSchema (`telemetry: { enabled, asked, installId? }`) (10-04). (~1899 tok)
+- `shell-registry.ts` — One per-shell registry (Phase 11 D-02/D-08, 11-04; `src/shared/shell-registry.ts`): `ShellSpec`, `SHELL_SPECS` (zsh, bash; fish not shipped), `getShellSpec`, `shippedShellNames()`, `detectShell(input)`, `resolveAdapterPath(spec)` (Homebrew `share/queque/<adapter>` first, else the package `shell/` dir next to dist), `HOMEBREW_PREFIXES`, the zsh/bash floors (`BASH_FAIL_BELOW = '5.0'`, `BASH_WARN_BELOW = '5.1'`), `parseShellVersion`/`versionBelow`, `BASH_LOGIN_FILES`, `BASHRC_SOURCE_RE`, `loginFileSourcesBashrc`. Every fact `qq init` and `qq doctor` need about a shell. stripShellComments() (per-line, quote-aware); loginFileSourcesBashrc ignores commented lines (WR-06). (~1900 tok)
 - `socket-path.ts` — Returns the Unix socket path for the qq daemon for a given UID. (~352 tok)
 - `telemetry-config.ts` — Anonymous telemetry consent state (phase 10, D-06, D-09). (~2510 tok)
 - `telemetry-endpoint.ts` — resolveTelemetryEndpoint(env): baked host/key with usableSecret QQ_TELEMETRY_HOST/QQ_TELEMETRY_KEY overrides; null for an empty or non-phc_ key, a non-http(s) host, or a host with credentials (10-04). (~407 tok)
@@ -826,6 +1191,7 @@
 ## tests/
 
 - `auto-revert.test.ts` — 13 tests for scripts/ci/auto-revert.sh against temp repos (bare remote, merge commit) with the gh double on PATH; skips without bash (10-07). (~4620 tok)
+- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11378 tok)
 - `bundle-startup.test.ts` — Builds the real tsup config into a temp dir (no node_modules): every emitted .js (main.js launcher + app.js bundle) loads only Node built-ins (static, literal dynamic import, __require); `--help` of both files works; per-user 0700 compile cache populated under XDG_CACHE_HOME; unwritable / world-writable cache locations fail safe (stderr equals the NODE_DISABLE_COMPILE_CACHE baseline). No timing assertions. (~2000 tok)
 - `candidate-select-layout.test.tsx` — Real-hooks Ink render (no react/ink mocks; Writable/Readable 78x22 TTY fakes) checking CandidateSelect's layout reports and the Zellij resize spawn on candidate arrival; `mountArrival` (press/rerender/close helpers), `spawnedHeights`, `lastFrame`, and `replayScreen` (tiny terminal model of Ink's writes incl. ESC 7 / ESC 8 save/restore: header row, stale rows, scroll). (a) the lbuffer never filters (G-09.1-5: `noMatch` is the regression oracle); (d) a matching lbuffer `smt2` draws and reports the full list (G-09.1-5); (e) "header row" (plain, flagged, matching lbuffer; all draw query ''): pane PTY rows (height − 2 chrome) fit the drawn frame; (f) typing `smt` + 3 Backspaces keeps the pane at the arrival height; (g) a new candidates array resets the hold. `instant frame takeover` (quick 261011-jbh): t1-t5 replay the real widget bytes (spawnSync zsh) + reserve + armed real-Ink loading frame (inline full/cleared screen, Zellij pane file, 200-char lbuffer, no instant frame); t6 takeover unit cases; `mountStream` helper and the 09.1-07 streamed-rows describe (D-06 to D-10, D-16, D-17); G-09.1-5 Pitfall 9 rewrite (the lbuffer never filters streamed rows, FILTER shows the placeholder); WR-04 (lbuffer `gr`, typed `grep` survives a non-matching first row, never `grgrep`); WR-05 (a later list without the highlighted row keeps the highlight position; typing/Backspace move it to row 0); WR-06 (typed `grep`, up/down on an empty filtered list, then a matching row arrives highlighted); `filterLine` helper + the `G-09.1-5: FILTER opens empty` describe (UAT case `show me how to use z3` + typed `smt`, empty lbuffer, typed text equal to the lbuffer); CR-01 one-chunk Backspace describe (`ab`+2 DEL, `a`+DEL, mid-stream `smtx`+DEL / `q`+DEL, each ONE stdin push); CR-01 invariance `it.each` (Down+Enter, corrected filter+Enter, moved highlight+typed key, filtered Down+Enter, empty-filter Backspace, Down+Tab+DEL+Enter on a flagged row: one key per read vs one read insert the same row) (~13900 tok)
 - `candidate-select.test.tsx` — Mocked-hooks CandidateSelect tests (useState by call order, useEffect stubbed, useRef a plain `{ current }` function for the pane hold): live search (initialQuery never filters, a typed query does), `G-09.1-5 FILTER opens empty` describe (query state '' whatever initialQuery is; supersedes 03.1 D-01/D-02), zero-match Enter guard via typed `zzz`, Tab install toggle, Enter/Esc, effect count (2; WR-05 moved the query reset into the key handlers). Cannot see effect ordering — use candidate-select-layout.test.tsx for that.; CR-01 same-closure case (typed text + Backspace on one handler closure); CR-01 same-closure Down+Enter (wrapping navigation) and Tab+Enter (Tab install form) cases (~6650 tok)
@@ -837,7 +1203,7 @@
 - `claude-process.test.ts` — runClaudeTurn against real `fake-claude-stream.mjs` children: settles on result before exit, one stdin user line and no prompt in argv, SIGTERM abort drops later deltas and exit 143, is_error auth rejection; afterEach SIGKILLs recorded pids. Plans 05/06 extend it; 09.1-06 `runClaudeTurn failure paths` (timeout 143 with a 1000 ms budget, backstop SIGKILL, double settle, stdout-flood, exit-no-result, die-before-init, ENOENT, zero budget, pre-aborted signal, stderr cap); 09.1-05 prewarmed-child turns; WR-02 init deadline (hang-before-init → stale-prewarm + SIGTERM; never fires after init on sigterm-slow) (~3830 tok)
 - `claude-provider.test.ts` — SDK adapter tests with a fake MessageStream (`text` listeners, `finalMessage`, APIUserAbortError on abort; `create` throws), debug-log mock, per-test QQ_CONFIG_FILE: `{ timeout, signal }`, onCandidate order, final-list precedence, abort, no thinking/sampling keys, effort/`output_config` and the `sdkOutputConfig` table (09.1-04). fake stream `stopReason`; WR-07 truncation cases (fail closed on fragment / empty text, keep closed rows) (~5500 tok)
 - `claude-stream-json.test.ts` — Parser tests: chunk splits, split ⓘ through one StringDecoder, blank/non-JSON lines, maxCarryBytes/onOverflow (byte-counted, once, later input ignored), default 1 MiB cap, textDeltaOf, isInitEvent (09.1-06). (~1390 tok)
-- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; Esc during loading (onCancel from the ink render mock) writes cancel, aborts the adapter signal, never rerenders; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM); `inkMock.autoSelect` switch; streaming, partial-list and AbortError-after-Esc client tests (09.1-07) Phase 10: mocks ../src/client/telemetry-events.js (reportClientTelemetryMock); describe `runForegroundClient: telemetry outcome` (10-10); mocks telemetry-consent/telemetry-config with importOriginal spreads (real gates, fake prompt and config IO, default asked true) and describe `runForegroundClient: telemetry consent (D-09)` (call order unmount < ask < mark < report, env gates, write failure) (10-11). (~11100 tok)
+- `client-result.test.ts` — runForegroundClient result/FIFO/Zellij paths; Esc during loading (onCancel from the ink render mock) writes cancel, aborts the adapter signal, never rerenders; installed-tool awareness via the real `_qq_write_tool_handoff` (flags A-D, envelope carries sorted catalog ∩ installed incl. function `nvm`, no chunk ⇒ prompt === QUEQUE_SYSTEM); `inkMock.autoSelect` switch; streaming, partial-list and AbortError-after-Esc client tests (09.1-07) Phase 10: mocks ../src/client/telemetry-events.js (reportClientTelemetryMock); describe `runForegroundClient: telemetry outcome` (10-10); mocks telemetry-consent/telemetry-config with importOriginal spreads (real gates, fake prompt and config IO, default asked true) and describe `runForegroundClient: telemetry consent (D-09)` (call order unmount < ask < mark < report, env gates, write failure) (10-11). resolveResultMode (WR-05) cases. (~11100 tok)
 - `code-changed.test.ts` — 8 tests spawning scripts/ci/code-changed.mjs in temp git repos (branch `topic`, no main): doc-only, src, workflow, deletion, zero base, unknown base, merge-base fallback, no git repo (10-05). (~1272 tok)
 - `command-words-fuzz.test.ts` — spawnSync fuzz of the shipped lexer in child processes: 20k seed 1 (15 s kill), 5k seed 7 (10 s kill), 33 crafted malformed inputs (1 s kill each), deep 2000 < 100 ms (best of up to 3 runs, logged); 16 MiB maxBuffer; reports the last stderr input on failure. (~900 tok)
 - `command-words.test.ts` — Spike 002 40-case table + 09-REVIEW regression table (zsh -f `${(k)builtins}` builtins), kind classification, D-06 install words, robustness (8193 chars, prototype keys, `"rg\`), frozen lexHand op/redir/comment token contract incl. heredoc-body and continuation tokens. (~1700 tok)
@@ -854,6 +1220,7 @@
 - `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
+- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3424 tok)
 - `intent-router.test.ts` — Declares makeRequest (~2122 tok)
 - `lsof-busybox.test.ts` — Defect 1 regression: parseLsofPidList cases, plus a fake busybox `lsof` on PATH (written and warmed once in beforeAll, sacrificial pid via QQ_FAKE_LSOF_PID) naming a `sleep 30` child that must survive replaceStaleListener; both replace tests assert the `lsof output ignored` log (10-01, bug-428). (~1170 tok)
 - `main-direct-run.test.ts` — --------------------------------------------------------------------------- (~710 tok)
@@ -866,11 +1233,14 @@
 - `provider-pin.test.ts` — original: resetRegistries, writePin (~3837 tok)
 - `provider-resolver.test.ts` — Declares resetRegistries (~774 tok)
 - `qq-config.test.ts` — parsed: writeConfig (~1793 tok)
-- `readme-badges.test.ts` — Offline drift guard for the README badge block: CI/Nightly/Release shields workflow-status badges must point at existing workflow files on main; the `tested on` distro badges must equal the ci.yml `images:` array in order, with simple-icons logo slugs and the CI runs link; no macOS badge unless a workflow runs-on macOS (quick 261030-en8). (~1450 tok)
+- `readme-badges.test.ts` — Offline drift guard for the README badge block (6 cases): distro badge alts equal the ci.yml `images:` array in order; distro badge shape (no label segment, LOGO_SLUGS logo, CI link); the `Tests passing on:\` line; exactly one macOS badge linking docs/INSTALL.md with a tested-by-hand alt while no workflow runs-on macOS; shell badges match SHELL_SPECS; absence guard for workflow-status badges and a `### Supported platforms` table (quick 261030-en8, 261115-3qz, 261115-4um). (~2300 tok)
 - `registry-bootstrap.test.ts` — Declares hookIds (~689 tok)
 - `registry.test.ts` — Declares makeContextProvider (~1515 tok)
 - `semantic-release-user-notes.test.ts` — Declares repo; covers commit parsing, notes formatting, generateNotes (incl. CI credential URL) and normalizeRepositoryUrl cases (userinfo, git+, ssh, scp, trailing slash). (~3500 tok)
 - `shell-contract.test.ts` — Declares validCancel (~804 tok)
+- `shell-names-invariant.test.ts` — Every `SHELL_NAMES` entry appears in `shellRequestSchema`, `SHELL_SPECS`, `SHELL_KINDS` and `DOCTOR_CHECK_IDS`; shipped shells are exactly zsh and bash and their adapter files exist (Phase 11 D-02, 11-10). Phase 12 flips fish here. (~600 tok)
+- `shell-pty.test.ts` — Real-PTY scenarios for zsh and bash (`PTY_SHELLS`) through tests/pty/drive.sh and a private tmux server: round-trip, cancel, empty, multibyte, vi-insert, paste, prompt-multiline, errexit (11-01), handoff-quiet, hostile-env (11-07). Builds the real bundle into a temp QQ_DEV_ROOT and uses QQ_TEST_RESULT_MODE fixture mode; diagnostics are single-line. (~4080 tok)
+- `shell-registry.test.ts` — Unit tests for `src/shared/shell-registry.ts` (11-04): specs, detection, version parsing and floors, login-file sourcing, adapter path resolution. stripShellComments + commented login file cases (WR-06). (~1820 tok)
 - `steering.test.ts` — Catalog, lenient/strict `installed-tools` schemas (incl. catalog drift), builder wording and byte-stability, `adapters` source guard over src/providers/ (rules a-d); adapters (b) model-call markers include `'messages.stream('` (09.1-04) (~2580 tok)
 - `structured-output.test.ts` — ModelTurn: turn, timeout, fired (~1991 tok)
 - `telemetry-buffer.test.ts` — Gating (CI, DO_NOT_TRACK, disabled, no id, null endpoint), byte-exact pending, fixed properties, environment dedupe, threshold, cap with an in-flight send, fake-timer interval with hasRef false, drop on failure, install-id filter, reset, count-only debug log (10-06). (~2913 tok)
@@ -896,9 +1266,17 @@
 
 - `gh` — gh CLI test double for tests/auto-revert.test.ts: logs argv as JSON lines to $GH_LOG (per-argument `jq -Rs .`), serves jobs-ID.json, sha-runs-SHA.json, branch-runs.json and pr-list.txt from $GH_FIXTURES, copies --body-file to $GH_LOG.body (10-07). (~617 tok)
 
+## tests/helpers/
+
+- `shells.ts` — `findShell(name, { min })` (QQ_TEST_BASH / QQ_TEST_ZSH, then PATH, Homebrew (Apple silicon, Intel), MacPorts, system dirs), `findBinary(name)`, `ciRequired(value, label)` (warns locally, throws `is required when CI is set` under CI), `shellVersionOf` (11-01), `NO_TTY` spawnSync spread (detached: no controlling tty for `bash -i`). (~1150 tok)
+
 ## tests/live/
 
 - `sdk-contract.live.ts` — Nightly live SDK contract test, the only test that calls a real model: spawns the built daemon on `/tmp/qq-live-PID.sock` with a temp HOME and sends one streamed fetch-candidates; asserts schemas, LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08). (~2722 tok)
+
+## tests/pty/
+
+- `drive.sh` — `tests/pty/drive.sh start|type|key|paste|wait|capture|stop SERVER …`: drives an interactive zsh or bash (`QQ_PTY_SHELL_BIN`) in a private tmux server (`-L`, `-f /dev/null`); bash 3.2-safe; strips ZELLIJ* and TMUX so it never opens a pane in the user's session (Phase 11 D-10, 11-01). (~750 tok)
 
 ## tests/setup/
 

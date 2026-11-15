@@ -3,12 +3,15 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  BASH_BINDINGS_SCRIPT,
   type DoctorDeps,
   defaultDoctorDeps,
   doctorCommand,
   formatDoctorReport,
+  parseBashBindings,
   parseZshBindings,
   runDoctorChecks,
+  type ShellBindings,
 } from '../src/cli/commands/doctor.js';
 import {
   DOCTOR_CHECK_IDS,
@@ -21,6 +24,47 @@ import {
 
 const SOCKET = '/tmp/qq-501.sock';
 
+/** The zsh target's twelve rows, in order (Phase 10; unchanged by Phase 11). */
+const ZSH_IDS: DoctorCheckId[] = [
+  'zsh',
+  'jq',
+  'tmp',
+  'socket',
+  'daemon',
+  'integration',
+  'binding',
+  'term',
+  'locale',
+  'provider',
+  'node',
+  'telemetry',
+];
+const BASH_LINUX_IDS: DoctorCheckId[] = ['bash', ...ZSH_IDS.slice(1)];
+const BASH_DARWIN_IDS: DoctorCheckId[] = [
+  ...BASH_LINUX_IDS.slice(0, 6),
+  'bash_profile',
+  ...BASH_LINUX_IDS.slice(6),
+];
+
+function zshBound(emacs: string | null, viins: string | null): ShellBindings {
+  return { keymaps: { emacs, viins }, bracketedPaste: null, bleLoaded: false };
+}
+
+function bashBound(overrides: Partial<ShellBindings> = {}): ShellBindings {
+  return {
+    keymaps: { emacs: '_qq_question', 'vi-insert': '_qq_question' },
+    bracketedPaste: true,
+    bleLoaded: false,
+    ...overrides,
+  };
+}
+
+const HEALTHY_RC: Record<string, string> = {
+  '.zshrc': 'source "/opt/homebrew/share/queque/queque.zsh"\n',
+  '.bashrc': 'source "/opt/homebrew/share/queque/queque.bash"\n',
+  '.bash_profile': '[ -f ~/.bashrc ] && . ~/.bashrc\n',
+};
+
 /** A machine where `??` works: every check is ✓. Each case overrides one dependency. */
 function healthyDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
   return {
@@ -32,9 +76,10 @@ function healthyDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
     nodeVersion: '24.11.0',
     qqVersion: '0.7.0',
     which: (name) => `/usr/bin/${name}`,
-    zshVersion: async () => '5.9',
-    zshBindings: async () => ({ emacs: 'qq-question-widget', viins: 'qq-question-widget' }),
-    readZshrc: () => 'source "/opt/homebrew/share/queque/queque.zsh"\n',
+    shellVersion: async (shell) => (shell === 'bash' ? '5.3.3(1)-release' : '5.9'),
+    shellBindings: async (shell) =>
+      shell === 'bash' ? bashBound() : zshBound('qq-question-widget', 'qq-question-widget'),
+    readRc: (relPath) => HEALTHY_RC[relPath] ?? null,
     probeTmp: () => true,
     socketOwner: () => 501,
     pingDaemon: async () => 'yes',
@@ -58,7 +103,7 @@ function check(report: DoctorReport, id: DoctorCheckId) {
 describe('runDoctorChecks: healthy machine', () => {
   it('runs all twelve checks in id order with telemetry last, all ok, exit 0', async () => {
     const report = await runDoctorChecks(healthyDeps());
-    expect(report.checks.map((c) => c.id)).toEqual([...DOCTOR_CHECK_IDS]);
+    expect(report.checks.map((c) => c.id)).toEqual(ZSH_IDS);
     expect(report.checks).toHaveLength(12);
     expect(report.checks.at(-1)?.id).toBe('telemetry');
     expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
@@ -91,29 +136,29 @@ describe('runDoctorChecks: zsh (D-20)', () => {
   });
 
   it('fails for zsh 4.3.17', async () => {
-    const report = await runDoctorChecks(healthyDeps({ zshVersion: async () => '4.3.17' }));
+    const report = await runDoctorChecks(healthyDeps({ shellVersion: async () => '4.3.17' }));
     expect(check(report, 'zsh').status).toBe('fail');
     expect(doctorExitCode(report)).toBe(1);
   });
 
   it('warns for zsh 5.3 (untested) and still exits 0', async () => {
-    const report = await runDoctorChecks(healthyDeps({ zshVersion: async () => '5.3' }));
+    const report = await runDoctorChecks(healthyDeps({ shellVersion: async () => '5.3' }));
     expect(check(report, 'zsh').status).toBe('warn');
     expect(doctorExitCode(report)).toBe(0);
   });
 
   it('passes for zsh 5.8.1', async () => {
-    const report = await runDoctorChecks(healthyDeps({ zshVersion: async () => '5.8.1' }));
+    const report = await runDoctorChecks(healthyDeps({ shellVersion: async () => '5.8.1' }));
     expect(check(report, 'zsh').status).toBe('ok');
   });
 
   it('passes for zsh 5.9', async () => {
-    const report = await runDoctorChecks(healthyDeps({ zshVersion: async () => '5.9' }));
+    const report = await runDoctorChecks(healthyDeps({ shellVersion: async () => '5.9' }));
     expect(check(report, 'zsh').status).toBe('ok');
   });
 
   it('warns when zsh is on PATH but its version cannot be read', async () => {
-    const report = await runDoctorChecks(healthyDeps({ zshVersion: async () => null }));
+    const report = await runDoctorChecks(healthyDeps({ shellVersion: async () => null }));
     expect(check(report, 'zsh').status).toBe('warn');
   });
 });
@@ -226,7 +271,7 @@ describe('runDoctorChecks: warnings keep exit 0 (D-17)', () => {
   it('warns and names the widget when ? is bound to another widget', async () => {
     const report = await runDoctorChecks(
       healthyDeps({
-        zshBindings: async () => ({ emacs: 'qq-question-widget', viins: 'self-insert' }),
+        shellBindings: async () => zshBound('qq-question-widget', 'self-insert'),
       }),
     );
     expect(check(report, 'binding').status).toBe('warn');
@@ -235,12 +280,12 @@ describe('runDoctorChecks: warnings keep exit 0 (D-17)', () => {
   });
 
   it('warns when the bindings cannot be read', async () => {
-    const report = await runDoctorChecks(healthyDeps({ zshBindings: async () => null }));
+    const report = await runDoctorChecks(healthyDeps({ shellBindings: async () => null }));
     expect(check(report, 'binding').status).toBe('warn');
   });
 
   it('warns when ~/.zshrc does not load QueQue', async () => {
-    const report = await runDoctorChecks(healthyDeps({ readZshrc: () => null }));
+    const report = await runDoctorChecks(healthyDeps({ readRc: () => null }));
     expect(check(report, 'integration').status).toBe('warn');
     expect(check(report, 'integration').hint).toContain('qq init zsh && source ~/.zshrc');
   });
@@ -420,8 +465,8 @@ describe('runDoctorChecks: report contract', () => {
         probeTmp: () => false,
         socketOwner: () => 0,
         pingDaemon: async () => 'no',
-        readZshrc: () => null,
-        zshBindings: async () => null,
+        readRc: () => null,
+        shellBindings: async () => null,
         nodeVersion: '20.0.0',
         detectProvider: async () => ({ kind: 'none', message: 'x' }),
       }),
@@ -477,7 +522,7 @@ describe('runDoctorChecks: no leaks (T-10-07)', () => {
         healthyDeps({
           env,
           homeDir: '/home/canary-user',
-          readZshrc: () => 'export SECRET=canary-zshrc-content\n',
+          readRc: () => 'export SECRET=canary-zshrc-content\n',
           loadProviderPin: () => ({
             kind: 'invalid',
             path: '/home/canary-user/.config/qq/provider.json',
@@ -535,14 +580,11 @@ describe('parseZshBindings', () => {
   it('reads the widget after each marker and ignores other ~/.zshrc output', () => {
     const out =
       'welcome banner\n__qq_emacs__ "?" qq-question-widget\n__qq_viins__ "?" self-insert\n';
-    expect(parseZshBindings(out)).toEqual({ emacs: 'qq-question-widget', viins: 'self-insert' });
+    expect(parseZshBindings(out)).toEqual(zshBound('qq-question-widget', 'self-insert'));
   });
 
   it('returns null widgets for marker lines without a binding', () => {
-    expect(parseZshBindings('__qq_emacs__ \n__qq_viins__ garbage\n')).toEqual({
-      emacs: null,
-      viins: null,
-    });
+    expect(parseZshBindings('__qq_emacs__ \n__qq_viins__ garbage\n')).toEqual(zshBound(null, null));
   });
 
   it('returns null when no marker line appeared', () => {
@@ -552,7 +594,12 @@ describe('parseZshBindings', () => {
 
 describe('defaultDoctorDeps (real machine, read-only)', () => {
   it('reads the zsh version with stdin closed', async () => {
-    const version = await defaultDoctorDeps().zshVersion();
+    const version = await defaultDoctorDeps().shellVersion('zsh');
+    expect(version).toMatch(/^\d+\.\d+/);
+  });
+
+  it('reads a bash version with stdin closed, without rc files', async () => {
+    const version = await defaultDoctorDeps().shellVersion('bash');
     expect(version).toMatch(/^\d+\.\d+/);
   });
 
@@ -651,7 +698,7 @@ describe('doctorCommand', () => {
     const output = captureStdout();
     await doctorCommand({ json: true }, healthyDeps());
     const parsed = doctorReportSchema.parse(JSON.parse(output()));
-    expect(parsed.checks).toHaveLength(DOCTOR_CHECK_IDS.length);
+    expect(parsed.checks).toHaveLength(12);
     expect(output().endsWith('\n')).toBe(true);
   });
 
@@ -668,5 +715,432 @@ describe('doctorCommand', () => {
       healthyDeps({ detectProvider: async () => ({ kind: 'none', message: 'x' }) }),
     );
     expect(process.exitCode).toBe(0);
+  });
+});
+
+describe('doctorCommand --shell', () => {
+  afterEach(() => {
+    process.exitCode = undefined;
+    vi.restoreAllMocks();
+  });
+
+  function capture(stream: NodeJS.WriteStream): () => string {
+    let out = '';
+    vi.spyOn(stream, 'write').mockImplementation((chunk: string | Uint8Array) => {
+      out += String(chunk);
+      return true;
+    });
+    return () => out;
+  }
+
+  it('prints a bash-target report for shell bash and sets the exit code from it', async () => {
+    const stdout = capture(process.stdout);
+    await doctorCommand({ json: true, shell: 'bash' }, healthyDeps());
+    const parsed = doctorReportSchema.parse(JSON.parse(stdout()));
+    expect(parsed.checks[0]?.id).toBe('bash');
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('exits 1 for a bash below 5.0', async () => {
+    capture(process.stdout);
+    await doctorCommand(
+      { shell: 'bash' },
+      healthyDeps({ shellVersion: async () => '3.2.57(1)-release' }),
+    );
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('refuses fish as coming later: stderr, no report, exit 2', async () => {
+    const stdout = capture(process.stdout);
+    const stderr = capture(process.stderr);
+    await doctorCommand({ shell: 'fish' }, healthyDeps());
+    expect(stderr()).toBe(
+      'qq doctor: fish support is coming in a later release; supported now: zsh, bash\n',
+    );
+    expect(stdout()).toBe('');
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('refuses an unknown shell with the supported list, exit 2', async () => {
+    const stdout = capture(process.stdout);
+    const stderr = capture(process.stderr);
+    await doctorCommand({ shell: 'tcsh' }, healthyDeps());
+    expect(stderr()).toBe('qq doctor: unsupported shell; supported: zsh, bash\n');
+    expect(stdout()).toBe('');
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('keeps auto-detection without --shell', async () => {
+    const stdout = capture(process.stdout);
+    await doctorCommand({ json: true }, bashDeps());
+    expect(JSON.parse(stdout()).checks[0].id).toBe('bash');
+  });
+});
+
+describe('DOCTOR_CHECK_IDS (add, never rename)', () => {
+  it('keeps the Phase 10 ids first and appends bash, fish and bash_profile', () => {
+    expect(DOCTOR_CHECK_IDS.slice(0, 12)).toEqual(ZSH_IDS);
+    expect(DOCTOR_CHECK_IDS.slice(12)).toEqual(['bash', 'fish', 'bash_profile']);
+  });
+});
+
+/** A healthy machine whose login shell is bash (`$SHELL`). */
+function bashDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
+  return healthyDeps({ env: { ...healthyDeps().env, SHELL: '/usr/local/bin/bash' }, ...overrides });
+}
+
+describe('runDoctorChecks: target shell (D-08, D-02)', () => {
+  it('a bash target on linux has twelve rows starting with bash, all ok', async () => {
+    const report = await runDoctorChecks(healthyDeps(), { shell: 'bash' });
+    expect(report.checks.map((c) => c.id)).toEqual(BASH_LINUX_IDS);
+    expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
+  });
+
+  it('a bash target on darwin adds bash_profile after integration', async () => {
+    const report = await runDoctorChecks(healthyDeps({ platform: 'darwin' }), { shell: 'bash' });
+    expect(report.checks.map((c) => c.id)).toEqual(BASH_DARWIN_IDS);
+    expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
+  });
+
+  it('a zsh target on darwin has no bash_profile row', async () => {
+    const report = await runDoctorChecks(healthyDeps({ platform: 'darwin' }));
+    expect(report.checks.map((c) => c.id)).toEqual(ZSH_IDS);
+  });
+
+  it('options.shell wins over $SHELL', async () => {
+    const report = await runDoctorChecks(bashDeps(), { shell: 'zsh' });
+    expect(report.checks[0]?.id).toBe('zsh');
+  });
+
+  it('picks bash from SHELL=/usr/local/bin/bash', async () => {
+    const report = await runDoctorChecks(bashDeps());
+    expect(report.checks[0]?.id).toBe('bash');
+  });
+
+  it('falls back to the passwd shell when SHELL is /bin/sh', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({ env: { ...healthyDeps().env, SHELL: '/bin/sh' }, userShell: '/bin/zsh' }),
+    );
+    expect(report.checks[0]?.id).toBe('zsh');
+  });
+
+  it('uses the passwd bash when SHELL is unset', async () => {
+    const report = await runDoctorChecks(healthyDeps({ userShell: '/opt/local/bin/bash' }));
+    expect(report.checks[0]?.id).toBe('bash');
+  });
+
+  it('targets zsh when SHELL is fish (not shipped yet)', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({ env: { ...healthyDeps().env, SHELL: '/usr/bin/fish' } }),
+    );
+    expect(report.checks[0]?.id).toBe('zsh');
+    expect(report.checks.some((c) => c.id === 'fish')).toBe(false);
+  });
+
+  it('probes the target shell for its version, bindings and rc file', async () => {
+    const shellVersion = vi.fn(async () => '5.2.21(1)-release');
+    const shellBindings = vi.fn(async () => bashBound());
+    const readRc = vi.fn((relPath: string) => HEALTHY_RC[relPath] ?? null);
+    await runDoctorChecks(healthyDeps({ shellVersion, shellBindings, readRc }), { shell: 'bash' });
+    expect(shellVersion).toHaveBeenCalledWith('bash');
+    expect(shellBindings).toHaveBeenCalledWith('bash');
+    expect(readRc).toHaveBeenCalledWith('.bashrc');
+    expect(readRc).not.toHaveBeenCalledWith('.zshrc');
+  });
+});
+
+describe('runDoctorChecks: bash version (D-12)', () => {
+  async function bashRow(version: string | null, which?: DoctorDeps['which']) {
+    const report = await runDoctorChecks(
+      healthyDeps({ shellVersion: async () => version, ...(which ? { which } : {}) }),
+      { shell: 'bash' },
+    );
+    return { report, row: check(report, 'bash') };
+  }
+
+  it('fails when bash is not on PATH, exit 1', async () => {
+    const { report, row } = await bashRow('5.3.3(1)-release', (name) =>
+      name === 'bash' ? null : `/usr/bin/${name}`,
+    );
+    expect(row.status).toBe('fail');
+    expect(doctorExitCode(report)).toBe(1);
+  });
+
+  it('fails for bash 3.2.57 naming 3.2 and the 5.0 floor', async () => {
+    const { report, row } = await bashRow('3.2.57(1)-release');
+    expect(row.status).toBe('fail');
+    expect(row.summary).toContain('3.2');
+    expect(row.summary).toContain('5.0');
+    expect(doctorExitCode(report)).toBe(1);
+  });
+
+  it('fails for bash 4.4.20', async () => {
+    const { row } = await bashRow('4.4.20(1)-release');
+    expect(row.status).toBe('fail');
+  });
+
+  it('warns for bash 5.0.18 (untested, bracketed paste off by default)', async () => {
+    const { report, row } = await bashRow('5.0.18(1)-release');
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('bracketed paste');
+    expect(doctorExitCode(report)).toBe(0);
+  });
+
+  it('passes for bash 5.1.16', async () => {
+    const { row } = await bashRow('5.1.16(1)-release');
+    expect(row.status).toBe('ok');
+  });
+
+  it('passes for bash 5.3.3 and prints major.minor.patch only', async () => {
+    const { row } = await bashRow('5.3.3(1)-release');
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('bash 5.3.3');
+  });
+
+  it('never prints the build suffix', async () => {
+    for (const raw of ['3.2.57(1)-release', '5.0.18(1)-release', '5.2.21(1)-release']) {
+      const { row } = await bashRow(raw);
+      expect(row.summary).not.toContain('(1)');
+      expect(row.summary).not.toContain('release');
+    }
+  });
+
+  it('gives a brew hint on darwin', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({ platform: 'darwin', shellVersion: async () => '3.2.57(1)-release' }),
+      { shell: 'bash' },
+    );
+    expect(check(report, 'bash').hint).toContain('brew install bash');
+  });
+});
+
+describe('runDoctorChecks: bash integration and macOS login file (D-09)', () => {
+  it('is ok when ~/.bashrc sources the adapter', async () => {
+    const report = await runDoctorChecks(healthyDeps(), { shell: 'bash' });
+    expect(check(report, 'integration').status).toBe('ok');
+    expect(check(report, 'integration').summary).toBe('~/.bashrc loads QueQue');
+  });
+
+  it('warns with the bash init hint when ~/.bashrc does not load QueQue', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({ readRc: (relPath) => (relPath === '.bashrc' ? 'alias ll=ls\n' : null) }),
+      { shell: 'bash' },
+    );
+    expect(check(report, 'integration').status).toBe('warn');
+    expect(check(report, 'integration').hint).toContain('qq init bash && source ~/.bashrc');
+  });
+
+  it('warns when the only source line in ~/.bashrc is commented out (WR-06)', async () => {
+    const bashrc =
+      '# queque shell integration\n# source "/opt/homebrew/share/queque/queque.bash"\n';
+    const report = await runDoctorChecks(
+      healthyDeps({ readRc: (relPath) => (relPath === '.bashrc' ? bashrc : null) }),
+      { shell: 'bash' },
+    );
+    expect(check(report, 'integration').status).toBe('warn');
+    expect(check(report, 'integration').hint).toContain('qq init bash && source ~/.bashrc');
+  });
+
+  function darwinBash(rc: Record<string, string>) {
+    return runDoctorChecks(
+      healthyDeps({ platform: 'darwin', readRc: (relPath) => rc[relPath] ?? null }),
+      { shell: 'bash' },
+    );
+  }
+
+  it('bash_profile is ok when ~/.bash_profile sources ~/.bashrc', async () => {
+    const report = await darwinBash(HEALTHY_RC);
+    expect(check(report, 'bash_profile').status).toBe('ok');
+  });
+
+  it('bash_profile warns naming ~/.bash_profile when it skips ~/.bashrc', async () => {
+    const report = await darwinBash({ ...HEALTHY_RC, '.bash_profile': 'export PATH\n' });
+    const row = check(report, 'bash_profile');
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('~/.bash_profile');
+    expect(row.hint).toBe('add [ -f ~/.bashrc ] && . ~/.bashrc to ~/.bash_profile');
+    expect(doctorExitCode(report)).toBe(0);
+  });
+
+  it('bash_profile warns when its . ~/.bashrc line is commented out (WR-06)', async () => {
+    const report = await darwinBash({ ...HEALTHY_RC, '.bash_profile': '# . ~/.bashrc\n' });
+    const row = check(report, 'bash_profile');
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('~/.bash_profile');
+  });
+
+  it('bash_profile names ~/.profile when that is the first login file', async () => {
+    const report = await darwinBash({ '.bashrc': HEALTHY_RC['.bashrc'] ?? '', '.profile': 'x\n' });
+    expect(check(report, 'bash_profile').summary).toContain('~/.profile');
+  });
+
+  it('bash_profile warns when no login file exists', async () => {
+    const report = await darwinBash({ '.bashrc': HEALTHY_RC['.bashrc'] ?? '' });
+    const row = check(report, 'bash_profile');
+    expect(row.status).toBe('warn');
+    expect(row.hint).toBe('add [ -f ~/.bashrc ] && . ~/.bashrc to ~/.bash_profile');
+  });
+
+  it('reads ~/.bashrc and the login file through readRc only', async () => {
+    const readRc = vi.fn((relPath: string) => HEALTHY_RC[relPath] ?? null);
+    await runDoctorChecks(healthyDeps({ platform: 'darwin', readRc }), { shell: 'bash' });
+    expect(readRc.mock.calls.map(([p]) => p)).toEqual(
+      expect.arrayContaining(['.bashrc', '.bash_profile']),
+    );
+  });
+
+  it('has no bash_profile row on linux', async () => {
+    const report = await runDoctorChecks(healthyDeps({ readRc: () => null }), { shell: 'bash' });
+    expect(report.checks.some((c) => c.id === 'bash_profile')).toBe(false);
+  });
+});
+
+describe('runDoctorChecks: bash binding', () => {
+  async function bindingRow(bindings: ShellBindings | null) {
+    const report = await runDoctorChecks(healthyDeps({ shellBindings: async () => bindings }), {
+      shell: 'bash',
+    });
+    return check(report, 'binding');
+  }
+
+  it('is ok when ? runs _qq_question in emacs and vi-insert with paste on', async () => {
+    const row = await bindingRow(bashBound());
+    expect(row.status).toBe('ok');
+    expect(row.summary).toBe('? is bound to _qq_question in emacs and vi-insert');
+  });
+
+  it('warns naming self-insert when vi-insert does not run QueQue', async () => {
+    const row = await bindingRow(
+      bashBound({ keymaps: { emacs: '_qq_question', 'vi-insert': 'self-insert' } }),
+    );
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('self-insert');
+    expect(row.summary).toContain('vi-insert');
+  });
+
+  it('warns with the inputrc hint when bracketed paste is off', async () => {
+    const row = await bindingRow(bashBound({ bracketedPaste: false }));
+    expect(row.status).toBe('warn');
+    expect(row.hint).toContain('set enable-bracketed-paste on');
+    expect(row.hint).toContain('~/.inputrc');
+  });
+
+  it('warns that ble.sh replaces readline when it is loaded', async () => {
+    const row = await bindingRow(bashBound({ bleLoaded: true }));
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('ble.sh');
+  });
+
+  it('warns when the bindings cannot be read', async () => {
+    const row = await bindingRow(null);
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('interactive bash');
+  });
+
+  it('skips the probe (warn) when the version check failed', async () => {
+    const shellBindings = vi.fn(async () => bashBound());
+    const report = await runDoctorChecks(
+      healthyDeps({ shellVersion: async () => '3.2.57(1)-release', shellBindings }),
+      { shell: 'bash' },
+    );
+    expect(check(report, 'binding').status).toBe('warn');
+    expect(shellBindings).not.toHaveBeenCalled();
+  });
+
+  it('skips the probe when the bash version cannot be read', async () => {
+    const shellBindings = vi.fn(async () => bashBound());
+    await runDoctorChecks(healthyDeps({ shellVersion: async () => null, shellBindings }), {
+      shell: 'bash',
+    });
+    expect(shellBindings).not.toHaveBeenCalled();
+  });
+});
+
+describe('parseBashBindings', () => {
+  const ESC = String.fromCharCode(27);
+
+  it('reads both keymaps, paste and ble from marker lines and ignores readline noise', () => {
+    const out = [
+      `${ESC}[?1034hwelcome to bash`,
+      '__qq_emacs__ "?" "_qq_question"',
+      '__qq_vi-insert__ "?": "_qq_question"',
+      '__qq_paste__ set enable-bracketed-paste on',
+      '__qq_ble__ ',
+      '',
+    ].join('\n');
+    expect(parseBashBindings(out)).toEqual(bashBound());
+  });
+
+  it('reads a readline function from the bind -p fallback', () => {
+    const out = '__qq_emacs__ "?" "_qq_question"\n__qq_vi-insert__ "?": self-insert\n';
+    expect(parseBashBindings(out)?.keymaps['vi-insert']).toBe('self-insert');
+  });
+
+  it('reads a marker that follows a readline escape on the same line', () => {
+    const out = `__qq_emacs__ \n${ESC}[?1034h__qq_paste__ set enable-bracketed-paste off\n`;
+    expect(parseBashBindings(out)?.bracketedPaste).toBe(false);
+  });
+
+  it('marks ble.sh loaded for any BLE_VERSION value', () => {
+    expect(parseBashBindings('__qq_ble__ 0.4.0-devel3\n')?.bleLoaded).toBe(true);
+  });
+
+  it('returns null keymaps and unknown paste for empty markers', () => {
+    expect(parseBashBindings('__qq_emacs__ \n__qq_vi-insert__ \n__qq_paste__ \n')).toEqual({
+      keymaps: { emacs: null, 'vi-insert': null },
+      bracketedPaste: null,
+      bleLoaded: false,
+    });
+  });
+
+  it('returns null when no marker line appeared', () => {
+    expect(parseBashBindings('"?" "_qq_question"\n')).toBeNull();
+  });
+
+  it('the probe script prints every marker with builtins only', () => {
+    for (const marker of ['__qq_%s__', '__qq_paste__', '__qq_ble__']) {
+      expect(BASH_BINDINGS_SCRIPT).toContain(marker);
+    }
+    expect(BASH_BINDINGS_SCRIPT).toContain('emacs vi-insert');
+    expect(BASH_BINDINGS_SCRIPT).toContain('-X');
+    expect(BASH_BINDINGS_SCRIPT).toContain('enable-bracketed-paste');
+  });
+});
+
+describe('runDoctorChecks: no leaks for a bash target (T-11-25)', () => {
+  it('never prints HOME, the SHELL path, rc content or the build string', async () => {
+    const env = {
+      HOME: '/home/canary-user',
+      SHELL: '/opt/canary/bin/bash',
+      TERM: 'xterm-256color',
+      LANG: 'en_US.UTF-8',
+      PATH: '/opt/canary/bin:/usr/bin',
+    };
+    const variants: Partial<DoctorDeps>[] = [
+      {},
+      { readRc: () => 'export SECRET=canary-rc-xyz\n' },
+      { shellBindings: async () => bashBound({ bracketedPaste: false, bleLoaded: true }) },
+      { shellVersion: async () => '3.2.57(1)-release' },
+      { shellVersion: async () => '5.0.18(1)-release' },
+    ];
+    for (const variant of variants) {
+      const report = await runDoctorChecks(
+        healthyDeps({
+          env,
+          homeDir: '/home/canary-user',
+          platform: 'darwin',
+          readRc: (relPath) => `export SECRET=canary-rc-xyz\n${HEALTHY_RC[relPath] ?? ''}`,
+          shellVersion: async () => '5.2.21(1)-release',
+          ...variant,
+        }),
+      );
+      expect(report.checks[0]?.id).toBe('bash');
+      for (const text of [JSON.stringify(report), formatDoctorReport(report)]) {
+        expect(text).not.toContain('canary-user');
+        expect(text).not.toContain('/opt/canary');
+        expect(text).not.toContain('canary-rc-xyz');
+        expect(text).not.toContain('(1)-release');
+      }
+    }
   });
 });

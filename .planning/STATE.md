@@ -4,16 +4,16 @@ milestone: v1.0
 current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
-stopped_at: Phase 10 complete, ready to plan Phase 7
-last_updated: "2026-11-05T19:56:29.805Z"
-last_activity: 2026-10-30
-last_activity_desc: Phase 10 complete, transitioned to Phase 7
-state_head: 27e495e02191a5b903429b4c2a20898d81c71b1f
+stopped_at: Phase 11 complete, ready to plan Phase 7
+last_updated: "2026-11-15T10:03:54.804Z"
+last_activity: 2026-11-15
+last_activity_desc: Phase 11 complete, transitioned to Phase 7
+state_head: 78d6fb73b98974bbe458ee07253d959031d32de0
 progress:
-  total_phases: 13
+  total_phases: 15
   completed_phases: 8
-  total_plans: 56
-  completed_plans: 56
+  total_plans: 67
+  completed_plans: 67
   percent: 73
 milestone_name: milestone
 ---
@@ -25,7 +25,7 @@ milestone_name: milestone
 See: .planning/PROJECT.md (updated 2026-10-30)
 
 **Core value:** Turn natural-language intent into a shell command that feels native to the terminal workflow, not bolted on top of it.
-**Current focus:** Phase 7 — Context-Aware Learning and Ambient Suggestions
+**Current focus:** Phase 11 — Multi-shell trigger support (bash, fish-ready)
 
 ## Current Position
 
@@ -33,7 +33,7 @@ Phase: 7 — Context-Aware Learning and Ambient Suggestions
 Plan: Not started
 Next: /gsd-execute-phase 09.1 --gaps-only — run 09.1-10 (CR-01: keys sharing one stdin read), then /gsd-verify-work 09.1 to re-test UAT test 5
 Status: Ready to plan
-Last activity: 2026-11-05 - Completed quick task 261105-ix8: weekly Homebrew tap clone stats workflow (stats branch, publishing runs subtracted)
+Last activity: 2026-11-15 — Phase 11 complete, transitioned to Phase 7
 
 Progress: [███████░░░] 73%
 
@@ -41,7 +41,7 @@ Progress: [███████░░░] 73%
 
 **Velocity:**
 
-- Total plans completed: 32
+- Total plans completed: 43
 - Average duration: -
 - Total execution time: 0.0 hours
 
@@ -53,6 +53,7 @@ Progress: [███████░░░] 73%
 | 9 | 6 | - | - |
 | 09.1 | 10 | - | - |
 | 10 | 13 | - | - |
+| 11 | 11 | - | - |
 
 **Recent Trend:**
 
@@ -89,6 +90,8 @@ Progress: [███████░░░] 73%
 - Phase 8 scope expanded (2026-07-31): 08-01 must fix macOS Keychain detection gap — prototype `detectProvider()` only checks credentials file, missing `/login` sessions on darwin.
 - Phase 09.1 inserted after Phase 9: Provider Latency and Cancellation: effort low, stream-json, early first candidate, prewarmed claude -p, Esc aborts the model call (from debug llm-response-latency-profile) (URGENT)
 - Phase 10 added (2026-10-28): Linux distro CI harness and anonymous telemetry — PR CI + distro container matrix, smoke-distro.sh PTY smoke, filtered pre-push smoke, `qq doctor`, opt-in allow-listed PostHog telemetry.
+- Phase 11 added (2026-11-13): Multi-shell trigger support (bash and fish) — port `??` trigger + ink picker handoff to bash ≥5.0 (`bind -x`) and fish 4.x, from spikes 005–007.
+- Phase 11 rescoped (2026-11-13): bash ships, every shared seam becomes shell-aware; Phase 12 added: fish trigger support (adapter-only on Phase 11 seams).
 
 ### Decisions
 
@@ -182,11 +185,16 @@ None yet.
 | 261030-fdr | Minimal README for new users; detail moved to docs/INSTALL, PROVIDERS, USAGE, PRIVACY, CONFIGURATION | 2026-10-30 | c857dbe | [261030-fdr-reformat-the-readme-minimal-move-the-res](./quick/261030-fdr-reformat-the-readme-minimal-move-the-res/) |
 | 261030-tq3 | Replace a daemon from another qq build (build id in pong), add qq daemon --restart, report a silent daemon accurately | 2026-10-30 | 332b484 | [261030-tq3-restart-outdated-daemon-and-report-a-dae](./quick/261030-tq3-restart-outdated-daemon-and-report-a-dae/) |
 | 261105-ix8 | Weekly tap clone stats workflow: snapshots homebrew-tap clone traffic to the stats branch, minus publishing-run clones | 2026-11-05 | 27e495e | [261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo](./quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/) |
+| 261115-3qz | README support matrix: shell badges, Tests passing on row with macOS, Supported platforms table | 2026-11-15 | 7b75ddb | [261115-3qz-readme-support-matrix-shell-and-os-badge](./quick/261115-3qz-readme-support-matrix-shell-and-os-badge/) |
+| 261115-4um | README: drop CI/Nightly/Release badges and the Supported platforms table; macOS bash note back in Install | 2026-11-15 | 7ec301c | [261115-4um-readme-remove-workflow-badges-and-suppor](./quick/261115-4um-readme-remove-workflow-badges-and-suppor/) |
+| 36 | zsh prewarm tests poll 10 s instead of 2.5 s (pre-push flake, bug-429) | 2026-11-15 | ca22ea9 | — |
+| 37 | README Install: brew steps only; npm and macOS bash notes via the INSTALL.md link | 2026-11-15 | 78d6fb7 | — |
+Last activity: 2026-11-15 - Completed quick task 261115-4um: README drops workflow badges and the Supported platforms table
 
 ## Session Continuity
 
-Last activity: 2026-10-21 - Completed quick task 261021-sya: strip credentials from changelog repository links
+Last activity: 2026-11-15 - Completed quick task 261115-3qz: README support matrix (shell badges, Tests passing on row, Supported platforms table)
 
-Last session: 2026-10-30T16:40:00Z
-Stopped at: Phase 10 complete, ready to plan Phase 7
-Resume file: None
+Last session: 2026-11-13T20:05:04.333Z
+Stopped at: Phase 11 complete, ready to plan Phase 7
+Resume file: .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-CONTEXT.md

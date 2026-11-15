@@ -10,6 +10,7 @@ function makeRequest(lbuffer: string): NormalizedRequest {
     cwd: '/home/user/project',
     ttyPath: '/dev/tty',
     shellPid: 1234,
+    shell: 'zsh',
     intent: 'unknown',
     confidence: 1,
   };

@@ -9,19 +9,26 @@
 # around the fixture, and zsh, the widget, `qq client`, the daemon, the socket and
 # the Ink TUI are the real installed product.
 #
-# Runs `qq doctor` as the smoke user (D-17: with only `claude` faked the image must
-# have no hard blocker), then the expect passes `default`, `c-locale` and `consent`,
-# and stops at the first failure.
+# Runs `qq doctor --shell zsh` as the smoke user (D-17: with only `claude` faked the image
+# must have no hard blocker), then the zsh expect passes `default`, `c-locale` and `consent`.
+# Then the bash pass (Phase 11 D-10): `qq init bash` writes ~/.bashrc, `qq doctor --shell bash`
+# must report an ok `binding` row (the real `bind -X` probe), and the expect pass `default`
+# runs in `bash -i`. Stops at the first failure.
 # Artifacts in /out: image.txt, doctor.json, doctor.txt, pty-default.log,
-# pty-c-locale.log, pty-consent.log, qq-debug.log; on any failure also df.txt (`df -h /tmp`; a full disk
-# broke the widget in research) and zshrc.txt (the smoke user's ~/.zshrc). doctor.json
+# pty-c-locale.log, pty-consent.log, doctor-bash.json, doctor-bash.txt, pty-bash-default.log,
+# qq-debug.log; on any failure also df.txt (`df -h /tmp`; a full disk broke the widget in
+# research), zshrc.txt and bashrc.txt (the smoke user's ~/.zshrc and ~/.bashrc). doctor.json
 # and doctor.txt are written on every path that gets as far as the smoke user, failures
 # included, because the auto-revert PR body quotes them (D-15).
 #
 # Exit codes: 30 deps, 31 package install, 32 user, 33 `qq init zsh`;
-#   exit 34 when `qq doctor --json` exits non-zero (a hard blocker on this image);
+#   exit 34 when `qq doctor --shell zsh --json` exits non-zero (a hard blocker on this image);
 #   exit 35 when doctor.json is not a version 1 report with at least 11 checks;
 #   exit 36 when the consent pass's `n` is not saved (asked, disabled, no install id);
+#   exit 37 when `qq init bash` fails or ~/.bashrc does not source queque.bash;
+#   exit 38 when `qq doctor --shell bash --json` exits non-zero;
+#   exit 39 when doctor-bash.json is not a version 1 report with at least 11 checks and an
+#           ok `binding` row (the bash binding probe did not see `?` bound);
 # otherwise the exit code of scripts/smoke-distro.exp (10-19).
 set -u
 
@@ -37,7 +44,7 @@ trap 'chmod -R a+rX /out 2>/dev/null || true' EXIT
 
 # fail() collects doctor only when /out/doctor.json is missing: never let a report from an
 # earlier run in a reused /out stand in for this one (WR-06).
-rm -f /out/doctor.json /out/doctor.txt
+rm -f /out/doctor.json /out/doctor.txt /out/doctor-bash.json /out/doctor-bash.txt
 printf '%s\n' "${QQ_SMOKE_IMAGE:-unknown}" >/out/image.txt
 
 # Saves the failure artifacts, then exits with the given code.
@@ -48,6 +55,9 @@ fail() {
   df -h /tmp >/out/df.txt 2>&1
   if [ -f "$SMOKE_HOME/.zshrc" ]; then
     cp "$SMOKE_HOME/.zshrc" /out/zshrc.txt
+  fi
+  if [ -f "$SMOKE_HOME/.bashrc" ]; then
+    cp "$SMOKE_HOME/.bashrc" /out/bashrc.txt
   fi
   exit "$1"
 }
@@ -89,11 +99,12 @@ as_user() {
 
 # Writes /out/doctor.json (exit status in DOCTOR_RC) and the human checklist
 # /out/doctor.txt, whose exit status is ignored: it is only kept for the artifact.
+# `--shell zsh` pins the target: shell detection can never change what the zsh pass checks.
 DOCTOR_RC=
 collect_doctor() {
-  as_user "qq doctor --json >/out/doctor.json"
+  as_user "qq doctor --shell zsh --json >/out/doctor.json"
   DOCTOR_RC=$?
-  as_user "qq doctor >/out/doctor.txt 2>&1"
+  as_user "qq doctor --shell zsh >/out/doctor.txt 2>&1"
   return 0
 }
 
@@ -132,4 +143,36 @@ as_user "jq -e '.telemetry.asked == true and .telemetry.enabled == false and (.t
   cat "$SMOKE_HOME/.config/qq/config.json" >&2 2>/dev/null
   fail 36
 }
+
+# The bash pass (D-10). As for zsh, the exports go ABOVE the source line `qq init bash`
+# appends: the adapter prewarms the daemon while ~/.bashrc loads. The consent answer is
+# already saved, and QQ_TELEMETRY=0 keeps the question out of this pass regardless.
+as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' 'export QQ_TELEMETRY=0' >.bashrc" ||
+  fail 37
+as_user "qq init bash" || fail 37
+grep -q 'queque\.bash' "$SMOKE_HOME/.bashrc" || {
+  echo "smoke-distro-runner: qq init bash did not source queque.bash from ~/.bashrc" >&2
+  fail 37
+}
+as_user "printf '%s\n' \"PS1='QQSMOKE\\\\\$ '\" >>.bashrc" || fail 37
+
+# TERM as in the expect passes (a terminal sets it): `su -c` leaves it unset, and readline then
+# treats the terminal as dumb and turns enable-bracketed-paste off, which makes the binding
+# row warn even though `?` is bound.
+as_user "TERM=xterm-256color qq doctor --shell bash --json >/out/doctor-bash.json"
+DOCTOR_BASH_RC=$?
+as_user "TERM=xterm-256color qq doctor --shell bash >/out/doctor-bash.txt 2>&1"
+if [ "$DOCTOR_BASH_RC" -ne 0 ]; then
+  echo "smoke-distro-runner: qq doctor --shell bash --json exited $DOCTOR_BASH_RC:" >&2
+  cat /out/doctor-bash.txt >&2
+  fail 38
+fi
+jq -e '.version == 1 and (.checks | length) >= 11 and any(.checks[]; .id == "binding" and .status == "ok")' \
+  /out/doctor-bash.json >/dev/null || {
+  echo "smoke-distro-runner: doctor-bash.json is not a version 1 report with an ok binding row:" >&2
+  cat /out/doctor-bash.txt >&2
+  fail 39
+}
+
+as_user "expect /opt/qq-scripts/smoke-distro.exp default bash" || fail $?
 exit 0

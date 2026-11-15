@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { SHELL_NAMES } from '../src/contracts/shell.js';
 import {
   ARCH_KINDS,
   clientTelemetryEventSchema,
@@ -13,6 +14,7 @@ import {
   QUERY_OUTCOMES,
   queryOutcomePayloadSchema,
   queryOutcomeWirePropertiesSchema,
+  SHELL_KINDS,
   TELEMETRY_EVENTS,
   TELEMETRY_LIB,
   telemetryBatchSchema,
@@ -48,6 +50,8 @@ const clientSamples: Sample[] = [
       os: 'linux',
       arch: 'arm64',
       distro: 'alpine',
+      shell: 'zsh',
+      shell_version: '5.9',
       zsh: '5.9',
       node_major: 24,
       zellij: false,
@@ -110,8 +114,15 @@ describe('telemetry enums', () => {
     expect(OS_KINDS).toEqual(['darwin', 'linux', 'other']);
     expect(ARCH_KINDS).toEqual(['x64', 'arm64', 'other']);
     expect(DISTRO_IDS).toEqual(['macos', 'ubuntu', 'debian', 'fedora', 'arch', 'alpine', 'other']);
+    expect(SHELL_KINDS).toEqual(['zsh', 'bash', 'fish']);
     expect(TELEMETRY_EVENTS).toEqual(['qq_query_outcome', 'qq_error', 'qq_environment']);
     expect(TELEMETRY_LIB).toBe('queque');
+  });
+
+  // Early guard (D-11): the telemetry allow list repeats the shell contract on purpose, so a
+  // shell added to SHELL_NAMES must be added here too (plan 10 repeats this across seams).
+  it('lists the same shells as the shell request contract', () => {
+    expect([...SHELL_KINDS]).toEqual([...SHELL_NAMES]);
   });
 });
 
@@ -141,6 +152,40 @@ describe('valid samples parse', () => {
   it('accepts the literal zsh version `unknown`', () => {
     const sample = withProperty(clientSamples[2] as Sample, 'zsh', 'unknown');
     expect(clientTelemetryEventSchema.safeParse(sample).success).toBe(true);
+  });
+
+  it('accepts a bash environment with zsh `unknown`', () => {
+    const bash = { shell: 'bash', shell_version: '5.2', zsh: 'unknown' };
+    const client = clientSamples[2] as Sample;
+    const wire = wireSamples[2] as Sample;
+    expect(
+      clientTelemetryEventSchema.safeParse({
+        ...client,
+        properties: { ...client.properties, ...bash },
+      }).success,
+    ).toBe(true);
+    expect(
+      telemetryWireEventSchema.safeParse({ ...wire, properties: { ...wire.properties, ...bash } })
+        .success,
+    ).toBe(true);
+  });
+
+  it('accepts every shell kind and the literal shell version `unknown`', () => {
+    for (const shell of SHELL_KINDS) {
+      const sample = withProperty(clientSamples[2] as Sample, 'shell', shell);
+      expect(clientTelemetryEventSchema.safeParse(sample).success).toBe(true);
+    }
+    const unknown = withProperty(clientSamples[2] as Sample, 'shell_version', 'unknown');
+    expect(clientTelemetryEventSchema.safeParse(unknown).success).toBe(true);
+  });
+
+  it('requires shell and shell_version on the environment event', () => {
+    const { shell: _shell, ...withoutShell } = (clientSamples[2] as Sample).properties;
+    const { shell_version: _version, ...withoutVersion } = (clientSamples[2] as Sample).properties;
+    for (const properties of [withoutShell, withoutVersion]) {
+      const sample = { ...(clientSamples[2] as Sample), properties };
+      expect(clientTelemetryEventSchema.safeParse(sample).success).toBe(false);
+    }
   });
 });
 
@@ -240,6 +285,13 @@ describe('free-form values fail', () => {
     [2, 'distro', 'Ubuntu 22.04.3 LTS'],
     [2, 'zsh', '5.9-dev-1'],
     [2, 'zsh', '5.9.0'],
+    [2, 'shell', 'tcsh'],
+    [2, 'shell', '/bin/bash'],
+    [2, 'shell', 'unknown'],
+    [2, 'shell_version', '5.2.21(1)-release'],
+    [2, 'shell_version', '5'],
+    [2, 'shell_version', '5.2.21'],
+    [2, 'shell_version', 'GNU bash 5.2'],
     [2, 'node_major', 17],
     [2, 'node_major', 24.5],
     [2, 'os', 'Darwin 24.6.0'],
@@ -336,7 +388,16 @@ const COMMON_KEYS = [
 ];
 const QUERY_OUTCOME_KEYS = ['candidate_count', 'error_kind', 'outcome', 'provider'];
 const ERROR_KEYS = ['error_kind', 'provider'];
-const ENVIRONMENT_KEYS = ['arch', 'distro', 'node_major', 'os', 'zellij', 'zsh'];
+const ENVIRONMENT_KEYS = [
+  'arch',
+  'distro',
+  'node_major',
+  'os',
+  'shell',
+  'shell_version',
+  'zellij',
+  'zsh',
+];
 
 describe('pinned allow-list keys', () => {
   it('pins the payload keys of every event', () => {
