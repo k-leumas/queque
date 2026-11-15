@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-15T09:08:23.722Z"
+last_updated: "2026-11-15T09:38:25.954Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: 624461da4bf65203d1908122a3dfd361c3ab8323
+state_head: 7ec301cd3d1c3652f6d57e0444f2599b32790081
 progress:
   total_phases: 15
   completed_phases: 8
@@ -186,7 +186,8 @@ None yet.
 | 261030-tq3 | Replace a daemon from another qq build (build id in pong), add qq daemon --restart, report a silent daemon accurately | 2026-10-30 | 332b484 | [261030-tq3-restart-outdated-daemon-and-report-a-dae](./quick/261030-tq3-restart-outdated-daemon-and-report-a-dae/) |
 | 261105-ix8 | Weekly tap clone stats workflow: snapshots homebrew-tap clone traffic to the stats branch, minus publishing-run clones | 2026-11-05 | 27e495e | [261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo](./quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/) |
 | 261115-3qz | README support matrix: shell badges, Tests passing on row with macOS, Supported platforms table | 2026-11-15 | 7b75ddb | [261115-3qz-readme-support-matrix-shell-and-os-badge](./quick/261115-3qz-readme-support-matrix-shell-and-os-badge/) |
-
+| 261115-4um | README: drop CI/Nightly/Release badges and the Supported platforms table; macOS bash note back in Install | 2026-11-15 | 7ec301c | [261115-4um-readme-remove-workflow-badges-and-suppor](./quick/261115-4um-readme-remove-workflow-badges-and-suppor/) |
+Last activity: 2026-11-15 - Completed quick task 261115-4um: README drops workflow badges and the Supported platforms table
 ## Session Continuity
 
 Last activity: 2026-11-15 - Completed quick task 261115-3qz: README support matrix (shell badges, Tests passing on row, Supported platforms table)

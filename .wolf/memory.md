@@ -1010,3 +1010,17 @@
 | 03:08 | phase.complete 11: ROADMAP/STATE/REQUIREMENTS updated (BASH-01 Complete); 11 summary-path warnings are command strings/home paths, not missing files | .planning/ | done | ~2k |
 | 03:09 | transition: PROJECT.md evolved after Phase 11 (bash validated, D-12 + README decisions); phase 11 done | .planning/PROJECT.md | done | ~2k |
 | 03:09 | Session end: 1 writes across 1 files (11-VERIFICATION.md) | 0 reads | ~6270 tok |
+| 03:23 | Session end: 1 writes across 1 files (11-VERIFICATION.md) | 0 reads | ~6270 tok |
+| 03:26 | Session end: 1 writes across 1 files (11-VERIFICATION.md) | 0 reads | ~6270 tok |
+| 03:28 | Session end: 1 writes across 1 files (11-VERIFICATION.md) | 0 reads | ~6270 tok |
+| 03:29 | Session end: 1 writes across 1 files (11-VERIFICATION.md) | 0 reads | ~6270 tok |
+| 03:32 | Created .planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md | — | ~4519 |
+| 03:32 | Edited .planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md | 3→7 lines | ~104 |
+| 03:32 | Edited .planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md | 2→2 lines | ~47 |
+| 03:32 | Edited .planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md | 3→3 lines | ~68 |
+| 03:33 | Session end: 5 writes across 2 files (11-VERIFICATION.md, 261115-4um-PLAN.md) | 0 reads | ~11346 tok |
+| 03:34 | Edited .claude/worktrees/agent-aaab7ee947be7d639/README.md | removed 5 lines | ~4 |
+| 03:34 | Edited .claude/worktrees/agent-aaab7ee947be7d639/README.md | reduced (-9 lines) | ~83 |
+| 03:36 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/commit-msg.txt | — | ~114 |
+| 03:37 | Created .claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md | — | ~1251 |
+| 09:37 | quick 261115-4um: removed README workflow badges + Supported platforms table, macOS bash note now one Install sentence; readme-badges.test.ts 6 cases incl. absence guard | README.md, tests/readme-badges.test.ts | full suite 1874/1874 green, commit 5c0a9f2 | ~5k |
