@@ -4303,3 +4303,10 @@
 | 13:46 | Edited tests/instant-frame-parity.test.ts | 3→5 lines | ~48 |
 | 13:52 | bash -i tests failed in pre-push (tty job control): NO_TTY detached spawn; pty-harness full suite 1849/1849 | tests/helpers/shells.ts, tests/bash-widget.test.ts, tests/instant-frame-parity.test.ts | fixed (bug-538) | ~3000 |
 | 13:52 | Created ../../.claude/projects/-Users-samuel-dev-tui-llm/memory/feedback_run_full_suite.md | — | ~256 |
+| 13:52 | Session end: 3 writes across 3 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md) | 1 reads | ~10346 tok |
+| 13:56 | Session end: 3 writes across 3 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md) | 1 reads | ~10346 tok |
+| 01:49 | Session end: 3 writes across 3 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md) | 2 reads | ~10346 tok |
+| 01:50 | Created .claude/worktrees/agent-a3569fac921ea04a8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-11-SUMMARY.md | — | ~3200 |
+| 01:51 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/11-11-msg.txt | — | ~103 |
+| 14:10 | wrote and committed 11-11 SUMMARY (gate 1849/1849, macOS bash UAT approved route A, CI 43634554226 green, 3 deviations; flagged stray .wolf/anatomy.md.orig) | .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-11-SUMMARY.md | committed c2fe2d0 | ~6k |
+| 01:52 | removed stray .wolf/anatomy.md.orig (committed by mistake in 69e3e81); reverted a truncated OpenWolf anatomy rescan; 11-11 tracking complete | .wolf/, .planning/ | done | ~2k |
