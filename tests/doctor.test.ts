@@ -930,6 +930,17 @@ describe('runDoctorChecks: bash integration and macOS login file (D-09)', () => 
     expect(check(report, 'integration').hint).toContain('qq init bash && source ~/.bashrc');
   });
 
+  it('warns when the only source line in ~/.bashrc is commented out (WR-06)', async () => {
+    const bashrc =
+      '# queque shell integration\n# source "/opt/homebrew/share/queque/queque.bash"\n';
+    const report = await runDoctorChecks(
+      healthyDeps({ readRc: (relPath) => (relPath === '.bashrc' ? bashrc : null) }),
+      { shell: 'bash' },
+    );
+    expect(check(report, 'integration').status).toBe('warn');
+    expect(check(report, 'integration').hint).toContain('qq init bash && source ~/.bashrc');
+  });
+
   function darwinBash(rc: Record<string, string>) {
     return runDoctorChecks(
       healthyDeps({ platform: 'darwin', readRc: (relPath) => rc[relPath] ?? null }),
@@ -949,6 +960,13 @@ describe('runDoctorChecks: bash integration and macOS login file (D-09)', () => 
     expect(row.summary).toContain('~/.bash_profile');
     expect(row.hint).toBe('add [ -f ~/.bashrc ] && . ~/.bashrc to ~/.bash_profile');
     expect(doctorExitCode(report)).toBe(0);
+  });
+
+  it('bash_profile warns when its . ~/.bashrc line is commented out (WR-06)', async () => {
+    const report = await darwinBash({ ...HEALTHY_RC, '.bash_profile': '# . ~/.bashrc\n' });
+    const row = check(report, 'bash_profile');
+    expect(row.status).toBe('warn');
+    expect(row.summary).toContain('~/.bash_profile');
   });
 
   it('bash_profile names ~/.profile when that is the first login file', async () => {

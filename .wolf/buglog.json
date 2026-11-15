@@ -9027,6 +9027,27 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-15T11:15:00Z"
+    },
+    {
+      "id": "bug-552",
+      "timestamp": "2026-11-15T11:30:00Z",
+      "error_message": "11-REVIEW WR-06: a commented-out source line counted as installed: qq init said 'already present', doctor reported ~/.bashrc loads QueQue and bash_profile ok while nothing loaded",
+      "file": "src/shared/shell-registry.ts",
+      "root_cause": "hasShellIntegration's source regex and BASHRC_SOURCE_RE accept a command word after any whitespace, including the space after `#`; hasShellIntegration also returned true for the `# queque shell integration` marker alone, which survives when the user comments out or deletes the source line",
+      "fix": "new stripShellComments() in shell-registry.ts (per line, the first unquoted word-start `#` to EOL; quotes and mid-word # kept, line count kept); hasShellIntegration and loginFileSourcesBashrc match on the stripped text, and the marker alone no longer counts (init always writes marker + source together). Tests in init-command (commented forms, trailing comment, # in path, init re-adds), shell-registry (stripShellComments, login file), doctor (integration + bash_profile warn)",
+      "tags": [
+        "init",
+        "doctor",
+        "rc-file",
+        "comments",
+        "regex",
+        "false-positive",
+        "phase-11",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T11:30:00Z"
     }
   ]
 }

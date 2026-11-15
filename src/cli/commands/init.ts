@@ -23,6 +23,7 @@ import {
   resolveAdapterPath,
   type ShellSpec,
   shippedShellNames,
+  stripShellComments,
   versionBelow,
 } from '../../shared/shell-registry.js';
 
@@ -30,23 +31,21 @@ const MARKER = '# queque shell integration';
 const VERSION_PROBE_TIMEOUT_MS = 3000;
 
 /**
- * Returns true when the rc file already sources this shell's queque adapter or contains our
- * integration marker — not merely any mention of "queque". A `source` or `.` command word (at a
- * line start or after whitespace, `;`, `&` or `|`) followed by a path ending in
- * `queque.<shell>`, double-quoted, single-quoted or bare.
+ * Returns true when the rc file actively sources this shell's queque adapter — not merely any
+ * mention of "queque". A `source` or `.` command word (at a line start or after whitespace, `;`,
+ * `&` or `|`) followed by a path ending in `queque.<shell>`, double-quoted, single-quoted or
+ * bare. Comments are stripped first (WR-06): a source line the user commented out does not
+ * count, and neither does the `# queque shell integration` marker on its own (init always
+ * writes it together with the source line, so a lone marker means that line is gone).
  */
 export function hasShellIntegration(existing: string, shell: ShellName): boolean {
-  if (/# queque shell integration/.test(existing)) {
-    return true;
-  }
-
   const file = `queque\\.${shell}`;
   const scriptPattern = new RegExp(
     `(?:^|[\\s;&|])(?:source|\\.)\\s+` +
       `(?:"[^"\\n]*${file}"|'[^'\\n]*${file}'|[^\\s"';&|]*${file}(?=[\\s;&|)]|$))`,
     'm',
   );
-  return scriptPattern.test(existing);
+  return scriptPattern.test(stripShellComments(existing));
 }
 
 /** Everything init reads or writes, injectable so tests never touch the real home or spawn. */

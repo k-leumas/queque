@@ -971,3 +971,10 @@
 | 11:05 | fix(11) WR-04: client stderr defaults to $tmpdir/client.err (0700) in bash and zsh, not /tmp/qq-UID-debug.log; b27 + zsh client stderr target; CONTRIBUTING note; full suite 1858 green | shell/bash/queque.bash, shell/zsh/queque.zsh, CONTRIBUTING.md, tests | fixed | ~5k |
 | 02:32 | Edited src/cli/commands/client.ts | added 2 condition(s) | ~303 |
 | 11:15 | fix(11) WR-05: client resolveResultMode ignores empty/unknown QQ_TEST_RESULT_MODE (only cancel/replace-buffer-fixture count); tests + CONTRIBUTING; full suite 1862 green | src/cli/commands/client.ts, tests/client-result.test.ts, CONTRIBUTING.md | fixed | ~3k |
+| 02:33 | Session end: 29 writes across 14 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 14 reads | ~69270 tok |
+| 02:34 | Edited src/shared/shell-registry.ts | added nullish coalescing | ~348 |
+| 02:34 | Edited src/shared/shell-registry.ts | 5→5 lines | ~77 |
+| 02:34 | Edited src/shared/shell-registry.ts | 1→4 lines | ~36 |
+| 02:34 | Edited src/cli/commands/init.ts | modified hasShellIntegration() | ~263 |
+| 02:35 | Session end: 33 writes across 16 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 14 reads | ~69994 tok |
+| 11:30 | fix(11) WR-06: stripShellComments in shell-registry; hasShellIntegration + loginFileSourcesBashrc ignore commented lines, marker alone no longer counts; init/registry/doctor tests; full suite 1872 green | src/shared/shell-registry.ts, src/cli/commands/init.ts, tests | fixed | ~5k |
