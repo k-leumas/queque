@@ -1024,3 +1024,5 @@
 | 03:36 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/commit-msg.txt | — | ~114 |
 | 03:37 | Created .claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md | — | ~1251 |
 | 09:37 | quick 261115-4um: removed README workflow badges + Supported platforms table, macOS bash note now one Install sentence; readme-badges.test.ts 6 cases incl. absence guard | README.md, tests/readme-badges.test.ts | full suite 1874/1874 green, commit 5c0a9f2 | ~5k |
+| 03:39 | Session end: 9 writes across 5 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 3 reads | ~21360 tok |
+| 03:44 | gsd-fast: zsh prewarm tests poll 10 s (was 2.5 s), helper timeout 15 s, describe 20 s; pre-push failures (bug-429); pty full suite 1874/1874 | tests/zsh-widget.test.ts | fixed | ~3k |

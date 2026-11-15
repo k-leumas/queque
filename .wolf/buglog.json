@@ -6855,8 +6855,8 @@
       "timestamp": "2026-10-29T20:24:54Z",
       "error_message": "tests/zsh-widget.test.ts > daemon prewarm > starts a background ensure call once in interactive shells / prewarms via qq on PATH when QQ_DEV_ROOT is unset: expected status 0, got 1 (full suite, load avg ~22)",
       "file": "tests/zsh-widget.test.ts",
-      "root_cause": "Not fixed. Load flake: fails only under full-suite parallel load, 57/57 alone x3 and green in the previous full run. Code path untouched by phase 10 (10-02 changed only qq-question-widget mktemp handling)",
-      "fix": "None yet; watch for recurrence",
+      "root_cause": "Test waited only 50 x sleep 0.05 (2.5 s) for zsh's background `daemon --ensure` to write its marker; under parallel suite load (pre-push hook, Ollama busy) the &! job starts later, the final `[[ -f marker ]] && cat` returns 1.",
+      "fix": "Widened the prewarm marker poll from 2.5 s to 10 s (exits early), runInteractiveZsh timeout 15 s and the describe timeout 20 s (tests/zsh-widget.test.ts). The background ensure call starts slowly when the pre-push hook runs files in parallel; the assertion is unchanged.",
       "tags": [
         "test",
         "flaky",
@@ -6868,8 +6868,8 @@
         "bug-206",
         "bug-270"
       ],
-      "occurrences": 3,
-      "last_seen": "2026-10-30T16:16:40.060772+00:00"
+      "occurrences": 5,
+      "last_seen": "2026-11-15T10:45:00Z"
     },
     {
       "id": "bug-453",
@@ -7082,16 +7082,16 @@
       "timestamp": "2026-10-29T23:47:32.585Z",
       "error_message": "Null/undefined access in ",
       "file": ".claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/10-12-SUMMARY.md",
-      "root_cause": "Property access on potentially null/undefined value",
-      "fix": "Added null safety (optional chaining or null check) | Also: - Drill (parallel track): `0db4004` `test: break the ?? bind",
+      "root_cause": "Test waited only 50 x sleep 0.05 (2.5 s) for zsh's background `daemon --ensure` to write its marker; under parallel suite load (pre-push hook, Ollama busy) the &! job starts later, the final `[[ -f marker ]] && cat` returns 1.",
+      "fix": "Widened the prewarm marker poll from 2.5 s to 10 s (exits early), runInteractiveZsh timeout 15 s and the describe timeout 20 s (tests/zsh-widget.test.ts). The background ensure call starts slowly when the pre-push hook runs files in parallel; the assertion is unchanged.",
       "tags": [
         "auto-detected",
         "null-safety",
         "md"
       ],
       "related_bugs": [],
-      "occurrences": 4,
-      "last_seen": "2026-10-30T16:16:40.060772+00:00"
+      "occurrences": 6,
+      "last_seen": "2026-11-15T10:45:00Z"
     },
     {
       "id": "bug-430",

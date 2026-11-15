@@ -59,7 +59,8 @@ function runZsh(script: string): { stdout: string; stderr: string; status: numbe
 function runInteractiveZsh(script: string): { stdout: string; stderr: string; status: number } {
   const result = spawnSync('zsh', ['-fi', '-c', script], {
     encoding: 'utf8',
-    timeout: 5000,
+    // Fits the prewarm tests' 10 s marker poll (bug-429).
+    timeout: 15_000,
     env: { ...process.env, PATH: process.env.PATH },
   });
   return {
@@ -201,7 +202,9 @@ describe('?? trigger: cancel restores pre-trigger buffer', () => {
   });
 });
 
-describe('daemon prewarm', () => {
+// The background ensure call can take seconds to start when the suite runs files in parallel
+// (pre-push hook, bug-429/bug-500), so poll up to 10 s; the loop exits as soon as the marker lands.
+describe('daemon prewarm', { timeout: 20_000 }, () => {
   it('starts a background ensure call once in interactive shells', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-prewarm-'));
     const devRoot = join(dir, 'repo');
@@ -224,7 +227,7 @@ printf '%s\n' "$*" > "${marker}"
       QQ_DEV_ROOT="${devRoot}"
       PATH="${binDir}:$PATH"
       source ${widgetPath}
-      for i in {1..50}; do
+      for i in {1..200}; do
         [[ -f "${marker}" ]] && break
         sleep 0.05
       done
@@ -254,7 +257,7 @@ printf '%s\n' "$*" > "${marker}"
       unset QQ_DEV_ROOT
       PATH="${binDir}:$PATH"
       source ${widgetPath}
-      for i in {1..50}; do
+      for i in {1..200}; do
         [[ -f "${marker}" ]] && break
         sleep 0.05
       done
