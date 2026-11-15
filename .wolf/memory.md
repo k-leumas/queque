@@ -941,3 +941,12 @@
 | 02:02 | Session end: 6 writes across 6 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 3 reads | ~24173 tok |
 | 02:13 | Created .planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-REVIEW.md | — | ~3785 |
 | 02:14 | code review phase 11: 70 files, 0 critical / 6 warning / 6 info; disposition ledger all open | .planning/phases/11-*/11-REVIEW.md | done | ~5k |
+| 02:16 | Session end: 7 writes across 7 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 5 reads | ~31776 tok |
+| 02:20 | Session end: 7 writes across 7 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 13 reads | ~63276 tok |
+| 02:20 | Edited tests/bash-widget.test.ts | modified then() | ~274 |
+| 02:21 | Edited shell/bash/queque.bash | 8→10 lines | ~111 |
+| 02:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/gate.sh | — | ~168 |
+| 02:22 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/addbug.py | — | ~166 |
+| 02:22 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/bug-wr01.json | — | ~288 |
+| 10:25 | fix(11) WR-01: bash locale fallback wrapped in { } 2>/dev/null, no setlocale warning; b24 added; full suite 1850 green | shell/bash/queque.bash, tests/bash-widget.test.ts | fixed | ~3k |
+| 02:23 | Session end: 12 writes across 11 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 13 reads | ~64303 tok |

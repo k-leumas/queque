@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-14T19:52:24.622Z
-> Files: 765 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-15T08:22:50.292Z
+> Files: 770 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ../../
 
@@ -837,6 +837,8 @@
 - `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
 - `11-PATTERNS.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Pattern Map (~4891 tok)
 - `11-RESEARCH.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Research (~17835 tok)
+- `11-REVIEW.md` — Phase 11: Code Review Report (~3548 tok)
+- `11-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2154 tok)
 - `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1816 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
@@ -1072,7 +1074,7 @@
 
 ## shell/bash/
 
-- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). (~6350 tok)
+- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). en_US.UTF-8 locale fallback is `{ LC_ALL=…; } 2>/dev/null`, so no setlocale warning leaks (WR-01). (~6400 tok)
 
 ## shell/zsh/
 

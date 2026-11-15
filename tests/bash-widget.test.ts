@@ -30,6 +30,7 @@
  *   b20 Zellij: a pane that never answers gives the prompt back after the read timeout
  *   b22 Zellij: a failed mkfifo restores the line at once and launches nothing
  *   b23 Zellij: a zellij run that exits non-zero restores the line at once (sentinel line)
+ *   b24 no UTF-8 locale: the instant-frame locale fallback prints no setlocale warning
  *
  * Every shell starts without ZELLIJ* or TMUX, and with QQ_DAEMON_PREWARMED=1 so sourcing never
  * starts a real daemon (b17 clears it). A missing bash 5 or jq skips locally and fails when CI
@@ -466,6 +467,21 @@ echo "line=[$READLINE_LINE] point=$READLINE_POINT"`,
       expect(run.stdout.indexOf(FRAME_CLEAR)).toBeGreaterThan(paint);
       expect(run.stderr).toContain('queque: cannot create a temp dir in /tmp');
       expect(run.stdout).toContain('line=[ask tail] point=3');
+    });
+
+    it('b24: with no UTF-8 locale the fallback prints no setlocale warning (WR-01)', () => {
+      // Both fallback locales renamed to names no host has: the real function then runs the
+      // path a glibc image without C.UTF-8 and en_US.UTF-8 takes.
+      const run = runInteractiveBash(
+        `source <(declare -f _qq_instant_frame | command sed 's/C\\.UTF-8/zz_ZZ.UTF-8/; s/en_US\\.UTF-8/yy_YY.UTF-8/')
+echo "renamed=$(declare -f _qq_instant_frame | command grep -c -e zz_ZZ -e yy_YY)"
+_qq_instant_frame 'echo hi' 78; st=$?
+echo "status=$st frame=\${#REPLY}"`,
+        cleanEnv({ LC_ALL: 'C', LC_CTYPE: 'C', LANG: 'C' }),
+      );
+      expect(run.stdout).toContain('renamed=2\n');
+      expect(run.stdout).toMatch(/status=0 frame=[1-9]/);
+      expect(run.stderr.trim()).toBe('');
     });
   },
 );

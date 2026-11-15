@@ -123,11 +123,13 @@ _qq_instant_frame() {
   # would come out short (› and … are 3 bytes) and a typed multibyte character could be cut in
   # half. Count characters in a UTF-8 locale for this function only (`local` restores it on
   # return). If none exists the assignment changes nothing; its warning goes to /dev/null.
+  # `local` is a builtin, so its redirect covers it. A bare assignment ignores its own
+  # redirect, so the second one sits in a `{ }` group (WR-01).
   local probe='›'
   if (( ${#probe} != 1 )); then
     local LC_ALL=C.UTF-8 2>/dev/null
     if (( ${#probe} != 1 )); then
-      LC_ALL=en_US.UTF-8 2>/dev/null
+      { LC_ALL=en_US.UTF-8; } 2>/dev/null
     fi
   fi
   local lbuffer=${1//[[:cntrl:]]/}

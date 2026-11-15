@@ -8923,6 +8923,26 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-11-15T08:00:00Z"
+    },
+    {
+      "id": "bug-540",
+      "timestamp": "2026-11-15T10:25:00Z",
+      "error_message": "11-REVIEW WR-01: on a host with neither C.UTF-8 nor en_US.UTF-8 every ?? printed `bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)` into the instant-frame paint",
+      "file": "shell/bash/queque.bash",
+      "root_cause": "`LC_ALL=en_US.UTF-8 2>/dev/null` is an assignment-only simple command: bash runs the redirect separately and does not apply it to the assignment, so the setlocale warning reached the real stderr (the first `local LC_ALL=... 2>/dev/null` is a builtin and was silent)",
+      "fix": "wrap the fallback in a group: `{ LC_ALL=en_US.UTF-8; } 2>/dev/null`. bash-widget b24 renames both locales to nonexistent names via declare -f | sed and asserts empty stderr under LC_ALL=C (failed before the fix)",
+      "tags": [
+        "bash",
+        "locale",
+        "setlocale",
+        "stderr-leak",
+        "instant-frame",
+        "phase-11",
+        "code-review"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-15T10:25:00Z"
     }
   ]
 }
