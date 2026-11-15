@@ -997,3 +997,11 @@
 | 02:54 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md | 3→5 lines | ~78 |
 | 02:54 | Edited .claude/worktrees/agent-a8dbb2d34afbd0c5a/.planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/261115-3qz-SUMMARY.md | inline fix | ~12 |
 | 08:55 | quick 261115-3qz: README shell badge row, "Tests passing on:" distro+macOS row, Supported platforms table; badge test tied to ci.yml and SHELL_SPECS | README.md, tests/readme-badges.test.ts | done, 48d3385 + b22e860, full suite 1875/1875 green | ~4100 |
+| 02:58 | pty full suite after fixes + README: 1851/1875, 24 load flakes (fuzz, prewarm, b22) at load 67; 3 files alone 144/144; todo updated | .planning/todos/pending/2026-11-14-fuzz-single-input-budget.md | flaky, logged | ~2k |
+| 02:59 | Session end: 48 writes across 23 files (bash-widget.test.ts, instant-frame-parity.test.ts, feedback_run_full_suite.md, 11-11-SUMMARY.md, 11-11-msg.txt) | 19 reads | ~103149 tok |
+
+## Session: 2026-11-15 03:00
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 03:05 | Drafted update-notifier GSD todo | .planning/todos/pending/2026-11-15-update-notifier.md | created | ~1500 |
