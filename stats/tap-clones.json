@@ -124,5 +124,47 @@
     "release_clones": 0,
     "adjusted_count": 0,
     "adjusted_uniques": 0
+  },
+  "2026-11-09": {
+    "count": 0,
+    "uniques": 0,
+    "release_clones": 0,
+    "adjusted_count": 0,
+    "adjusted_uniques": 0
+  },
+  "2026-11-10": {
+    "count": 0,
+    "uniques": 0,
+    "release_clones": 0,
+    "adjusted_count": 0,
+    "adjusted_uniques": 0
+  },
+  "2026-11-11": {
+    "count": 1,
+    "uniques": 1,
+    "release_clones": 0,
+    "adjusted_count": 1,
+    "adjusted_uniques": 1
+  },
+  "2026-11-12": {
+    "count": 0,
+    "uniques": 0,
+    "release_clones": 0,
+    "adjusted_count": 0,
+    "adjusted_uniques": 0
+  },
+  "2026-11-13": {
+    "count": 1,
+    "uniques": 1,
+    "release_clones": 0,
+    "adjusted_count": 1,
+    "adjusted_uniques": 1
+  },
+  "2026-11-14": {
+    "count": 1,
+    "uniques": 1,
+    "release_clones": 0,
+    "adjusted_count": 1,
+    "adjusted_uniques": 1
   }
 }
