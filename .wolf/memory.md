@@ -1055,3 +1055,5 @@
 | 21:06 | bump homebrew-releaser v1→v4 so formula_includes (brew caveats) is honored; inputs checked against v4 action.yml | .github/workflows/release.yaml | full suite 1875/1875, actionlint ok | ~2k |
 | 11:48 | homebrew-releaser skip_checksum: true (immutable releases 422 on checksum.txt upload, run 44139257824) | .github/workflows/release.yaml | full suite 1875/1875, actionlint ok | ~2k |
 | 13:08 | fix prewarm test marker race (printf > marker seen empty; tmp+mv), CI run 44154541470 | tests/zsh-widget.test.ts | prewarm x5 pass, full suite 1875/1875 | ~3k |
+| 13:25 | readme rebrand (user's readme-rebrand.diff): tagline, name explainer, badges moved, Tested on: under Install; readme-badges test follows; anatomy drops out-of-repo ../ sections | README.md, tests/readme-badges.test.ts, .wolf/anatomy.md | full suite 1875/1875 | ~4k |
+| 13:53 | readme: pronunciation into H1 with a footnote for the name origin; drop the name paragraph | README.md | GitHub render checked, full suite 1875/1875 | ~2k |

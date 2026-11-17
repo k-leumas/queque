@@ -12,7 +12,7 @@ const REPO = 'k-leumas/queque';
 const CI_RUNS = `https://github.com/${REPO}/actions/workflows/ci.yml`;
 const REPO_BLOB = `https://github.com/${REPO}/blob/main/`;
 const INSTALL_DOC = `${REPO_BLOB}docs/INSTALL.md`;
-const TESTS_PASSING_LINE = /^Tests passing on:\\$/m;
+const TESTED_ON_LINE = /^Tested on:\\$/m;
 
 // Docker image name (the part before `:`) -> simple-icons logo slug.
 const LOGO_SLUGS = new Map<string, string>([
@@ -79,7 +79,7 @@ function staticBadgeParts(badge: Badge): string[] {
   return segment.split('-').map((part) => decodeURIComponent(part));
 }
 
-// The "Tests passing on:" row is the static shields badges that link the CI runs page. The
+// The "Tested on:" row is the static shields badges that link the CI runs page. The
 // shell and macOS badges link docs/INSTALL.md, so the href filter isolates the distro row.
 function distroBadges(): Badge[] {
   return readmeBadges().filter((b) => isStaticShieldsBadge(b) && b.href === CI_RUNS);
@@ -99,13 +99,13 @@ describe('README badges', () => {
     const refs = distroBadges().map((b) => b.alt);
     expect(
       refs,
-      'README distro badges must equal ci.yml images; update the "Tests passing on:" badges in README.md',
+      'README distro badges must equal ci.yml images; update the "Tested on:" badges in README.md',
     ).toEqual(images);
   });
 
   it('distro badges show only the distro name, logo and CI link', () => {
     const badges = distroBadges();
-    expect(badges.length, 'README must have "Tests passing on:" distro badges').toBeGreaterThan(0);
+    expect(badges.length, 'README must have "Tested on:" distro badges').toBeGreaterThan(0);
     for (const badge of badges) {
       const ref = badge.alt;
       const [name = '', tag = ''] = ref.split(':');
@@ -132,19 +132,19 @@ describe('README badges', () => {
     }
   });
 
-  it('the distro row sits under a Tests passing on: line', () => {
+  it('the distro row sits under a Tested on: line', () => {
     const text = readmeText();
-    const label = TESTS_PASSING_LINE.exec(text);
+    const label = TESTED_ON_LINE.exec(text);
     expect(
       label,
-      'README.md must have a line that is exactly `Tests passing on:\\` above the distro badges',
+      'README.md must have a line that is exactly `Tested on:\\` above the distro badges',
     ).not.toBeNull();
     const first = distroBadges()[0];
-    expect(first, 'README must have "Tests passing on:" distro badges').toBeDefined();
+    expect(first, 'README must have "Tested on:" distro badges').toBeDefined();
     const firstIndex = text.indexOf(badgeMarkdown(first as Badge));
     expect(
       label?.index ?? -1,
-      'the `Tests passing on:\\` line must come before the first distro badge in README.md',
+      'the `Tested on:\\` line must come before the first distro badge in README.md',
     ).toBeLessThan(firstIndex);
   });
 
@@ -153,7 +153,7 @@ describe('README badges', () => {
     const macBadges = readmeBadges().filter((b) => /macos/i.test(b.alt) || /macos/i.test(b.img));
     expect(
       macBadges.length,
-      'README must have exactly one macOS badge at the end of the "Tests passing on:" row',
+      'README must have exactly one macOS badge at the end of the "Tested on:" row',
     ).toBe(1);
     if (!macRunner) {
       expect(
