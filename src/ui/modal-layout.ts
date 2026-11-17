@@ -160,6 +160,8 @@ export interface CandidateSelectLayoutInput {
   installToggled?: ReadonlySet<string>;
   /** Where the candidate list stands; absent means `'complete'`. */
   listState?: CandidateListState;
+  /** The once-a-day update line under the controls (quick 261117-jpp); one truncated row. */
+  updateHint?: string;
 }
 
 /**
@@ -241,6 +243,8 @@ export function estimateCandidateSelectLines(input: CandidateSelectLayoutInput):
 
   lines += 1; // ControlsLine marginTop
   lines += 1; // ControlsLine text
+
+  if (input.updateHint !== undefined) lines += 1; // update hint: one truncated row, no margin
 
   if (input.includeDevFooter) {
     lines += 1;

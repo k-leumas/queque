@@ -3,6 +3,7 @@ import * as path from 'node:path';
 import * as tty from 'node:tty';
 import { render } from 'ink';
 import React from 'react';
+import { requestDaemonOnce } from '../cli/commands/telemetry.js';
 import { gatherContext } from '../context/pipeline.js';
 import type { CommandCandidate } from '../contracts/candidates.js';
 import {
@@ -27,6 +28,7 @@ import {
 } from '../shared/telemetry-config.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
+import { UPDATE_HINT_REQUEST_TIMEOUT_MS, updateCheckBlockedBy } from '../shared/update-check.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { type CandidateListState, MODAL_VIEWPORT_LINES } from '../ui/modal-layout.js';
 import {
@@ -209,6 +211,15 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         rbufferLength: request.rbuffer.length,
       });
     } else if (resultMode === 'llm') {
+      // The once-a-day update hint (quick 261117-jpp), asked right after ensureDaemon and NEVER
+      // awaited on the way to the first frame or the result write: `??` never waits on it. The
+      // env + TTY gate runs here, so a non-terminal or opted-out run sends nothing.
+      const updateHintRead: Promise<string | null> =
+        updateCheckBlockedBy(process.env, process.stdout.isTTY === true) === null
+          ? requestDaemonOnce(socketPath, { kind: 'update-hint' }, UPDATE_HINT_REQUEST_TIMEOUT_MS)
+              .then((reply) => (reply?.kind === 'update-hint' ? reply.hint : null))
+              .catch(() => null)
+          : Promise.resolve(null);
       // Declared here so the catch block can also write errors to the TTY.
       let ttyReadStream: tty.ReadStream | undefined;
       let ttyWriteStream: tty.WriteStream | undefined;
@@ -322,17 +333,28 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             // Rows streamed so far (09.1 D-05), in the order the provider reported them.
             const streamed: CommandCandidate[] = [];
 
+            // The update line, once the daemon answered, and the arguments of the last
+            // render, so the hint's arrival re-renders exactly the current view.
+            let updateHint: string | undefined;
+            let lastView: [
+              Parameters<typeof CandidateSelect>[0]['candidates'],
+              boolean | undefined,
+              CandidateListState,
+            ] = [null, undefined, 'complete'];
+
             // Build initial element with null candidates (D-06 loading state)
             const buildCandidateElement = (
               candidates: Parameters<typeof CandidateSelect>[0]['candidates'],
               errorState?: boolean,
               listState: CandidateListState = 'complete',
-            ) =>
-              React.createElement(CandidateSelect, {
+            ) => {
+              lastView = [candidates, errorState, listState];
+              return React.createElement(CandidateSelect, {
                 candidates,
                 initialQuery: request.lbuffer,
                 error: errorState,
                 listState,
+                updateHint,
                 onSelect: async (command: string, explanation: string) => {
                   if (resolved) return;
                   resolved = true;
@@ -357,6 +379,7 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
                 },
                 onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined,
               });
+            };
 
             // Force interactive:true so Ink uses cursor-repositioning mode regardless of
             // CI env vars (is-in-ci checks process.env.CI which many devtools set) and
@@ -368,6 +391,13 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
                 : { interactive: true };
 
             const app = render(buildCandidateElement(null), renderOptions);
+
+            // The hint joins the live modal whenever it arrives; after Enter or Esc it is dropped.
+            void updateHintRead.then((hint) => {
+              if (hint === null || resolved) return;
+              updateHint = hint;
+              app.rerender(buildCandidateElement(...lastView));
+            });
 
             // Restore cursor to the saved position (top of reserved area) then clear
             // to end of screen. This works regardless of where Ink left the cursor.

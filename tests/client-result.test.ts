@@ -81,6 +81,15 @@ vi.mock('../src/shared/telemetry-config.js', async (importOriginal) => ({
   telemetryStateWritable: consentMock.telemetryStateWritable,
 }));
 
+// The update-hint ask (quick 261117-jpp): the real env + TTY gate runs; only the one-shot
+// daemon request is faked, because these tests run no daemon. Default reply: no hint.
+const requestDaemonOnceMock = vi.hoisted(() => vi.fn().mockResolvedValue(null));
+
+vi.mock('../src/cli/commands/telemetry.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../src/cli/commands/telemetry.js')>()),
+  requestDaemonOnce: requestDaemonOnceMock,
+}));
+
 // ---------------------------------------------------------------------------
 // References to the real (un-mocked) fs/promises functions, captured before
 // the vi.mock factory runs. These are used inside the FIFO-path describe block
@@ -1746,6 +1755,137 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
     await runForegroundClient({ requestFile, resultFile, resultMode });
     expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+  });
+});
+
+describe('runForegroundClient: update hint (quick 261117-jpp)', () => {
+  let tmpDir: string;
+  let requestFile: string;
+  let resultFile: string;
+  let ttyDescriptor: PropertyDescriptor | undefined;
+  const HINT = 'qq 0.11.0 available · brew upgrade queque';
+
+  type HintElement = {
+    props: {
+      candidates: Array<{ command: string }> | null;
+      listState?: string;
+      updateHint?: string;
+      onCancel: () => Promise<void>;
+    };
+  };
+
+  function setStdoutTTY(value: boolean): void {
+    Object.defineProperty(process.stdout, 'isTTY', { value, configurable: true });
+  }
+
+  beforeEach(async () => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qq-fg-update-'));
+    requestFile = path.join(tmpDir, 'request.json');
+    resultFile = path.join(tmpDir, 'result.json');
+    fs.writeFileSync(
+      requestFile,
+      `${JSON.stringify({
+        version: 1,
+        ttyPath: '/dev/tty',
+        cwd: '/home/user',
+        shellPid: 1234,
+        lbuffer: 'list files in src',
+        rbuffer: '',
+      })}\n`,
+    );
+    const { resolveProviderAdapter } = await import('../src/providers/provider-pin.js');
+    vi.mocked(resolveProviderAdapter).mockImplementation(() => ({
+      fetchCandidates: fetchCandidatesMock,
+    }));
+    fetchCandidatesMock.mockReset();
+    requestDaemonOnceMock.mockReset();
+    requestDaemonOnceMock.mockResolvedValue(null);
+    ttyDescriptor = Object.getOwnPropertyDescriptor(process.stdout, 'isTTY');
+  });
+
+  afterEach(() => {
+    inkMock.autoSelect = true;
+    vi.unstubAllEnvs();
+    if (ttyDescriptor) {
+      Object.defineProperty(process.stdout, 'isTTY', ttyDescriptor);
+    } else {
+      delete (process.stdout as { isTTY?: boolean }).isTTY;
+    }
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('sends nothing under the vitest opt-out (QQ_NO_UPDATE_CHECK=1)', async () => {
+    setStdoutTTY(true);
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: 'status' }]);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(requestDaemonOnceMock).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing when stdout is not a terminal', async () => {
+    vi.stubEnv('QQ_NO_UPDATE_CHECK', '');
+    vi.stubEnv('CI', '');
+    setStdoutTTY(false);
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: 'status' }]);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(requestDaemonOnceMock).not.toHaveBeenCalled();
+  });
+
+  it('asks the daemon and adds the hint to the current view without changing it', async () => {
+    vi.stubEnv('QQ_NO_UPDATE_CHECK', '');
+    vi.stubEnv('CI', '');
+    setStdoutTTY(true);
+    inkMock.autoSelect = false;
+    requestDaemonOnceMock.mockResolvedValue({ kind: 'update-hint', hint: HINT });
+    fetchCandidatesMock.mockImplementation(
+      (_envelope: ContextEnvelope, options?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
+        }),
+    );
+    const { render } = await import('ink');
+    const renderMock = vi.mocked(render);
+    const renderCallIndex = renderMock.mock.calls.length;
+
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    await vi.waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalledTimes(1));
+    const app = renderMock.mock.results[renderCallIndex]?.value as {
+      rerender: ReturnType<typeof vi.fn>;
+    };
+    await vi.waitFor(() => expect(app.rerender).toHaveBeenCalledTimes(1));
+
+    expect(requestDaemonOnceMock).toHaveBeenCalledWith(
+      '/tmp/qq-test-999.sock',
+      {
+        kind: 'update-hint',
+      },
+      500,
+    );
+    const withHint = app.rerender.mock.calls[0]?.[0] as HintElement;
+    // Still the loading view: the hint changes nothing but its own row.
+    expect(withHint.props.candidates).toBeNull();
+    expect(withHint.props.updateHint).toBe(HINT);
+
+    await withHint.props.onCancel();
+    await run;
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({ kind: 'cancel' });
+  });
+
+  it('never waits on the hint: a daemon that never answers does not hold the result', async () => {
+    vi.stubEnv('QQ_NO_UPDATE_CHECK', '');
+    vi.stubEnv('CI', '');
+    setStdoutTTY(true);
+    requestDaemonOnceMock.mockImplementation(() => new Promise(() => undefined));
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: 'status' }]);
+    const { runForegroundClient } = await import('../src/client/run-foreground.js');
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    expect(requestDaemonOnceMock).toHaveBeenCalledTimes(1);
+    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toMatchObject({
+      kind: 'replace-buffer',
+      lbuffer: 'git status',
+    });
   });
 });
 

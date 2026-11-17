@@ -1,4 +1,6 @@
 import type * as net from 'node:net';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 // restartDaemon is read only inside daemonCommand (call time): tests/client-result.test.ts mocks
 // daemon/bootstrap.js with ensureDaemon only and still loads main.ts.
 import { ensureDaemon, restartDaemon } from '../../daemon/bootstrap.js';
@@ -11,7 +13,13 @@ import {
 import { disablePrewarm, enablePrewarm } from '../../providers/claude-prewarm.js';
 import { SIGKILL_GRACE_MS } from '../../providers/claude-process.js';
 import { appendDebugLog } from '../../shared/debug-log.js';
+import { detectInstall } from '../../shared/install-detect.js';
 import { socketPath as defaultSocketPath } from '../../shared/socket-path.js';
+import {
+  createUpdateChecker,
+  UPDATE_CACHE_FILE_NAME,
+  updateCacheDir,
+} from '../../shared/update-check.js';
 
 export interface DaemonCommandOptions {
   socket?: string;
@@ -150,9 +158,24 @@ export async function daemonCommand(options: DaemonCommandOptions): Promise<void
   // Without a baked key nothing is ever buffered or sent (D-22).
   const telemetry = createTelemetryBuffer();
   telemetry.start();
+  // Update notifier (quick 261117-jpp): nothing is fetched here. The checker asks the registry
+  // only when a gated terminal client sends `update-hint`, at most once per 24 h.
+  const updates = createUpdateChecker({
+    env: process.env,
+    cacheFile: join(
+      updateCacheDir({ env: process.env, platform: process.platform, homeDir: homedir() }),
+      UPDATE_CACHE_FILE_NAME,
+    ),
+    fetchImpl: fetch,
+    now: Date.now,
+    currentVersion: __QUEQUE_VERSION__,
+    nodeVersion: process.versions.node,
+    detectInstall: () => detectInstall(),
+  });
   const server = await startDaemonServer(sock, {
     onShutdown: () => onShutdownRequest(),
     telemetry,
+    updates,
   });
   const connections = trackConnections(server);
   void appendDebugLog('daemon', 'server started', { socket: sock });

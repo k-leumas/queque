@@ -12,6 +12,9 @@ export default defineConfig({
     setupFiles: ['tests/setup/scrub-git-env.ts'],
     testTimeout: 60_000,
     hookTimeout: 30_000,
+    // A fresh config does not inherit vitest.config.ts's `test.env`: repeat the update-check
+    // opt-out so the live job never reaches registry.npmjs.org (quick 261117-jpp).
+    env: { QQ_NO_UPDATE_CHECK: '1' },
   },
   define: baseConfig.define,
 });

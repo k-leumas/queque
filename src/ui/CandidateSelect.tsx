@@ -76,6 +76,11 @@ interface Props {
   onLayoutLinesChange?: (lineCount: number) => void;
   /** Where the candidate list stands (09.1 D-05); defaults to `'complete'`. */
   listState?: CandidateListState;
+  /**
+   * The once-a-day dim update line (quick 261117-jpp), one truncated row under the controls.
+   * Selection-independent: it never changes with the highlighted row.
+   */
+  updateHint?: string;
 }
 
 /**
@@ -117,6 +122,7 @@ export function CandidateSelect({
   error,
   onLayoutLinesChange,
   listState = 'complete',
+  updateHint,
 }: Props): ReactElement {
   const { isRawModeSupported } = useStdin();
   const { stdout } = useStdout();
@@ -253,6 +259,7 @@ export function CandidateSelect({
       includeDevFooter,
       installToggled,
       listState,
+      updateHint,
     };
     const previousHeld = paneHold.current.candidates === candidates ? paneHold.current.lines : 0;
     const lines = heldPaneLines(previousHeld, layout);
@@ -268,6 +275,7 @@ export function CandidateSelect({
     includeDevFooter,
     installToggled,
     listState,
+    updateHint,
     onLayoutLinesChange,
   ]);
 
@@ -465,6 +473,13 @@ export function CandidateSelect({
         </Box>
       )}
       <ControlsLine />
+      {updateHint !== undefined && (
+        <Box flexShrink={0}>
+          <Text dimColor wrap="truncate">
+            {updateHint}
+          </Text>
+        </Box>
+      )}
       {process.env.QQ_DEV_ROOT != null && (
         <Box justifyContent="flex-end">
           <Text color="yellow">{`dev v${__QUEQUE_VERSION__} ${__QUEQUE_COMMIT__}`}</Text>

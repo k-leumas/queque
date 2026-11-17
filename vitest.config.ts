@@ -5,6 +5,9 @@ export default defineConfig({
     environment: 'node',
     include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
     setupFiles: ['tests/setup/scrub-git-env.ts'],
+    // No test ever reaches registry.npmjs.org (quick 261117-jpp): every worker and every
+    // daemon/CLI child it spawns inherits the update-check opt-out. Gate tests pass their own env.
+    env: { QQ_NO_UPDATE_CHECK: '1' },
   },
   define: {
     __QUEQUE_COMMIT__: JSON.stringify('test-build'),
