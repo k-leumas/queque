@@ -328,17 +328,26 @@ export function formatUpdateHint(status: UpdateStatus): string | null {
     return null;
   }
   const { latest, install, nodeTooOld } = status;
+  // Nix upgrades go through the user's nix config: no hint at all.
   if (install.method === 'nix') {
     return null;
+  }
+  // Any command would upgrade the Windows install, not the one WSL runs (discretion 12).
+  if (install.method === 'windows-node') {
+    return truncateHint(
+      `qq ${latest} available · this qq runs on a Windows Node; install Node inside WSL`,
+    );
   }
   if (nodeTooOld !== null) {
     return truncateHint(
       `qq ${latest} needs Node ${nodeTooOld.floor}+; you have ${nodeTooOld.have}`,
     );
   }
-  if (install.packaged && install.upgradeCommand !== null) {
+  if (install.packaged) {
+    // A distro package may lag upstream. Without a sure command, say how instead.
+    const how = install.upgradeCommand ?? install.note ?? 'update it with your package manager';
     return truncateHint(
-      `upstream qq ${latest} released; your package may not have it yet · ${install.upgradeCommand}`,
+      `upstream qq ${latest} released; your package may not have it yet · ${how}`,
     );
   }
   if (install.upgradeCommand !== null) {

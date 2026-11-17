@@ -9094,6 +9094,41 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-11-17T19:30:00Z"
+    },
+    {
+      "id": "bug-555",
+      "timestamp": "2026-11-17T14:58:00Z",
+      "error_message": "tests/update-check.test.ts reads null for a missing, corrupt or wrongly shaped file: EEXIST on mkdirSync after readUpdateCache(missing)",
+      "file": "src/shared/update-check.ts",
+      "root_cause": "readUpdateCache shared the write path's private-dir helper, which mkdir'd the cache dir, so a read had a filesystem side effect",
+      "fix": "isPrivateCacheDir(dir, create): reads only lstat (a missing dir reads as null), writes mkdir 0700 first",
+      "tags": [
+        "update-check",
+        "cache",
+        "side-effect",
+        "quick-261117-jpp"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-17T14:58:00Z"
+    },
+    {
+      "id": "bug-556",
+      "timestamp": "2026-11-17T15:25:00Z",
+      "error_message": "biome lint/suspicious/noControlCharactersInRegex on /[\\u0000-\\u001f\\u007f]/ in tests/update-check.test.ts",
+      "file": "tests/update-check.test.ts",
+      "root_cause": "Biome rejects control-character ranges in regex literals, even in a test asserting their absence",
+      "fix": "Check char codes instead: [...line].filter((ch) => ch.charCodeAt(0) < 0x20 || ch === '\\u007f') equals []",
+      "tags": [
+        "biome",
+        "lint",
+        "regex",
+        "test",
+        "quick-261117-jpp"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-17T15:25:00Z"
     }
   ]
 }

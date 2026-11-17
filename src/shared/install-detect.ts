@@ -196,14 +196,134 @@ function readMarker(
   }
 }
 
+const NPM_UPGRADE = `npm i -g ${NPM_PACKAGE}@latest`;
+const NODE_VERSION_ONLY_NOTE = 'this Node version only';
+const USER_PREFIX_NOTE = 'set a user npm prefix first, not sudo';
+const AUR_NOTE = 'update via your AUR helper';
+/** The segment every npm-style global install of qq has. */
+const NPM_GLOBAL_SEGMENT = `/lib/node_modules/${NPM_PACKAGE}/`;
+
+/** True when `real` is inside `dir`. */
+function isUnder(real: string, dir: string | undefined): boolean {
+  if (dir === undefined || dir === '') {
+    return false;
+  }
+  const base = dir.endsWith('/') ? dir.slice(0, -1) : dir;
+  return real.startsWith(`${base}/`);
+}
+
 /**
- * How this qq was installed. Rules in order: the `.install-source` marker, then the
- * install path. Never rejects.
+ * An npm-command result. When the global node_modules dir that holds qq is not writable, the
+ * note asks for a user prefix: never `sudo npm` (discretion 8).
+ */
+function npmInstall(
+  deps: InstallDetectDeps,
+  real: string,
+  method: 'nvm' | 'fnm' | 'npm',
+  note?: string,
+): InstallInfo {
+  const notes = note === undefined ? [] : [note];
+  const scope = real.lastIndexOf('/node_modules/@k-leumas/');
+  if (scope !== -1 && !deps.isWritable(real.slice(0, scope + '/node_modules'.length))) {
+    notes.push(USER_PREFIX_NOTE);
+  }
+  return {
+    method,
+    upgradeCommand: NPM_UPGRADE,
+    ...(notes.length > 0 ? { note: notes.join('; ') } : {}),
+    packaged: false,
+  };
+}
+
+/** The ID and ID_LIKE tokens of /etc/os-release, unquoted and lower-cased. */
+function osReleaseTokens(text: string | null): string[] {
+  if (text === null) {
+    return [];
+  }
+  const tokens: string[] = [];
+  for (const line of text.split('\n')) {
+    const match = /^(?:ID|ID_LIKE)=(.*)$/.exec(line.trim());
+    if (match?.[1] !== undefined) {
+      const value = match[1].replace(/^["']|["']$/g, '').toLowerCase();
+      tokens.push(...value.split(/\s+/).filter((token) => token !== ''));
+    }
+  }
+  return tokens;
+}
+
+/** A package-owner hit: packaged, and a command only when the owner is exactly `queque`. */
+function ownedBy(
+  owner: string,
+  method: InstallMethod,
+  command: string | null,
+  note?: string,
+): InstallInfo {
+  return {
+    method,
+    upgradeCommand: owner === 'queque' ? command : null,
+    ...(note === undefined ? {} : { note }),
+    packaged: true,
+  };
+}
+
+/**
+ * Asks dpkg, rpm and pacman in that order who owns `real`; the first hit wins. Argv only, and
+ * the path is one argv element. Null when no package owns it.
+ */
+async function queryPackageOwner(
+  deps: InstallDetectDeps,
+  real: string,
+): Promise<InstallInfo | null> {
+  const dpkg = await deps.runOwnerQuery('dpkg', ['-S', real]);
+  if (dpkg.ok) {
+    const owner = dpkg.stdout.split(':')[0]?.trim() ?? '';
+    return ownedBy(owner, 'apt', 'sudo apt install --only-upgrade queque');
+  }
+
+  // rpm expands the two characters `\n` in --qf itself.
+  const rpm = await deps.runOwnerQuery('rpm', ['-qf', '--qf', '%{NAME}\\n', real]);
+  if (rpm.ok) {
+    const owner = rpm.stdout.trim();
+    const tokens = osReleaseTokens(deps.readOsRelease());
+    if (tokens.some((token) => token.includes('suse'))) {
+      return ownedBy(owner, 'zypper', 'sudo zypper up queque');
+    }
+    if (tokens.some((token) => token === 'fedora' || token === 'rhel' || token === 'centos')) {
+      return ownedBy(owner, 'dnf', 'sudo dnf upgrade queque');
+    }
+    return ownedBy(owner, 'rpm', null);
+  }
+
+  const pacman = await deps.runOwnerQuery('pacman', ['-Qoq', real]);
+  if (pacman.ok) {
+    const owner = pacman.stdout.split('\n')[0]?.trim() ?? '';
+    // -Qm lists foreign packages: installed from the AUR, not from a sync repo.
+    const foreign = await deps.runOwnerQuery('pacman', ['-Qm', 'queque']);
+    if (foreign.ok) {
+      return ownedBy(owner, 'aur', null, AUR_NOTE);
+    }
+    return ownedBy(owner, 'pacman', 'sudo pacman -Syu');
+  }
+
+  return null;
+}
+
+/**
+ * How this qq was installed. Rules in order: a Windows Node under WSL, the `.install-source`
+ * marker, then the install path (brew, volta, pnpm, nix, nvm, fnm, npm global), then on Linux
+ * only, for unmatched /usr paths, the dpkg/rpm/pacman owner queries, then the npm fallback,
+ * then unknown. Never rejects.
  */
 export async function detectInstall(
   deps: InstallDetectDeps = defaultInstallDetectDeps(),
 ): Promise<InstallInfo> {
   const real = deps.realpath(deps.modulePath);
+
+  // A Windows Node running qq inside WSL: any command would upgrade the wrong install
+  // (discretion 12).
+  if (deps.platform === 'linux' && /^\/mnt\/[a-z]\//.test(deps.execPath)) {
+    return { method: 'windows-node', upgradeCommand: null, packaged: false };
+  }
 
   // Rule 1: a packager's marker wins. Homebrew's first-party tap updates in the same release
   // run, so it is not a lagging distro package (discretion 5).
@@ -220,6 +340,50 @@ export async function detectInstall(
   // Homebrew, macOS and Linuxbrew.
   if (real.includes('/Cellar/queque/')) {
     return { method: 'brew', upgradeCommand: 'brew upgrade queque', packaged: false };
+  }
+
+  const env = deps.env;
+  if (isUnder(real, env.VOLTA_HOME || `${deps.homeDir}/.volta`)) {
+    return { method: 'volta', upgradeCommand: `volta install ${NPM_PACKAGE}`, packaged: false };
+  }
+
+  if (isUnder(real, env.PNPM_HOME) || real.includes('/pnpm/global/')) {
+    return { method: 'pnpm', upgradeCommand: `pnpm add -g ${NPM_PACKAGE}`, packaged: false };
+  }
+
+  // Nix: the store is read-only and upgrades go through the nix config, so no hint at all.
+  if (real.startsWith('/nix/store/')) {
+    return { method: 'nix', upgradeCommand: null, packaged: false };
+  }
+
+  if (
+    isUnder(real, env.NVM_DIR || `${deps.homeDir}/.nvm`) ||
+    real.includes('/.nvm/versions/node/')
+  ) {
+    return npmInstall(deps, real, 'nvm', NODE_VERSION_ONLY_NOTE);
+  }
+
+  if (isUnder(real, env.FNM_DIR) || real.includes('/fnm/node-versions/')) {
+    return npmInstall(deps, real, 'fnm', NODE_VERSION_ONLY_NOTE);
+  }
+
+  if (real.includes(NPM_GLOBAL_SEGMENT) && !real.startsWith('/usr/')) {
+    return npmInstall(deps, real, 'npm');
+  }
+
+  if (real.startsWith('/usr/')) {
+    // Owner queries run only on Linux (discretion 7); on macOS a /usr/local npm prefix goes
+    // straight to the npm fallback.
+    if (deps.platform === 'linux') {
+      const owned = await queryPackageOwner(deps, real);
+      if (owned !== null) {
+        return owned;
+      }
+    }
+    // The npm fallback, only for a path npm itself lays out: anything else stays unknown.
+    if (real.includes(NPM_GLOBAL_SEGMENT)) {
+      return npmInstall(deps, real, 'npm');
+    }
   }
 
   return { method: 'unknown', upgradeCommand: null, packaged: false };

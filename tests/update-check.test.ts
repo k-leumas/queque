@@ -447,6 +447,68 @@ describe('formatUpdateHint (Task 1 rows)', () => {
   });
 });
 
+describe('formatUpdateHint: one line per install method', () => {
+  const NPM = 'npm i -g @k-leumas/queque-cli@latest';
+  const UPSTREAM = 'upstream qq 0.11.0 released; your package may not have it yet';
+  const rows: Array<[string, InstallInfo, string | null]> = [
+    ['brew', BREW, 'qq 0.11.0 available · brew upgrade queque'],
+    [
+      'nvm',
+      { method: 'nvm', upgradeCommand: NPM, note: 'this Node version only', packaged: false },
+      `qq 0.11.0 available · ${NPM} (this Node version only)`,
+    ],
+    [
+      'system npm, non-writable',
+      {
+        method: 'npm',
+        upgradeCommand: NPM,
+        note: 'set a user npm prefix first, not sudo',
+        packaged: false,
+      },
+      `qq 0.11.0 available · ${NPM} (set a user npm prefix first, not sudo)`,
+    ],
+    ['nix', { method: 'nix', upgradeCommand: null, packaged: false }, null],
+    [
+      'apt',
+      { method: 'apt', upgradeCommand: 'sudo apt install --only-upgrade queque', packaged: true },
+      `${UPSTREAM} · sudo apt install --only-upgrade queque`,
+    ],
+    [
+      'aur',
+      { method: 'aur', upgradeCommand: null, note: 'update via your AUR helper', packaged: true },
+      `${UPSTREAM} · update via your AUR helper`,
+    ],
+    [
+      'packaged, no command, no note',
+      { method: 'rpm', upgradeCommand: null, packaged: true },
+      `${UPSTREAM} · update it with your package manager`,
+    ],
+    [
+      'windows-node',
+      { method: 'windows-node', upgradeCommand: null, packaged: false },
+      'qq 0.11.0 available · this qq runs on a Windows Node; install Node inside WSL',
+    ],
+    ['unknown', UNKNOWN, `qq 0.11.0 available · ${RELEASES_URL}`],
+  ];
+
+  it.each(rows)('%s', (_label, install, expected) => {
+    const line = formatUpdateHint(available(install));
+    expect(line).toBe(expected);
+    if (line !== null) {
+      expect(line.length).toBeLessThanOrEqual(200);
+      const controls = [...line].filter((ch) => ch.charCodeAt(0) < 0x20 || ch === '\u007f');
+      expect(controls).toEqual([]);
+    }
+  });
+
+  it('truncates an over-long line to 200 chars', () => {
+    const line = formatUpdateHint(
+      available({ method: 'marker', source: 'x', upgradeCommand: 'a'.repeat(300), packaged: true }),
+    );
+    expect(line?.length).toBe(200);
+  });
+});
+
 describe('detectInstall (Task 1 rows)', () => {
   const CELLAR_APP =
     '/opt/homebrew/Cellar/queque/0.10.5/libexec/lib/node_modules/@k-leumas/queque-cli/dist/cli/app.js';
