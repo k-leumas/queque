@@ -217,3 +217,6 @@ jobs:
             end
           formula_folder: Formula
           skip_commit: false
+          # Immutable releases reject assets added after publish (422); the formula already
+          # carries the tarball sha256, so the checksum.txt upload is not needed.
+          skip_checksum: true
