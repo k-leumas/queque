@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-17T17:48:30.610Z"
+last_updated: "2026-11-17T19:08:17.997Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: c73d9d6816eb27f6e4f7bad1333458a111dbcc81
+state_head: 54896fa26e358e465fdf9cb4c1ea6c928d1ace6d
 progress:
   total_phases: 15
   completed_phases: 8
@@ -191,6 +191,7 @@ None yet.
 | 37 | README Install: brew steps only; npm and macOS bash notes via the INSTALL.md link | 2026-11-15 | 78d6fb7 | — |
 | 38 | bump homebrew-releaser v1→v4 so the brew caveats ship | 2026-11-16 | ef26e33 | — |
 | 39 | skip homebrew-releaser checksum upload (immutable releases 422) | 2026-11-17 | c73d9d6 | — |
+| 40 | fix zsh prewarm test marker race (tmp + mv) | 2026-11-17 | 54896fa | — |
 Last activity: 2026-11-15 - Completed quick task 261115-4um: README drops workflow badges and the Supported platforms table
 
 ## Session Continuity

@@ -9072,6 +9072,28 @@
       ],
       "occurrences": 1,
       "last_seen": "2026-11-15T11:30:00Z"
+    },
+    {
+      "id": "bug-554",
+      "timestamp": "2026-11-17T19:30:00Z",
+      "error_message": "CI debian:13 (run 44154541470): zsh-widget daemon prewarm > prewarms via qq on PATH when QQ_DEV_ROOT is unset: expected '' to contain 'daemon --ensure'",
+      "file": "tests/zsh-widget.test.ts",
+      "root_cause": "The fake qq/node wrote the marker with printf > marker; the shell creates the empty file before the text lands, so the poll loop could break on the empty file and cat ''",
+      "fix": "Fakes write marker.tmp then mv it into place so the marker appears complete in one step (all three prewarm tests)",
+      "tags": [
+        "test",
+        "flake",
+        "race",
+        "zsh",
+        "prewarm",
+        "ci"
+      ],
+      "related_bugs": [
+        "bug-429",
+        "bug-553"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-17T19:30:00Z"
     }
   ]
 }
