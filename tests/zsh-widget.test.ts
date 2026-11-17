@@ -209,6 +209,8 @@ describe('?? trigger: cancel restores pre-trigger buffer', () => {
 
 // The background ensure call can take seconds to start when the suite runs files in parallel
 // (pre-push hook, bug-429/bug-500), so poll up to 10 s; the loop exits as soon as the marker lands.
+// The fakes write the marker to a temp file and mv it into place: `printf > marker` creates the
+// file before the text lands, and a poll that sees it early reads '' (bug-554).
 describe('daemon prewarm', { timeout: 20_000 }, () => {
   it('starts a background ensure call once in interactive shells', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-prewarm-'));
@@ -222,7 +224,8 @@ describe('daemon prewarm', { timeout: 20_000 }, () => {
     writeFileSync(
       join(binDir, 'node'),
       `#!/bin/sh
-printf '%s\n' "$*" > "${marker}"
+printf '%s\n' "$*" > "${marker}.tmp"
+mv "${marker}.tmp" "${marker}"
 `,
       { encoding: 'utf8' },
     );
@@ -252,7 +255,8 @@ printf '%s\n' "$*" > "${marker}"
     writeFileSync(
       join(binDir, 'qq'),
       `#!/bin/sh
-printf '%s\n' "$*" > "${marker}"
+printf '%s\n' "$*" > "${marker}.tmp"
+mv "${marker}.tmp" "${marker}"
 `,
       { encoding: 'utf8' },
     );
@@ -289,7 +293,8 @@ printf '%s\n' "$*" > "${marker}"
       join(binDir, 'qq'),
       `#!/bin/sh
 cat > "${stdinCopy}"
-printf '%s\n' "$*" > "${marker}"
+printf '%s\n' "$*" > "${marker}.tmp"
+mv "${marker}.tmp" "${marker}"
 `,
       { encoding: 'utf8' },
     );
