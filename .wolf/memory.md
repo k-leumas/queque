@@ -1053,3 +1053,4 @@
 | 05:06 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
 | 05:13 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
 | 21:06 | bump homebrew-releaser v1→v4 so formula_includes (brew caveats) is honored; inputs checked against v4 action.yml | .github/workflows/release.yaml | full suite 1875/1875, actionlint ok | ~2k |
+| 11:48 | homebrew-releaser skip_checksum: true (immutable releases 422 on checksum.txt upload, run 44139257824) | .github/workflows/release.yaml | full suite 1875/1875, actionlint ok | ~2k |
