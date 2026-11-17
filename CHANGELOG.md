@@ -1,3 +1,16 @@
+## [0.10.2](https://github.com/k-leumas/queque/compare/v0.10.1...v0.10.2) (2026-11-17)
+
+### Bug Fixes
+
+- Fixed the Homebrew installation so the post-install instructions (caveats) actually show up when you install or upgrade QueQue via brew.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **release:** bump homebrew-releaser to v4 so the brew caveats ship (#34) ([71dffca](https://github.com/k-leumas/queque/commit/71dffcac6a44859cf904e3c61de8b488b9352427))
+
+</details>
+
 ## [0.10.1](https://github.com/k-leumas/queque/compare/v0.10.0...v0.10.1) (2026-11-15)
 
 ### Bug Fixes
