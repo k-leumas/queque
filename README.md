@@ -61,6 +61,7 @@ See [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md) for filt
 - [Choose a provider](https://github.com/k-leumas/queque/blob/main/docs/PROVIDERS.md): Claude Code login, API keys, OpenAI and Ollama (beta), restarting the daemon.
 - [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md): the picker, installed-tool awareness, Zellij.
 - [Privacy](https://github.com/k-leumas/queque/blob/main/docs/PRIVACY.md): what leaves your machine, debug logging, opt-in anonymous telemetry.
+- Update check: once a day the background daemon asks the npm registry for the latest qq and shows one dim line in ?? when a newer one exists. Turn it off with `export QQ_NO_UPDATE_CHECK=1` (it is also off when `CI` is set or there is no terminal); details in [Privacy](https://github.com/k-leumas/queque/blob/main/docs/PRIVACY.md#update-check).
 - [Configuration](https://github.com/k-leumas/queque/blob/main/docs/CONFIGURATION.md): the `config.json` fields.
 - [System design](https://github.com/k-leumas/queque/blob/main/docs/SYSTEM_DESIGN.md) and [Extensions](https://github.com/k-leumas/queque/blob/main/docs/EXTENSIONS.md): architecture and extension seams.
 - [Contributing](https://github.com/k-leumas/queque/blob/main/CONTRIBUTING.md): development setup and developer-only settings.

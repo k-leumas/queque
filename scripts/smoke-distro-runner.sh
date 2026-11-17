@@ -113,7 +113,9 @@ collect_doctor() {
 # QQ_TELEMETRY=0 keeps the telemetry consent prompt out of the default and c-locale PTY
 # passes (research Pitfall 10); the consent pass sets QQ_SMOKE_CONSENT=1 to leave it unset.
 # The telemetry line is single-quoted so zsh evaluates it, not this runner.
-as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' '[ -n \"\${QQ_SMOKE_CONSENT:-}\" ] || export QQ_TELEMETRY=0' >.zshrc" ||
+# QQ_NO_UPDATE_CHECK=1 keeps the daemon off registry.npmjs.org in every pass (as_user may not
+# pass the container env through, so the rc files set it too).
+as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' 'export QQ_NO_UPDATE_CHECK=1' '[ -n \"\${QQ_SMOKE_CONSENT:-}\" ] || export QQ_TELEMETRY=0' >.zshrc" ||
   fail 33
 as_user "qq init zsh" || fail 33
 grep -q 'queque\.zsh' "$SMOKE_HOME/.zshrc" || {
@@ -147,7 +149,7 @@ as_user "jq -e '.telemetry.asked == true and .telemetry.enabled == false and (.t
 # The bash pass (D-10). As for zsh, the exports go ABOVE the source line `qq init bash`
 # appends: the adapter prewarms the daemon while ~/.bashrc loads. The consent answer is
 # already saved, and QQ_TELEMETRY=0 keeps the question out of this pass regardless.
-as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' 'export QQ_TELEMETRY=0' >.bashrc" ||
+as_user "printf '%s\n' 'export QQ_DEBUG_LOG_FILE=/out/qq-debug.log' 'export QQ_NO_UPDATE_CHECK=1' 'export QQ_TELEMETRY=0' >.bashrc" ||
   fail 37
 as_user "qq init bash" || fail 37
 grep -q 'queque\.bash' "$SMOKE_HOME/.bashrc" || {

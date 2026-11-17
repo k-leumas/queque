@@ -25,6 +25,22 @@ QueQue is **insertion-only**: it writes commands into your shell buffer — you 
 
 See [docs/EXTENSIONS.md](EXTENSIONS.md) for the expansion path (local learning, multi-provider, plugins).
 
+## Update check
+
+QueQue tells you when a newer qq exists, with one dim line in `??` and an `update` row in `qq doctor`.
+
+**What is sent.** One HTTPS GET of `https://registry.npmjs.org/@k-leumas/queque-cli/latest`. It carries no query text, no install id and no custom headers. npm sees your IP address and that the package was looked up, as it does for any `npm install`.
+
+**When.** At most once every 24 hours, from the background daemon, and only after you opened `??` in a terminal. `??` never waits for it: the first `??` of the day starts the check, and a later one shows the result. A failed check (offline, a timeout, an unexpected reply) stays silent and is retried the next day. `qq doctor` runs the same check when the saved result is older than 24 hours.
+
+**What is saved.** The time of the last check, the latest version, the Node version it needs and when the line was last shown. It lives in `update-check.json` in a private folder (mode 700, file mode 600), on macOS and Linux alike: `$XDG_CACHE_HOME/queque/` when `XDG_CACHE_HOME` is an absolute path, otherwise `~/.cache/queque/`.
+
+**How the upgrade command is chosen.** From how this qq was installed: the install marker the Homebrew formula writes, or the install path (Homebrew, Volta, pnpm, nvm, fnm, npm, Nix). On Linux, and only for installs under `/usr`, QueQue asks the local package database who owns the file (`dpkg -S`, `rpm -qf` or `pacman -Qo`). Those queries run on your machine and send nothing. When the method is unknown, the line links the releases page instead of guessing a command.
+
+**How often you see it.** The line shows at most once a day across all terminals, and daemon restarts do not reset that.
+
+**Turning it off.** `export QQ_NO_UPDATE_CHECK=1` (any value other than empty, `0` or `false`) stops the request and the line. The check is also off when `CI` is set the same way, or when there is no terminal. `qq doctor` then says the check is off and why.
+
 ## Anonymous telemetry
 
 Telemetry is off unless you say yes. After your first accepted `??`, QueQue asks once:

@@ -52,7 +52,7 @@ fi
 # script text.
 set +e
 # shellcheck disable=SC2016 # $# and $@ belong to the container's sh, not this shell.
-git archive --format=tar HEAD | docker run --rm -i -e NODE_VERSION="$(cat .nvmrc)" "$IMAGE" sh -c '
+git archive --format=tar HEAD | docker run --rm -i -e NODE_VERSION="$(cat .nvmrc)" -e QQ_NO_UPDATE_CHECK=1 "$IMAGE" sh -c '
 set -eu
 mkdir -p /w
 cd /w

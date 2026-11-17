@@ -21,8 +21,10 @@ fi
 # QQ_TELEMETRY=0 keeps the one-time telemetry consent question out of this run: it prints
 # "QueQue: send anonymous usage..." after the first accepted ??, which the expect script below
 # reads as an error (exit 13). Same opt-out as scripts/smoke-distro-runner.sh.
+# QQ_NO_UPDATE_CHECK=1 keeps the daemon from asking registry.npmjs.org for a newer qq.
 cat >> "$HOME/.zshrc" <<ZSHRC
 export QQ_TELEMETRY=0
+export QQ_NO_UPDATE_CHECK=1
 export QQ_FORCE_SELECTOR=1
 export QQ_DEBUG_LOG_FILE='${QQ_DEBUG_LOG_FILE}'
 export PATH='/home/linuxbrew/.linuxbrew/bin:${PATH}'

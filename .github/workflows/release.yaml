@@ -184,6 +184,7 @@ jobs:
             system "npm", "install", "--ignore-scripts", "--loglevel=error"
             system "node_modules/.bin/tsup"
             system "npm", "install", *std_npm_args, "--loglevel=error"
+            (libexec/"lib/node_modules/@k-leumas/queque-cli/.install-source").write '{"source":"homebrew","upgrade":"brew upgrade queque"}'
             bin.install_symlink libexec/"lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" => "qq"
             (share/"queque").install "shell/zsh/queque.zsh"
             (share/"queque").install "shell/bash/queque.bash"

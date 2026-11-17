@@ -102,6 +102,7 @@ docker run --rm \
   -v "$OUT_DIR:/out" \
   -e NODE_VERSION="$(cat .nvmrc)" \
   -e QQ_SMOKE_IMAGE="$IMAGE" \
+  -e QQ_NO_UPDATE_CHECK=1 \
   "$IMAGE" sh /opt/qq-scripts/smoke-distro-runner.sh
 rc=$?
 set -e
