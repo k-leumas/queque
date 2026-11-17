@@ -1,4 +1,4 @@
-# QueQue
+# QueQue *(kew-kew)*[^name]
 
 **Type what you want. Hit `??`. Pick a command.**
 Nothing runs until you press Enter.
@@ -8,8 +8,6 @@ find big files??  →  du -ah . | sort -rh | head -20
 ```
 
 ![QueQue demo](https://raw.githubusercontent.com/k-leumas/queque/main/assets/demo.gif)
-
-QueQue (pronounced *kew-kew*, like the start of "question") is short for *question question*: the `??` you type to call it, and the `qq` you run to set it up. It works inside your own zsh or bash prompt. You don't switch to a browser, a new terminal or a chat window.
 
 [![zsh 5.0+](https://img.shields.io/badge/zsh-5.0%2B-F15A24?logo=zsh&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#zsh)
 [![bash 5.0+](https://img.shields.io/badge/bash-5.0%2B-4EAA25?logo=gnubash&logoColor=white)](https://github.com/k-leumas/queque/blob/main/docs/INSTALL.md#bash)
@@ -66,3 +64,5 @@ See [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md) for filt
 - [Configuration](https://github.com/k-leumas/queque/blob/main/docs/CONFIGURATION.md): the `config.json` fields.
 - [System design](https://github.com/k-leumas/queque/blob/main/docs/SYSTEM_DESIGN.md) and [Extensions](https://github.com/k-leumas/queque/blob/main/docs/EXTENSIONS.md): architecture and extension seams.
 - [Contributing](https://github.com/k-leumas/queque/blob/main/CONTRIBUTING.md): development setup and developer-only settings.
+
+[^name]: Short for *question question*: the `??` you type to call it, and the `qq` you run to set it up.

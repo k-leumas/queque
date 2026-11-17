@@ -5,6 +5,7 @@
 > Last updated: 2026-11-15
 
 ## User Preferences
+- [2026-11-17] README: the pronunciation lives in the H1 (`# QueQue *(kew-kew)*[^name]`) and the name origin in a GFM footnote at the end; no name paragraph in the intro (user: it was wordy and mixed in info that is not useful). GitHub repo About: "Natural language in, shell command out. You press Enter." (no shell names, not tied to English).
 
 - [2026-11-14] Run the full test suite after every update, not only the files you touched.
 - [2026-10-18] Give a time estimate for every task, subagent, test run or review you start, plus the total remaining. Typical times: executor 20–55 min under load, reviewer ~10 min, fixer ~27 min, verifier ~8 min, full suite 2–10 min.
