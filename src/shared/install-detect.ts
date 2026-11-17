@@ -198,7 +198,8 @@ function readMarker(
 
 const NPM_UPGRADE = `npm i -g ${NPM_PACKAGE}@latest`;
 const NODE_VERSION_ONLY_NOTE = 'this Node version only';
-const USER_PREFIX_NOTE = 'set a user npm prefix first, not sudo';
+/** Added when the global node_modules dir is not writable; `qq doctor` spells the fix out. */
+export const USER_PREFIX_NOTE = 'set a user npm prefix first, not sudo';
 const AUR_NOTE = 'update via your AUR helper';
 /** The segment every npm-style global install of qq has. */
 const NPM_GLOBAL_SEGMENT = `/lib/node_modules/${NPM_PACKAGE}/`;
