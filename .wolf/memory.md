@@ -1057,7 +1057,67 @@
 | 13:08 | fix prewarm test marker race (printf > marker seen empty; tmp+mv), CI run 44154541470 | tests/zsh-widget.test.ts | prewarm x5 pass, full suite 1875/1875 | ~3k |
 | 13:25 | readme rebrand (user's readme-rebrand.diff): tagline, name explainer, badges moved, Tested on: under Install; readme-badges test follows; anatomy drops out-of-repo ../ sections | README.md, tests/readme-badges.test.ts, .wolf/anatomy.md | full suite 1875/1875 | ~4k |
 | 13:53 | readme: pronunciation into H1 with a footnote for the name origin; drop the name paragraph | README.md | GitHub render checked, full suite 1875/1875 | ~2k |
+| 14:08 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
+
+## Session: 2026-11-17 14:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:24 | Created .planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-PLAN.md | — | ~14879 |
+| 14:25 | planned quick 261117-jpp update notifier (3 tasks: tracer IPC hint, detectInstall matrix, doctor/formula/docs) | .planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-PLAN.md | plan valid | ~60k |
+| 14:53 | Session end: 1 writes across 1 files (261117-jpp-PLAN.md) | 4 reads | ~26489 tok |
+| 14:56 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | — | ~5144 |
+| 14:56 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-hint-ipc.test.ts | — | ~980 |
+| 14:57 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/modal-layout.test.ts | expanded (+19 lines) | ~245 |
+| 14:57 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | — | ~1896 |
+| 14:58 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | — | ~4621 |
+| 14:58 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | added 1 condition(s) | ~121 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/telemetry-config.ts | inline fix | ~18 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | added 1 condition(s) | ~144 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | ensurePrivateDir() → isPrivateCacheDir() | ~22 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | ensurePrivateDir() → isPrivateCacheDir() | ~22 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/contracts/ipc.ts | expanded (+6 lines) | ~101 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/contracts/ipc.ts | expanded (+7 lines) | ~132 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/daemon/server.ts | 2→5 lines | ~111 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/daemon/server.ts | modified hint() | ~61 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/daemon/server.ts | added optional chaining | ~196 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/ui/modal-layout.ts | 6→8 lines | ~73 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/ui/modal-layout.ts | added 1 condition(s) | ~47 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/ui/CandidateSelect.tsx | CSS: Selection-independent | ~90 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/vitest.config.ts | modified org() | ~81 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/vitest.live.config.ts | 2→5 lines | ~70 |
+| 15:02 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/client-result.test.ts | modified ask() | ~228 |
+| 15:02 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/client-result.test.ts | added optional chaining | ~1513 |
+| 15:03 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task1-msg.txt | — | ~260 |
+| 15:04 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/install-detect.test.ts | — | ~3076 |
+| 15:05 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | added optional chaining | ~644 |
+| 15:05 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | 120 → 300 | ~29 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | added optional chaining | ~1162 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | added 1 condition(s) | ~94 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | added 10 condition(s) | ~486 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | added nullish coalescing | ~255 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | 1→2 lines | ~37 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/.wolf/buglog.json | modified isPrivateCacheDir() | ~451 |
+| 15:07 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task2-msg.txt | — | ~235 |
 | 15:10 | quick 261117-jpp task 1: update notifier tracer (update-check.ts, install-detect.ts marker/brew/unknown, update-hint IPC, daemon checker, client ask never awaited, dim hint row under ControlsLine, vitest QQ_NO_UPDATE_CHECK=1) | src/shared/update-check.ts, src/shared/install-detect.ts, src/daemon/server.ts, src/client/run-foreground.ts, src/ui/CandidateSelect.tsx | task 1 verify green, typecheck ok | ~30k |
 | 15:30 | quick 261117-jpp task 2: detectInstall covers WSL, volta, pnpm, nix, nvm, fnm, npm (user-prefix note), Linux dpkg/rpm/pacman owner queries; formatUpdateHint windows-node + packaged fallbacks | src/shared/install-detect.ts, src/shared/update-check.ts, tests/install-detect.test.ts, tests/update-check.test.ts | 80/80 targeted, typecheck ok | ~15k |
+| 15:11 | Session end: 34 writes across 18 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 6 reads | ~63118 tok |
+| 15:14 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp-doctor-spot.sh | — | ~185 |
+| 15:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task3a-msg.txt | — | ~182 |
+| 15:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_marker_edit.py | — | ~405 |
+| 15:16 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_optout_edit.py | — | ~503 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/scripts/smoke-distro-runner.sh | 1→3 lines | ~62 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/package.json | 3→6 lines | ~25 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/docs/PRIVACY.md | expanded (+16 lines) | ~555 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/README.md | added nullish coalescing | ~104 |
+| 15:17 | Created .claude/worktrees/agent-ab947582b53914f53/tests/install-marker-formula.test.ts | — | ~592 |
+| 15:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_formula_ruby.py | — | ~239 |
+| 15:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_wolf_edit.py | — | ~1162 |
+| 15:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task3b-msg.txt | — | ~215 |
+| 15:21 | Created .claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md | — | ~3670 |
+| 15:21 | Edited .claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md | inline fix | ~108 |
+| 15:21 | Edited .claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md | inline fix | ~107 |
 | 15:20 | quick 261117-jpp task 3a: qq doctor update row (checkUpdate before telemetry, DoctorDeps.updateStatus, id 'update' appended), USER_PREFIX_NOTE exported | src/cli/commands/doctor.ts, src/contracts/doctor.ts, tests/doctor.test.ts | doctor 125/125, typecheck ok, pty spot check shows warn row | ~12k |
 | 15:21 | quick 261117-jpp task 3b: homebrew .install-source marker in both formula blocks + smoke emulation (guard test), QQ_NO_UPDATE_CHECK=1 in every distro/homebrew container, engines.node >=24, README + PRIVACY update-check docs, todo moved to done, cerebrum learning | .github/workflows/*.y*ml, scripts/*, package.json, README.md, docs/PRIVACY.md, tests/install-marker-formula.test.ts | actionlint ok, full suite 1988/1988 plain and pty | ~15k |
+| 15:22 | Edited .planning/STATE.md | 2→3 lines | ~39 |
+| 15:23 | Session end: 50 writes across 32 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 8 reads | ~71645 tok |

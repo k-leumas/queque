@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-17T19:25:07.155Z"
+last_updated: "2026-11-17T21:22:45.667Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: 6072f6f23b232997115156636295fd3457b26317
+state_head: 8effde00fb90cec42c0aab38d9154e8b2c5484d9
 progress:
   total_phases: 15
   completed_phases: 8
@@ -193,7 +193,9 @@ None yet.
 | 39 | skip homebrew-releaser checksum upload (immutable releases 422) | 2026-11-17 | c73d9d6 | — |
 | 40 | fix zsh prewarm test marker race (tmp + mv) | 2026-11-17 | 54896fa | — |
 | 41 | readme rebrand + anatomy out-of-repo cleanup | 2026-11-17 | 6072f6f | — |
-Last activity: 2026-11-15 - Completed quick task 261115-4um: README drops workflow badges and the Supported platforms table
+| 261117-jpp | Update notifier: daily npm check, install-aware upgrade hint, doctor row, opt-out | 2026-11-17 | 8effde0 | [261117-jpp-implement-update-notifier-per-planning-t](./quick/261117-jpp-implement-update-notifier-per-planning-t/) |
+
+Last activity: 2026-11-17 - Completed quick task 261117-jpp: Update notifier (daily npm check, install-aware upgrade hint, doctor row, opt-out)
 
 ## Session Continuity
 
