@@ -1121,3 +1121,6 @@
 | 15:21 | quick 261117-jpp task 3b: homebrew .install-source marker in both formula blocks + smoke emulation (guard test), QQ_NO_UPDATE_CHECK=1 in every distro/homebrew container, engines.node >=24, README + PRIVACY update-check docs, todo moved to done, cerebrum learning | .github/workflows/*.y*ml, scripts/*, package.json, README.md, docs/PRIVACY.md, tests/install-marker-formula.test.ts | actionlint ok, full suite 1988/1988 plain and pty | ~15k |
 | 15:22 | Edited .planning/STATE.md | 2→3 lines | ~39 |
 | 15:23 | Session end: 50 writes across 32 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 8 reads | ~71645 tok |
+| 19:04 | Session end: 50 writes across 32 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 8 reads | ~71645 tok |
+| 19:06 | Edited src/shared/instant-frame-spec.ts | 5→6 lines | ~103 |
+| 19:08 | bump INSTANT_FRAME_VIEWPORT_LINES 18→19 (spec, zsh, bash) for the update hint row | src/shared/instant-frame-spec.ts, shell/zsh/queque.zsh, shell/bash/queque.bash | 1988/1988 plain + pty | ~3k |

@@ -31,11 +31,12 @@ export const CURSOR_HOME = '\u001B[H';
  * content stays visible above it. Sized for the typical tallest modal: query header (1) +
  * filter (1) + content marginTop (1) + 3 two-line candidates with marginBottom (9) + the
  * destructive ⚠ footer (marginTop + line = 2) + the ⓘ legend (marginTop + line = 2) +
- * controls (marginTop + line = 2) = 18. The two footers are separate boxes with their own
- * margins, so each adds two lines. A fixed approximation written before candidates arrive:
- * 5-candidate lists, wrapped rows or a wrapped legend can exceed it.
+ * controls (marginTop + line = 2) + the once-a-day update hint under the controls (1) = 19.
+ * The two footers are separate boxes with their own margins, so each adds two lines. A fixed
+ * approximation written before candidates arrive: 5-candidate lists, wrapped rows or a
+ * wrapped legend can exceed it.
  */
-export const INSTANT_FRAME_VIEWPORT_LINES = 18;
+export const INSTANT_FRAME_VIEWPORT_LINES = 19;
 
 /** The first loading frame (LoadingSpinner FRAMES[0]); the instant frame paints it. */
 export const INSTANT_FRAME_LOADING_TEXT = 'thinking…';

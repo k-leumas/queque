@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-18T00:00:00.544Z
-> Files: 521 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-18T01:06:52.195Z
+> Files: 522 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -811,3 +811,7 @@
 
 - `run-1-partial.log` — Declares f (~4424 tok)
 - `run-from-6.raw.json` (~4090 tok)
+
+## src/shared/
+
+- `instant-frame-spec.ts` — The instant first frame, as one TypeScript reference (Phase 11 D-04; quick 261011-jbh, LD-1). (~1808 tok)
