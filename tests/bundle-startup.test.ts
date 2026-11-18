@@ -231,4 +231,23 @@ describe('CLI bundle startup (blank modal before the loading frame)', () => {
     },
     BUILD_TIMEOUT_MS,
   );
+
+  it(
+    'b7: --version and -v print the package version (the smoke runs `qq --version`)',
+    async () => {
+      const pkg = JSON.parse(await readFile('package.json', 'utf8')) as { version: string };
+      for (const flag of ['--version', '-v']) {
+        const run = spawnSync(process.execPath, [mainPath, flag], {
+          cwd: outDir,
+          encoding: 'utf8',
+          env: runEnv(freshCacheHome()),
+          stdio: ['ignore', 'pipe', 'pipe'],
+          timeout: BUILD_TIMEOUT_MS,
+        });
+        expect(run.status, run.stderr).toBe(0);
+        expect(run.stdout).toContain(`qq/${pkg.version} `);
+      }
+    },
+    BUILD_TIMEOUT_MS,
+  );
 });
