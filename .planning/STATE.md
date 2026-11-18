@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-18T01:08:47.028Z"
+last_updated: "2026-11-18T02:41:39.064Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: 1b2aac4cd9ccc1f1ed055d142b640e48a76f22f3
+state_head: 42f226e2e13fa532b2d3afd833a6922d4ab86511
 progress:
   total_phases: 15
   completed_phases: 8
@@ -195,6 +195,7 @@ None yet.
 | 41 | readme rebrand + anatomy out-of-repo cleanup | 2026-11-17 | 6072f6f | — |
 | 261117-jpp | Update notifier: daily npm check, install-aware upgrade hint, doctor row, opt-out | 2026-11-17 | 8effde0 | [261117-jpp-implement-update-notifier-per-planning-t](./quick/261117-jpp-implement-update-notifier-per-planning-t/) |
 | 43 | bump MODAL_VIEWPORT_LINES 18→19 for the update hint row | 2026-11-17 | 1b2aac4 | — |
+| 44 | homebrew docker smoke image node:22 → node:24 (engines floor) | 2026-11-17 | 42f226e | — |
 
 Last activity: 2026-11-17 - Completed quick task 261117-jpp: Update notifier (daily npm check, install-aware upgrade hint, doctor row, opt-out)
 

@@ -1124,3 +1124,5 @@
 | 19:04 | Session end: 50 writes across 32 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 8 reads | ~71645 tok |
 | 19:06 | Edited src/shared/instant-frame-spec.ts | 5→6 lines | ~103 |
 | 19:08 | bump INSTANT_FRAME_VIEWPORT_LINES 18→19 (spec, zsh, bash) for the update hint row | src/shared/instant-frame-spec.ts, shell/zsh/queque.zsh, shell/bash/queque.bash | 1988/1988 plain + pty | ~3k |
+| 19:09 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 20:41 | homebrew docker smoke image node:22-bookworm → node:24-bookworm to meet engines.node >=24 | scripts/smoke-homebrew-docker.sh | 1988/1988 plain + pty; docker down, image not built | ~2k |

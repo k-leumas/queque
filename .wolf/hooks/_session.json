@@ -41,6 +41,11 @@
       "count": 1,
       "tokens": 0,
       "first_read": "2026-11-17T21:11:25.408Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/shared/instant-frame-spec.ts": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-18T01:06:47.444Z"
     }
   },
   "files_written": [
@@ -343,6 +348,12 @@
       "action": "edit",
       "tokens": 42,
       "at": "2026-11-17T21:22:53.154Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/shared/instant-frame-spec.ts",
+      "action": "edit",
+      "tokens": 103,
+      "at": "2026-11-18T01:06:52.213Z"
     }
   ],
   "edit_counts": {
@@ -377,11 +388,12 @@
     "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_wolf_edit.py": 1,
     "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task3b-msg.txt": 1,
     ".claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md": 3,
-    ".planning/STATE.md": 1
+    ".planning/STATE.md": 1,
+    "src/shared/instant-frame-spec.ts": 1
   },
   "anatomy_hits": 3,
-  "anatomy_misses": 5,
+  "anatomy_misses": 6,
   "repeated_reads_warned": 1,
   "cerebrum_warnings": 0,
-  "stop_count": 4
+  "stop_count": 6
 }

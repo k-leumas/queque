@@ -73,7 +73,7 @@ fi
 cd "$ROOT_DIR"
 
 docker build -t "$IMAGE_NAME" -f - . <<'DOCKERFILE'
-FROM node:22-bookworm
+FROM node:24-bookworm
 
 ENV HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
