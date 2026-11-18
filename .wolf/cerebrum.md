@@ -5,6 +5,8 @@
 > Last updated: 2026-11-17
 
 ## User Preferences
+
+- 2026-11-17: In short UI hints (e.g. the update notifier row) the user cares that the message says what to do with the exact command, not about details like the version number. Cut detail before the actionable part, and make sure the command fits the 80-col picker row.
 - [2026-11-17] README: the pronunciation lives in the H1 (`# QueQue *(kew-kew)*[^name]`) and the name origin in a GFM footnote at the end; no name paragraph in the intro (user: it was wordy and mixed in info that is not useful). GitHub repo About: "Natural language in, shell command out. You press Enter." (no shell names, not tied to English).
 
 - [2026-11-14] Run the full test suite after every update, not only the files you touched.
