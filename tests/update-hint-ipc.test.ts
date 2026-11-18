@@ -14,7 +14,7 @@ import { requestDaemonOnce } from '../src/cli/commands/telemetry.js';
 import { ipcRequestSchema, ipcResponseSchema } from '../src/contracts/ipc.js';
 import { startDaemonServer } from '../src/daemon/server.js';
 
-const HINT = 'qq 0.11.0 available · brew upgrade queque';
+const HINT = 'qq update available · brew upgrade queque';
 
 describe('update-hint IPC kind', () => {
   let socketPath: string;

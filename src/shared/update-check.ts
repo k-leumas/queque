@@ -327,7 +327,8 @@ export function formatUpdateHint(status: UpdateStatus): string | null {
   if (status.state !== 'available') {
     return null;
   }
-  const { latest, install, nodeTooOld } = status;
+  // No version number: the picker row is 80 columns at worst, and the command is what matters.
+  const { install, nodeTooOld } = status;
   // Nix upgrades go through the user's nix config: no hint at all.
   if (install.method === 'nix') {
     return null;
@@ -335,26 +336,22 @@ export function formatUpdateHint(status: UpdateStatus): string | null {
   // Any command would upgrade the Windows install, not the one WSL runs (discretion 12).
   if (install.method === 'windows-node') {
     return truncateHint(
-      `qq ${latest} available · this qq runs on a Windows Node; install Node inside WSL`,
+      'qq update available · this qq uses a Windows Node; install Node inside WSL',
     );
   }
   if (nodeTooOld !== null) {
-    return truncateHint(
-      `qq ${latest} needs Node ${nodeTooOld.floor}+; you have ${nodeTooOld.have}`,
-    );
+    return truncateHint(`qq update needs Node ${nodeTooOld.floor}+; you have ${nodeTooOld.have}`);
   }
   if (install.packaged) {
     // A distro package may lag upstream. Without a sure command, say how instead.
     const how = install.upgradeCommand ?? install.note ?? 'update it with your package manager';
-    return truncateHint(
-      `upstream qq ${latest} released; your package may not have it yet · ${how}`,
-    );
+    return truncateHint(`qq update (your package may lag) · ${how}`);
   }
   if (install.upgradeCommand !== null) {
     const note = install.note === undefined ? '' : ` (${install.note})`;
-    return truncateHint(`qq ${latest} available · ${install.upgradeCommand}${note}`);
+    return truncateHint(`qq update available · ${install.upgradeCommand}${note}`);
   }
-  return truncateHint(`qq ${latest} available · ${RELEASES_URL}`);
+  return truncateHint(`qq update available · ${RELEASES_URL}`);
 }
 
 export interface UpdateCheckerDeps {

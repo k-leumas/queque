@@ -1128,3 +1128,13 @@
 | 20:41 | homebrew docker smoke image node:22-bookworm → node:24-bookworm to meet engines.node >=24 | scripts/smoke-homebrew-docker.sh | 1988/1988 plain + pty; docker down, image not built | ~2k |
 | 20:42 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
 | 20:47 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 21:14 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 21:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | — | ~410 |
+| 21:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Main.dc.html | — | ~1056 |
+| 21:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Before.dc.html | — | ~983 |
+| 21:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Npm.dc.html | — | ~1068 |
+| 21:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | — | ~1058 |
+| 21:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Distro.dc.html | — | ~1060 |
+| 21:21 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~62 |
+| 21:22 | Session end: 58 writes across 39 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~77818 tok |
+| 21:37 | update hint drops the version number (qq update available · <cmd>); distro wording shortened; test pins the command inside an 80-col row | src/shared/update-check.ts, tests/update-check.test.ts | full suite: only bash-widget b22 timing flake (passes alone) | ~6k |

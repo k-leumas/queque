@@ -559,7 +559,7 @@ describe('estimateCandidateSelectLines: update hint', () => {
 
   it('adds exactly one row for a short or a long hint (the row truncates)', () => {
     const without = estimateCandidateSelectLines(base);
-    const short = 'qq 0.11.0 available · brew upgrade queque';
+    const short = 'qq update available · brew upgrade queque';
     expect(estimateCandidateSelectLines({ ...base, updateHint: short })).toBe(without + 1);
     expect(estimateCandidateSelectLines({ ...base, updateHint: 'x'.repeat(300) })).toBe(
       without + 1,

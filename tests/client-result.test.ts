@@ -1763,7 +1763,7 @@ describe('runForegroundClient: update hint (quick 261117-jpp)', () => {
   let requestFile: string;
   let resultFile: string;
   let ttyDescriptor: PropertyDescriptor | undefined;
-  const HINT = 'qq 0.11.0 available · brew upgrade queque';
+  const HINT = 'qq update available · brew upgrade queque';
 
   type HintElement = {
     props: {

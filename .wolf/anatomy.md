@@ -1,7 +1,16 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-18T01:06:52.195Z
-> Files: 522 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-18T03:21:56.886Z
+> Files: 528 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/
+
+- `Before.dc.html` — Picker without an update hint (~983 tok)
+- `canvas.json` (~432 tok)
+- `Distro.dc.html` — Update hint: distro package (~1060 tok)
+- `Main.dc.html` — Update hint: Homebrew (~1056 tok)
+- `NodeTooOld.dc.html` — Update hint: Node too old (~1058 tok)
+- `Npm.dc.html` — Update hint: npm via nvm (~1068 tok)
 
 ## ./
 

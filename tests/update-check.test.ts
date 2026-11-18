@@ -7,6 +7,7 @@ import {
   type InstallDetectDeps,
   type InstallInfo,
 } from '../src/shared/install-detect.js';
+import { MODAL_MAX_COLUMNS } from '../src/shared/instant-frame-spec.js';
 import {
   compareVersions,
   createUpdateChecker,
@@ -347,11 +348,11 @@ describe('createUpdateChecker', () => {
   it('shows the hint at most once per 24 h', async () => {
     seed({});
     const { checker } = makeChecker();
-    await expect(checker.hint()).resolves.toBe('qq 0.11.0 available · brew upgrade queque');
+    await expect(checker.hint()).resolves.toBe('qq update available · brew upgrade queque');
     expect(readUpdateCache(cacheFile)?.shownAt).toBe(NOW);
     await expect(checker.hint()).resolves.toBeNull();
     now += UPDATE_HINT_INTERVAL_MS;
-    await expect(checker.hint()).resolves.toBe('qq 0.11.0 available · brew upgrade queque');
+    await expect(checker.hint()).resolves.toBe('qq update available · brew upgrade queque');
   });
 
   it('runs detectInstall once for the checker lifetime', async () => {
@@ -371,7 +372,7 @@ describe('createUpdateChecker', () => {
   it('names the Node floor when the latest release needs a newer Node', async () => {
     seed({ enginesNode: '>=26' });
     const { checker } = makeChecker();
-    await expect(checker.hint()).resolves.toBe('qq 0.11.0 needs Node 26+; you have 24.14.1');
+    await expect(checker.hint()).resolves.toBe('qq update needs Node 26+; you have 24.14.1');
   });
 
   it('status() reports blocked, unknown, current and available without touching shownAt', async () => {
@@ -419,7 +420,7 @@ describe('formatUpdateHint (Task 1 rows)', () => {
   });
 
   it('points an unknown install at the releases page', () => {
-    expect(formatUpdateHint(available(UNKNOWN))).toBe(`qq 0.11.0 available · ${RELEASES_URL}`);
+    expect(formatUpdateHint(available(UNKNOWN))).toBe(`qq update available · ${RELEASES_URL}`);
     expect(RELEASES_URL).toBe('https://github.com/k-leumas/queque/releases');
   });
 
@@ -433,7 +434,7 @@ describe('formatUpdateHint (Task 1 rows)', () => {
           packaged: false,
         }),
       ),
-    ).toBe('qq 0.11.0 available · brew upgrade queque');
+    ).toBe('qq update available · brew upgrade queque');
     expect(
       formatUpdateHint(
         available({
@@ -443,19 +444,19 @@ describe('formatUpdateHint (Task 1 rows)', () => {
           packaged: true,
         }),
       ),
-    ).toBe('upstream qq 0.11.0 released; your package may not have it yet · paru -S queque');
+    ).toBe('qq update (your package may lag) · paru -S queque');
   });
 });
 
 describe('formatUpdateHint: one line per install method', () => {
   const NPM = 'npm i -g @k-leumas/queque-cli@latest';
-  const UPSTREAM = 'upstream qq 0.11.0 released; your package may not have it yet';
+  const UPSTREAM = 'qq update (your package may lag)';
   const rows: Array<[string, InstallInfo, string | null]> = [
-    ['brew', BREW, 'qq 0.11.0 available · brew upgrade queque'],
+    ['brew', BREW, 'qq update available · brew upgrade queque'],
     [
       'nvm',
       { method: 'nvm', upgradeCommand: NPM, note: 'this Node version only', packaged: false },
-      `qq 0.11.0 available · ${NPM} (this Node version only)`,
+      `qq update available · ${NPM} (this Node version only)`,
     ],
     [
       'system npm, non-writable',
@@ -465,7 +466,7 @@ describe('formatUpdateHint: one line per install method', () => {
         note: 'set a user npm prefix first, not sudo',
         packaged: false,
       },
-      `qq 0.11.0 available · ${NPM} (set a user npm prefix first, not sudo)`,
+      `qq update available · ${NPM} (set a user npm prefix first, not sudo)`,
     ],
     ['nix', { method: 'nix', upgradeCommand: null, packaged: false }, null],
     [
@@ -486,9 +487,9 @@ describe('formatUpdateHint: one line per install method', () => {
     [
       'windows-node',
       { method: 'windows-node', upgradeCommand: null, packaged: false },
-      'qq 0.11.0 available · this qq runs on a Windows Node; install Node inside WSL',
+      'qq update available · this qq uses a Windows Node; install Node inside WSL',
     ],
-    ['unknown', UNKNOWN, `qq 0.11.0 available · ${RELEASES_URL}`],
+    ['unknown', UNKNOWN, `qq update available · ${RELEASES_URL}`],
   ];
 
   it.each(rows)('%s', (_label, install, expected) => {
@@ -499,6 +500,17 @@ describe('formatUpdateHint: one line per install method', () => {
       const controls = [...line].filter((ch) => ch.charCodeAt(0) < 0x20 || ch === '\u007f');
       expect(controls).toEqual([]);
     }
+  });
+
+  // The picker row is MODAL_MAX_COLUMNS wide minus the modal's 2 padding columns, and Ink cuts
+  // the rest with an ellipsis: the command must end inside that, only a trailing note may go.
+  it.each(
+    rows.filter(([, install]) => install.upgradeCommand !== null),
+  )('%s: the command fits an 80-column picker row', (_label, install) => {
+    const line = formatUpdateHint(available(install)) ?? '';
+    const commandEnd =
+      line.indexOf(install.upgradeCommand ?? '') + (install.upgradeCommand ?? '').length;
+    expect(commandEnd).toBeLessThan(MODAL_MAX_COLUMNS - 2);
   });
 
   it('truncates an over-long line to 200 chars', () => {
