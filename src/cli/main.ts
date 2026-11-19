@@ -132,6 +132,7 @@ export async function main(argv = process.argv.slice(2)): Promise<void> {
     });
 
   cli.help();
+  cli.version(__QUEQUE_VERSION__);
   cli.parse(['node', 'qq', ...argv], { run: false });
 
   await cli.runMatchedCommand();

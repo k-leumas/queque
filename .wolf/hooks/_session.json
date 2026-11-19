@@ -56,6 +56,16 @@
       "count": 1,
       "tokens": 1110,
       "first_read": "2026-11-15T10:47:15.798Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/main.ts": {
+      "count": 1,
+      "tokens": 1320,
+      "first_read": "2026-11-18T03:00:01.467Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/bundle-startup.test.ts": {
+      "count": 1,
+      "tokens": 2000,
+      "first_read": "2026-11-18T03:00:21.779Z"
     }
   },
   "files_written": [
@@ -208,6 +218,18 @@
       "action": "create",
       "tokens": 1558,
       "at": "2026-11-15T10:48:52.752Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/cli/main.ts",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-11-18T03:00:28.902Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/bundle-startup.test.ts",
+      "action": "edit",
+      "tokens": 212,
+      "at": "2026-11-18T03:00:36.702Z"
     }
   ],
   "edit_counts": {
@@ -223,9 +245,11 @@
     "tests/zsh-widget.test.ts": 2,
     "shell/zsh/queque.zsh": 1,
     "shell/README.md": 2,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py": 1
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py": 1,
+    "src/cli/main.ts": 1,
+    "tests/bundle-startup.test.ts": 1
   },
-  "anatomy_hits": 9,
+  "anatomy_hits": 11,
   "anatomy_misses": 2,
   "repeated_reads_warned": 3,
   "cerebrum_warnings": 0,

@@ -1057,3 +1057,6 @@
 | 13:08 | fix prewarm test marker race (printf > marker seen empty; tmp+mv), CI run 44154541470 | tests/zsh-widget.test.ts | prewarm x5 pass, full suite 1875/1875 | ~3k |
 | 13:25 | readme rebrand (user's readme-rebrand.diff): tagline, name explainer, badges moved, Tested on: under Install; readme-badges test follows; anatomy drops out-of-repo ../ sections | README.md, tests/readme-badges.test.ts, .wolf/anatomy.md | full suite 1875/1875 | ~4k |
 | 13:53 | readme: pronunciation into H1 with a footnote for the name origin; drop the name paragraph | README.md | GitHub render checked, full suite 1875/1875 | ~2k |
+| 21:00 | Edited src/cli/main.ts | 2→3 lines | ~18 |
+| 21:00 | Edited tests/bundle-startup.test.ts | modified for() | ~212 |
+| 21:09 | qq --version / -v via cac .version(__QUEQUE_VERSION__) + bundle-startup b7 | src/cli/main.ts, tests/bundle-startup.test.ts | plain 1876/1876; pty timing flakes under load avg 196 (ollama) | ~4k |
