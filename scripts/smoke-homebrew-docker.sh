@@ -8,18 +8,14 @@ usage() {
   cat <<'EOF'
 Usage: scripts/smoke-homebrew-docker.sh
 
-Builds a Docker image from this checkout, installs QueQue using the same shape
-as the generated Homebrew formula, then opens an interactive zsh PTY and types:
+Builds a Docker image from this checkout, installs QueQue in the same shape as
+the generated Homebrew formula, then opens a real zsh PTY and types:
 
   list files by size??
 
-Required environment:
-  ANTHROPIC_API_KEY      Anthropic key used by the live LLM request.
-
-Also accepted:
-  anthropic_api_key      Lowercase alias; exported to the container as
-                         ANTHROPIC_API_KEY.
-  .env.local             Fallback source for either key name.
+Only the model is fake: the `claude` on PATH inside the container runs
+tests/fixtures/fake-claude-stream.mjs, so no API key or token is read or passed.
+The install, `qq init zsh`, the ZLE widget, client, daemon and TUI are real.
 
 Optional environment:
   QQ_SMOKE_QUERY         Intent typed before ??.
@@ -32,43 +28,7 @@ if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   exit 0
 fi
 
-read_env_local_key() {
-  local key="$1"
-  local file="$ROOT_DIR/.env.local"
-  [[ -f "$file" ]] || return 0
-
-  awk -F= -v key="$key" '
-    /^[[:space:]]*(export[[:space:]]+)?[A-Za-z_][A-Za-z0-9_]*[[:space:]]*=/ {
-      name = $1
-      sub(/^[[:space:]]*export[[:space:]]+/, "", name)
-      gsub(/[[:space:]]/, "", name)
-      if (name == key) {
-        value = substr($0, index($0, "=") + 1)
-        sub(/^[[:space:]]*/, "", value)
-        sub(/[[:space:]]*$/, "", value)
-        if ((value ~ /^".*"$/) || (value ~ /^'\''.*'\''$/)) {
-          value = substr(value, 2, length(value) - 2)
-        }
-        print value
-        exit
-      }
-    }
-  ' "$file"
-}
-
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-
-API_KEY="${ANTHROPIC_API_KEY:-${anthropic_api_key:-}}"
-if [[ -z "$API_KEY" ]]; then
-  API_KEY="$(read_env_local_key ANTHROPIC_API_KEY)"
-fi
-if [[ -z "$API_KEY" ]]; then
-  API_KEY="$(read_env_local_key anthropic_api_key)"
-fi
-if [[ -z "$API_KEY" ]]; then
-  echo "error: set ANTHROPIC_API_KEY, anthropic_api_key, or add one to .env.local" >&2
-  exit 2
-fi
 
 cd "$ROOT_DIR"
 
@@ -125,7 +85,7 @@ CMD ["/usr/local/bin/run-queque-homebrew-smoke"]
 DOCKERFILE
 
 docker run --rm \
-  -e "ANTHROPIC_API_KEY=$API_KEY" \
+  -v "$ROOT_DIR/tests/fixtures/fake-claude-stream.mjs:/opt/fake/fake-claude-stream.mjs:ro" \
   -e QQ_NO_UPDATE_CHECK=1 \
   -e "QQ_SMOKE_QUERY=$QUERY" \
   "$IMAGE_NAME"

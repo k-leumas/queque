@@ -811,6 +811,12 @@
 
 - `run-1-partial.log` — Declares f (~4424 tok)
 - `run-from-6.raw.json` (~4090 tok)
+
+## scripts/
+
+- `docker-homebrew-smoke-runner.sh` — In-container half of the Homebrew smoke: writes the fake `claude` shim (exit 21 when the fixture is not mounted), `qq init zsh`, expect waits for `tldr z3` then the `QQSMOKE# tldr z3  # ` buffer redraw (exits 10-14, 20). (~1000 tok)
+- `smoke-homebrew-docker.sh` — Key-free Homebrew-shaped install smoke: heredoc Dockerfile on the .nvmrc Node major, formula-emulation RUN, fake claude mounted read-only at /opt/fake. (~1300 tok)
+
 ## src/
 
 - `env.d.ts` — Declares the build defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_TELEMETRY_KEY__ and __QUEQUE_TELEMETRY_HOST__ (10-04), plus __QUEQUE_BUILD_ID__ (quick 261030-tq3). (~55 tok)

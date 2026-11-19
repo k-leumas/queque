@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${ANTHROPIC_API_KEY:?ANTHROPIC_API_KEY is required}"
 : "${QQ_SMOKE_QUERY:=list files by size}"
 export QQ_SMOKE_QUERY
 
@@ -9,6 +8,22 @@ export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
 export HOME=/root
 export QQ_DEBUG_LOG_FILE=/tmp/qq-smoke-debug.log
 rm -f "$HOME/.zshrc" "$QQ_DEBUG_LOG_FILE"
+
+# Only the model is fake: the `claude` on PATH is a shim around the fixture the host mounts
+# read-only, so no model key or token is passed in or read here. With no key, QueQue's default
+# provider runs `claude -p`; the formula-shaped install, zsh, the widget, `qq client`, the
+# daemon and the Ink TUI are the real product. The shim is written before `qq init zsh` because
+# the widget prewarms the daemon while ~/.zshrc loads and the daemon keeps the PATH it started
+# with.
+if [ ! -f /opt/fake/fake-claude-stream.mjs ]; then
+  echo "smoke failed: fake claude fixture not mounted at /opt/fake/fake-claude-stream.mjs" >&2
+  exit 21
+fi
+cat >/usr/local/bin/claude <<'SHIM'
+#!/bin/sh
+exec node /opt/fake/fake-claude-stream.mjs "${FAKE_CLAUDE_SCENARIO:-success}" "$@"
+SHIM
+chmod 755 /usr/local/bin/claude
 
 qq init zsh
 
@@ -32,7 +47,7 @@ PS1='QQSMOKE%# '
 ZSHRC
 
 expect <<'EXPECT'
-set timeout 75
+set timeout 40
 set query $env(QQ_SMOKE_QUERY)
 log_user 1
 
@@ -48,29 +63,30 @@ expect {
 
 send -- "$query??"
 
+# The fake's first candidate. Never loosen this to a pattern that matches without `tldr z3`.
 expect {
-  -re {> +[^\r\n]+} {}
-  -re {queque: no AI provider configured|ANTHROPIC_API_KEY is required|QueQue:} {
-    puts stderr "QueQue returned an error before showing a selected candidate"
+  "tldr z3" {}
+  -re {(queque|QueQue): [^\r\n]*} {
+    puts stderr "QueQue printed an error before the candidate tldr z3: $expect_out(0,string)"
     exit 11
   }
   timeout {
-    puts stderr "timed out waiting for QueQue to render a selected candidate"
+    puts stderr "timed out waiting for the candidate row tldr z3"
     exit 12
   }
 }
 
 send "\r"
 
+# The prompt redraw holding the accepted command proves it reached the live zsh buffer.
 expect {
-  -re {queque .*} { exp_continue }
-  -re {  # [^\r\n]+} {}
-  -re {QueQue:} {
-    puts stderr "QueQue returned an error after candidate fetch"
+  -re {QQSMOKE[%#] tldr z3  # } {}
+  -re {(queque|QueQue): [^\r\n]*} {
+    puts stderr "QueQue printed an error after the candidate fetch: $expect_out(0,string)"
     exit 13
   }
   timeout {
-    puts stderr "timed out waiting for accepted command to return to the shell buffer"
+    puts stderr "timed out waiting for tldr z3 to return to the zsh buffer"
     exit 14
   }
 }
@@ -81,5 +97,5 @@ expect eof
 EXPECT
 
 echo
-echo "smoke passed: Homebrew-shaped local install handled the ?? trigger and accepted an LLM response"
+echo "smoke passed: the Homebrew-shaped install handled ?? and returned the fake claude's candidate to the zsh buffer"
 echo "debug log: $QQ_DEBUG_LOG_FILE"
