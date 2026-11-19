@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-18T03:37:21.274Z"
+last_updated: "2026-11-19T04:25:06.761Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: 45f352efcc810a9c3f7ae64582302a35e88b4ed2
+state_head: d63cebe3c5f5f9078347b32d0ab4caf56946dcdd
 progress:
   total_phases: 15
   completed_phases: 8
@@ -197,8 +197,9 @@ None yet.
 | 43 | bump MODAL_VIEWPORT_LINES 18→19 for the update hint row | 2026-11-17 | 1b2aac4 | — |
 | 44 | homebrew docker smoke image node:22 → node:24 (engines floor) | 2026-11-17 | 42f226e | — |
 | 45 | update hint drops the version so the command fits 80 cols | 2026-11-17 | 45f352e | — |
+| 261118-ubg | Speed up and harden the release workflow: parallel brew-smoke job, Docker layer cache, apt cache, fake claude in the Homebrew smoke | 2026-11-18 | d63cebe | [261118-ubg-speed-up-and-harden-the-release-workflow](./quick/261118-ubg-speed-up-and-harden-the-release-workflow/) |
 
-Last activity: 2026-11-17 - Completed quick task 261117-jpp: Update notifier (daily npm check, install-aware upgrade hint, doctor row, opt-out)
+Last activity: 2026-11-18 - Completed quick task 261118-ubg: Faster release workflow (parallel brew-smoke, Docker layer cache, apt cache, fake claude smoke)
 
 ## Session Continuity
 

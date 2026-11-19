@@ -1,34 +1,433 @@
 {
-  "session_id": "session-2026-11-18-2236",
-  "started": "2026-11-18T04:36:50.335Z",
-  "files_read": {},
+  "session_id": "session-2026-11-15-0300",
+  "started": "2026-11-15T09:00:03.235Z",
+  "files_read": {
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md": {
+      "count": 1,
+      "tokens": 4309,
+      "first_read": "2026-11-15T09:34:04.561Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-aaab7ee947be7d639/README.md": {
+      "count": 1,
+      "tokens": 1450,
+      "first_read": "2026-11-15T09:34:08.640Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-aaab7ee947be7d639/tests/readme-badges.test.ts": {
+      "count": 1,
+      "tokens": 2700,
+      "first_read": "2026-11-15T09:34:09.220Z"
+    },
+    "/Users/samuel/dev/tui-llm/README.md": {
+      "count": 1,
+      "tokens": 1250,
+      "first_read": "2026-11-15T10:02:37.094Z"
+    },
+    "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md": {
+      "count": 2,
+      "tokens": 867,
+      "first_read": "2026-11-15T10:31:57.518Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/ui/CandidateSelect.tsx": {
+      "count": 1,
+      "tokens": 4100,
+      "first_read": "2026-11-15T10:33:26.852Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh": {
+      "count": 2,
+      "tokens": 5619,
+      "first_read": "2026-11-15T10:34:10.829Z"
+    },
+    "/Users/samuel/.claude/gsd-core/references/debugger-fix-acceptance.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-15T10:37:25.626Z"
+    },
+    "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-15T10:40:45.372Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts": {
+      "count": 2,
+      "tokens": 14186,
+      "first_read": "2026-11-15T10:43:05.659Z"
+    },
+    "/Users/samuel/dev/tui-llm/shell/README.md": {
+      "count": 1,
+      "tokens": 1110,
+      "first_read": "2026-11-15T10:47:15.798Z"
+    },
+    "/Users/samuel/dev/tui-llm/src/cli/main.ts": {
+      "count": 1,
+      "tokens": 1320,
+      "first_read": "2026-11-18T03:00:01.467Z"
+    },
+    "/Users/samuel/dev/tui-llm/tests/bundle-startup.test.ts": {
+      "count": 1,
+      "tokens": 2000,
+      "first_read": "2026-11-18T03:00:21.779Z"
+    },
+    "/Users/samuel/.claude/gsd-core/workflows/quick.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-19T03:49:36.263Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md": {
+      "count": 1,
+      "tokens": 8174,
+      "first_read": "2026-11-19T04:03:35.771Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/scripts/docker-homebrew-smoke-runner.sh": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-19T04:04:19.542Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.wolf/anatomy.md": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-19T04:08:42.668Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/scripts/smoke-homebrew-docker.sh": {
+      "count": 1,
+      "tokens": 0,
+      "first_read": "2026-11-19T04:09:51.247Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts": {
+      "count": 1,
+      "tokens": 1003,
+      "first_read": "2026-11-19T04:18:48.048Z"
+    },
+    "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/release.yaml": {
+      "count": 1,
+      "tokens": 2090,
+      "first_read": "2026-11-19T04:19:11.282Z"
+    }
+  },
   "files_written": [
     {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html",
-      "action": "edit",
-      "tokens": 2,
-      "at": "2026-11-18T17:23:52.444Z"
+      "file": "/Users/samuel/dev/tui-llm/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VERIFICATION.md",
+      "action": "create",
+      "tokens": 6270,
+      "at": "2026-11-15T09:06:37.723Z"
     },
     {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html",
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md",
+      "action": "create",
+      "tokens": 4841,
+      "at": "2026-11-15T09:32:23.209Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md",
+      "action": "edit",
+      "tokens": 112,
+      "at": "2026-11-15T09:32:51.606Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md",
+      "action": "edit",
+      "tokens": 51,
+      "at": "2026-11-15T09:32:53.631Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md",
+      "action": "edit",
+      "tokens": 72,
+      "at": "2026-11-15T09:32:55.442Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-aaab7ee947be7d639/README.md",
+      "action": "edit",
+      "tokens": 4,
+      "at": "2026-11-15T09:34:18.459Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-aaab7ee947be7d639/README.md",
+      "action": "edit",
+      "tokens": 89,
+      "at": "2026-11-15T09:34:18.994Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/commit-msg.txt",
+      "action": "create",
+      "tokens": 122,
+      "at": "2026-11-15T09:36:54.335Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md",
+      "action": "create",
+      "tokens": 1340,
+      "at": "2026-11-15T09:37:40.951Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/README.md",
+      "action": "edit",
+      "tokens": 49,
+      "at": "2026-11-15T10:02:39.654Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "create",
+      "tokens": 990,
+      "at": "2026-11-15T10:31:40.684Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 1070,
+      "at": "2026-11-15T10:37:44.340Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs",
+      "action": "create",
+      "tokens": 383,
+      "at": "2026-11-15T10:38:40.525Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs",
+      "action": "create",
+      "tokens": 449,
+      "at": "2026-11-15T10:40:53.778Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/probe.sh",
+      "action": "create",
+      "tokens": 98,
+      "at": "2026-11-15T10:40:56.611Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 565,
+      "at": "2026-11-15T10:43:38.855Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 990,
+      "at": "2026-11-15T10:44:02.144Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 215,
+      "at": "2026-11-15T10:44:02.609Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "action": "edit",
+      "tokens": 122,
+      "at": "2026-11-15T10:45:04.075Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/zsh-widget.test.ts",
+      "action": "edit",
+      "tokens": 512,
+      "at": "2026-11-15T10:45:04.526Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/zsh/queque.zsh",
+      "action": "edit",
+      "tokens": 192,
+      "at": "2026-11-15T10:45:19.960Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/README.md",
+      "action": "edit",
+      "tokens": 143,
+      "at": "2026-11-15T10:47:21.011Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/shell/README.md",
+      "action": "edit",
+      "tokens": 109,
+      "at": "2026-11-15T10:47:39.771Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/debug/smoke-picker-race.md",
+      "action": "edit",
+      "tokens": 544,
+      "at": "2026-11-15T10:47:58.397Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py",
+      "action": "create",
+      "tokens": 1558,
+      "at": "2026-11-15T10:48:52.752Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/src/cli/main.ts",
+      "action": "edit",
+      "tokens": 18,
+      "at": "2026-11-18T03:00:28.902Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/tests/bundle-startup.test.ts",
+      "action": "edit",
+      "tokens": 212,
+      "at": "2026-11-18T03:00:36.702Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md",
+      "action": "create",
+      "tokens": 9321,
+      "at": "2026-11-19T04:01:27.901Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md",
+      "action": "edit",
+      "tokens": 38,
+      "at": "2026-11-19T04:01:58.185Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md",
+      "action": "edit",
+      "tokens": 59,
+      "at": "2026-11-19T04:01:59.714Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/scripts/docker-homebrew-smoke-runner.sh",
+      "action": "create",
+      "tokens": 898,
+      "at": "2026-11-19T04:04:35.339Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-timed-smoke.sh",
+      "action": "create",
+      "tokens": 220,
+      "at": "2026-11-19T04:04:55.244Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.wolf/anatomy.md",
+      "action": "edit",
+      "tokens": 150,
+      "at": "2026-11-19T04:08:49.611Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-1.txt",
+      "action": "create",
+      "tokens": 156,
+      "at": "2026-11-19T04:09:01.779Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts",
+      "action": "create",
+      "tokens": 1003,
+      "at": "2026-11-19T04:09:34.428Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/scripts/smoke-homebrew-docker.sh",
+      "action": "create",
+      "tokens": 1630,
+      "at": "2026-11-19T04:10:17.453Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.dockerignore",
+      "action": "create",
+      "tokens": 146,
+      "at": "2026-11-19T04:10:17.868Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-steps.sh",
+      "action": "create",
+      "tokens": 138,
+      "at": "2026-11-19T04:12:03.989Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/package.json",
+      "action": "edit",
+      "tokens": 6,
+      "at": "2026-11-19T04:12:59.717Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/scripts/docker-homebrew-smoke-runner.sh",
       "action": "edit",
       "tokens": 88,
-      "at": "2026-11-18T17:23:55.576Z"
+      "at": "2026-11-19T04:15:42.664Z"
     },
     {
-      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json",
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/package.json",
       "action": "edit",
-      "tokens": 22,
-      "at": "2026-11-18T17:23:57.427Z"
+      "tokens": 7,
+      "at": "2026-11-19T04:16:37.937Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-context.sh",
+      "action": "create",
+      "tokens": 302,
+      "at": "2026-11-19T04:17:12.693Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-2.txt",
+      "action": "create",
+      "tokens": 277,
+      "at": "2026-11-19T04:18:29.837Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts",
+      "action": "edit",
+      "tokens": 574,
+      "at": "2026-11-19T04:18:59.008Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/release.yaml",
+      "action": "edit",
+      "tokens": 533,
+      "at": "2026-11-19T04:19:29.057Z"
+    },
+    {
+      "file": "/private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-3.txt",
+      "action": "create",
+      "tokens": 203,
+      "at": "2026-11-19T04:22:36.763Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md",
+      "action": "create",
+      "tokens": 2276,
+      "at": "2026-11-19T04:23:35.401Z"
+    },
+    {
+      "file": "/Users/samuel/dev/tui-llm/.claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md",
+      "action": "edit",
+      "tokens": 74,
+      "at": "2026-11-19T04:23:42.365Z"
     }
   ],
   "edit_counts": {
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html": 2,
-    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json": 1
+    ".planning/phases/11-multi-shell-trigger-support-bash-and-fish/11-VERIFICATION.md": 1,
+    ".planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-PLAN.md": 4,
+    ".claude/worktrees/agent-aaab7ee947be7d639/README.md": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/commit-msg.txt": 1,
+    ".claude/worktrees/agent-aaab7ee947be7d639/.planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/261115-4um-SUMMARY.md": 1,
+    "README.md": 1,
+    ".planning/debug/smoke-picker-race.md": 6,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/delay.cjs": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/exp/mod/probe.sh": 1,
+    "tests/zsh-widget.test.ts": 2,
+    "shell/zsh/queque.zsh": 1,
+    "shell/README.md": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/54b10aaa-2ed1-42b5-811c-fe0a7f426b7c/scratchpad/wolf-update.py": 1,
+    "src/cli/main.ts": 1,
+    "tests/bundle-startup.test.ts": 1,
+    ".planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md": 3,
+    ".claude/worktrees/agent-acc1b575e55c47c56/scripts/docker-homebrew-smoke-runner.sh": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-timed-smoke.sh": 1,
+    ".claude/worktrees/agent-acc1b575e55c47c56/.wolf/anatomy.md": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-1.txt": 1,
+    ".claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts": 2,
+    ".claude/worktrees/agent-acc1b575e55c47c56/scripts/smoke-homebrew-docker.sh": 1,
+    ".claude/worktrees/agent-acc1b575e55c47c56/.dockerignore": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-steps.sh": 1,
+    ".claude/worktrees/agent-acc1b575e55c47c56/package.json": 2,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-context.sh": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-2.txt": 1,
+    ".claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/release.yaml": 1,
+    "../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-3.txt": 1,
+    ".claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md": 2
   },
-  "anatomy_hits": 0,
-  "anatomy_misses": 0,
-  "repeated_reads_warned": 0,
+  "anatomy_hits": 14,
+  "anatomy_misses": 6,
+  "repeated_reads_warned": 3,
   "cerebrum_warnings": 0,
-  "stop_count": 5
+  "stop_count": 25
 }

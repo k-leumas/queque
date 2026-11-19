@@ -1,7 +1,16 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T00:00:01.583Z
-> Files: 521 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T04:23:42.346Z
+> Files: 678 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/
+
+- `ubg-commit-1.txt` (~137 tok)
+- `ubg-commit-2.txt` (~242 tok)
+- `ubg-commit-3.txt` (~178 tok)
+- `ubg-context.sh` — Lists what the repo-root Docker build context contains under .dockerignore. (~282 tok)
+- `ubg-steps.sh` — Usage: ubg-steps.sh <logname> — prints each BuildKit step header with its DONE/CACHED status. (~129 tok)
+- `ubg-timed-smoke.sh` — Usage: ubg-timed-smoke.sh <logname> [smoke args...] (~206 tok)
 
 ## ./
 
@@ -97,6 +106,32 @@
 - `drive.sh` — drive.sh <fish-binary> <scenario> — runs a scenario in a private tmux server and prints screen (~639 tok)
 - `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1541 tok)
 - `README.md` — Project documentation (~820 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/
+
+- `.dockerignore` — Scopes the Docker build context of scripts/smoke-homebrew-docker.sh, the only Docker build (~136 tok)
+- `package.json` — Node.js package manifest (~566 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/
+
+- `release.yaml` — CI: Release (~2482 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/
+
+- `261118-ubg-SUMMARY.md` — Phase quick-261118-ubg Plan 01: Speed up and harden the release workflow Summary (~2003 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/.wolf/
+
+- `anatomy.md` — anatomy.md (~23294 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/scripts/
+
+- `docker-homebrew-smoke-runner.sh` (~911 tok)
+- `smoke-homebrew-docker.sh` — Declares p (~1521 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/tests/
+
+- `homebrew-smoke-docker.test.ts` — The Homebrew install smoke (scripts/smoke-homebrew-docker.sh) gates every release. Only the (~1571 tok)
 
 ## .github/workflows/
 
@@ -763,6 +798,10 @@
 
 - `261117-jpp-PLAN.md` (~13982 tok)
 - `261117-jpp-SUMMARY.md` — Phase quick-261117-jpp Plan 01: Update Notifier Summary (~3509 tok)
+
+## .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/
+
+- `261118-ubg-PLAN.md` — Declares there (~8174 tok)
 
 ## .planning/research/
 
