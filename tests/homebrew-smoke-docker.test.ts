@@ -79,3 +79,52 @@ describe('Homebrew Docker smoke', () => {
     expect(manifest).toBeLessThan(npm);
   });
 });
+
+/**
+ * Slices one job out of release.yaml: from its two-space-indented `  name:` key up to the next
+ * two-space-indented job key (or the end of the file).
+ */
+function jobBlock(name: string): string {
+  const text = read('.github/workflows/release.yaml');
+  const start = text.indexOf(`\n  ${name}:\n`);
+  if (start === -1) return '';
+  const rest = text.slice(start + 1);
+  const next = rest.slice(1).search(/\n {2}[A-Za-z0-9_-]+:\n/);
+  return next === -1 ? rest : rest.slice(0, next + 2);
+}
+
+describe('Release workflow smoke jobs', () => {
+  it('brew-smoke always runs the smoke with the gha cache and no secret', () => {
+    const job = jobBlock('brew-smoke');
+    expect(job).toContain('./scripts/smoke-homebrew-docker.sh');
+    expect(job).toContain('QQ_SMOKE_DOCKER_CACHE: gha');
+    expect(job).toContain('docker/setup-buildx-action@');
+    expect(job).toContain('crazy-max/ghaction-github-runtime@');
+    expect(job).toContain('contents: read');
+    expect(job).not.toMatch(/\bif:/);
+    expect(job).not.toContain('setup-node');
+    expect(job).not.toContain('pnpm/action-setup');
+    expect(job).not.toContain('apt-get');
+    for (const name of KEY_NAMES) {
+      expect(job).not.toContain(name);
+    }
+  });
+
+  it('test restores the apt deps from cache and runs the gates, not the smoke', () => {
+    const job = jobBlock('test');
+    expect(job).toContain('cache-apt-pkgs-action@');
+    expect(job).toContain('packages: zsh jq bash tmux');
+    for (const gate of ['pnpm lint', 'pnpm typecheck', 'pnpm test:run', 'pnpm build']) {
+      expect(job).toContain(gate);
+    }
+    expect(job).not.toContain('smoke-homebrew-docker.sh');
+    for (const name of KEY_NAMES) {
+      expect(job).not.toContain(name);
+    }
+  });
+
+  it('tag-and-changelog needs both jobs and the skip step is gone', () => {
+    expect(jobBlock('tag-and-changelog')).toContain('needs: [test, brew-smoke]');
+    expect(read('.github/workflows/release.yaml')).not.toContain('Skip Homebrew install smoke');
+  });
+});

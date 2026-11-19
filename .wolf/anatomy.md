@@ -104,7 +104,7 @@
 - `distro.yml` — Reusable distro matrices (D-14, D-16). Called by ci.yml with the PR image pins and by (~626 tok)
 - `homebrew.yml` — CI: Update Homebrew Tap (~1144 tok)
 - `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03). Provider or distro drift shows up within a day (~570 tok)
-- `release.yaml` — CI: Release (~2090 tok)
+- `release.yaml` — CI: Release. `test` (lint/typecheck/test/build, apt deps from awalsh128/cache-apt-pkgs-action + check step) and `brew-smoke` (buildx + gha cache, key-free Homebrew smoke) run in parallel; tag-and-changelog needs both, then publish-npm and publish-homebrew. (~2400 tok)
 - `tap-clone-stats.yml` — Weekly snapshot of Homebrew tap clone traffic, with the clones made by our own publishing runs (~1865 tok)
 
 ## .gsd/
@@ -953,7 +953,7 @@
 - `environment-shape.test.ts` — Enum mapping, zsh/node parsing, null on an out-of-bound node, no env value leaks (10-10). (~946 tok)
 - `error-kind.test.ts` — withErrorKind/errorKindOf units; claude-default CLI/SDK mapping via importOriginal-spread mocks of claude.js and claude-cli.js; daemon fetch-error errorKind and pin_invalid; fetch-client re-tagging; the in-process fallback (10-06). (~2776 tok)
 - `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
-- `homebrew-smoke-docker.test.ts` — Guards the Homebrew Docker smoke: no Anthropic key, fake claude wired, .dockerignore tracks every COPY source, buildx + gha cache gate, deps-first layer order. (~900 tok)
+- `homebrew-smoke-docker.test.ts` — Guards the Homebrew Docker smoke (no Anthropic key, fake claude wired, .dockerignore tracks every COPY source, buildx + gha cache gate, deps-first layer order) and release.yaml's job shape via jobBlock(): brew-smoke never skips, test has the apt cache, tag-and-changelog needs both. (~1400 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3424 tok)

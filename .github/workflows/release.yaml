@@ -10,8 +10,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    env:
-      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+
+    permissions:
+      contents: read
 
     steps:
       - uses: actions/checkout@v6
@@ -26,7 +27,20 @@ jobs:
           cache: pnpm
 
       - name: Install shell test dependencies
-        run: sudo apt-get update && sudo apt-get install -y zsh jq bash tmux
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: zsh jq bash tmux
+          # Bump to rebuild the cache when the package list changes.
+          version: 1
+
+      - name: Check shell test dependencies
+        run: |
+          # A cache restore extracts files only and skips the ldconfig trigger.
+          sudo ldconfig
+          zsh --version
+          tmux -V
+          jq --version
+          bash --version | head -n 1
 
       - run: pnpm install --frozen-lockfile
 
@@ -42,18 +56,35 @@ jobs:
       - name: Build
         run: pnpm build
 
+  # Runs in parallel with `test`. The image builds qq from source in Docker and only the model
+  # is fake (tests/fixtures/fake-claude-stream.mjs), so no secret is needed and the smoke always
+  # runs.
+  brew-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+
+    env:
+      QQ_SMOKE_DOCKER_CACHE: gha
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - uses: docker/setup-buildx-action@v4
+
+      # Exposes the ACTIONS_* runtime variables the gha cache backend reads in a run step.
+      - uses: crazy-max/ghaction-github-runtime@v4
+
       - name: Homebrew install smoke
-        if: env.ANTHROPIC_API_KEY != ''
         timeout-minutes: 5
         run: ./scripts/smoke-homebrew-docker.sh
 
-      - name: Skip Homebrew install smoke
-        if: env.ANTHROPIC_API_KEY == ''
-        run: |
-          echo "::notice::Skipping Homebrew install smoke because ANTHROPIC_API_KEY is not configured for this repository."
-
   tag-and-changelog:
-    needs: test
+    needs: [test, brew-smoke]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
