@@ -1164,3 +1164,6 @@
 | 20:25 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
 | 20:35 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
 | 21:08 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 21:00 | Edited src/cli/main.ts | 2→3 lines | ~18 |
+| 21:00 | Edited tests/bundle-startup.test.ts | modified for() | ~212 |
+| 21:09 | qq --version / -v via cac .version(__QUEQUE_VERSION__) + bundle-startup b7 | src/cli/main.ts, tests/bundle-startup.test.ts | plain 1876/1876; pty timing flakes under load avg 196 (ollama) | ~4k |
