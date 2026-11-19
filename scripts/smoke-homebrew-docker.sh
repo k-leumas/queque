@@ -72,8 +72,12 @@ fi
 
 cd "$ROOT_DIR"
 
-docker build -t "$IMAGE_NAME" -f - . <<'DOCKERFILE'
-FROM node:22-bookworm
+# The same Node major as everything else (.nvmrc), like the formula's node@<major>.
+NODE_MAJOR="$(tr -d 'v[:space:]' < .nvmrc | cut -d. -f1)"
+
+docker build --build-arg "NODE_MAJOR=$NODE_MAJOR" -t "$IMAGE_NAME" -f - . <<'DOCKERFILE'
+ARG NODE_MAJOR
+FROM node:${NODE_MAJOR}-bookworm
 
 ENV HOMEBREW_PREFIX=/home/linuxbrew/.linuxbrew
 ENV PATH=/home/linuxbrew/.linuxbrew/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -95,7 +99,7 @@ RUN npm install --ignore-scripts --loglevel=error \
 # Local equivalent of the Homebrew formula install block from
 # .github/workflows/homebrew.yml (and release.yaml):
 #   npm install *std_npm_args
-#   bin.install_symlink libexec/.../dist/cli/main.js => "qq"
+#   bin/"qq": a wrapper that execs node@<.nvmrc major> (the pinned dependency) on .../dist/cli/main.js
 #   (share/"queque").install "shell/zsh/queque.zsh"
 #   (share/"queque").install "shell/bash/queque.bash"
 # The `test -f` lines fail the image build when an adapter is missing from share/queque.
@@ -104,7 +108,7 @@ RUN set -eux; \
   libexec="$cellar/libexec"; \
   mkdir -p "$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/share/queque" "$libexec"; \
   npm install --global --prefix "$libexec" --ignore-scripts --loglevel=error /src; \
-  ln -sf "$libexec/lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" "$HOMEBREW_PREFIX/bin/qq"; \
+  printf '#!/bin/bash\nexec "%s" "%s" "$@"\n' "$(command -v node)" "$libexec/lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" >"$HOMEBREW_PREFIX/bin/qq"; \
   cp /src/shell/zsh/queque.zsh "$HOMEBREW_PREFIX/share/queque/queque.zsh"; \
   cp /src/shell/bash/queque.bash "$HOMEBREW_PREFIX/share/queque/queque.bash"; \
   test -f "$HOMEBREW_PREFIX/share/queque/queque.zsh"; \
