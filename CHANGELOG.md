@@ -1,3 +1,16 @@
+## [0.10.7](https://github.com/k-leumas/queque/compare/v0.10.6...v0.10.7) (2026-11-19)
+
+### Bug Fixes
+
+- Running `qq --version` or `qq -v` now correctly prints the installed version instead of doing nothing or showing the wrong output.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **cli:** print the version for qq --version and -v (#39) ([27b3048](https://github.com/k-leumas/queque/commit/27b3048464ae6334331c958d507c5aec07f78675))
+
+</details>
+
 ## [0.10.6](https://github.com/k-leumas/queque/compare/v0.10.5...v0.10.6) (2026-11-19)
 
 ## [0.10.5](https://github.com/k-leumas/queque/compare/v0.10.4...v0.10.5) (2026-11-17)
