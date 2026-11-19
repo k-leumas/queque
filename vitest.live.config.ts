@@ -1,7 +1,10 @@
 import { defineConfig } from 'vitest/config';
 import baseConfig from './vitest.config.js';
 
-// The nightly live contract job only (phase 10, D-01): `pnpm test:live`. A fresh config, not
+// The nightly live contract jobs only (phase 10 D-01, quick 261118-v58): `live` runs
+// `pnpm test:live tests/live/sdk-contract.live.ts` and `live-cli` runs
+// `pnpm test:live tests/live/cli-contract.live.ts` (a file argument, never after `--`; the
+// shared harness tests/live/live-daemon.ts is not collected). A fresh config, not
 // mergeConfig with vitest.config.ts, because vitest concatenates `include` arrays and the live
 // run would pick up the whole default suite. The default include (`tests/**/*.test.ts`) never
 // matches `*.live.ts`, so `pnpm test:run` never calls a real model.

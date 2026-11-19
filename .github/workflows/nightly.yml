@@ -3,8 +3,9 @@
 # red run opens no issue (read-only token, no issue step).
 #
 # Only the schedule and manual dispatch: no push or pull request trigger of any kind, so PR and
-# fork code never runs where the ANTHROPIC_API_KEY secret is available. The `live` job is also
-# guarded to this repository, because scheduled runs on forks have no secret.
+# fork code never runs where the ANTHROPIC_API_KEY secret is available. The `live` and
+# `live-cli` jobs are the only jobs that see the secret, and both are also guarded to this
+# repository, because scheduled runs on forks have no secret.
 name: Nightly
 
 on:
@@ -27,8 +28,8 @@ jobs:
     with:
       images: '["ubuntu:latest","debian:latest","fedora:latest","archlinux:latest","alpine:latest"]'
 
-  # The phase's only real-model job: one SDK-path request against the built daemon,
-  # contract-level assertions only (tests/live/sdk-contract.live.ts, D-02).
+  # The SDK path only: one SDK-path request against the built daemon, contract-level
+  # assertions only (tests/live/sdk-contract.live.ts, D-02). The CLI path is `live-cli`.
   live:
     if: github.repository == 'k-leumas/queque'
     runs-on: ubuntu-24.04
@@ -61,4 +62,50 @@ jobs:
       - name: Live SDK contract test
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: pnpm test:live
+        run: pnpm test:live tests/live/sdk-contract.live.ts
+
+  # The Claude Code CLI path: a cold and a prewarmed `claude -p --output-format stream-json`
+  # turn against the real `claude` (tests/live/cli-contract.live.ts, contract-level only).
+  # The CLI is unpinned on purpose, so drift in Claude Code shows up within a day; the version
+  # step names it in a red run. The key reaches `claude` through the test's temp-HOME
+  # apiKeyHelper, not through qq's SDK path (the test hides it from the daemon).
+  live-cli:
+    if: github.repository == 'k-leumas/queque'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      LEFTHOOK: '0'
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm build
+
+      # No secret here, and no --ignore-scripts: the package installs its native binary.
+      - name: Install the latest Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code@latest
+
+      - name: Claude Code CLI version
+        run: claude --version
+
+      - name: Require the API key secret
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::ANTHROPIC_API_KEY secret is missing"
+            exit 1
+          fi
+
+      - name: Live Claude Code CLI contract test
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: pnpm test:live tests/live/cli-contract.live.ts
