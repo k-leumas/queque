@@ -25,6 +25,7 @@
 - Prefer simple solutions: on an unsupported environment, do nothing and print one clear line (final D-12: old bash gets no bindings).
 
 ## Key Learnings
+- **Live CLI path needs the key hidden from qq** (2026-11-18, quick 261118-v58): qq has no pin that forces `claude -p` while a key is usable (a `claude` provider.json pin resolves to the same SDK-first composite; claudeCliAdapter is unregistered). tests/live/cli-contract.live.ts drops ANTHROPIC_API_KEY, ANTHROPIC_AUTH_TOKEN and CLAUDE_CODE_OAUTH_TOKEN from the daemon env and authenticates `claude` with a temp-HOME `.claude/settings.json` apiKeyHelper `printenv LIVE_CLAUDE_CLI_API_KEY` (key never on disk). apiKeyHelper is honored under `--safe-mode` (probed with claude 2.1.311). With a fake key `claude -p` printed `init` then hung past 45 s, so a bad CI key shows up as a CLI timeout, not an auth error. `pnpm test:live <file>` selects one live file; never put `--` before it (pnpm forwards it to vitest).
 - **homebrew-releaser `formula_includes` needs v2+** (2026-11-16): v1 warns "Unexpected input(s) 'formula_includes'" and drops the brew caveats silently. release.yaml now pins `@v4`. A 401 on `api.github.com/repos/k-leumas/queque` from that step means `HOMEBREW_TAP_TOKEN` expired; the token needs Contents on both queque and homebrew-tap.
 - **Immutable releases block post-publish assets** (2026-11-17): the repo has immutable releases on, so homebrew-releaser v4's `checksum.txt` upload got 422 after the formula was already pushed. release.yaml sets `skip_checksum: true`; any future step that adds release assets must run before semantic-release publishes.
 
@@ -67,6 +68,7 @@
 
 ## Decision Log
 
+- [2026-11-18] Nightly `live-cli` installs the latest @anthropic-ai/claude-code unpinned, to catch Claude Code drift within a day; its `claude --version` step names the version in a red run.
 - [2026-11-14] D-12 final: bash <5.0 prints one startup line and binds nothing. `qq init` refuses it and doctor fails it. Don't bring back old-bash `??` bindings.
 - [2026-10-30] The pong carries a `build` id, and a rebuilt CLI replaces the running daemon.
 - [2026-10-30] Telemetry key left empty for now (backend still open). A consent "yes" carries over to a keyed build.

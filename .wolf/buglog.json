@@ -9209,6 +9209,23 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-18T03:00:36.716Z"
+    },
+    {
+      "id": "bug-558",
+      "timestamp": "2026-11-18T22:50:00.000Z",
+      "error_message": "biome check tests/live: Formatter would have printed the following content (cli-contract.live.ts expect(...).toBe(true) wrapped)",
+      "file": "tests/live/cli-contract.live.ts",
+      "root_cause": "Hand-wrapped a .toBe(true) call that fits within biome's 100-column line width",
+      "fix": "Ran biome format --write on the file before staging",
+      "tags": [
+        "biome",
+        "format",
+        "live-test",
+        "quick-261118-v58"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-18T22:50:00.000Z"
     }
   ]
 }

@@ -23,7 +23,7 @@
 - `tsconfig.json` — TypeScript configuration (~187 tok)
 - `tsup.config.ts` — Declares version (~904 tok)
 - `vitest.config.ts` — Vitest test configuration (~299 tok)
-- `vitest.live.config.ts` — /*.test.ts`) never (~260 tok)
+- `vitest.live.config.ts` — Fresh vitest config for the nightly live jobs only: include `tests/live/**/*.live.ts` (never the default suite, never live-daemon.ts), testTimeout 60 s, hookTimeout 30 s, QQ_NO_UPDATE_CHECK; `live` and `live-cli` each pass one file to `pnpm test:live <file>` (no `--`) (~330 tok)
 
 ## .claude/
 
@@ -102,7 +102,7 @@
 - `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1850 tok)
 - `distro.yml` — Reusable distro matrices (D-14, D-16). Called by ci.yml with the PR image pins and by (~626 tok)
 - `homebrew.yml` — CI: Update Homebrew Tap (~1144 tok)
-- `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03). Provider or distro drift shows up within a day (~570 tok)
+- `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03; schedule + workflow_dispatch only, contents: read): `distro` on :latest images; `live` runs only tests/live/sdk-contract.live.ts; `live-cli` (quick 261118-v58) installs the latest @anthropic-ai/claude-code unpinned, prints `claude --version`, requires the secret and runs only tests/live/cli-contract.live.ts; both live jobs guarded to k-leumas/queque (~1100 tok)
 - `release.yaml` — CI: Release (~2090 tok)
 - `tap-clone-stats.yml` — Weekly snapshot of Homebrew tap clone traffic, with the clones made by our own publishing runs (~1865 tok)
 
@@ -1000,7 +1000,9 @@
 
 ## tests/live/
 
-- `sdk-contract.live.ts` — Nightly live SDK contract test, the only test that calls a real model: spawns the built daemon on `/tmp/qq-live-PID.sock` with a temp HOME and sends one streamed fetch-candidates; asserts schemas, LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08). (~2722 tok)
+- `cli-contract.live.ts` — Nightly `live-cli` contract test against the real `claude` (quick 261118-v58): socket `/tmp/qq-live-cli-PID.sock`; beforeAll throws (never skips) without ANTHROPIC_API_KEY, without `claude --version` on PATH (hint `npm i -g @anthropic-ai/claude-code`) or without dist; daemon env drops ANTHROPIC_API_KEY / ANTHROPIC_AUTH_TOKEN / CLAUDE_CODE_OAUTH_TOKEN so qq takes `claude -p`, and claude authenticates through a temp-HOME `.claude/settings.json` apiKeyHelper `printenv LIVE_CLAUDE_CLI_API_KEY` (key never on disk); cold turn (`cli result`, no `sdk path`) then prewarmed turn (`prewarm hit`); CLI_FAILURE_LINES include `claude-cli path`, `cli timed out`, `cli init timed out`, `prewarm retry cold`, `prewarm spawn failed`, `prewarm error`, `response truncated` (~1500 tok)
+- `live-daemon.ts` — Shared live harness (not collected by either config): startLiveDaemon({ socketPath, env overrides where undefined deletes, prepareHome }) under a temp HOME with cleanup on failure, stopLiveDaemon, fetchLive, buildEnvelope, readDebugLog, settledDebugLog(file, marker, fromOffset), expectLiveContract (schemas + ceilings), LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, mainJs (~2700 tok)
+- `sdk-contract.live.ts` — Nightly live SDK contract test, built on live-daemon.ts; the `live` job runs only this file: built daemon on `/tmp/qq-live-PID.sock` with a temp HOME, one streamed fetch-candidates; expectLiveContract, then `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08, quick 261118-v58). (~700 tok)
 
 ## tests/pty/
 

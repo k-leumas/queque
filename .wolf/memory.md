@@ -1168,3 +1168,4 @@
 | 21:00 | Edited tests/bundle-startup.test.ts | modified for() | ~212 |
 | 21:09 | qq --version / -v via cac .version(__QUEQUE_VERSION__) + bundle-startup b7 | src/cli/main.ts, tests/bundle-startup.test.ts | plain 1876/1876; pty timing flakes under load avg 196 (ollama) | ~4k |
 | 22:41 | quick 261118-v58 T1: shared live harness + cold real-claude CLI live test + nightly live-cli job | tests/live/live-daemon.ts, tests/live/sdk-contract.live.ts, tests/live/cli-contract.live.ts, vitest.live.config.ts, .github/workflows/nightly.yml | typecheck/biome/actionlint green; key-missing and no-claude failures verified | ~12k |
+| 22:50 | quick 261118-v58 T2: prewarmed real-claude turn (prewarm hit, no prewarm retry cold) + anatomy/cerebrum/buglog | tests/live/cli-contract.live.ts, .wolf/anatomy.md, .wolf/cerebrum.md, .wolf/buglog.json | typecheck/biome green; no key exported, so the real run is left to the first nightly | ~6k |

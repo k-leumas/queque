@@ -127,4 +127,26 @@ describe('live Claude Code CLI contract (nightly only)', () => {
     ).toBe(false);
     expectNoCliFailureLines(slice);
   });
+
+  // Depends on the cold turn above (vitest runs a file's tests in order): its `finally` spawned
+  // an idle `--input-format stream-json` child for this cwd and argv before the final list
+  // arrived. The same cwd and `extras: []` give the same argv, so the pool key matches.
+  it('answers the same request on the prewarmed claude child within the same ceilings', async () => {
+    if (!daemon) throw new Error('the live daemon did not start');
+    const offset = readDebugLog(daemon.debugLogFile).length;
+
+    const exchange = await fetchLive(daemon.socketPath, buildEnvelope(daemon.home));
+    expectLiveContract(exchange);
+
+    const slice = await settledDebugLog(daemon.debugLogFile, 'cli result', offset);
+    // Booleans only (T-10-29). `prewarm retry cold` is a failure line: a stale warm child that
+    // silently fell back to a cold spawn does not count as a warm turn.
+    expect(slice.includes('prewarm hit'), 'daemon debug log has the "prewarm hit" line').toBe(true);
+    expect(slice.includes('cli result'), 'daemon debug log has the "cli result" line').toBe(true);
+    expect(
+      readDebugLog(daemon.debugLogFile).includes('sdk path'),
+      'daemon debug log has the "sdk path" line',
+    ).toBe(false);
+    expectNoCliFailureLines(slice);
+  });
 });
