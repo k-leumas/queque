@@ -149,6 +149,16 @@ jobs:
           ref: ${{ github.ref_name }}
           fetch-depth: 0
 
+      - name: Resolve Node major from .nvmrc
+        id: node
+        run: |
+          MAJOR="$(tr -d 'v[:space:]' < .nvmrc | cut -d. -f1)"
+          if ! [[ "$MAJOR" =~ ^[0-9]+$ ]]; then
+            echo "::error::.nvmrc does not start with a Node major version"
+            exit 1
+          fi
+          echo "major=$MAJOR" >> "$GITHUB_OUTPUT"
+
       - name: Check existing Homebrew formula
         id: formula
         env:
@@ -181,17 +191,22 @@ jobs:
           commit_owner: k-leumas
           commit_email: samuelkimama@protonmail.com
           install: |
+            ENV.prepend_path "PATH", Formula["node@${{ steps.node.outputs.major }}"].opt_bin
             system "npm", "install", "--ignore-scripts", "--loglevel=error"
             system "node_modules/.bin/tsup"
             system "npm", "install", *std_npm_args, "--loglevel=error"
             (libexec/"lib/node_modules/@k-leumas/queque-cli/.install-source").write '{"source":"homebrew","upgrade":"brew upgrade queque"}'
-            bin.install_symlink libexec/"lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" => "qq"
+            (bin/"qq").write <<~SH
+              #!/bin/bash
+              exec "#{Formula["node@${{ steps.node.outputs.major }}"].opt_bin}/node" "#{libexec}/lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" "$@"
+            SH
+            chmod 0755, bin/"qq"
             (share/"queque").install "shell/zsh/queque.zsh"
             (share/"queque").install "shell/bash/queque.bash"
           test: |
             assert_match "queque", shell_output("#{bin}/qq --version")
           depends_on: |
-            "node"
+            "node@${{ steps.node.outputs.major }}"
             "jq"
           formula_includes: |
             def caveats
