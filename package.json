@@ -18,6 +18,9 @@
   "bin": {
     "qq": "dist/cli/main.js"
   },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "build": "tsup",
     "dev": "tsup src/cli/main.ts --watch",

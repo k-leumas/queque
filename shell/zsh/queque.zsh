@@ -85,7 +85,7 @@ _qq_write_tool_handoff() {
 # client exactly as before.
 # Constants use `typeset -g`, not `-r`: the widget is re-sourced in dev.
 # ---------------------------------------------------------------------------
-typeset -g QQ_MODAL_VIEWPORT_LINES=18          # mirrors MODAL_VIEWPORT_LINES (modal-layout.ts)
+typeset -g QQ_MODAL_VIEWPORT_LINES=19          # mirrors MODAL_VIEWPORT_LINES (modal-layout.ts)
 typeset -g QQ_MODAL_MAX_COLUMNS=80             # mirrors MODAL_MAX_WIDTH (CandidateSelect / Modal)
 typeset -g QQ_MODAL_PADDING_COLUMNS=1          # Modal paddingX on each side
 typeset -g QQ_ZELLIJ_FRAME_COLUMNS=2           # floating pane border columns

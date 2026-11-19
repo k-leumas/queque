@@ -2,9 +2,13 @@
 
 > OpenWolf's learning memory. Updated automatically as the AI learns from interactions.
 > Do not edit manually unless correcting an error.
-> Last updated: 2026-11-15
+> Last updated: 2026-11-17
 
 ## User Preferences
+
+- 2026-11-17: The update line is read from the cache before the first frame (never pops in mid-picker) and stays on EVERY `??` until the user upgrades (no once-a-day limit).
+- 2026-11-17: The qq TUI update line does ONE thing: `qq update available · <how to install>`. Environment problems (Windows Node under WSL, Node too old) and qualifiers (package lag, npm prefix, nvm scope) never go in the picker; boot/run failures belong on the command line (`qq doctor`), not in the TUI.
+- 2026-11-17: In short UI hints (e.g. the update notifier row) the user cares that the message says what to do with the exact command, not about details like the version number. Cut detail before the actionable part, and make sure the command fits the 80-col picker row.
 - [2026-11-17] README: the pronunciation lives in the H1 (`# QueQue *(kew-kew)*[^name]`) and the name origin in a GFM footnote at the end; no name paragraph in the intro (user: it was wordy and mixed in info that is not useful). GitHub repo About: "Natural language in, shell command out. You press Enter." (no shell names, not tied to English).
 
 - [2026-11-14] Run the full test suite after every update, not only the files you touched.
@@ -24,6 +28,7 @@
 - **homebrew-releaser `formula_includes` needs v2+** (2026-11-16): v1 warns "Unexpected input(s) 'formula_includes'" and drops the brew caveats silently. release.yaml now pins `@v4`. A 401 on `api.github.com/repos/k-leumas/queque` from that step means `HOMEBREW_TAP_TOKEN` expired; the token needs Contents on both queque and homebrew-tap.
 - **Immutable releases block post-publish assets** (2026-11-17): the repo has immutable releases on, so homebrew-releaser v4's `checksum.txt` upload got 422 after the formula was already pushed. release.yaml sets `skip_checksum: true`; any future step that adds release assets must run before semantic-release publishes.
 
+- **Update notifier** (2026-11-17, quick 261117-jpp): the npm check runs in the daemon, only after a client that passed the env + TTY gate sends `update-hint` (never at daemon start), so CI and non-TTY runs never fetch. Cache and the shared once-a-day `shownAt` live in `${XDG_CACHE_HOME abs or ~/.cache}/queque/update-check.json` on every platform. `detectInstall()` answers who installed qq, never which package manager exists (no pickInstaller). The Homebrew `.install-source` marker is written in BOTH workflow install blocks and the smoke-homebrew-docker emulation (tests/install-marker-formula.test.ts). Every Docker smoke and test container, and vitest, needs QQ_NO_UPDATE_CHECK=1. `qq doctor` has an `update` row (13 rows zsh, 14 macOS bash).
 - **Shells:** ZLE widgets run with stdin from /dev/null, so reattach the client to /dev/tty. Pass the buffer as `lbuffer`/`rbuffer` strings, not cursor offsets. zsh needs `rehash` before reading `${(k)commands}` (~10 ms). bash ≥5.0 uses `bind -x` with READLINE_LINE/POINT. fish 4 uses `bind` plus `commandline`. In bash, run background work only as `( cmd & )` (no job notice). Scope per-call env with `local -x`. Reprint the head of a multi-line PS1 after the picker. Every helper the zsh widget calls must exit 0, because the ERR trap deletes the session dir. jq is a hard runtime dependency.
 - **Adding a shell:** follow shell/README.md, gated by tests/shell-names-invariant.test.ts. Add the adapter to both Homebrew install blocks (release.yaml, homebrew.yml) and to the smoke script. The instant frame must stay byte-identical across instant-frame-spec.ts and every adapter. Shell-specific prompt cues go in `buildPrompt`, never in `buildSystemPrompt`, because the prewarm cache is keyed on the system-prompt argv.
 - **Daemon/IPC:** ensureDaemon replaces a daemon that lacks any pong flag (fetchCandidates, installedTools, streamCandidates, providerPin) or whose `build` id differs. A change to envelope SHAPE or routing needs a new flag. IPC schemas filter unknown VALUES and reject unknown SHAPES. The daemon spawns with cwd home and takes its env from the shell that started it. Dotenv lookup is home-based. After an env change: `pkill -f 'daemon --socket /tmp/qq-'` then `qq daemon --ensure`. Keep socket handlers inside a Promise chain.

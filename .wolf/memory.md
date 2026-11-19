@@ -17,10 +17,10 @@
 | 14:37 | revised Phase 1 plans after checker feedback, validated schemas/structure, logged planning bug | .planning/phases/01-shell-bridge-and-result-contract/01-01-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-03-PLAN.md; .wolf/cerebrum.md; .wolf/buglog.json | complete | ~5000 |
 
 ## Session: 2026-05-01 16:04
-> Consolidated session (34 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-01 16:49
-> Consolidated session (19 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 21:21
 > Consolidated session (0 actions)
@@ -32,61 +32,61 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-02 21:25
-> Consolidated session (3 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 22:00
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 07:20
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 08:07
-> Consolidated session (2 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 08:28
-> Consolidated session (33 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-13 15:37
-> Consolidated session (9 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 17:30
-> Consolidated session (3 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 18:10
-> Consolidated session (16 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 04:05
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 08:24
-> Consolidated session (39 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 10:30
-> Consolidated session (30 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 12:02
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 14:39
-> Consolidated session (28 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 18:32
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 21:22
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 04:30
-> Consolidated session (46 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 11:53
-> Consolidated session (17 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-16 19:41
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-21 05:19
-> Consolidated session (29 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-21 11:22
 > Consolidated session (0 actions)
@@ -95,46 +95,46 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-21 12:18
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 18:16
-> Consolidated session (4 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 21:27
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 21:34
-> Consolidated session (24 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 12:20
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-22 12:32
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 13:30
-> Consolidated session (18 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 15:07
-> Consolidated session (18 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-23 19:32
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-23 21:27
-> Consolidated session (4 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-23 21:55
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-23 22:15
-> Consolidated session (17 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-23 11:50
-> Consolidated session (26 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-28 00:24
-> Consolidated session (12 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-28 01:00
 > Consolidated session (0 actions)
@@ -143,97 +143,97 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-28 15:44
-> Consolidated session (44 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-29 16:43
-> Consolidated session (21 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 17:25
-> Consolidated session (14 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 18:17
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 10:41
-> Consolidated session (37 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 13:12
-> Consolidated session (42 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-04 16:21
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-04 16:27
-> Consolidated session (21 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-05 17:08
-> Consolidated session (26 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-05 18:19
-> Consolidated session (11 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-07 18:08
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-07 19:45
-> Consolidated session (1 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 18:23
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 19:07
-> Consolidated session (8 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 21:38
-> Consolidated session (37 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 12:23
-> Consolidated session (31 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-13 11:24
-> Consolidated session (92 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 15:30
-> Consolidated session (26 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:05
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:10
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:11
-> Consolidated session (50 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:48
-> Consolidated session (109 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-19 17:44
-> Consolidated session (32 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-19 10:31
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-19 10:58
-> Consolidated session (16 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-30 10:19
 > Consolidated session (0 actions)
 
 ## Session: 2026-07-30 11:36
-> Consolidated session (3 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-30 11:46
 > Consolidated session (0 actions)
 
 ## Session: 2026-07-30 11:49
-> Consolidated session (29 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-31 14:28
 > Consolidated session (0 actions)
 
 ## Session: 2026-07-31 16:36
-> Consolidated session (12 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-31 16:46
 > Consolidated session (0 actions)
@@ -257,16 +257,16 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-08-26 18:37
-> Consolidated session (25 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-08-26 19:40
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-08-26 20:45
-> Consolidated session (52 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-08-26 21:05
-> Consolidated session (116 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-09-03 17:18
 > Consolidated session (0 actions)
@@ -296,19 +296,19 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-08 19:56
-> Consolidated session (6 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 20:29
-> Consolidated session (38 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 23:42
-> Consolidated session (27 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 00:49
-> Consolidated session (18 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 02:01
-> Consolidated session (43 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 10:08
 > Consolidated session (0 actions)
@@ -317,76 +317,76 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-10 12:36
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-11 20:31
-> Consolidated session (33 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-11 03:54
-> Consolidated session (88 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 20:59
-> Consolidated session (30 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 22:46
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-12 22:46
-> Consolidated session (82 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 23:48
-> Consolidated session (290 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 13:10
-> Consolidated session (119 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-13 23:42
-> Consolidated session (1 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-13 12:14
-> Consolidated session (8 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-17 03:16
-> Consolidated session (31 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-17 11:28
-> Consolidated session (147 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-19 00:03
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-19 01:18
-> Consolidated session (98 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-22 20:45
-> Consolidated session (14 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-27 14:31
-> Consolidated session (1 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-29 18:43
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-29 19:23
-> Consolidated session (43 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-29 12:22
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-29 13:29
-> Consolidated session (310 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-30 19:38
-> Consolidated session (8 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-30 01:00
-> Consolidated session (36 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-30 09:57
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-30 09:57
-> Consolidated session (83 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-11-13 08:51
 
@@ -1057,6 +1057,113 @@
 | 13:08 | fix prewarm test marker race (printf > marker seen empty; tmp+mv), CI run 44154541470 | tests/zsh-widget.test.ts | prewarm x5 pass, full suite 1875/1875 | ~3k |
 | 13:25 | readme rebrand (user's readme-rebrand.diff): tagline, name explainer, badges moved, Tested on: under Install; readme-badges test follows; anatomy drops out-of-repo ../ sections | README.md, tests/readme-badges.test.ts, .wolf/anatomy.md | full suite 1875/1875 | ~4k |
 | 13:53 | readme: pronunciation into H1 with a footnote for the name origin; drop the name paragraph | README.md | GitHub render checked, full suite 1875/1875 | ~2k |
+| 14:08 | Session end: 25 writes across 11 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 11 reads | ~56481 tok |
+
+## Session: 2026-11-17 14:10
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 14:24 | Created .planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-PLAN.md | — | ~14879 |
+| 14:25 | planned quick 261117-jpp update notifier (3 tasks: tracer IPC hint, detectInstall matrix, doctor/formula/docs) | .planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-PLAN.md | plan valid | ~60k |
+| 14:53 | Session end: 1 writes across 1 files (261117-jpp-PLAN.md) | 4 reads | ~26489 tok |
+| 14:56 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | — | ~5144 |
+| 14:56 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-hint-ipc.test.ts | — | ~980 |
+| 14:57 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/modal-layout.test.ts | expanded (+19 lines) | ~245 |
+| 14:57 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | — | ~1896 |
+| 14:58 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | — | ~4621 |
+| 14:58 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | added 1 condition(s) | ~121 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/telemetry-config.ts | inline fix | ~18 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | added 1 condition(s) | ~144 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | ensurePrivateDir() → isPrivateCacheDir() | ~22 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | ensurePrivateDir() → isPrivateCacheDir() | ~22 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/contracts/ipc.ts | expanded (+6 lines) | ~101 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/contracts/ipc.ts | expanded (+7 lines) | ~132 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/daemon/server.ts | 2→5 lines | ~111 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/daemon/server.ts | modified hint() | ~61 |
+| 14:59 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/daemon/server.ts | added optional chaining | ~196 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/ui/modal-layout.ts | 6→8 lines | ~73 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/ui/modal-layout.ts | added 1 condition(s) | ~47 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/ui/CandidateSelect.tsx | CSS: Selection-independent | ~90 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/vitest.config.ts | modified org() | ~81 |
+| 15:00 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/vitest.live.config.ts | 2→5 lines | ~70 |
+| 15:02 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/client-result.test.ts | modified ask() | ~228 |
+| 15:02 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/client-result.test.ts | added optional chaining | ~1513 |
+| 15:03 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task1-msg.txt | — | ~260 |
+| 15:04 | Created .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/install-detect.test.ts | — | ~3076 |
+| 15:05 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | added optional chaining | ~644 |
+| 15:05 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | 120 → 300 | ~29 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | added optional chaining | ~1162 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | added 1 condition(s) | ~94 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/install-detect.ts | added 10 condition(s) | ~486 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/src/shared/update-check.ts | added nullish coalescing | ~255 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/tests/update-check.test.ts | 1→2 lines | ~37 |
+| 15:06 | Edited .claude/worktrees/agent-a1f8a8b03d5a01d2a/.wolf/buglog.json | modified isPrivateCacheDir() | ~451 |
+| 15:07 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task2-msg.txt | — | ~235 |
+| 15:10 | quick 261117-jpp task 1: update notifier tracer (update-check.ts, install-detect.ts marker/brew/unknown, update-hint IPC, daemon checker, client ask never awaited, dim hint row under ControlsLine, vitest QQ_NO_UPDATE_CHECK=1) | src/shared/update-check.ts, src/shared/install-detect.ts, src/daemon/server.ts, src/client/run-foreground.ts, src/ui/CandidateSelect.tsx | task 1 verify green, typecheck ok | ~30k |
+| 15:30 | quick 261117-jpp task 2: detectInstall covers WSL, volta, pnpm, nix, nvm, fnm, npm (user-prefix note), Linux dpkg/rpm/pacman owner queries; formatUpdateHint windows-node + packaged fallbacks | src/shared/install-detect.ts, src/shared/update-check.ts, tests/install-detect.test.ts, tests/update-check.test.ts | 80/80 targeted, typecheck ok | ~15k |
+| 15:11 | Session end: 34 writes across 18 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 6 reads | ~63118 tok |
+| 15:14 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp-doctor-spot.sh | — | ~185 |
+| 15:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task3a-msg.txt | — | ~182 |
+| 15:15 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_marker_edit.py | — | ~405 |
+| 15:16 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_optout_edit.py | — | ~503 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/scripts/smoke-distro-runner.sh | 1→3 lines | ~62 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/package.json | 3→6 lines | ~25 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/docs/PRIVACY.md | expanded (+16 lines) | ~555 |
+| 15:16 | Edited .claude/worktrees/agent-ab947582b53914f53/README.md | added nullish coalescing | ~104 |
+| 15:17 | Created .claude/worktrees/agent-ab947582b53914f53/tests/install-marker-formula.test.ts | — | ~592 |
+| 15:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_formula_ruby.py | — | ~239 |
+| 15:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/jpp_wolf_edit.py | — | ~1162 |
+| 15:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261117-jpp-task3b-msg.txt | — | ~215 |
+| 15:21 | Created .claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md | — | ~3670 |
+| 15:21 | Edited .claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md | inline fix | ~108 |
+| 15:21 | Edited .claude/worktrees/agent-ab947582b53914f53/.planning/quick/261117-jpp-implement-update-notifier-per-planning-t/261117-jpp-SUMMARY.md | inline fix | ~107 |
+| 15:20 | quick 261117-jpp task 3a: qq doctor update row (checkUpdate before telemetry, DoctorDeps.updateStatus, id 'update' appended), USER_PREFIX_NOTE exported | src/cli/commands/doctor.ts, src/contracts/doctor.ts, tests/doctor.test.ts | doctor 125/125, typecheck ok, pty spot check shows warn row | ~12k |
+| 15:21 | quick 261117-jpp task 3b: homebrew .install-source marker in both formula blocks + smoke emulation (guard test), QQ_NO_UPDATE_CHECK=1 in every distro/homebrew container, engines.node >=24, README + PRIVACY update-check docs, todo moved to done, cerebrum learning | .github/workflows/*.y*ml, scripts/*, package.json, README.md, docs/PRIVACY.md, tests/install-marker-formula.test.ts | actionlint ok, full suite 1988/1988 plain and pty | ~15k |
+| 15:22 | Edited .planning/STATE.md | 2→3 lines | ~39 |
+| 15:23 | Session end: 50 writes across 32 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 8 reads | ~71645 tok |
+| 19:04 | Session end: 50 writes across 32 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 8 reads | ~71645 tok |
+| 19:06 | Edited src/shared/instant-frame-spec.ts | 5→6 lines | ~103 |
+| 19:08 | bump INSTANT_FRAME_VIEWPORT_LINES 18→19 (spec, zsh, bash) for the update hint row | src/shared/instant-frame-spec.ts, shell/zsh/queque.zsh, shell/bash/queque.bash | 1988/1988 plain + pty | ~3k |
+| 19:09 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 20:41 | homebrew docker smoke image node:22-bookworm → node:24-bookworm to meet engines.node >=24 | scripts/smoke-homebrew-docker.sh | 1988/1988 plain + pty; docker down, image not built | ~2k |
+| 20:42 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 20:47 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 21:14 | Session end: 51 writes across 33 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~71748 tok |
+| 21:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | — | ~410 |
+| 21:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Main.dc.html | — | ~1056 |
+| 21:20 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Before.dc.html | — | ~983 |
+| 21:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Npm.dc.html | — | ~1068 |
+| 21:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | — | ~1058 |
+| 21:21 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Distro.dc.html | — | ~1060 |
+| 21:21 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~62 |
+| 21:22 | Session end: 58 writes across 39 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~77818 tok |
+| 21:37 | update hint drops the version number (qq update available · <cmd>); distro wording shortened; test pins the command inside an 80-col row | src/shared/update-check.ts, tests/update-check.test.ts | full suite: only bash-widget b22 timing flake (passes alone) | ~6k |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Main.dc.html | inline fix | ~13 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Npm.dc.html | inline fix | ~25 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Npm.dc.html | inline fix | ~36 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | inline fix | ~14 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | inline fix | ~33 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Distro.dc.html | inline fix | ~22 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Distro.dc.html | inline fix | ~29 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~64 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~16 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~18 |
+| 21:42 | Session end: 68 writes across 39 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 10 reads | ~78097 tok |
+| 22:15 | Update hint: TUI shows only install how-to; env problems left to qq doctor | src/shared/update-check.ts, tests/update-check.test.ts | 90 update tests pass | ~3000 |
+
+## Session: 2026-11-18 22:36
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:05 | Update line: painted from cache in first frame, shown every ?? until upgrade | update-check.ts, run-foreground.ts, server.ts, ipc.ts, tests, README, PRIVACY | update tests pass | ~8000 |
+| 11:23 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | removed 1 lines | ~2 |
+| 11:23 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | inline fix | ~82 |
+| 11:23 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~22 |
+| 11:24 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 12:18 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 20:25 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 20:35 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 21:08 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
 | 21:00 | Edited src/cli/main.ts | 2→3 lines | ~18 |
 | 21:00 | Edited tests/bundle-startup.test.ts | modified for() | ~212 |
 | 21:09 | qq --version / -v via cac .version(__QUEQUE_VERSION__) + bundle-startup b7 | src/cli/main.ts, tests/bundle-startup.test.ts | plain 1876/1876; pty timing flakes under load avg 196 (ollama) | ~4k |

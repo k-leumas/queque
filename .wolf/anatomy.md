@@ -1,28 +1,34 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-18T03:00:36.646Z
-> Files: 544 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T00:00:01.583Z
+> Files: 521 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
-- `.gitignore` — Git ignore rules (~54 tok)
+- `.DS_Store` (~2186 tok)
+- `.gitignore` — Git ignore rules (~65 tok)
+- `.nvmrc` (~3 tok)
 - `.releaserc.json` (~363 tok)
-- `biome.json` (~213 tok)
-- `CHANGELOG.md` — User-facing release notes: Features / Bug Fixes / Deprecations highlights with conventional-commit lists under `<details>` (LLM-written from the changeset at release). Unreleased = v0.5.0..HEAD. (~2200 tok)
+- `biome.json` — Biome linter/formatter configuration (~210 tok)
+- `CHANGELOG.md` — Change log (~16975 tok)
 - `CLAUDE.md` — OpenWolf (~1668 tok)
-- `CONTRIBUTING.md` — Contributing: dev setup, live debug log (always-on `/tmp/qq-<uid>-debug.log`), Claude Provider env table (key optional, `claude -p` login route, QQ_MODEL `claude-sonnet-5` SDK route only) Client raw stderr reaches QQ_DEBUG_LOG_FILE only when set (else session-dir client.err). QQ_TEST_RESULT_MODE: only the two fixture names count. (~1450 tok)
-- `lefthook.yml` (~320 tok)
-- `marketing-post.md` — QueQue — LinkedIn Launch Post (~617 tok)
-- `package.json` — Node.js package manifest Phase 10 scripts: smoke:distro, test:distro, test:live. (~499 tok)
-- `README.md` — Project documentation: H1 `# QueQue *(kew-kew)*[^name]` (GFM footnote at the end explains *question question*: `??` and `qq`), bold tagline (Type what you want. Hit `??`. Pick a command.) and "Nothing runs until you press Enter", a one-line example block, demo gif, then the shell badge row (zsh/bash `${failBelow}+` from SHELL_SPECS, fish coming soon) linking docs/INSTALL.md anchors. Install (brew block only, then one See-Install sentence for npm, requirements, macOS bash notes and undo), then a `Tested on:\` line over six static distro badges (alt = ci.yml image ref, CI runs link) plus a macOS badge (tested by hand, links docs/INSTALL.md); no workflow-status badges, no support table. Then Choose a provider and Usage; absolute `https://github.com/k-leumas/queque/blob/main/` doc links (npm ships README alone) (quick 261030-fdr, 261115-3qz, 261115-4um; rebrand 2026-11-17) (~1150 tok)
-- `tsconfig.json` — TypeScript configuration (~180 tok)
-- `tsup.config.ts` — Build: entry { main: src/cli/launcher.ts, app: src/cli/main.ts } → dist/cli; `noExternal: [/.*/]` (every dependency inlined into app.js); esbuild aliases react-devtools-core / bufferutil / utf-8-validate to src/shims; banner = shebang + createRequire `require` for CJS deps; defines __QUEQUE_COMMIT__/__QUEQUE_VERSION__; dts + sourcemaps kept. Phase 10: `define` also bakes __QUEQUE_TELEMETRY_KEY__ (empty until plan 13, D-22) and __QUEQUE_TELEMETRY_HOST__ (`https://eu.i.posthog.com`, D-05). Quick 261030-tq3: __QUEQUE_BUILD_ID__ = `<version>+<commit>.<Date.now base36>`, computed once per tsup config load (watch rebuilds share one id). (~680 tok)
-- `vitest.config.ts` — Vitest base config: tests/**/*.test.ts(x), setupFiles scrub-git-env; defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_BUILD_ID__ ('0.0.0-test+test-build', quick 261030-tq3) and an inert telemetry key/host. vitest.live inherits `define`. (~230 tok)
-- `vitest.live.config.ts` — /*.test.ts`) never (~198 tok)
+- `commitlint.config.js` (~20 tok)
+- `CONTRIBUTING.md` — Contributing (~1845 tok)
+- `lefthook.yml` (~293 tok)
+- `package.json` — Node.js package manifest (~566 tok)
+- `pnpm-lock.yaml` — pnpm lock file (~43535 tok)
+- `pnpm-workspace.yaml` (~14 tok)
+- `README.md` — Project documentation (~1217 tok)
+- `renovate.json` (~31 tok)
+- `tsconfig.json` — TypeScript configuration (~187 tok)
+- `tsup.config.ts` — Declares version (~904 tok)
+- `vitest.config.ts` — Vitest test configuration (~299 tok)
+- `vitest.live.config.ts` — /*.test.ts`) never (~260 tok)
 
 ## .claude/
 
 - `settings.json` (~441 tok)
+- `settings.local.json` (~433 tok)
 
 ## .claude/rules/
 
@@ -30,337 +36,311 @@
 
 ## .claude/skills/spike-findings-tui-llm/
 
-- `references/candidate-command-check.md` — hand lexer to flag candidates using missing tools (~1100 tok)
-- `references/installed-command-handoff.md` — zsh rehash + $commands handoff recipe, ~7 ms (~900 tok)
-- `references/prompt-steering.md` — installed∩catalog prompt list vs full list (PARTIAL) (~1000 tok)
-- `SKILL.md` — Project: tui-llm (QueQue) (~585 tok)
-- `SKILL.md` — Spike findings blueprint index: installed-only-commands requirements + feature areas (~600 tok)
+- `SKILL.md` — Project: tui-llm (QueQue) (~1039 tok)
 
 ## .claude/skills/spike-findings-tui-llm/references/
 
-- `bash-integration.md` — blueprint: bash ≥5.0 ?? adapter (bind -x, READLINE_*, compgen handoff, Zellij FIFO, PS1 head) (~1300 tok)
 - `bash-integration.md` — bash integration (`??` in bash ≥5.0) (~1173 tok)
 - `candidate-command-check.md` — Candidate Command Check (flag suggestions that use missing tools) (~1016 tok)
-- `fish-integration.md` — blueprint: fish 4.x ?? adapter (bind/commandline, string collect, cat+guard FIFO read, repaint padding) (~1300 tok)
 - `fish-integration.md` — fish integration (`??` in fish 4.x) (~1142 tok)
 - `installed-command-handoff.md` — Installed-Command Handoff (zsh → qq client) (~841 tok)
 - `prompt-steering.md` — Prompt Steering With the Installed List (~828 tok)
 
-## .claude/worktrees/agent-a0683766a13a0d567/.github/workflows/
+## .claude/skills/spike-findings-tui-llm/sources/001-zsh-commands-handoff/
 
-- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1850 tok)
+- `bench.zsh` — Spike 001 — cost and freshness of handing zsh's $commands table to the qq client. (~652 tok)
+- `README.md` — Project documentation (~1071 tok)
+- `rehash-cost.zsh` — Spike 001b — what does "rehash then hand off" cost on every ?? (widget-side work). (~484 tok)
 
-## .claude/worktrees/agent-a0683766a13a0d567/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+## .claude/skills/spike-findings-tui-llm/sources/002-candidate-binary-check/
 
-- `11-09-SUMMARY.md` — Phase 11 Plan 09: Distro bash smoke, bash-versions CI and Homebrew bash adapter Summary (~3486 tok)
+- `cases.mjs` — Expected = every program the shell would look up, in order. Wrappers (sudo, xargs…) count too. (~988 tok)
+- `extract.mjs` — Index just past the `close` that balances the `open` at s[i]. Respects quotes and escapes. (~2664 tok)
+- `find-hang.mjs` — Spike 002 — isolate inputs that hang lexHand: each runs in a child with a 1 s timeout. (~252 tok)
+- `fuzz-child.mjs` — Declares alphabet (~188 tok)
+- `package.json` — Node.js package manifest (~33 tok)
+- `README.md` — Project documentation (~1281 tok)
+- `run.mjs` — Spike 002 runner: accuracy of hand lexer vs shell-quote, plus per-candidate cost and (~730 tok)
 
-## .claude/worktrees/agent-a0683766a13a0d567/scripts/
+## .claude/skills/spike-findings-tui-llm/sources/003-prompt-steering/
 
-- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~2199 tok)
-- `smoke-distro.sh` (~980 tok)
+- `catalog.ts` — Curated catalog of notable CLI tools that have common alternatives. Variant B sends only (~440 tok)
+- `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1778 tok)
+- `README.md` — Project documentation (~1195 tok)
 
-## .claude/worktrees/agent-a0683766a13a0d567/scripts/ci/
+## .claude/skills/spike-findings-tui-llm/sources/003-prompt-steering/results/
 
-- `bash-version-check.sh` — Usage: bash-version-check.sh refuse|accept (~990 tok)
+- `run-1-partial.log` — Declares f (~4424 tok)
 
-## .claude/worktrees/agent-a0f685ede72cc35a6/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
+## .claude/skills/spike-findings-tui-llm/sources/004-bash-readline-trigger/
 
-- `11-08-SUMMARY.md` — Phase 11 Plan 08: bash diagnostics in `qq doctor` Summary (~4292 tok)
+- `README.md` — Project documentation (~1191 tok)
+- `run-all.sh` — Runs every case against each bash given as an argument; prints log + what bash executed. (~136 tok)
+- `run.exp` — Usage: run.exp <bash-binary> <case> <logfile> (~489 tok)
+- `spike.bash` — Spike 004: bash adapter for the literal `??` trigger. (~337 tok)
 
-## .claude/worktrees/agent-a0f685ede72cc35a6/src/cli/
+## .claude/skills/spike-findings-tui-llm/sources/005-bash-tui-handoff/
 
-- `main.ts` — Exports main (~1576 tok)
+- `drive.sh` — drive.sh <shell-cmd> <scenario> — runs a scenario in a private tmux server and prints screen (~553 tok)
+- `queque.bash` — Spike 005: full bash adapter — ports qq-question-widget (shell/zsh/queque.zsh:334) to readline. (~1200 tok)
+- `README.md` — Project documentation (~911 tok)
 
-## .claude/worktrees/agent-a0f685ede72cc35a6/src/cli/commands/
+## .claude/skills/spike-findings-tui-llm/sources/006-fish-commandline-trigger/
 
-- `doctor.ts` — Unix socket path limits from the Node docs (107 bytes on Linux, 103 on macOS). (~8634 tok)
+- `drive.sh` — drive.sh <case> [vi] — runs one trigger case in fish 4 inside a private tmux server. (~426 tok)
+- `README.md` — Project documentation (~881 tok)
+- `spike.fish` — Spike 006: fish adapter stub for the literal `??` trigger (fish ≥4). (~308 tok)
 
-## .claude/worktrees/agent-a0f685ede72cc35a6/tests/
+## .claude/skills/spike-findings-tui-llm/sources/007-fish-tui-handoff/
 
-- `doctor.test.ts` — The zsh target's twelve rows, in order (Phase 10; unchanged by Phase 11). (~12044 tok)
-
-## .claude/worktrees/agent-a12c46af7c526c5d0/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-06-SUMMARY.md` — Phase 11 Plan 06: Instant frame spec and bash painter Summary (~4569 tok)
-
-## .claude/worktrees/agent-a12c46af7c526c5d0/shell/bash/
-
-- `queque.bash` — shellcheck shell=bash (~4365 tok)
-
-## .claude/worktrees/agent-a12c46af7c526c5d0/src/client/
-
-- `instant-frame.ts` — Instant first frame takeover (quick 261011-jbh, LD-1). (~1324 tok)
-
-## .claude/worktrees/agent-a12c46af7c526c5d0/src/shared/
-
-- `instant-frame-spec.ts` — The instant first frame, as one TypeScript reference (Phase 11 D-04; quick 261011-jbh, LD-1). (~1792 tok)
-
-## .claude/worktrees/agent-a12c46af7c526c5d0/src/ui/
-
-- `CandidateSelect.tsx` — Fixed left gutter width — active glyph and inactive spaces both occupy this width so command text ne (~5817 tok)
-- `LoadingSpinner.tsx` — FRAMES[0] is the loading text the shell adapters paint in the instant frame (Phase 11 D-04). (~188 tok)
-- `modal-layout.ts` — Mark that starts the explanation of a candidate using a tool zsh cannot resolve (D-08). (~2962 tok)
-
-## .claude/worktrees/agent-a12c46af7c526c5d0/tests/
-
-- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~5244 tok)
-- `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3392 tok)
-
-## .claude/worktrees/agent-a1536771d36d290f8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-03-SUMMARY.md` — Phase 11 Plan 03: Shell-aware tool handoff and command-word lexer Summary (~4510 tok)
-
-## .claude/worktrees/agent-a1536771d36d290f8/src/client/
-
-- `tool-handoff.ts` — Fixed sibling filenames a shell adapter's `??` widget writes next to request.json (~1371 tok)
-
-## .claude/worktrees/agent-a1b3b715f798c3738/shell/bash/
-
-- `queque.bash` — shellcheck shell=bash (~7482 tok)
-
-## .claude/worktrees/agent-a337e7a5046250a2b/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-07-SUMMARY.md` — Phase 11 Plan 07: bash tool handoff, prewarm and Zellij pane Summary (~4802 tok)
-
-## .claude/worktrees/agent-a337e7a5046250a2b/shell/bash/
-
-- `queque.bash` — shellcheck shell=bash (~6770 tok)
-
-## .claude/worktrees/agent-a337e7a5046250a2b/tests/
-
-- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11317 tok)
-- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~4650 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/
-
-- `CONTRIBUTING.md` — Contributing (~1764 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-01-SUMMARY.md` — Phase 11 Plan 01: bash `??` tracer and PTY harness Summary (~5170 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/scripts/ci/
-
-- `install-distro-deps.sh` — Installs what QueQue needs on a fresh Linux distro image: git, zsh, bash, jq, expect, (~1339 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/shell/bash/
-
-- `queque.bash` — bash 5.0+ readline adapter: bind -x on ? (emacs+vi-insert), interactive guard, 'needs bash 5.0+' refusal, jq request.json shell:bash, inline qq client, READLINE_LINE/POINT apply with QQ_ORIG_POINT restore (~2434 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/src/cli/commands/
-
-- `client.ts` — Real client command handler. (~517 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/src/client/
-
-- `run-foreground.ts` — Splits a command + explanation into shell buffer halves. (~7035 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/src/contracts/
-
-- `shell.ts` — Every shell QueQue knows (Phase 11 D-02). A shell adapter lives at (~703 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/tests/
-
-- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~2980 tok)
-- `context-pipeline.test.ts` — Declares buildRequest (~1555 tok)
-- `intent-router.test.ts` — Declares makeRequest (~2127 tok)
-- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~4074 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/tests/helpers/
-
-- `shells.ts` — Searched after PATH: Homebrew (Apple silicon, Intel), MacPorts, then the system dirs. (~1140 tok)
-
-## .claude/worktrees/agent-a3f8055ae191c3229/tests/pty/
-
-- `drive.sh` — tests/pty/drive.sh: drive an interactive zsh or bash in a private tmux server (Phase 11 D-10). (~794 tok)
-
-## .claude/worktrees/agent-a42288e8a0c40af47/.github/workflows/
-
-- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1870 tok)
-
-## .claude/worktrees/agent-a42288e8a0c40af47/scripts/ci/
-
-- `bash-version-check.sh` — Usage: bash-version-check.sh refuse|accept (~1427 tok)
-
-## .claude/worktrees/agent-a42288e8a0c40af47/shell/bash/
-
-- `queque.bash` — shellcheck shell=bash (~7181 tok)
-
-## .claude/worktrees/agent-a42288e8a0c40af47/tests/
-
-- `bash-widget.test.ts` — Helper tests for the bash readline adapter (`shell/bash/queque.bash`, Phase 11 BASH-01). (~11679 tok)
-- `shell-pty.test.ts` — Multi-line diagnostics (screens, logs) as one quote-free line joined by ` | `: a multi-line (~5384 tok)
-
-## .claude/worktrees/agent-a69c0cacb81a465ce/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-05-SUMMARY.md` — Phase 11 Plan 05: Shell-aware telemetry environment Summary (~3753 tok)
-
-## .claude/worktrees/agent-a6b88ee339a5f6c80/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
-
-- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~4329 tok)
-
-## .claude/worktrees/agent-abef3015cfebacee8/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-02-SUMMARY.md` — Phase 11 Plan 02: shell identity in the context and prompt Summary (~3343 tok)
-
-## .claude/worktrees/agent-abef3015cfebacee8/src/providers/
-
-- `claude.ts` — Moved to steering.ts in Phase 9; re-exported so existing importers keep compiling. (~5578 tok)
-
-## .claude/worktrees/agent-abef3015cfebacee8/tests/
-
-- `claude-provider.test.ts` — Text pieces emitted as `text` events, in order, before finalMessage settles. (~8603 tok)
-- `shell-contract.test.ts` — A request.json as a pre-Phase-11 zsh widget writes it: no `shell`, no `shellVersion`. (~1664 tok)
-- `zsh-widget.test.ts` — Smoke tests for the zsh ZLE widget (`shell/zsh/queque.zsh`). (~14461 tok)
-
-## .claude/worktrees/agent-acce3f5bef6c7f99f/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-04-SUMMARY.md` — Phase 11 Plan 04: Shell registry and `qq init [shell]` Summary (~3268 tok)
-
-## .claude/worktrees/agent-acce3f5bef6c7f99f/src/cli/commands/
-
-- `init.ts` — `qq init [shell]` (Phase 11 D-08, D-09, D-12, D-14): detect the login shell, gate bash below (~2620 tok)
-
-## .claude/worktrees/agent-acce3f5bef6c7f99f/src/registry/
-
-- `bootstrap.ts` — Registers all Phase 2 built-ins into their respective registries. (~806 tok)
-
-## .claude/worktrees/agent-acce3f5bef6c7f99f/src/shared/
-
-- `shell-registry.ts` — One per-shell registry (Phase 11 D-02, D-08): every fact `qq init` and `qq doctor` need about (~2170 tok)
-
-## .claude/worktrees/agent-acce3f5bef6c7f99f/tests/
-
-- `init-command.test.ts` — InitDeps: fakeInit (~4275 tok)
-- `registry-bootstrap.test.ts` — Declares adapters (~890 tok)
-- `shell-registry.test.ts` — Declares zsh (~2078 tok)
-
-## .claude/worktrees/agent-ae0e9549a31c00864/
-
-- `README.md` — Project documentation (~1187 tok)
-
-## .claude/worktrees/agent-ae0e9549a31c00864/.planning/phases/11-multi-shell-trigger-support-bash-and-fish/
-
-- `11-10-SUMMARY.md` — Phase 11 Plan 10: Shell-neutral docs, the adapter contract and the SHELL_NAMES invariant Summary (~3304 tok)
-
-## .claude/worktrees/agent-ae0e9549a31c00864/docs/
-
-- `INSTALL.md` — Install (~668 tok)
-
-## .claude/worktrees/agent-ae0e9549a31c00864/shell/
-
-- `README.md` — Project documentation (~2654 tok)
-
-## .claude/worktrees/agent-ae0e9549a31c00864/tests/
-
-- `shell-names-invariant.test.ts` — SHELL_NAMES invariant (Phase 11 D-02, the "promote" decision): every shell QueQue knows must (~688 tok)
-
-## .claude/worktrees/agent-aedd4b806c24b1e4a/.planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
-
-- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~6996 tok)
+- `drive.sh` — drive.sh <fish-binary> <scenario> — runs a scenario in a private tmux server and prints screen (~639 tok)
+- `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1541 tok)
+- `README.md` — Project documentation (~820 tok)
 
 ## .github/workflows/
 
-- `ci.yml` — Push and PR CI (D-14): push `**`, pull_request, workflow_dispatch; per-event concurrency that never cancels main. Jobs changes (code-changed.mjs), checks (lint/typecheck/test:run/build), distro (distro.yml with 6 pinned images), ci-ok (always(), the only required check) and auto-revert (push only, distro failed, not auto-revert/*, contents/pull-requests write + actions read, download-artifact@v8 into runner.temp). Heavy jobs run unless `code == 'false'` (10-05, 10-07). (~1215 tok)
-- `distro.yml` — Reusable distro matrices (workflow_call, input `images` JSON): test-distro runs scripts/ci/test-in-distro.sh, smoke runs scripts/smoke-distro.sh; fail-fast off; `smoke-<slug>` artifacts uploaded always, 14 days (10-05). (~547 tok)
-- `homebrew.yml` — CI: Update Homebrew Tap (~957 tok)
-- `nightly.yml` — `Nightly`: schedule `23 3 * * *` plus workflow_dispatch. Job distro reuses distro.yml with ubuntu/debian/fedora/archlinux/alpine `:latest`; job live (repo guard `k-leumas/queque`) runs `pnpm test:live` with the secret in step env. Read-only token, not a required check (10-08). (~498 tok)
-- `release.yaml` — CI: Release (~1842 tok)
-- `tap-clone-stats.yml` — `Tap clone stats`: schedule `17 6 * * 1` (Mondays 06:17 UTC) plus workflow_dispatch. Reads k-leumas/homebrew-tap per-day clone traffic and subtracts per UTC day the "Release to Homebrew tap" steps (release.yaml, homebrew.yml; success or failure, all attempts) as release_clones, clamped adjusted_count/adjusted_uniques; merges into stats/tap-clones.json on the orphan `stats` branch (ls-remote exit 2 then `git switch --orphan`; `git push origin stats`, never main). TRAFFIC_TOKEN (fine-grained PAT) as GH_TOKEN in the fetch step only; contents: write; summary rows Raw and Adjusted. Offline harness: .planning/quick/261105-ix8-*/verify-tap-clone-stats.sh (quick 261105-ix8). (~1630 tok)
+- `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1850 tok)
+- `distro.yml` — Reusable distro matrices (D-14, D-16). Called by ci.yml with the PR image pins and by (~626 tok)
+- `homebrew.yml` — CI: Update Homebrew Tap (~1144 tok)
+- `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03). Provider or distro drift shows up within a day (~570 tok)
+- `release.yaml` — CI: Release (~2090 tok)
+- `tap-clone-stats.yml` — Weekly snapshot of Homebrew tap clone traffic, with the clones made by our own publishing runs (~1865 tok)
 
 ## .gsd/
 
+- `.gitignore` — Git ignore rules (~1 tok)
+- `CODEBASE.md` — Codebase Map (~723 tok)
+- `DECISIONS.md` — Declares implementing (~707 tok)
+- `dispatch-isolation-sentinel.json` (~36 tok)
+- `notifications.jsonl` (~173 tok)
 - `PROJECT.md` — QueQue (~1526 tok)
 - `REQUIREMENTS.md` — Requirements (~1662 tok)
+- `STATE.md` — GSD State (~25 tok)
+
+## .gsd/milestones/M001/
+
+- `M001-CONTEXT.md` — M001 Context (~16 tok)
+- `M001-RESEARCH.md` — Research Summary: QueQue (~3165 tok)
+- `M001-ROADMAP.md` — M001: Migration (~398 tok)
+
+## .gsd/milestones/M001/slices/S01/
+
+- `S01-PLAN.md` — S01: Shell Bridge And Result Contract (~539 tok)
+- `S01-RESEARCH.md` — Phase 1: Shell Bridge and Result Contract - Research (~4836 tok)
+- `S01-SUMMARY.md` — S01: Shell Bridge And Result Contract (~3067 tok)
+
+## .gsd/milestones/M001/slices/S01/tasks/
+
+- `T01-PLAN.md` — T01: 01-shell-bridge-and-result-contract 01 (~249 tok)
+- `T01-SUMMARY.md` — T01: 01-shell-bridge-and-result-contract 01 (~1224 tok)
+- `T02-PLAN.md` — T02: 01-shell-bridge-and-result-contract 02 (~219 tok)
+- `T02-SUMMARY.md` — T02: 01-shell-bridge-and-result-contract 02 (~1047 tok)
+- `T03-PLAN.md` — T03: 01-shell-bridge-and-result-contract 03 (~317 tok)
+- `T03-SUMMARY.md` — T03: 01-shell-bridge-and-result-contract 03 (~997 tok)
+
+## .gsd/milestones/M001/slices/S02/
+
+- `S02-PLAN.md` — S02: Intent Router And Context Pipeline (~1629 tok)
+- `S02-RESEARCH.md` — Phase 2: Intent Router and Context Pipeline - Research (~5890 tok)
+- `S02-SUMMARY.md` — S02: Intent Router And Context Pipeline (~2951 tok)
+
+## .gsd/milestones/M001/slices/S02/tasks/
+
+- `T01-PLAN.md` — T01: 02-intent-router-and-context-pipeline 01 (~610 tok)
+- `T01-SUMMARY.md` — T01: 02-intent-router-and-context-pipeline 01 (~1000 tok)
+- `T02-PLAN.md` — T02: 02-intent-router-and-context-pipeline 02 (~935 tok)
+- `T02-SUMMARY.md` — T02: 02-intent-router-and-context-pipeline 02 (~1074 tok)
+- `T03-PLAN.md` — T03: 02-intent-router-and-context-pipeline 03 (~741 tok)
+- `T03-SUMMARY.md` — T03: 02-intent-router-and-context-pipeline 03 (~670 tok)
+
+## .gsd/milestones/M001/slices/S03/
+
+- `S03-PLAN.md` — S03: Claude Fast Path And Ranked Suggestions (~697 tok)
+- `S03-RESEARCH.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Research (~8018 tok)
+
+## .gsd/milestones/M001/slices/S03/tasks/
+
+- `T01-PLAN.md` — T01: 03 01 (~399 tok)
+- `T01-SUMMARY.md` — T01: 03 01 (~1055 tok)
+- `T02-PLAN.md` — T02: 03 02 (~364 tok)
+- `T02-SUMMARY.md` — T02: 03 02 (~1318 tok)
+- `T03-PLAN.md` — T03: 03 03 (~317 tok)
+- `T03-SUMMARY.md` — T03: 03 03 (~654 tok)
+
+## .gsd/milestones/M001/slices/S04/
+
+- `S04-PLAN.md` — S04: Update Interface And Interactivity To Match That Of This Git (~747 tok)
+- `S04-RESEARCH.md` — Phase 03.1: Monocle-style Interface and Interactivity — Research (~6849 tok)
+- `S04-SUMMARY.md` — S04: Update Interface And Interactivity To Match That Of This Git (~3403 tok)
+
+## .gsd/milestones/M001/slices/S04/tasks/
+
+- `T01-PLAN.md` — T01: 03.1 01 (~345 tok)
+- `T01-SUMMARY.md` — T01: 03.1 01 (~882 tok)
+- `T02-PLAN.md` — T02: 03.1 02 (~290 tok)
+- `T02-SUMMARY.md` — T02: 03.1 02 (~815 tok)
+- `T03-PLAN.md` — T03: 03.1 03 (~593 tok)
+- `T03-SUMMARY.md` — T03: 03.1 03 (~1874 tok)
+
+## .gsd/milestones/M001/slices/S05/
+
+- `S05-PLAN.md` — S05: Zellij Floating Pane Integration For Best Ux (~774 tok)
+- `S05-RESEARCH.md` — Phase 3.2: Zellij Floating Pane Integration - Research (~8712 tok)
+- `S05-SUMMARY.md` — S05: Zellij Floating Pane Integration For Best Ux (~4438 tok)
+
+## .gsd/milestones/M001/slices/S05/tasks/
+
+- `T01-PLAN.md` — T01: 03.2 01 (~351 tok)
+- `T01-SUMMARY.md` — T01: 03.2 01 (~1392 tok)
+- `T02-PLAN.md` — T02: 03.2 02 (~404 tok)
+- `T02-SUMMARY.md` — T02: 03.2 02 (~1616 tok)
+- `T03-PLAN.md` — T03: 03.2 03 (~507 tok)
+- `T03-SUMMARY.md` — T03: 03.2 03 (~1272 tok)
+
+## .gsd/milestones/M001/slices/S06/
+
+- `S06-PLAN.md` — S06: Fuzzy Tui Selection Ux (~603 tok)
+- `S06-RESEARCH.md` — Phase 4: Fuzzy TUI Selection UX - Research (~6481 tok)
+
+## .gsd/milestones/M001/slices/S06/tasks/
+
+- `T01-PLAN.md` — T01: 04 01 (~341 tok)
+- `T01-SUMMARY.md` — T01: 04 01 (~1201 tok)
+- `T02-PLAN.md` — T02: 04 02 (~281 tok)
+- `T02-SUMMARY.md` — T02: 04 02 (~1062 tok)
+- `T03-PLAN.md` — T03: 04 03 (~364 tok)
+- `T03-SUMMARY.md` — T03: 04 03 (~1397 tok)
+
+## .gsd/milestones/M001/slices/S07/
+
+- `S07-PLAN.md` — S07: Clarification Chat in the Same TUI (~58 tok)
+
+## .gsd/milestones/M001/slices/S08/
+
+- `S08-PLAN.md` — S08: Hardening, Privacy Defaults, and Extension Seams (~69 tok)
+
+## .gsd/runtime/
+
+- `write-gate-state.json` (~35 tok)
 
 ## .planning/
 
 - `.continue-here.md` — Session Handoff — Homebrew Binary Fix + Tooling Cleanup (~1144 tok)
-- `config.json` (~258 tok)
+- `config.json` (~268 tok)
 - `HANDOFF.json` — Declares correctly (~1406 tok)
-- `PROJECT.md` — QueQue (~1525 tok)
-- `REQUIREMENTS.md` — Requirements: QueQue (~1313 tok)
-- `ROADMAP.md` — Roadmap: QueQue (~7983 tok)
-- `STATE.md` — Project State (~3580 tok)
+- `PROJECT.md` — QueQue (~2352 tok)
+- `REQUIREMENTS.md` — Requirements: QueQue (~1781 tok)
+- `ROADMAP.md` — Roadmap: QueQue (~7986 tok)
+- `state.json` (~451 tok)
+- `STATE.md` — Project State (~5111 tok)
 
 ## .planning/debug/
 
-- `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~3416 tok)
+- `empty-modal-after-tool-awareness-reenable.md` — Current Focus (~3914 tok)
 - `llm-response-latency-profile.md` — Symptoms (~6991 tok)
-- `modal-blank-before-loading.md` — Symptoms (~493 tok)
-- `modal-filter-prefilled-with-query.md` — Current Focus (~3427 tok)
+- `modal-filter-prefilled-with-query.md` — Current Focus (~3813 tok)
+
+## .planning/debug/resolved/
+
+- `modal-blank-before-loading.md` — Symptoms (~3787 tok)
+- `smoke-picker-race.md` — Symptoms (~3154 tok)
 
 ## .planning/notes/
 
+- `2026-05-01-figure-out-directory-version-control-and-passing-that.md` (~38 tok)
 - `2026-05-01-shell-path-vcs-detection.md` — Declares we (~60 tok)
 
 ## .planning/phases/01-shell-bridge-and-result-contract/
 
-- `01-01-PLAN.md` — Phase 1 plan for repo scaffold, CLI skeleton, and shared shell/IPC contracts (~4500 tok)
-- `01-01-SUMMARY.md` — Phase 01 Plan 01: Toolchain Baseline and Shell/IPC Contracts Summary (~1631 tok)
-- `01-02-PLAN.md` — Phase 1 plan for the zsh ZLE widget, request capture, and shell-side result application (~3600 tok)
-- `01-03-PLAN.md` — Phase 1 plan for daemon bootstrap and foreground client seams (~3900 tok)
-- `01-HUMAN-UAT.md` — Current Test (~188 tok)
-- `01-RESEARCH.md` — Phase 1 implementation research for ZLE trigger, shell contract, and daemon bootstrap (~4300 tok)
+- `01-01-PLAN.md` — /*.test.ts`. In `src/cli/main.ts`, export `main` and register the stable `client` and `daemon` commands, including the `daemon --ensure` flow, even... (~2157 tok)
+- `01-01-SUMMARY.md` — Phase 01 Plan 01: Toolchain Baseline and Shell/IPC Contracts Summary (~1742 tok)
+- `01-02-PLAN.md` — Declares ShellRequest (~1812 tok)
+- `01-02-SUMMARY.md` — Phase 01 Plan 02: ZSH Bridge and Result Application Summary (~1437 tok)
+- `01-03-PLAN.md` — ShellResult: ensureDaemon, startDaemonServer, runForegroundClient, writeShellResult (~2735 tok)
+- `01-03-SUMMARY.md` — Phase 01 Plan 03: Daemon Bootstrap and Client Seam Summary (~1393 tok)
+- `01-HUMAN-UAT.md` — Current Test (~504 tok)
+- `01-RESEARCH.md` — Phase 1: Shell Bridge and Result Contract - Research (~4836 tok)
 - `01-REVIEW-FIX.md` — Phase 01: Code Review Fix Report (~1149 tok)
 - `01-REVIEW.md` — Phase 01: Code Review Report (~3511 tok)
-- `01-VERIFICATION.md` — Phase 1: Shell Bridge and Result Contract Verification Report (~4027 tok)
+- `01-VALIDATION.md` — Phase 1 — Validation Strategy (~918 tok)
+- `01-VERIFICATION.md` — Phase 1: Shell Bridge and Result Contract Verification Report (~4026 tok)
 
 ## .planning/phases/02-intent-router-and-context-pipeline/
 
 - `02-01-PLAN.md` — Broad intent categories classified before any context gathering. (~8477 tok)
-- `02-02-PLAN.md` — and: classifyIntent, detectVcsContext, runForegroundClient, suggestShellResult, suggestShellResult (~13578 tok)
-- `02-03-PLAN.md` — Declares for (~8405 tok)
+- `02-01-SUMMARY.md` — Phase 02 Plan 01: Intent contracts and deterministic routing Summary (~1222 tok)
+- `02-02-PLAN.md` — Exports RequestIntent (~13578 tok)
+- `02-02-SUMMARY.md` — Phase 02 Plan 02: Context pipeline and candidate selection Summary (~1430 tok)
+- `02-03-PLAN.md` — Exports GatherContextInput (~8405 tok)
+- `02-03-SUMMARY.md` — Phase 02 Plan 03: Registry bootstrap Summary (~947 tok)
 - `02-CONTEXT.md` — Phase 2: Intent Router and Context Pipeline - Context (~1686 tok)
 - `02-DISCUSSION-LOG.md` — Phase 2: Intent Router and Context Pipeline - Discussion Log (~840 tok)
 - `02-PATTERNS.md` — Phase 2: Intent Router and Context Pipeline - Pattern Map (~5434 tok)
 - `02-RESEARCH.md` — Phase 2: Intent Router and Context Pipeline - Research (~5890 tok)
 - `02-REVIEWS.md` — Cross-AI Plan Review — Phase 2 (~2741 tok)
+- `02-VALIDATION.md` — Phase 2 — Validation Strategy (~857 tok)
 
 ## .planning/phases/03-claude-fast-path-and-ranked-suggestions/
 
-- `03-01-PLAN.md` — with: readEnvValueFromDotEnvLocal, appendDebugLog, resolveModel (~3933 tok)
-- `03-01-SUMMARY.md` — Dependency graph (~1318 tok)
-- `03-02-PLAN.md` — Trust Boundaries (~3133 tok)
+- `03-01-PLAN.md` — Exports ContextEnvelope (~3933 tok)
+- `03-01-SUMMARY.md` — Dependency graph (~1389 tok)
+- `03-02-PLAN.md` — Trust Boundaries (~3131 tok)
+- `03-02-SUMMARY.md` — Phase 03 Plan 02: Confidence Propagation, Error ShellResult, and Claude Backend Registration Summary (~1576 tok)
 - `03-03-PLAN.md` — Trust Boundaries (~2481 tok)
+- `03-03-SUMMARY.md` — Phase 03 Plan 03: Error Kind Handling in ZSH Widget Summary (~770 tok)
 - `03-CONTEXT.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Context (~1774 tok)
-- `03-PATTERNS.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Pattern Map (~5239 tok)
-- `03-RESEARCH.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Research (~8019 tok)
+- `03-PATTERNS.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Pattern Map (~5237 tok)
+- `03-RESEARCH.md` — Phase 3: Claude Fast Path and Ranked Suggestions - Research (~8018 tok)
 - `03-REVIEW-FIX.md` — Phase 03: Code Review Fix Report (~1902 tok)
-- `03-REVIEW.md` — Phase 03: Code Review Report — Claude Fast Path and Ranked Suggestions (~2880 tok)
-- `03-VALIDATION.md` — Phase 3 — Validation Strategy (~945 tok)
-- `03-VERIFICATION.md` — Phase 03: Claude Fast Path and Ranked Suggestions Verification Report (~2457 tok)
+- `03-REVIEW.md` — Phase 03: Code Review Report — Claude Fast Path and Ranked Suggestions (~2885 tok)
+- `03-VALIDATION.md` — Phase 3 — Validation Strategy (~944 tok)
+- `03-VERIFICATION.md` — Phase 03: Claude Fast Path and Ranked Suggestions Verification Report (~2456 tok)
 
 ## .planning/phases/03.1-update-interface-and-interactivity-to-match-that-of-this-git/
 
+- `03.1-01-PLAN.md` — Trust Boundaries (~3397 tok)
+- `03.1-01-SUMMARY.md` — Phase 03.1 Plan 01: Wave 0 Test Infrastructure Summary (~1008 tok)
+- `03.1-02-PLAN.md` — Trust Boundaries (~2868 tok)
+- `03.1-02-SUMMARY.md` — Phase 03.1 Plan 02: UI Support Components (Wave 1) Summary (~987 tok)
+- `03.1-03-PLAN.md` — Exports CandidateSelect (~5763 tok)
 - `03.1-03-SUMMARY.md` — Phase 03.1 Plan 03: Wave 2 Core Implementation Summary (~2166 tok)
+- `03.1-CONTEXT.md` — Phase 3.1: Monocle-style Interface and Interactivity - Context (~1626 tok)
+- `03.1-DISCUSSION-LOG.md` — Phase 3.1: Monocle-style Interface and Interactivity - Discussion Log (~788 tok)
+- `03.1-HUMAN-UAT.md` — Current Test (~359 tok)
 - `03.1-PATTERNS.md` — Phase 03.1: Monocle-style Interface and Interactivity — Pattern Map (~5392 tok)
+- `03.1-RESEARCH.md` — Phase 03.1: Monocle-style Interface and Interactivity — Research (~6849 tok)
 - `03.1-REVIEW.md` — Phase 03.1: Code Review Report (~3497 tok)
 - `03.1-UI-SPEC.md` — Phase 03.1 — UI Design Contract: Monocle-style Interface and Interactivity (~3007 tok)
-- `03.1-VERIFICATION.md` — Phase 03.1: Monocle-style Interface and Interactivity — Verification Report (~4216 tok)
+- `03.1-VALIDATION.md` — Phase 03.1 — Validation Strategy (~910 tok)
+- `03.1-VERIFICATION.md` — Phase 03.1: Monocle-style Interface and Interactivity — Verification Report (~4215 tok)
 
 ## .planning/phases/03.2-zellij-floating-pane-integration-for-best-ux/
 
+- `.gitkeep` (~0 tok)
 - `03.2-01-PLAN.md` — returning: runZsh, runZshWithoutZellij (~4521 tok)
-- `03.2-02-PLAN.md` — uses: writeShellResult (~3930 tok)
+- `03.2-01-SUMMARY.md` — Phase 3.2 Plan 01: Wave 1 TDD Foundation — Test Contracts for FIFO and Zellij Integration Summary (~1811 tok)
+- `03.2-02-PLAN.md` — Exports ForegroundClientArgs (~3930 tok)
+- `03.2-02-SUMMARY.md` — Phase 3.2 Plan 02: Wave 2 — FIFO-Aware Write and Zellij Branch Implementation Summary (~1955 tok)
 - `03.2-03-PLAN.md` — Trust Boundaries (~3914 tok)
-- `03.2-CONTEXT.md` — Phase 3.2: Zellij floating pane integration for best UX - Context (~1961 tok)
+- `03.2-03-SUMMARY.md` — Phase 03.2 Plan 03: qq-question-widget Zellij FIFO Rewrite Summary (~1485 tok)
+- `03.2-CONTEXT.md` — Phase 3.2: Zellij floating pane integration for best UX - Context (~1960 tok)
 - `03.2-DISCUSSION-LOG.md` — Phase 3.2: Zellij floating pane integration for best UX - Discussion Log (~1080 tok)
 - `03.2-PATTERNS.md` — Phase 3.2: Zellij Floating Pane Integration - Pattern Map (~3828 tok)
-- `03.2-RESEARCH.md` — Phase 3.2: Zellij Floating Pane Integration - Research (~8713 tok)
+- `03.2-RESEARCH.md` — Phase 3.2: Zellij Floating Pane Integration - Research (~8712 tok)
 - `03.2-REVIEWS.md` — Cross-AI Plan Review — Phase 3.2 (~2218 tok)
 - `03.2-VALIDATION.md` — Phase 3.2 — Validation Strategy (~848 tok)
 
 ## .planning/phases/04-fuzzy-tui-selection-ux/
 
 - `.continue-here.md` — Session Checkpoint — Phase 04 UAT Fixes Pending (~1112 tok)
-- `04-01-PLAN.md` — Trust Boundaries (~3163 tok)
+- `04-01-PLAN.md` — Declares with (~4172 tok)
 - `04-01-SUMMARY.md` — Phase 04 Plan 01: TDD Test Scaffolding Summary (~1281 tok)
 - `04-02-PLAN.md` — Trust Boundaries (~1718 tok)
-- `04-02-SUMMARY.md` — Phase 04 Plan 02: useEffect([query]) Reset Hook Summary (~1190 tok)
-- `04-03-PLAN.md` — Trust Boundaries (~2757 tok)
-- `04-PATTERNS.md` — Phase 4: Fuzzy TUI Selection UX - Pattern Map (~4526 tok)
-- `04-RESEARCH.md` — Phase 4: Fuzzy TUI Selection UX - Research (~6409 tok)
+- `04-02-SUMMARY.md` — Phase 04 Plan 02: useEffect([query]) Reset Hook Summary (~1331 tok)
+- `04-03-PLAN.md` — Trust Boundaries (~2875 tok)
+- `04-03-SUMMARY.md` — Phase 04 Plan 03: Main.ts FIFO Safety Handlers Summary (~1632 tok)
+- `04-PATTERNS.md` — Phase 4: Fuzzy TUI Selection UX - Pattern Map (~4525 tok)
+- `04-RESEARCH.md` — Phase 4: Fuzzy TUI Selection UX - Research (~6482 tok)
 - `04-REVIEW.md` — Phase 04: Code Review Report (~3376 tok)
 - `04-UAT.md` — Current Test (~1187 tok)
 - `04-VALIDATION.md` — Phase 04 — Validation Strategy (~955 tok)
@@ -387,132 +367,221 @@
 
 ## .planning/phases/08-zero-config-install-and-provider-detection/
 
-- `08-01-PLAN.md` — Execute plan: platform-aware Claude CLI detection (macOS Keychain `/login` gap, OAuth env tokens, tests). (~1700 tok)
+- `08-01-PLAN.md` — Trust Boundaries (~1599 tok)
 - `08-01-SUMMARY.md` — Phase 08 Plan 01: Platform-Aware Claude Auth Detection Summary (~918 tok)
 - `08-02-PLAN.md` (~10802 tok)
 - `08-02-SUMMARY.md` — Phase 08 Plan 02: Claude CLI-First Fetch with SDK Rescue Summary (~1774 tok)
-- `08-03-PLAN.md` — Gap closure: provider.json schema checkpoint, pin loader + resolveProviderAdapter, Ollama adapter through the daemon (~9558 tok)
-- `08-04-PLAN.md` — Gap closure: OpenAI Chat Completions adapter behind the pin, OPENAI_API_KEY handling (~5566 tok)
-- `08-05-PLAN.md` — Gap closure: `qq init provider` picker on /dev/tty, atomic 0600 pin write, daemon restart (~6701 tok)
-- `08-06-PLAN.md` — Gap closure: first failed ?? hint to `qq init provider`, detection-never-selects comment, docs (~4152 tok)
+- `08-03-PLAN.md` — Declares ProviderPin (~9758 tok)
+- `08-03-SUMMARY.md` — Phase 8 Plan 03: Provider Pin and Ollama Adapter Summary (~4977 tok)
+- `08-04-PLAN.md` — Cross-phase note from Phase 9 (09-03) (~5769 tok)
+- `08-04-SUMMARY.md` — Phase 8 Plan 04: OpenAI Adapter Summary (~4352 tok)
+- `08-05-PLAN.md` — Declares ProviderPin (~6701 tok)
+- `08-05-SUMMARY.md` — Phase 8 Plan 05: `qq init provider` Picker Summary (~6349 tok)
+- `08-06-PLAN.md` (~4152 tok)
+- `08-06-SUMMARY.md` — Phase 8 Plan 06: Failure Hint and Shipped-Behavior Docs Summary (~3359 tok)
 - `08-CONTEXT.md` — Phase 8: Zero-Config Install and Provider Detection - Context (~2262 tok)
 - `08-DISCUSSION-LOG.md` — Phase 8: Zero-Config Install and Provider Detection - Discussion Log (~954 tok)
 - `08-PATTERNS.md` — Phase 8: Zero-Config Install and Provider Detection - Pattern Map (~6670 tok)
 - `08-RESEARCH.md` — Phase 8: Zero-Config Install and Provider Detection - Research (~8967 tok)
+- `08-REVIEW-DISPOSITION.md` — Phase 08: Code Review Disposition (~1617 tok)
 - `08-REVIEW-FIX.md` — Phase 8: Code Review Fix Report (~3034 tok)
 - `08-REVIEW.md` — Phase 8: Code Review Report (iteration 3, incremental diff 3eb8bfb..HEAD) (~3419 tok)
 - `08-REVIEWS.md` — Cross-AI Plan Review — Phase 8 (~2352 tok)
-- `08-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2301 tok)
+- `08-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking gate) (~2301 tok)
+- `08-UAT.md` — Current Test (~940 tok)
 - `08-VALIDATION.md` — Phase 8 — Validation Strategy (~990 tok)
 - `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~6737 tok)
-- `08-VERIFICATION.md` — Phase 08: Zero-Config Install and Provider Detection Verification Report (~4525 tok)
-- `COVERAGE.md` — API coverage matrix (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) for the seal-time gate (~1900 tok)
 - `COVERAGE.md` — API Coverage — Phase 08 (Ollama, OpenAI, Anthropic Messages, Claude Code CLI) (~1524 tok)
 
 ## .planning/phases/09-installed-only-command-awareness/
 
-- `09-01-PLAN.md` — Wave 1 tracer: ERR-trap-safe zsh handoff (kill switch) → tool-handoff reader → hardened command-words lexer → ⊘ flag; handoff safety/timing tests; TDD layout rows + reserve 17; review ledger (~14923 tok)
+- `.gitkeep` (~1 tok)
+- `09-01-PLAN.md` — Declares names (~14923 tok)
 - `09-01-SUMMARY.md` — Phase 9 Plan 01: Installed-Tool Awareness Tracer Summary (~3567 tok)
-- `09-02-PLAN.md` — Wave 2: 40 spike-002 lexer cases, robustness + token-contract cases, child-process fuzz (maxBuffer, per-case timeouts); no .wolf commits (~5997 tok)
-- `09-03-PLAN.md` — Wave 2: tool catalog, lenient daemon-side / strict client-side installed-tools schemas, steering.ts buildSystemPrompt, adapters guard, 08-03/08-04 notes (~9570 tok)
-- `09-03-SUMMARY.md` — Phase 9 Plan 03: Installed-Tools Prompt Steering Summary (~3699 tok)
-- `09-04-PLAN.md` — Wave 2: installer/package map/install form (comment/heredoc block), Tab toggle, ControlsLine tabHint via element tree (~9205 tok)
+- `09-02-PLAN.md` — Declares stripping (~6006 tok)
+- `09-02-SUMMARY.md` — Phase 9 Plan 02: Lexer Proof Summary (~3125 tok)
+- `09-03-PLAN.md` — Exports QUEQUE_SYSTEM (~9570 tok)
+- `09-03-SUMMARY.md` — Phase 9 Plan 03: Installed-Tools Prompt Steering Summary (~3780 tok)
+- `09-04-PLAN.md` — Declares components (~9205 tok)
 - `09-04-SUMMARY.md` — Phase 9 Plan 04: Tab Install Form Summary (~3886 tok)
-- `09-05-PLAN.md` — Wave 3: apply wave-2 .wolf entries, pong installedTools, catalog-drift test, client sends strict chunk, human check (real-shell timing, Zellij kill switch) (~8056 tok)
+- `09-05-PLAN.md` (~8065 tok)
 - `09-05-SUMMARY.md` — Phase 9 Plan 05: Installed-Tools Chunk, Daemon Capability and Live Check Summary (~2198 tok)
-- `09-06-PLAN.md` — Gap closure G-09-7 (empty Zellij modal): tracer = render-phase candidate-arrival reset in CandidateSelect (prevCandidates, 4th useState) + real-hooks Ink test; Task 2 = serialized latest-wins zellij resize queue (error/2 s settle release) + completion-order race test; SIGWINCH not wired (reasons in objective) (~9100 tok)
+- `09-06-PLAN.md` — Declares with (~9089 tok)
 - `09-06-SUMMARY.md` — Phase 9 Plan 06: Empty Zellij Modal (G-09-7) Summary (~4285 tok)
 - `09-CONTEXT.md` — Phase 9: Installed-Only Command Awareness - Context (~2940 tok)
-- `09-DISCUSS-CHECKPOINT.json` (~587 tok)
 - `09-DISCUSSION-LOG.md` — Phase 9: Installed-Only Command Awareness - Discussion Log (~1131 tok)
 - `09-PATTERNS.md` — Phase 9: Installed-Only Command Awareness - Pattern Map (~3875 tok)
-- `09-RESEARCH.md` — Phase 9: Installed-Only Command Awareness - Research (~13208 tok)
+- `09-RESEARCH.md` — Phase 9: Installed-Only Command Awareness - Research (~13327 tok)
+- `09-REVIEW-DISPOSITION.md` — Phase 09: Code Review Disposition (~1230 tok)
 - `09-REVIEW-FIX.md` — Phase 9: Code Review Fix Report (~2744 tok)
-- `09-REVIEW.md` — Phase 9: Code Review Report (~3864 tok)
-- `09-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~1967 tok)
-- `09-SECURITY.md` — Phase 9 threat register (23 threats, all closed, ASVS L1), accepted risks AR-09-01/02, audit trail (~2100 tok)
-- `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1584 tok)
-- `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~6301 tok)
-- `COVERAGE.md` — No external API integration declaration for Phase 9 (~44 tok)
+- `09-REVIEW.md` — Phase 9: Code Review Report (~6807 tok)
+- `09-REVIEWS.md` — Cross-AI Plan Review — Phase 9 (~9364 tok)
+- `09-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking gate) (~2499 tok)
+- `09-UAT.md` — Current Test (~3540 tok)
+- `09-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2358 tok)
+- `09-VERIFICATION.md` — Phase 9: Installed-Only Command Awareness Verification Report (~6329 tok)
+- `COVERAGE.md` (~44 tok)
 - `deferred-items.md` — Phase 09 — Deferred Items (~280 tok)
+
+## .planning/phases/09-installed-only-command-awareness/.review-diagnostics/20261008T065606Z-gsd-review-zh3vw6/
+
+- `gsd-review-claude.md` — Phase 9 plan review: installed-only command awareness (~4563 tok)
+- `gsd-review-codex.err` — Declares so (~54449 tok)
+- `gsd-review-codex.md` — Cross-AI Plan Review Request (~51075 tok)
+- `gsd-review-cursor.md` — Cross-AI Plan Review — Phase 9 (Installed-Only Command Awareness) (~3415 tok)
+
+## .planning/phases/09-installed-only-command-awareness/.tdd/
+
+- `09-01-red-evidence.json` (~1228 tok)
+- `09-04-task1-red-evidence.json` — Declares on (~1889 tok)
+- `09-04-task2-red-evidence.json` (~2093 tok)
 
 ## .planning/phases/09.1-provider-latency-and-cancellation/
 
+- `.gitkeep` (~1 tok)
 - `09.1-01-PLAN.md` — Artifacts this phase produces (~12953 tok)
-- `09.1-02-PLAN.md` — Artifacts this phase produces (~6994 tok)
+- `09.1-01-SUMMARY.md` — Phase 09.1 Plan 01: Cancellable stream-json claude -p turn Summary (~4826 tok)
+- `09.1-02-PLAN.md` — Artifacts this phase produces (~6996 tok)
+- `09.1-02-SUMMARY.md` — Phase 09.1 Plan 02: claude -p effort and streamed candidates Summary (~5315 tok)
 - `09.1-03-PLAN.md` — Artifacts this phase produces (~6865 tok)
+- `09.1-03-SUMMARY.md` — Phase 09.1 Plan 03: Streamed candidate IPC Summary (~4943 tok)
 - `09.1-04-PLAN.md` — Artifacts this phase produces (~7405 tok)
+- `09.1-04-SUMMARY.md` — Phase 09.1 Plan 04: Streamed, abortable SDK request with effort Summary (~4810 tok)
 - `09.1-05-PLAN.md` — Artifacts this phase produces (~8364 tok)
+- `09.1-05-SUMMARY.md` — Phase 09.1 Plan 05: Prewarmed claude -p Process Summary (~4766 tok)
 - `09.1-06-PLAN.md` — Artifacts this phase produces (~6783 tok)
-- `09.1-07-PLAN.md` — Artifacts this phase produces (~8155 tok)
+- `09.1-06-SUMMARY.md` — Phase 09.1 Plan 06: Bounded, backstopped claude -p runner Summary (~4845 tok)
+- `09.1-07-PLAN.md` — Artifacts this phase produces (~8174 tok)
+- `09.1-07-SUMMARY.md` — Phase 09.1 Plan 07: Streamed candidate list in the modal Summary (~4532 tok)
 - `09.1-08-PLAN.md` — Artifacts this phase produces (~6502 tok)
 - `09.1-08-SUMMARY.md` — Phase 09.1 Plan 08: Phase Gate, OpenWolf Records and Latency UAT Prep Summary (~5691 tok)
-- `09.1-09-PLAN.md` — Gap closure G-09.1-5 (UAT test 5): FILTER opens empty, lbuffer header-only, typed text is the whole filter; tracer real-Ink regression + CandidateSelect seed fix, pre-fill tests rewritten (none deleted), 03.1 D-01/D-02 superseded, OpenWolf/debug records (~9359 tok)
+- `09.1-09-PLAN.md` — Declares to (~9359 tok)
 - `09.1-09-SUMMARY.md` — Phase 09.1 Plan 09: Empty FILTER on Open (G-09.1-5) Summary (~4197 tok)
-- `09.1-10-PLAN.md` — Gap closure CR-01 (verification P9-6): Backspace dropped when it shares a stdin read with typed keys; tracer real-Ink one-chunk regression + per-render `pendingInput` snapshot read by every CandidateSelect key handler (Backspace, typing, Tab, Enter, arrows), invariance it.each (arrow/DEL-separated chunks; Ink keeps CR/Tab inside text runs), CR-01 disposition fixed, OpenWolf records (~11136 tok)
+- `09.1-10-PLAN.md` — Artifacts this phase produces (~11136 tok)
 - `09.1-10-SUMMARY.md` — Phase 09.1 Plan 10: Coalesced stdin read (CR-01) Summary (~3051 tok)
-- `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2714 tok)
+- `09.1-CONTEXT.md` — Phase 09.1: Provider Latency and Cancellation - Context (~2938 tok)
 - `09.1-DISCUSSION-LOG.md` — Phase 09.1: Provider Latency and Cancellation - Discussion Log (~847 tok)
 - `09.1-PATTERNS.md` — Phase 09.1: Provider Latency and Cancellation - Pattern Map (~3593 tok)
-- `09.1-RESEARCH.md` — Phase 09.1: Provider Latency and Cancellation - Research (~17961 tok)
+- `09.1-RESEARCH.md` — Phase 09.1: Provider Latency and Cancellation - Research (~18055 tok)
+- `09.1-REVIEW-DISPOSITION.md` — Phase 09.1: Code Review Disposition (~1352 tok)
 - `09.1-REVIEW-FIX.md` — Phase 09.1: Code Review Fix Report (~2739 tok)
 - `09.1-REVIEW.md` — Phase 09.1: Code Review Report (~3339 tok)
-- `09.1-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2166 tok)
-- `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6435 tok)
+- `09.1-REVIEWS.md` — Cross-AI Plan Review — Phase 09.1 (~5368 tok)
+- `09.1-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking gate) (~2225 tok)
+- `09.1-UAT.md` — Setup (before any test) (~2358 tok)
+- `09.1-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2824 tok)
+- `09.1-VERIFICATION.md` — Phase 09.1: Provider Latency and Cancellation Verification Report (~6434 tok)
 - `COVERAGE.md` — API Coverage — Anthropic Messages API (TS SDK 0.92.0) and Claude Code print mode (2.1.285) (~681 tok)
+
+## .planning/phases/09.1-provider-latency-and-cancellation/.review-diagnostics/20261012T055939Z-gsd-review-muEyHJ/
+
+- `gsd-review-codex.err` — Declares so (~85400 tok)
+- `gsd-review-codex.md` — Cross-AI Plan Review Request (~80092 tok)
+- `gsd-review-cursor.md` — Phase 09.1 Plan Review (~4498 tok)
+- `gsd-review-ollama.md` (~48 tok)
 
 ## .planning/phases/10-linux-distro-ci-harness-and-anonymous-telemetry/
 
+- `.gitkeep` (~1 tok)
 - `10-01-PLAN.md` — Artifacts this phase produces (~8944 tok)
-- `10-02-PLAN.md` — Artifacts this phase produces (~3548 tok)
-- `10-03-PLAN.md` — Artifacts this phase produces (~5803 tok)
+- `10-01-SUMMARY.md` — Phase 10 Plan 01: Distro Smoke Harness and Busybox lsof Fix Summary (~4888 tok)
+- `10-02-PLAN.md` — Artifacts this phase produces (~5342 tok)
+- `10-02-SUMMARY.md` — Phase 10 Plan 02: Stale Prewarm Simulation and mktemp Guard Summary (~2662 tok)
+- `10-03-PLAN.md` — Artifacts this phase produces (~5801 tok)
+- `10-03-SUMMARY.md` — Phase 10 Plan 03: qq doctor Summary (~2970 tok)
 - `10-04-PLAN.md` — Artifacts this phase produces (~7397 tok)
+- `10-04-SUMMARY.md` — Phase 10 Plan 04: Telemetry foundation Summary (~3116 tok)
 - `10-05-PLAN.md` — Artifacts this phase produces (~6769 tok)
+- `10-05-SUMMARY.md` — Phase 10 Plan 05: Push/PR CI, Six-Distro Matrices and the ci-ok Gate Summary (~3921 tok)
 - `10-06-PLAN.md` — Artifacts this phase produces (~8032 tok)
-- `10-07-PLAN.md` — Artifacts this phase produces (~4522 tok)
-- `10-08-PLAN.md` — Artifacts this phase produces (~3645 tok)
-- `10-09-PLAN.md` — Artifacts this phase produces (~3273 tok)
-- `10-10-PLAN.md` — Artifacts this phase produces (~4637 tok)
+- `10-06-SUMMARY.md` — Phase 10 Plan 06: Daemon telemetry buffer, IPC kinds and error kinds Summary (~4228 tok)
+- `10-07-PLAN.md` — Artifacts this phase produces (~6315 tok)
+- `10-07-SUMMARY.md` — Phase 10 Plan 07: Smoke Auto-Revert PR Summary (~4141 tok)
+- `10-08-PLAN.md` — Artifacts this phase produces (~5438 tok)
+- `10-08-SUMMARY.md` — Phase 10 Plan 08: Nightly :latest Matrices and the Live SDK Contract Job Summary (~3594 tok)
+- `10-09-PLAN.md` — Artifacts this phase produces (~5108 tok)
+- `10-09-SUMMARY.md` — Phase 10 Plan 09: qq telemetry and the doctor telemetry row Summary (~3348 tok)
+- `10-10-PLAN.md` — Artifacts this phase produces (~6434 tok)
+- `10-10-SUMMARY.md` — Phase 10 Plan 10: Client Telemetry Events Summary (~4444 tok)
 - `10-11-PLAN.md` — Artifacts this phase produces (~6980 tok)
+- `10-11-SUMMARY.md` — Phase 10 Plan 11: Telemetry Consent Ask and Phase Gate Summary (~4417 tok)
 - `10-12-PLAN.md` — Artifacts this phase produces (~5039 tok)
+- `10-12-SUMMARY.md` — Phase 10 Plan 12: GitHub CI Proof and Revert Drill Summary (~7514 tok)
 - `10-13-PLAN.md` — Artifacts this phase produces (~5222 tok)
+- `10-13-SUMMARY.md` — Phase 10 Plan 13: Telemetry Key Decision Summary (~1124 tok)
 - `10-CONTEXT.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Context (~2801 tok)
-- `10-DISCUSS-CHECKPOINT.json` (~360 tok)
 - `10-DISCUSSION-LOG.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Discussion Log (~825 tok)
 - `10-PATTERNS.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Pattern Map (~3292 tok)
 - `10-RESEARCH.md` — Phase 10: Linux distro CI harness and anonymous telemetry - Research (~22000 tok)
+- `10-REVIEW-DISPOSITION.md` — Phase 10: Code Review Disposition (~1207 tok)
 - `10-REVIEW-FIX.md` — Phase 10: Code Review Fix Report (~1991 tok)
 - `10-REVIEW.md` — Phase 10: Code Review Report (re-review after the fix run) (~3189 tok)
+- `10-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking gate) (~2513 tok)
+- `10-UAT.md` — Current Test (~442 tok)
+- `10-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2054 tok)
 - `10-VERIFICATION.md` — Phase 10: Linux distro CI harness and anonymous telemetry Verification Report (~3689 tok)
 - `COVERAGE.md` — API Coverage — PostHog Cloud EU public capture API, and the GitHub REST API (via `gh` in CI) (~735 tok)
 
 ## .planning/phases/11-multi-shell-trigger-support-bash-and-fish/
 
+- `.gitkeep` (~1 tok)
 - `11-01-PLAN.md` — Artifacts this phase produces (~12224 tok)
+- `11-01-SUMMARY.md` — Phase 11 Plan 01: bash `??` tracer and PTY harness Summary (~5170 tok)
 - `11-02-PLAN.md` — Artifacts this phase produces (~5990 tok)
+- `11-02-SUMMARY.md` — Phase 11 Plan 02: shell identity in the context and prompt Summary (~3343 tok)
 - `11-03-PLAN.md` — Artifacts this phase produces (~7369 tok)
+- `11-03-SUMMARY.md` — Phase 11 Plan 03: Shell-aware tool handoff and command-word lexer Summary (~4510 tok)
 - `11-04-PLAN.md` — Artifacts this phase produces (~8936 tok)
+- `11-04-SUMMARY.md` — Phase 11 Plan 04: Shell registry and `qq init [shell]` Summary (~3268 tok)
 - `11-05-PLAN.md` — Artifacts this phase produces (~6270 tok)
+- `11-05-SUMMARY.md` — Phase 11 Plan 05: Shell-aware telemetry environment Summary (~3753 tok)
 - `11-06-PLAN.md` — Artifacts this phase produces (~7870 tok)
-- `11-07-PLAN.md` — Artifacts this phase produces (~8332 tok)
+- `11-06-SUMMARY.md` — Phase 11 Plan 06: Instant frame spec and bash painter Summary (~4569 tok)
+- `11-07-PLAN.md` — Artifacts this phase produces (~8330 tok)
+- `11-07-SUMMARY.md` — Phase 11 Plan 07: bash tool handoff, prewarm and Zellij pane Summary (~4802 tok)
 - `11-08-PLAN.md` — Artifacts this phase produces (~7187 tok)
+- `11-08-SUMMARY.md` — Phase 11 Plan 08: bash diagnostics in `qq doctor` Summary (~4292 tok)
 - `11-09-PLAN.md` — Artifacts this phase produces (~7340 tok)
+- `11-09-SUMMARY.md` — Phase 11 Plan 09: Distro bash smoke, bash-versions CI and Homebrew bash adapter Summary (~3486 tok)
 - `11-10-PLAN.md` — Artifacts this phase produces (~6192 tok)
+- `11-10-SUMMARY.md` — Phase 11 Plan 10: Shell-neutral docs, the adapter contract and the SHELL_NAMES invariant Summary (~3304 tok)
 - `11-11-PLAN.md` — Declared files are the .wolf/ records. If a Task 1 gate fails, the fix lands in the owning (~5913 tok)
+- `11-11-SUMMARY.md` — Phase 11 Plan 11: Final gate, macOS bash UAT and CI Summary (~3000 tok)
 - `11-CONTEXT.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Context (~2667 tok)
-- `11-DISCUSS-CHECKPOINT.json` (~443 tok)
 - `11-DISCUSSION-LOG.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Discussion Log (~844 tok)
 - `11-PATTERNS.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Pattern Map (~4891 tok)
 - `11-RESEARCH.md` — Phase 11: Multi-shell trigger support (bash, fish-ready) - Research (~17835 tok)
+- `11-REVIEW-DISPOSITION.md` — Phase 11: Code Review Disposition (~813 tok)
 - `11-REVIEW-FIX.md` — Phase 11: Code Review Fix Report (~2388 tok)
 - `11-REVIEW.md` — Phase 11: Code Review Report (~3548 tok)
-- `11-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking g (~2154 tok)
-- `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~1816 tok)
-- `11-VERIFICATION.md` — Phase 11: Multi-shell trigger support (bash, fish-ready): Verification Report (~5486 tok)
+- `11-REVIEWS.md` — Cross-AI Plan Review — Phase 11 (~11156 tok)
+- `11-SECURITY.md` — threats_open = count of OPEN threats at or above workflow.security_block_on severity (the blocking gate) (~2154 tok)
+- `11-VALIDATION.md` — status lifecycle: draft (seeded by plan-phase) → validated (set by validate-phase §6) (~2226 tok)
+- `11-VERIFICATION.md` — Phase 11: Multi-shell trigger support (bash, fish-ready): Verification Report (~5325 tok)
+
+## .planning/phases/11-multi-shell-trigger-support-bash-and-fish/.red/
+
+- `11-01-red.json` (~1306 tok)
+- `11-02-task1-red.json` (~1012 tok)
+- `11-02-task2-red.json` (~2756 tok)
+- `11-03-task1-red.json` (~835 tok)
+- `11-03-task2-red.json` — Declares fd (~4502 tok)
+- `11-06-task1-red.json` — Declares is (~1614 tok)
+- `11-06-task2-red.json` (~2593 tok)
+- `11-07-task1-red.json` — Declares corrupt (~1788 tok)
+- `11-07-task2-red.json` — Declares corrupt (~2149 tok)
+
+## .planning/phases/12-fish-trigger-support/
+
+- `.gitkeep` (~1 tok)
+
+## .planning/phases/999.1-model-supplied-install-package-names/
+
+- `.gitkeep` (~0 tok)
 
 ## .planning/quick/20260522-selection-summary-and-history/
 
-- `PLAN.md` — Quick Task: Selection Summary and History (~824 tok)
+- `PLAN.md` — Quick Task: Selection Summary and History (~823 tok)
 - `SUMMARY.md` — Summary: Selection Summary and History (~274 tok)
 
 ## .planning/quick/20260604-isDirectRun-symlink-regression/
@@ -560,11 +629,18 @@
 
 ## .planning/quick/20260619-workflows-nvmrc/
 
+- `PLAN.md` — Quick Task: Workflows use .nvmrc for Node version (~81 tok)
 - `SUMMARY.md` — Quick Task: Workflows use .nvmrc for Node version (~85 tok)
 
 ## .planning/quick/260501-qt4-write-a-short-node-script-that-restart-t/
 
-- `260501-qt4-PLAN.md` — Quick task plan for a minimal Node watcher that restarts `pnpm dev` and logs watch/restart events. (~520 tok)
+- `260501-qt4-PLAN.md` — Quick Task Plan (~611 tok)
+- `260501-qt4-SUMMARY.md` — Quick Summary 260501-qt4 (~157 tok)
+
+## .planning/quick/260502-cf6-fix-the-ci-so-the-tests-pass/
+
+- `260502-cf6-PLAN.md` — Quick Task 260502-cf6: fix the ci so the tests pass (~222 tok)
+- `260502-cf6-SUMMARY.md` — Quick Task 260502-cf6: fix the ci so the tests pass (~112 tok)
 
 ## .planning/quick/260522-tui-cleanup-on-close/
 
@@ -574,16 +650,12 @@
 ## .planning/quick/260522-vfd-prototype-provider-detection/
 
 - `260522-vfd-PLAN.md` — Trust Boundaries (~2693 tok)
-- `260522-vfd-PLAN.md` — Quick plan: prototype provider detection waterfall (5-step, detect.ts, tests, run-foreground wiring) (~1800 tok)
 - `260522-vfd-SUMMARY.md` — Phase quick Plan 260522-vfd: Prototype Provider Detection Summary (~881 tok)
 
 ## .planning/quick/260528-mk1-rename-que-que-to-queque-in-prose-write-/
 
-- `260528-mk1-SUMMARY.md` — Phase quick Plan 260528-mk1: Rename que-que to queque Summary (~1192 tok)
-
-## .planning/quick/260528-mk1-rename-queque-to-queque-in-prose-write-/
-
 - `260528-mk1-PLAN.md` — Declares names (~2959 tok)
+- `260528-mk1-SUMMARY.md` — Phase quick Plan 260528-mk1: Rename que-que to queque Summary (~1192 tok)
 
 ## .planning/quick/260529-ney-explore-beta-release-requirements-for-ho/
 
@@ -598,49 +670,98 @@
 
 ## .planning/quick/261011-e43-fix-top-queque-line-is-clipped-when-moda/
 
-- `261011-e43-PLAN.md` — Quick plan: Zellij header clip fix. Tracer TDD = real-Ink "header row" test (pane PTY rows >= rows Ink frame occupies; plain/flagged/smt2) + `INK_TRAILING_CURSOR_ROWS = 1` in resolveZellijPaneHeight (content + 2 frame + 1 cursor row, capped); queue-test height literals +1 (exitAfterMs key 9→10); resize-signal wiring rejected (reasons in objective); Task 2 live Zellij human-verify. (~6200 tok)
-- `261011-e43-SUMMARY.md` — Phase quick-261011-e43 Plan 01: Zellij header clip fix Summary (~2790 tok)
+- `261011-e43-PLAN.md` (~6165 tok)
+- `261011-e43-RED-evidence.json` (~858 tok)
+- `261011-e43-SUMMARY.md` — Phase quick-261011-e43 Plan 01: Zellij header clip fix Summary (~2858 tok)
 
 ## .planning/quick/261011-f9o-keep-the-zellij-modal-at-its-full-list-h/
 
-- `261011-f9o-PLAN.md` — Quick plan: hold the Zellij pane height while filtering. Tracer TDD = real-Ink (f) `smt` + Backspace spawns no resize (pre-fix probe 18,11,18) with a `replayScreen` check (header row 0, no stale rows, no scroll) + `heldPaneLines(previousHeld, input)` in modal-layout (max of held, current, unfiltered estimate) fed by a per-candidates-array useRef hold in CandidateSelect; (d)/(e) expectations changed on purpose; Task 2 unit tests + (g) per-list reset + wolf records; Task 3 live Zellij human-verify. Zellij path only; run-foreground/zellij-pane-resize untouched. (~8000 tok)
-- `261011-f9o-SUMMARY.md` — Phase quick-261011-f9o Plan 01: Keep the Zellij modal at its full-list height while filtering Summar (~2607 tok)
+- `261011-f9o-PLAN.md` — Declares CandidateSelect (~8008 tok)
+- `261011-f9o-RED-evidence.json` (~1150 tok)
+- `261011-f9o-SUMMARY.md` — Phase quick-261011-f9o Plan 01: Keep the Zellij modal at its full-list height while filtering Summary (~2594 tok)
 
 ## .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/
 
-- `261011-jbh-PLAN.md` — Quick plan: instant first frame + faster Node start. Tracer TDD (Task 1, LD-1): zsh widget paints `queque › <lbuffer>` + `thinking…` before Node (inline: reserve + ESC 7 + CSI J + frame + ESC 8 via plain print; Zellij: session-dir `instant-frame.txt` cat by a `/bin/sh` pane wrapper, lbuffer never in argv); client `src/client/instant-frame.ts` `armInstantFrameTakeover` injects the surface clear into Ink's first visible write (inline ESC 8 + CSI J on the client's own fresh save, Zellij CSI H + CSI J); real-Ink `replayScreen` cases t1-t6 + zsh z1-z10; `QQ_INSTANT_FRAME=0` kill switch. Task 2 (LD-2): RED tests/bundle-startup.test.ts, tsup entry {main: src/cli/launcher.ts, app: src/cli/main.ts}, noExternal, react-devtools-core shim alias, createRequire banner, per-user 0700 compile cache (fail safe), lazy `import('@anthropic-ai/sdk')`. Task 3 live check inline + Zellij; then debug session → resolved/. (~12400 tok)
-- `261011-jbh-SUMMARY.md` — Phase quick-261011-jbh Plan 01: Instant first frame from the zsh widget + bundled, compile-cached cl (~3712 tok)
-- `COVERAGE.md` — api-coverage gate declaration: no external API integration (SDK import only made lazy). (~68 tok)
+- `261011-jbh-PLAN.md` (~12421 tok)
+- `261011-jbh-SUMMARY.md` — Phase quick-261011-jbh Plan 01: Instant first frame from the zsh widget + bundled, compile-cached client Summary (~3744 tok)
+- `COVERAGE.md` (~68 tok)
 - `deferred-items.md` — Deferred items: quick 261011-jbh (~332 tok)
+
+## .planning/quick/261011-jbh-instant-first-frame-from-the-zsh-widget-/red/
+
+- `task1-red.json` — Declares and (~2677 tok)
+- `task2-red.json` (~580 tok)
 
 ## .planning/quick/261012-kp1-rewrite-changelog-md-to-user-facing-feat/
 
 - `261012-kp1-PLAN.md` (~912 tok)
 - `261012-kp1-SUMMARY.md` — Summary: User-facing changelog (~182 tok)
 
+## .planning/quick/261012-nlf-fix-t-09-1-14-wr-01-r2-in-src-providers-/
+
+- `261012-nlf-PLAN.md` — Exports isNormalStopReason (~9338 tok)
+- `261012-nlf-SUMMARY.md` — Phase quick-261012-nlf Plan 01: Fail closed on every non-normal stop reason Summary (~1583 tok)
+- `COVERAGE.md` (~101 tok)
+
 ## .planning/quick/261017-4kt-update-the-readme-to-match-the-current-f/
 
-- `261017-4kt-PLAN.md` — Code-grounded facts (observed by the planner on 2026-10-17; re-check each one against the cited code (~5812 tok)
+- `261017-4kt-PLAN.md` — Code-grounded facts (observed by the planner on 2026-10-17; re-check each one against the cited code before writing it into the README) (~5812 tok)
+- `261017-4kt-SUMMARY.md` — Phase quick-261017-4kt Plan 01: README refresh Summary (~1956 tok)
 - `COVERAGE.md` (~46 tok)
 
 ## .planning/quick/261017-5q6-fix-the-stale-init-command-in-homebrew-y/
 
-- `261017-5q6-PLAN.md` — Quick plan: replace the stale `>>` init redirect with `qq init zsh && source ~/.zshrc` in src/cli/main.ts help, shell/zsh/queque.zsh qq-not-found zle message, release.yaml + homebrew.yml caveats (tracer); caveats auth-first with `claude /login`; CONTRIBUTING.md key optional / QQ_MODEL `claude-sonnet-5` / debug log default; python yaml + ruby caveats render gate (~6700 tok)
-- `COVERAGE.md` — api-coverage gate declaration: no external API integration (docs/help wording only) (~64 tok)
+- `261017-5q6-PLAN.md` — Exports DEFAULT_MODEL (~6672 tok)
+- `261017-5q6-SUMMARY.md` — Phase quick-261017-5q6 Plan 01: Fix the stale init command Summary (~1373 tok)
+- `COVERAGE.md` (~64 tok)
+
+## .planning/quick/261018-wax-prevent-ollama-and-openai-cut-off-answer/
+
+- `261018-wax-PLAN.md` — Exports strictCandidateListWithoutProse (~9667 tok)
+- `261018-wax-SUMMARY.md` — Phase quick-261018-wax Plan 01: Prevent Ollama and OpenAI cut-off answers Summary (~1859 tok)
+- `COVERAGE.md` — API Coverage — Ollama /api/chat and OpenAI Chat Completions (quick 261018-wax) (~648 tok)
 
 ## .planning/quick/261021-sya-fix-changelog-links-leaking-x-access-tok/
 
-- `261021-sya-PLAN.md` — Declares normalizeRepositoryUrl (~3906 tok)
+- `261021-sya-PLAN.md` — Exports normalizeRepositoryUrl (~3906 tok)
 - `261021-sya-SUMMARY.md` — Quick 261021-sya Plan 01: Fix Changelog Links Leaking x-access-token Summary (~928 tok)
 
 ## .planning/quick/261030-en8-add-badges-to-the-readme-for-all-the-pas/
 
-- `261030-en8-PLAN.md` — /*.test.ts`. tsconfig includes tests. There is no YAML parser dependency, so extract `images:` with (~4947 tok)
+- `261030-en8-PLAN.md` — /*.test.ts`. tsconfig includes tests. There is no YAML parser dependency, so extract `images:` with a regex. The distro CI legs test `git archive H... (~4947 tok)
+- `261030-en8-SUMMARY.md` — Quick 261030-en8 Plan 01: README Badges Summary (~1201 tok)
 
 ## .planning/quick/261030-fdr-reformat-the-readme-minimal-move-the-res/
 
-- `261030-fdr-PLAN.md` — Quick plan: minimal README (H1, badges, pitch, gif, Install, Choose a provider, Usage, More) with detail moved verbatim to docs/INSTALL, PROVIDERS, USAGE, PRIVACY (+ telemetry), CONFIGURATION; README links docs via absolute GitHub blob URLs (npm ships README alone); tests/docs-links.test.ts guards links/anchors; check-readme-moved.mjs proves no old line lost vs b45f6db (~8700 tok)
-- `check-readme-moved.mjs` — One-off preservation check: every line of `git show b45f6db:README.md` (normalized: link targets, `> `, heading markers, whitespace) must appear in README.md + docs/INSTALL, PROVIDERS, USAGE, PRIVACY, CONFIGURATION.md; only six decorative ALLOWED_DROPS; exit 1 lists missing lines (~650 tok)
+- `261030-fdr-PLAN.md` — Now:** pitch, the demo gif, `## Install`, `## Choose a provider`, `## Usage`, `## More`. (~8699 tok)
+- `261030-fdr-SUMMARY.md` — Quick 261030-fdr Plan 01: Minimal README with docs split Summary (~1193 tok)
+- `check-readme-moved.mjs` — One-off preservation check for quick task 261030-fdr: every line of the README at b45f6db (~598 tok)
+
+## .planning/quick/261030-tq3-restart-outdated-daemon-and-report-a-dae/
+
+- `261030-tq3-PLAN.md` — Declares DaemonOptions (~9128 tok)
+- `261030-tq3-SUMMARY.md` — Quick 261030-tq3 Plan 01: Restart an outdated daemon and report a daemon that does not answer — Summary (~1830 tok)
+
+## .planning/quick/261105-ix8-add-a-weekly-homebrew-tap-clone-stats-wo/
+
+- `261105-ix8-PLAN.md` — Declares and (~8387 tok)
+- `261105-ix8-SUMMARY.md` — Quick 261105-ix8: Weekly Homebrew tap clone stats Summary (~2094 tok)
+- `verify-tap-clone-stats.sh` — Offline harness for .github/workflows/tap-clone-stats.yml (quick 261105-ix8). (~4470 tok)
+
+## .planning/quick/261115-3qz-readme-support-matrix-shell-and-os-badge/
+
+- `261115-3qz-PLAN.md` (~5467 tok)
+- `261115-3qz-SUMMARY.md` — Phase quick-261115-3qz Plan 01: README support matrix Summary (~1145 tok)
+
+## .planning/quick/261115-4um-readme-remove-workflow-badges-and-suppor/
+
+- `261115-4um-PLAN.md` — Declares body (~4309 tok)
+- `261115-4um-SUMMARY.md` — Phase quick-261115-4um Plan 01: Remove README workflow badges and support table Summary (~1173 tok)
+
+## .planning/quick/261117-jpp-implement-update-notifier-per-planning-t/
+
+- `261117-jpp-PLAN.md` (~13982 tok)
+- `261117-jpp-SUMMARY.md` — Phase quick-261117-jpp Plan 01: Update Notifier Summary (~3509 tok)
 
 ## .planning/research/
 
@@ -652,11 +773,9 @@
 
 ## .planning/spikes/
 
-- `CONVENTIONS.md` — how we spike: zsh timing, spike-local deps, tsup bundling (~400 tok)
-- `MANIFEST.md` — Spike Manifest (~258 tok)
-- `MANIFEST.md` — spike index + installed-only-commands requirements (~500 tok)
-- `WRAP-UP-SUMMARY.md` — Spike Wrap-Up Summary (~438 tok)
-- `WRAP-UP-SUMMARY.md` — wrap-up summary of spikes 001–003 (~500 tok)
+- `CONVENTIONS.md` — Spike Conventions (~596 tok)
+- `MANIFEST.md` — Spike Manifest (~1106 tok)
+- `WRAP-UP-SUMMARY.md` — Spike Wrap-Up Summary (~922 tok)
 
 ## .planning/spikes/001-zsh-commands-handoff/
 
@@ -666,90 +785,32 @@
 
 ## .planning/spikes/002-candidate-binary-check/
 
+- `.gitignore` — Git ignore rules (~4 tok)
 - `cases.mjs` — Expected = every program the shell would look up, in order. Wrappers (sudo, xargs…) count too. (~988 tok)
-- `extract.mjs` — Index just past the `close` that balances the `open` at s[i]. Respects quotes and escapes. (~2563 tok)
+- `extract.mjs` — Index just past the `close` that balances the `open` at s[i]. Respects quotes and escapes. (~2664 tok)
+- `find-hang.mjs` — Spike 002 — isolate inputs that hang lexHand: each runs in a child with a 1 s timeout. (~252 tok)
+- `fuzz-child.mjs` — Declares alphabet (~188 tok)
+- `package-lock.json` — npm lock file (~309 tok)
+- `package.json` — Node.js package manifest (~33 tok)
 - `README.md` — Project documentation (~1281 tok)
 - `run.mjs` — Spike 002 runner: accuracy of hand lexer vs shell-quote, plus per-candidate cost and (~730 tok)
 
 ## .planning/spikes/003-prompt-steering/
 
+- `.gitignore` — Git ignore rules (~11 tok)
 - `catalog.ts` — Curated catalog of notable CLI tools that have common alternatives. Variant B sends only (~440 tok)
-- `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1696 tok)
+- `compare.ts` — Spike 003 — does telling the model which tools are installed help, and what does it cost? (~1778 tok)
 - `README.md` — Project documentation (~1195 tok)
 
-## .planning/spikes/004-bash-readline-trigger/
+## .planning/spikes/003-prompt-steering/out/
 
-- `README.md` — spike 004: bash `bind -x` ?? trigger, VALIDATED on 5.0+ (~1100 tok)
-- `README.md` — Project documentation (~1191 tok)
-- `spike.bash` — stub bash adapter: `?` binding, READLINE_LINE/POINT, 3.2 guard (~350 tok)
+- `compare.js` — .planning/spikes/003-prompt-steering/compare.ts (~6622 tok)
+- `compare.js.map` — \n * Returns a reused Anthropic SDK client for this process.\n *\n * The constructor is the keep-alive / TLS boundary. Creating a new client on\n *... (~14046 tok)
 
-## .planning/spikes/005-bash-tui-handoff/
+## .planning/spikes/003-prompt-steering/results/
 
-- `drive.sh` — private-tmux driver: fixture / llm-pick / llm-esc / prompt-multiline (~550 tok)
-- `queque.bash` — full bash adapter port of qq-question-widget (handoff, FIFO, prompt-head reprint) (~1200 tok)
-- `README.md` — spike 005: bash → Ink picker handoff, inline + Zellij, VALIDATED (~900 tok)
-- `README.md` — Project documentation (~911 tok)
-
-## .planning/spikes/006-fish-commandline-trigger/
-
-- `drive.sh` — private-tmux driver for fish trigger cases (~450 tok)
-- `README.md` — spike 006: fish bind + commandline ?? trigger, VALIDATED on 4.x (~900 tok)
-- `README.md` — Project documentation (~881 tok)
-- `spike.fish` — stub fish adapter (~300 tok)
-
-## .planning/spikes/007-fish-tui-handoff/
-
-- `drive.sh` — private-tmux driver for fish picker scenarios (~600 tok)
-- `queque.fish` — full fish adapter (PATH handoff, FIFO cat + timeout guard, repaint padding) (~1400 tok)
-- `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1538 tok)
-- `README.md` — spike 007: fish → Ink picker handoff, inline + Zellij, VALIDATED (~950 tok)
-- `README.md` — Project documentation (~820 tok)
-
-## docs/
-
-- `config.example.json` — Example `~/.config/qq/config.json` incl. `"effort": "low"` (09.1-02). (~61 tok)
-- `CONFIGURATION.md` — Configuration reference, moved verbatim from the README (quick 261030-fdr): the `config.json` field table (`effort`, `privacy.*`, `safety.destructiveCommandPatterns`), links config.example.json, PROVIDERS.md#after-changing-your-key-or-settings and SYSTEM_DESIGN.md. (~700 tok)
-- `EXTENSIONS.md` — QueQue Extension Seams (~2376 tok)
-- `INSTALL.md` — Install (quick 261030-fdr; Phase 11 11-10): Homebrew, npm, `qq init` for zsh and bash, the bash 5.0 floor and Homebrew bash, optional chsh, the `~/.bash_profile` line, `qq doctor`, undoing `qq init` (remove the two QueQue lines). (~800 tok)
-- `PRIVACY.md` — Privacy defaults, moved verbatim from the README (quick 261030-fdr): insertion-only, what leaves the machine per provider, what is never sent, debug logging, user config; plus a source-checked Anonymous telemetry section (consent prompt text, env overrides, the three allow-listed events, install id, PostHog Cloud EU batches dropped on failure, `qq telemetry status|on|off|show`). (~1700 tok)
-- `PROVIDERS.md` — Choose a provider, moved verbatim from the README (quick 261030-fdr): Claude (default) with Claude Code login vs `ANTHROPIC_API_KEY` and which route wins, OpenAI or Ollama (beta) via `qq init provider` and `provider.json`, After changing your key or settings (daemon restart). Anchors `#claude-default`, `#openai-or-ollama-beta`, `#after-changing-your-key-or-settings` are linked from CONTRIBUTING.md and README.md. (~1900 tok)
-- `RELEASING.md` — Release Process (~1426 tok)
-- `SYSTEM_DESGN.md` — System Design (~3530 tok)
-- `SYSTEM_DESIGN.md` — System Design; the IPC paragraph covers the streaming reply sequence (`candidate` rows, `candidates` done signal), the three pong flags, abort on socket close and D-16 (09.1-03). Source links are `../`-relative (quick 261030-fdr). (~2900 tok)
-- `USAGE.md` — Usage, moved verbatim from the README (quick 261030-fdr): the `??` examples, picker (streaming rows, FILTER box, Enter, Esc), destructive-command mark, Installed-tool awareness (`#installed-tool-awareness`, `QQ_TOOL_AWARENESS=0`), Inside Zellij (`QQ_PANE_WIDTH`/`QQ_PANE_HEIGHT`). (~1000 tok)
-
-## scripts/
-
-- `build-dashboard.mjs` — `, 'wholename']], (~7492 tok)
-- `docker-homebrew-smoke-runner.sh` (~567 tok)
-- `semantic-release-user-notes.ts` — semantic-release plugin that writes user-facing changelog notes. (~4122 tok)
-- `smoke-distro-runner.sh` — In-container half of scripts/smoke-distro.sh. POSIX sh, runs as root in a fresh (~1494 tok)
-- `smoke-distro.exp` — Expect PTY driver, `smoke-distro.exp PASS`: passes default (XDG_RUNTIME_DIR unset), c-locale (LANG=C) and consent (QQ_SMOKE_CONSENT=1: first accept shows `[y/N]`, `n`, buffer executes, second accept never asks). Accept (`command not found: tldr`) and Esc (`restored-42`) anchored on the `QQSMOKE%` prompt redraw; idle-prompt regex allows zsh trailing escapes. Exits 10-16, 17 no consent question, 18 asked twice, 19 unknown pass (10-01, 10-11). (~1705 tok)
-- `smoke-distro.sh` — `smoke-distro.sh IMAGE [--out DIR]` (env QQ_SMOKE_OUT): host entry with the D-16 Docker check, `pnpm build`, `pnpm pack`, and `docker run` of smoke-distro-runner.sh with the tarball, the fake-claude fixture, scripts/ (ro) and the out dir mounted; prints `smoke-distro: PASS|FAIL IMAGE` and on failure the tails of pty-default/c-locale/consent logs (10-01, 10-11). (~773 tok)
-- `smoke-homebrew-docker.sh` (~953 tok)
-- `strip-cursor-coauthor-from-msg.sh` — Removes Cursor co-author trailer lines from a git commit message file or stdin. (~114 tok)
-
-## scripts/ci/
-
-- `auto-revert.sh` — D-15 smoke auto-revert (bash, env-only inputs REPO, BRANCH, HEAD_SHA, BEFORE_SHA, RUN_ID, RUN_URL, ARTIFACTS_DIR, GH_TOKEN). Last green = branch push run with smoke passed, then first-parent ancestor by head_sha, then the before SHA, then the merge base with main; else ::warning::. Restores the tree on `auto-revert/<branch, / to ->` with workflow files kept at HEAD (GITHUB_TOKEN cannot push them), force-pushes, then gh pr edit+comment if open else create. Body: failing jobs, run URL, doctor.json and log tails, sanitized, 60000-char cap (10-07). (~3562 tok)
-- `bash-version-check.sh` — `bash-version-check.sh refuse|accept`, the Phase 11 D-12 check inside one official `bash:<tag>` image (repo at /w, read-only): a non-interactive source is silent; refuse = one `needs bash 5.0+` line and no `_qq_question`; accept = function defined and `?` in `bind -m emacs -X`. POSIX sh (busybox); run by the ci.yml `bash-versions` job on bash:3.2, 4.4 (refuse) and 5.0 (accept) (11-09). (~930 tok)
-- `code-changed.mjs` — CI doc-only path filter: `isDocOnlyPath` (`*.md`, LICENSE, .planning/, .wolf/, docs/, .github/ISSUE_TEMPLATE/), `codeChanged(paths)`. Base is QQ_CHANGES_BASE (non-zero, present), else resolveBaseRef().mergeBase. Writes `code=true|false` to $GITHUB_OUTPUT and fails open to true; exits 1 only if $GITHUB_OUTPUT is unwritable (10-05). (~790 tok)
-- `install-distro-deps.sh` — POSIX sh, run as root: installs git, zsh, jq, expect, procps and Node 24 per /etc/os-release ID (apk on alpine; nodejs.org tarball checked against SHASUMS256.txt on ubuntu/debian; dnf nodejs24 on fedora; pacman nodejs-lts-krypton on arch), plus pnpm from packageManager unless --no-pnpm. Exits 2 unsupported distro, 3 install failure, 64 usage (10-01). (~1156 tok)
-- `test-in-distro.sh` — `test-in-distro.sh IMAGE [vitest args]`: pipes `git archive HEAD` into `docker run`, then install-distro-deps, `pnpm install --frozen-lockfile`, and `pnpm test:run` or `vitest run ARGS`. D-16: without Docker it warns and exits 0 locally, exits 1 with CI set (10-01). (~450 tok)
-
-## shell/
-
-- `README.md` — Shell adapter contract for authors (Phase 11 D-01/D-02, 11-10): trigger rules, session dir, request.json fields (`shell`, `shellVersion`), result kinds, cursor restore, history, the Zellij timeout and setup failures, the tool handoff (`tools.pending`, two-flag `closed` cleanup), instant-frame parity, and the new-shell checklist gated by tests/shell-names-invariant.test.ts. Adapters scope the QQ_RESULT_FILE export to the trigger call. (~2670 tok)
-
-## shell/bash/
-
-- `queque.bash` — bash 5.0+ readline adapter (Phase 11 BASH-01; `shell/bash/queque.bash`): `bind -x` on `?` in emacs and vi-insert, interactive guard, then the one-line `queque: the ?? trigger needs bash 5.0+ (found X)` refusal below 5.0; request.json via `jq --arg` with `shell:"bash"` and `shellVersion`; instant frame (`_qq_instant_frame`, inline and pane bytes, kill switch QQ_INSTANT_FRAME=0) painted before mktemp; installed-tool handoff (`_qq_write_tool_handoff`/`_qq_start_tool_handoff`, `tools.pending` marker, `compgen -c`), `_qq_prewarm_daemon`, two-flag `_qq_cleanup`; inline `qq client` or the Zellij floating pane via a read-write FIFO (`QQ_RESULT_READ_TIMEOUT_S=30`); result applied to READLINE_LINE/READLINE_POINT with QQ_ORIG_POINT restore and `${PS1@P}` prompt-head reprint. Client = `node $QQ_DEV_ROOT/dist/cli/main.js` when built, else `qq` on PATH (11-01, 11-06, 11-07). en_US.UTF-8 locale fallback is `{ LC_ALL=…; } 2>/dev/null`, so no setlocale warning leaks (WR-01). A missing jq (type -P) prints `queque: jq not found` before the paint (WR-02). QQ_RESULT_FILE and the pane size are `local -x` (not left in the shell, WR-03). Client stderr goes to $tmpdir/client.err unless QQ_DEBUG_LOG_FILE is set (WR-04). (~6400 tok)
-
-## shell/zsh/
-
-- `qq.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract (~2727 tok)
-- `queque.zsh` — qq.zsh — QueQue ZLE widget and shell-side result contract; request.json carries `"shell": "zsh"` and `shellVersion` (11-02). QQ_RESULT_FILE and the pane size are `local -x`, scoped to the widget call (WR-03). Client stderr (inline and pane) goes to $tmpdir/client.err unless QQ_DEBUG_LOG_FILE is set (WR-04).; the daemon prewarm runs fully detached from the terminal (`</dev/null >/dev/null 2>&1 &!`, bug-553) (~5619 tok)
-
+- `run-1-partial.log` — Declares f (~4424 tok)
+- `run-from-6.raw.json` (~4090 tok)
 ## src/
 
 - `env.d.ts` — Declares the build defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_TELEMETRY_KEY__ and __QUEQUE_TELEMETRY_HOST__ (10-04), plus __QUEQUE_BUILD_ID__ (quick 261030-tq3). (~55 tok)

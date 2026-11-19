@@ -101,7 +101,7 @@ _qq_restore_line() {
 # change here needs the same change there. Builtins and parameter expansion only (no fork),
 # every function returns 0, and QQ_INSTANT_FRAME=0 paints nothing.
 # Plain globals, not readonly: the file is re-sourced in dev.
-QQ_MODAL_VIEWPORT_LINES=18                 # mirrors INSTANT_FRAME_VIEWPORT_LINES (spec)
+QQ_MODAL_VIEWPORT_LINES=19                 # mirrors INSTANT_FRAME_VIEWPORT_LINES (spec)
 QQ_MODAL_MAX_COLUMNS=80                    # mirrors MODAL_MAX_COLUMNS (spec, CandidateSelect)
 QQ_MODAL_PADDING_COLUMNS=1                 # mirrors the Modal paddingX on each side
 QQ_ZELLIJ_FRAME_COLUMNS=2                  # mirrors the floating pane border columns

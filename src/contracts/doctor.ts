@@ -8,7 +8,9 @@ import { z } from 'zod';
  * The JSON is pasted into public PR bodies and bug reports, so every string is fixed copy
  * (plus versions, the socket path, a widget name or the literals `~/.zshrc`, `~/.bashrc`,
  * `~/.bash_profile`, `~/.bash_login`, `~/.profile` and `~/.inputrc`), never an environment
- * value, key material, a path under the home directory or file content.
+ * value, key material, a path under the home directory or file content. The `update` row
+ * may also carry version numbers, a fixed upgrade command or the install marker's validated
+ * upgrade text (printable ASCII, 120 chars max), never a path or an environment value.
  *
  * One report targets one shell (Phase 11): its version row is `zsh` or `bash`, and
  * `bash_profile` appears only for bash on macOS. `fish` is reserved for Phase 12 and not
@@ -30,6 +32,7 @@ export const DOCTOR_CHECK_IDS = [
   'bash',
   'fish',
   'bash_profile',
+  'update',
 ] as const;
 
 export const DOCTOR_STATUSES = ['ok', 'warn', 'fail'] as const;

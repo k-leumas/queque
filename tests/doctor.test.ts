@@ -24,8 +24,8 @@ import {
 
 const SOCKET = '/tmp/qq-501.sock';
 
-/** The zsh target's twelve rows, in order (Phase 10; unchanged by Phase 11). */
-const ZSH_IDS: DoctorCheckId[] = [
+/** The Phase 10 ids, the first twelve DOCTOR_CHECK_IDS (add, never rename). */
+const PHASE10_IDS: DoctorCheckId[] = [
   'zsh',
   'jq',
   'tmp',
@@ -39,6 +39,8 @@ const ZSH_IDS: DoctorCheckId[] = [
   'node',
   'telemetry',
 ];
+/** The zsh target's thirteen rows, in order: `update` sits right before `telemetry`. */
+const ZSH_IDS: DoctorCheckId[] = [...PHASE10_IDS.slice(0, -1), 'update', 'telemetry'];
 const BASH_LINUX_IDS: DoctorCheckId[] = ['bash', ...ZSH_IDS.slice(1)];
 const BASH_DARWIN_IDS: DoctorCheckId[] = [
   ...BASH_LINUX_IDS.slice(0, 6),
@@ -91,6 +93,7 @@ function healthyDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
       state: { enabled: false, asked: false },
       keyPresent: false,
     }),
+    updateStatus: async () => ({ state: 'current', current: '0.10.5' }),
     ...overrides,
   };
 }
@@ -101,10 +104,11 @@ function check(report: DoctorReport, id: DoctorCheckId) {
 }
 
 describe('runDoctorChecks: healthy machine', () => {
-  it('runs all twelve checks in id order with telemetry last, all ok, exit 0', async () => {
+  it('runs all thirteen checks in id order with telemetry last, all ok, exit 0', async () => {
     const report = await runDoctorChecks(healthyDeps());
     expect(report.checks.map((c) => c.id)).toEqual(ZSH_IDS);
-    expect(report.checks).toHaveLength(12);
+    expect(report.checks).toHaveLength(13);
+    expect(report.checks.at(-2)?.id).toBe('update');
     expect(report.checks.at(-1)?.id).toBe('telemetry');
     expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
     expect(report.ok).toBe(true);
@@ -610,6 +614,14 @@ describe('defaultDoctorDeps (real machine, read-only)', () => {
     expect(deps.probeTmp()).toBe(true);
   });
 
+  it('keeps the update check off under vitest (QQ_NO_UPDATE_CHECK=1): no registry request', async () => {
+    expect(process.env.QQ_NO_UPDATE_CHECK).toBe('1');
+    await expect(defaultDoctorDeps().updateStatus()).resolves.toEqual({
+      state: 'blocked',
+      reason: 'QQ_NO_UPDATE_CHECK',
+    });
+  });
+
   it('reads the telemetry state from QQ_CONFIG_FILE and the gates from the environment', () => {
     const dir = mkdtempSync(join(tmpdir(), 'qq-doctor-tel-'));
     try {
@@ -625,6 +637,197 @@ describe('defaultDoctorDeps (real machine, read-only)', () => {
       vi.unstubAllEnvs();
       rmSync(dir, { recursive: true, force: true });
     }
+  });
+});
+
+describe('runDoctorChecks: update row', () => {
+  type Status = Awaited<ReturnType<DoctorDeps['updateStatus']>>;
+  type Install = Extract<Status, { state: 'available' }>['install'];
+  const BREW: Install = { method: 'brew', upgradeCommand: 'brew upgrade queque', packaged: false };
+
+  function available(install: Install, nodeTooOld: { floor: string; have: string } | null = null) {
+    return {
+      state: 'available',
+      current: '0.10.5',
+      latest: '0.11.0',
+      nodeTooOld,
+      install,
+    } as const satisfies Status;
+  }
+
+  async function updateRow(status: Status) {
+    const report = await runDoctorChecks(healthyDeps({ updateStatus: async () => status }));
+    // Every row validates (200 chars max) and no update state is a blocker.
+    expect(doctorReportSchema.safeParse(report).success).toBe(true);
+    expect(report.ok).toBe(true);
+    expect(report.checks.map((c) => c.id)).toEqual(ZSH_IDS);
+    return check(report, 'update');
+  }
+
+  it.each([
+    ['QQ_NO_UPDATE_CHECK', 'update check off (QQ_NO_UPDATE_CHECK is set)'],
+    ['CI', 'update check off (CI is set)'],
+    ['not a terminal', 'update check off (not a terminal)'],
+  ] as const)('blocked by %s is ok', async (reason, summary) => {
+    const row = await updateRow({ state: 'blocked', reason });
+    expect(row).toEqual({ id: 'update', status: 'ok', summary });
+  });
+
+  it('unknown and current are ok', async () => {
+    expect(await updateRow({ state: 'unknown' })).toEqual({
+      id: 'update',
+      status: 'ok',
+      summary: 'latest version unknown (registry not reached yet)',
+    });
+    expect(await updateRow({ state: 'current', current: '0.10.5' })).toEqual({
+      id: 'update',
+      status: 'ok',
+      summary: 'qq 0.10.5 is the latest',
+    });
+  });
+
+  it('a brew update warns with the brew command', async () => {
+    expect(await updateRow(available(BREW))).toEqual({
+      id: 'update',
+      status: 'warn',
+      summary: 'qq 0.11.0 available (installed via brew)',
+      hint: 'brew upgrade queque',
+    });
+  });
+
+  it('a homebrew marker is labeled by its source', async () => {
+    const row = await updateRow(
+      available({
+        method: 'marker',
+        source: 'homebrew',
+        upgradeCommand: 'brew upgrade queque',
+        packaged: false,
+      }),
+    );
+    expect(row.summary).toBe('qq 0.11.0 available (installed via homebrew)');
+    expect(row.hint).toBe('brew upgrade queque');
+  });
+
+  it('a non-writable npm prefix spells out the user prefix fix, never sudo npm', async () => {
+    const row = await updateRow(
+      available({
+        method: 'npm',
+        upgradeCommand: 'npm i -g @k-leumas/queque-cli@latest',
+        note: 'set a user npm prefix first, not sudo',
+        packaged: false,
+      }),
+    );
+    expect(row.status).toBe('warn');
+    expect(row.hint).toBe(
+      'npm config set prefix ~/.local, then npm i -g @k-leumas/queque-cli@latest (not sudo)',
+    );
+    expect(row.hint).not.toContain('sudo npm');
+  });
+
+  it('nvm keeps its note after the npm command', async () => {
+    const row = await updateRow(
+      available({
+        method: 'nvm',
+        upgradeCommand: 'npm i -g @k-leumas/queque-cli@latest',
+        note: 'this Node version only',
+        packaged: false,
+      }),
+    );
+    expect(row.hint).toBe('npm i -g @k-leumas/queque-cli@latest (this Node version only)');
+  });
+
+  it('an unknown install points at the releases page', async () => {
+    const row = await updateRow(
+      available({ method: 'unknown', upgradeCommand: null, packaged: false }),
+    );
+    expect(row.summary).toBe('qq 0.11.0 available (installed via unknown)');
+    expect(row.hint).toBe('see https://github.com/k-leumas/queque/releases');
+  });
+
+  it('nix warns and says to update through nix', async () => {
+    expect(
+      await updateRow(available({ method: 'nix', upgradeCommand: null, packaged: false })),
+    ).toEqual({
+      id: 'update',
+      status: 'warn',
+      summary: 'qq 0.11.0 available (installed via nix)',
+      hint: 'update it through nix',
+    });
+  });
+
+  it('a distro package says the package may lag, with its command', async () => {
+    expect(
+      await updateRow(
+        available({
+          method: 'apt',
+          upgradeCommand: 'sudo apt install --only-upgrade queque',
+          packaged: true,
+        }),
+      ),
+    ).toEqual({
+      id: 'update',
+      status: 'warn',
+      summary: 'upstream qq 0.11.0 released (installed via apt); your package may not have it yet',
+      hint: 'sudo apt install --only-upgrade queque',
+    });
+  });
+
+  it('an AUR package says to use the AUR helper', async () => {
+    const row = await updateRow(
+      available({
+        method: 'aur',
+        upgradeCommand: null,
+        note: 'update via your AUR helper',
+        packaged: true,
+      }),
+    );
+    expect(row.hint).toBe('update via your AUR helper');
+  });
+
+  it('a packaged install without a command or note names the package manager', async () => {
+    const row = await updateRow(available({ method: 'rpm', upgradeCommand: null, packaged: true }));
+    expect(row.hint).toBe('update it with your package manager');
+  });
+
+  it('a Node below the release floor says to upgrade Node first', async () => {
+    expect(await updateRow(available(BREW, { floor: '26', have: '24.14.1' }))).toEqual({
+      id: 'update',
+      status: 'warn',
+      summary: 'qq 0.11.0 needs Node 26+; you have 24.14.1',
+      hint: 'upgrade Node first',
+    });
+  });
+
+  it('a long marker command and version stay within the 200-char cap', async () => {
+    const row = await updateRow({
+      state: 'available',
+      current: '0.10.5',
+      latest: `1.0.0-${'a'.repeat(58)}`,
+      nodeTooOld: null,
+      install: {
+        method: 'marker',
+        source: 'x'.repeat(32),
+        upgradeCommand: 'y'.repeat(120),
+        packaged: true,
+      },
+    });
+    expect(row.status).toBe('warn');
+    expect(row.summary?.length).toBeLessThanOrEqual(200);
+  });
+
+  it('a throwing updateStatus is ok: update check failed', async () => {
+    const report = await runDoctorChecks(
+      healthyDeps({
+        updateStatus: async () => {
+          throw new Error('boom');
+        },
+      }),
+    );
+    expect(check(report, 'update')).toEqual({
+      id: 'update',
+      status: 'ok',
+      summary: 'update check failed',
+    });
   });
 });
 
@@ -698,7 +901,7 @@ describe('doctorCommand', () => {
     const output = captureStdout();
     await doctorCommand({ json: true }, healthyDeps());
     const parsed = doctorReportSchema.parse(JSON.parse(output()));
-    expect(parsed.checks).toHaveLength(12);
+    expect(parsed.checks).toHaveLength(13);
     expect(output().endsWith('\n')).toBe(true);
   });
 
@@ -778,9 +981,9 @@ describe('doctorCommand --shell', () => {
 });
 
 describe('DOCTOR_CHECK_IDS (add, never rename)', () => {
-  it('keeps the Phase 10 ids first and appends bash, fish and bash_profile', () => {
-    expect(DOCTOR_CHECK_IDS.slice(0, 12)).toEqual(ZSH_IDS);
-    expect(DOCTOR_CHECK_IDS.slice(12)).toEqual(['bash', 'fish', 'bash_profile']);
+  it('keeps the Phase 10 ids first and appends bash, fish, bash_profile and update', () => {
+    expect(DOCTOR_CHECK_IDS.slice(0, 12)).toEqual(PHASE10_IDS);
+    expect(DOCTOR_CHECK_IDS.slice(12)).toEqual(['bash', 'fish', 'bash_profile', 'update']);
   });
 });
 
@@ -790,15 +993,17 @@ function bashDeps(overrides: Partial<DoctorDeps> = {}): DoctorDeps {
 }
 
 describe('runDoctorChecks: target shell (D-08, D-02)', () => {
-  it('a bash target on linux has twelve rows starting with bash, all ok', async () => {
+  it('a bash target on linux has thirteen rows starting with bash, all ok', async () => {
     const report = await runDoctorChecks(healthyDeps(), { shell: 'bash' });
     expect(report.checks.map((c) => c.id)).toEqual(BASH_LINUX_IDS);
+    expect(report.checks).toHaveLength(13);
     expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
   });
 
   it('a bash target on darwin adds bash_profile after integration', async () => {
     const report = await runDoctorChecks(healthyDeps({ platform: 'darwin' }), { shell: 'bash' });
     expect(report.checks.map((c) => c.id)).toEqual(BASH_DARWIN_IDS);
+    expect(report.checks).toHaveLength(14);
     expect(report.checks.every((c) => c.status === 'ok')).toBe(true);
   });
 

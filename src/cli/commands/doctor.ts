@@ -11,6 +11,7 @@ import {
 import { homedir, userInfo } from 'node:os';
 import { basename, join } from 'node:path';
 import {
+  DOCTOR_TEXT_MAX,
   type DoctorCheck,
   type DoctorPlatform,
   type DoctorReport,
@@ -21,6 +22,7 @@ import { isShellName, type ShellName } from '../../contracts/shell.js';
 import { pingDaemonFetchCap, tryConnect } from '../../daemon/bootstrap.js';
 import { type DetectedProvider, detectProvider } from '../../providers/detect.js';
 import { loadProviderPin, type ProviderPinState } from '../../providers/provider-pin.js';
+import { detectInstall, NPM_PACKAGE, USER_PREFIX_NOTE } from '../../shared/install-detect.js';
 import {
   BASH_WARN_BELOW,
   detectShell,
@@ -39,6 +41,13 @@ import {
   telemetryBlockedBy,
 } from '../../shared/telemetry-config.js';
 import { resolveTelemetryEndpoint } from '../../shared/telemetry-endpoint.js';
+import {
+  createUpdateChecker,
+  RELEASES_URL,
+  UPDATE_CACHE_FILE_NAME,
+  type UpdateStatus,
+  updateCacheDir,
+} from '../../shared/update-check.js';
 import { hasShellIntegration } from './init.js';
 
 // The version floors live in the shell registry (Phase 11 D-02); re-exported for callers that
@@ -97,6 +106,8 @@ export interface DoctorDeps {
   detectProvider(): Promise<DetectedProvider>;
   /** Telemetry gate, consent state and whether this build has a project key (D-09, D-22). */
   telemetryStatus(): TelemetryStatus;
+  /** Update check status; refreshes a stale cache (1.5 s cap) and never marks the hint shown. */
+  updateStatus(): Promise<UpdateStatus>;
 }
 
 export interface TelemetryStatus {
@@ -365,6 +376,21 @@ export function defaultDoctorDeps(): DoctorDeps {
       state: readTelemetryState(),
       keyPresent: resolveTelemetryEndpoint(env) !== null,
     }),
+    // Same module and cache file as the daemon, so the row works with no daemon running
+    // (discretion 11). Built lazily: nothing touches the cache or the network until called.
+    updateStatus: () =>
+      createUpdateChecker({
+        env,
+        cacheFile: join(
+          updateCacheDir({ env, platform: process.platform, homeDir }),
+          UPDATE_CACHE_FILE_NAME,
+        ),
+        fetchImpl: fetch,
+        now: Date.now,
+        currentVersion: __QUEQUE_VERSION__,
+        nodeVersion: process.versions.node,
+        detectInstall: () => detectInstall(),
+      }).status({ isTTY: process.stdout.isTTY === true, refresh: true }),
   };
 }
 
@@ -747,6 +773,78 @@ function checkTelemetry(deps: DoctorDeps): DoctorCheck {
   );
 }
 
+/** The doctor wording of the non-writable npm prefix fix (discretion 8): never `sudo npm`. */
+const USER_PREFIX_HINT = `npm config set prefix ~/.local, then npm i -g ${NPM_PACKAGE}@latest (not sudo)`;
+
+function clipText(text: string): string {
+  return text.length > DOCTOR_TEXT_MAX ? `${text.slice(0, DOCTOR_TEXT_MAX - 1)}…` : text;
+}
+
+/** The fix for an available update: the install's command, or what to do without one. */
+function updateFixHint(install: Extract<UpdateStatus, { state: 'available' }>['install']): string {
+  if (install.method === 'nix') {
+    return 'update it through nix';
+  }
+  if (install.method === 'windows-node') {
+    return 'this qq runs on a Windows Node; install Node inside WSL';
+  }
+  if (install.upgradeCommand === null) {
+    if (install.packaged) {
+      return install.note ?? 'update it with your package manager';
+    }
+    return `see ${RELEASES_URL}`;
+  }
+  if (install.note?.includes(USER_PREFIX_NOTE)) {
+    return USER_PREFIX_HINT;
+  }
+  return install.note === undefined
+    ? install.upgradeCommand
+    : `${install.upgradeCommand} (${install.note})`;
+}
+
+/**
+ * Update row: warn when a newer qq exists, ok otherwise (up to date, check off, unknown, or a
+ * failed check); never a blocker. Fixed copy plus validated versions, a fixed command or the
+ * validated marker text: never a path or an environment value (D-18).
+ */
+async function checkUpdate(deps: DoctorDeps): Promise<DoctorCheck> {
+  let status: UpdateStatus;
+  try {
+    status = await deps.updateStatus();
+  } catch {
+    return ok('update', 'update check failed');
+  }
+  switch (status.state) {
+    case 'blocked':
+      return ok(
+        'update',
+        status.reason === 'not a terminal'
+          ? 'update check off (not a terminal)'
+          : `update check off (${status.reason} is set)`,
+      );
+    case 'unknown':
+      return ok('update', 'latest version unknown (registry not reached yet)');
+    case 'current':
+      return ok('update', clipText(`qq ${status.current} is the latest`));
+    case 'available': {
+      const { latest, install, nodeTooOld } = status;
+      const label =
+        install.method === 'marker' ? (install.source ?? install.method) : install.method;
+      if (install.method !== 'windows-node' && nodeTooOld !== null) {
+        return warn(
+          'update',
+          clipText(`qq ${latest} needs Node ${nodeTooOld.floor}+; you have ${nodeTooOld.have}`),
+          'upgrade Node first',
+        );
+      }
+      const summary = install.packaged
+        ? `upstream qq ${latest} released (installed via ${label}); your package may not have it yet`
+        : `qq ${latest} available (installed via ${label})`;
+      return warn('update', clipText(summary), clipText(updateFixHint(install)));
+    }
+  }
+}
+
 function reportPlatform(platform: NodeJS.Platform): DoctorPlatform {
   return platform === 'darwin' || platform === 'linux' ? platform : 'other';
 }
@@ -767,7 +865,7 @@ export function resolveDoctorShell(deps: DoctorDeps, requested?: ShellName): She
 /**
  * Runs the checks for one target shell: its version row (`zsh` or `bash`), then `jq`, `tmp`,
  * `socket`, `daemon`, `integration`, `bash_profile` (bash on macOS only), `binding`, `term`,
- * `locale`, `provider`, `node`, `telemetry`. Only hard blockers that make `??` impossible fail
+ * `locale`, `provider`, `node`, `update`, `telemetry`. Only hard blockers that make `??` impossible fail
  * (D-12, D-17, D-19, D-20); everything else warns. The report is validated with
  * `doctorReportSchema` before it is returned.
  */
@@ -780,10 +878,12 @@ export async function runDoctorChecks(
     const version = await checkShellVersion(deps, spec);
     return { version, binding: await checkBinding(deps, spec, version) };
   })();
-  const [{ version, binding }, daemon, provider] = await Promise.all([
+  // The update row's refresh (up to 1.5 s) overlaps the shell, daemon and provider probes.
+  const [{ version, binding }, daemon, provider, update] = await Promise.all([
     versionThenBinding,
     checkDaemon(deps),
     checkProvider(deps),
+    checkUpdate(deps),
   ]);
   const loginRow =
     spec.shell === 'bash' && deps.platform === 'darwin' ? [checkBashProfile(deps)] : [];
@@ -800,6 +900,7 @@ export async function runDoctorChecks(
     checkLocale(deps),
     provider,
     checkNode(deps),
+    update,
     checkTelemetry(deps),
   ];
   return doctorReportSchema.parse({

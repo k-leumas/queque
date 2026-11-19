@@ -547,3 +547,22 @@ describe('estimateCandidateSelectLines — streamed list status row (09.1 D-08, 
     expect(lines).toBeLessThanOrEqual(MODAL_VIEWPORT_LINES);
   });
 });
+
+describe('estimateCandidateSelectLines: update hint', () => {
+  const base = {
+    candidates: [{ command: 'git status', explanation: 'show status' }],
+    query: '',
+    selectedIndex: 0,
+    contentWidth: 40,
+    includeDevFooter: false,
+  };
+
+  it('adds exactly one row for a short or a long hint (the row truncates)', () => {
+    const without = estimateCandidateSelectLines(base);
+    const short = 'qq update available · brew upgrade queque';
+    expect(estimateCandidateSelectLines({ ...base, updateHint: short })).toBe(without + 1);
+    expect(estimateCandidateSelectLines({ ...base, updateHint: 'x'.repeat(300) })).toBe(
+      without + 1,
+    );
+  });
+});

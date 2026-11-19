@@ -99,6 +99,8 @@ RUN npm install --ignore-scripts --loglevel=error \
 # Local equivalent of the Homebrew formula install block from
 # .github/workflows/homebrew.yml (and release.yaml):
 #   npm install *std_npm_args
+#   (libexec/".../.install-source").write the homebrew install marker (byte-identical JSON;
+#   tests/install-marker-formula.test.ts keeps all three copies in sync)
 #   bin/"qq": a wrapper that execs node@<.nvmrc major> (the pinned dependency) on .../dist/cli/main.js
 #   (share/"queque").install "shell/zsh/queque.zsh"
 #   (share/"queque").install "shell/bash/queque.bash"
@@ -108,6 +110,7 @@ RUN set -eux; \
   libexec="$cellar/libexec"; \
   mkdir -p "$HOMEBREW_PREFIX/bin" "$HOMEBREW_PREFIX/share/queque" "$libexec"; \
   npm install --global --prefix "$libexec" --ignore-scripts --loglevel=error /src; \
+  printf '%s' '{"source":"homebrew","upgrade":"brew upgrade queque"}' >"$libexec/lib/node_modules/@k-leumas/queque-cli/.install-source"; \
   printf '#!/bin/bash\nexec "%s" "%s" "$@"\n' "$(command -v node)" "$libexec/lib/node_modules/@k-leumas/queque-cli/dist/cli/main.js" >"$HOMEBREW_PREFIX/bin/qq"; \
   cp /src/shell/zsh/queque.zsh "$HOMEBREW_PREFIX/share/queque/queque.zsh"; \
   cp /src/shell/bash/queque.bash "$HOMEBREW_PREFIX/share/queque/queque.bash"; \
@@ -123,5 +126,6 @@ DOCKERFILE
 
 docker run --rm \
   -e "ANTHROPIC_API_KEY=$API_KEY" \
+  -e QQ_NO_UPDATE_CHECK=1 \
   -e "QQ_SMOKE_QUERY=$QUERY" \
   "$IMAGE_NAME"

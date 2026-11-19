@@ -63,7 +63,7 @@ function normalized(value: string | undefined): string | undefined {
 }
 
 /** A flag variable counts as set unless it is missing, empty, `0` or `false`. */
-function flagSet(value: string | undefined): boolean {
+export function flagSet(value: string | undefined): boolean {
   const flag = normalized(value);
   return flag !== undefined && flag !== '' && flag !== '0' && flag !== 'false';
 }
