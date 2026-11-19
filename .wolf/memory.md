@@ -1184,3 +1184,37 @@
 | 22:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/v58-full-suite.sh | — | ~63 |
 | 22:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261118-v58-commit2.txt | — | ~153 |
 | 22:44 | Created .claude/worktrees/agent-a6dd9a29f1cc04dd6/.planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-SUMMARY.md | — | ~1931 |
+| 22:10 | Homebrew smoke on the fake claude, no key, stricter expect (tldr z3 + buffer redraw) | scripts/smoke-homebrew-docker.sh, scripts/docker-homebrew-smoke-runner.sh | key-free smoke passed 96s; old layout src change 73s, npm+tsup DONE 55.9s | ~6k |
+| 22:20 | Cached homebrew smoke image: version-stripped manifest stage, deps-first, runner last, --no-cache, QQ_SMOKE_DOCKER_CACHE=gha buildx branch, allow-list .dockerignore, guard test; teardown waits for the post-^C prompt (bug-558) | scripts/smoke-homebrew-docker.sh, scripts/docker-homebrew-smoke-runner.sh, .dockerignore, tests/homebrew-smoke-docker.test.ts | cold 81s, warm 4s, src 12s, version 21s (npm CACHED in src+version) | ~12k |
+| 22:30 | release.yaml: parallel test + brew-smoke jobs, apt cache + check step, buildx/gha runtime wiring, no secret or skip on the smoke; guard describe block | .github/workflows/release.yaml, tests/homebrew-smoke-docker.test.ts | actionlint clean, guards 21/21 | ~6k |
+| 21:22 | Session end: 27 writes across 13 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 13 reads | ~60031 tok |
+| 21:36 | Session end: 27 writes across 13 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 13 reads | ~60031 tok |
+| 21:36 | Session end: 27 writes across 13 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 13 reads | ~60031 tok |
+| 21:42 | Session end: 27 writes across 13 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 13 reads | ~60031 tok |
+| 21:47 | Session end: 27 writes across 13 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 13 reads | ~60031 tok |
+| 21:50 | Session end: 27 writes across 13 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 14 reads | ~60031 tok |
+| 22:01 | Created .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md | — | ~8700 |
+| 22:01 | Edited .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md | inline fix | ~36 |
+| 22:01 | Edited .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md | 3→3 lines | ~55 |
+| 22:02 | planned quick 261118-ubg (release split, smoke cache, apt cache, fake claude) | .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-PLAN.md | plan written, validated | ~60k |
+| 22:03 | Session end: 30 writes across 14 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 14 reads | ~69449 tok |
+| 22:04 | Created .claude/worktrees/agent-acc1b575e55c47c56/scripts/docker-homebrew-smoke-runner.sh | — | ~838 |
+| 22:04 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-timed-smoke.sh | — | ~206 |
+| 22:06 | Session end: 32 writes across 16 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 16 reads | ~78741 tok |
+| 22:08 | Edited .claude/worktrees/agent-acc1b575e55c47c56/.wolf/anatomy.md | expanded (+6 lines) | ~140 |
+| 22:09 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-1.txt | — | ~146 |
+| 22:09 | Session end: 34 writes across 18 files (11-VERIFICATION.md, 261115-4um-PLAN.md, README.md, commit-msg.txt, 261115-4um-SUMMARY.md) | 17 reads | ~79047 tok |
+| 22:09 | Created .claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts | — | ~1003 |
+| 22:10 | Created .claude/worktrees/agent-acc1b575e55c47c56/scripts/smoke-homebrew-docker.sh | — | ~1521 |
+| 22:10 | Created .claude/worktrees/agent-acc1b575e55c47c56/.dockerignore | — | ~136 |
+| 22:12 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-steps.sh | — | ~129 |
+| 22:12 | Edited .claude/worktrees/agent-acc1b575e55c47c56/package.json | inline fix | ~6 |
+| 22:15 | Edited .claude/worktrees/agent-acc1b575e55c47c56/scripts/docker-homebrew-smoke-runner.sh | 3→7 lines | ~83 |
+| 22:16 | Edited .claude/worktrees/agent-acc1b575e55c47c56/package.json | inline fix | ~7 |
+| 22:17 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-context.sh | — | ~282 |
+| 22:18 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-2.txt | — | ~258 |
+| 22:18 | Edited .claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts | added 1 condition(s) | ~574 |
+| 22:19 | Edited .claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/release.yaml | expanded (+31 lines) | ~533 |
+| 22:22 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-3.txt | — | ~190 |
+| 22:23 | Created .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md | — | ~2125 |
+| 22:23 | Edited .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md | 2→2 lines | ~70 |

@@ -9258,6 +9258,73 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-19T04:42:14.020Z"
+    },
+    {
+      "id": "bug-561",
+      "timestamp": "2026-11-18T21:15:00.000Z",
+      "error_message": "Homebrew Docker smoke passed but took ~40 s longer: transcript shows `QQSMOKE# xxit` / `zsh: command not found: xit`, then expect eof waits out the timeout",
+      "file": "scripts/docker-homebrew-smoke-runner.sh",
+      "root_cause": "The teardown sent Ctrl-C and then `exit` immediately; zsh flushes typeahead on SIGINT, so the leading `e` was dropped, the shell stayed open and `expect eof` blocked until `set timeout` (75 s before, 40 s now)",
+      "fix": "After Ctrl-C, wait for the empty prompt zsh draws after the interrupt (`QQSMOKE[%#] \\x1b\\[K`, prompt then clear-to-end-of-line) before sending `exit`",
+      "tags": [
+        "smoke",
+        "expect",
+        "zsh",
+        "sigint",
+        "race",
+        "docker"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-18T21:15:00.000Z"
+    },
+    {
+      "id": "bug-562",
+      "timestamp": "2026-11-19T04:12:59.721Z",
+      "error_message": "Incorrect value in code",
+      "file": ".claude/worktrees/agent-acc1b575e55c47c56/package.json",
+      "root_cause": "Had \"0.11.0\"",
+      "fix": "Changed to \"9.9.9\"",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "json"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-11-19T04:16:37.944Z"
+    },
+    {
+      "id": "bug-563",
+      "timestamp": "2026-11-19T04:18:59.012Z",
+      "error_message": "Missing guard clause",
+      "file": ".claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts",
+      "root_cause": "No early return/throw for edge case: start === -1",
+      "fix": "Added guard clause: if (start === -1)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-19T04:18:59.012Z"
+    },
+    {
+      "id": "bug-564",
+      "timestamp": "2026-11-19T04:19:29.061Z",
+      "error_message": "Significant refactor of ",
+      "file": ".claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/release.yaml",
+      "root_cause": "7 lines replaced/restructured",
+      "fix": "Rewrote 47\u219278 lines (7 removed)",
+      "tags": [
+        "auto-detected",
+        "refactor",
+        "yaml"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-19T04:19:29.061Z"
     }
   ]
 }

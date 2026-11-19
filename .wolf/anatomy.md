@@ -9,10 +9,22 @@
 - `261118-v58-commit2.txt` (~144 tok)
 - `v58-full-suite.sh` — Full default suite with MacPorts bash 5.3 available (memory: run full suite). (~63 tok)
 - `v58-noclaude.sh` — Runs the CLI live file with a dummy key and no `claude` on PATH; expects the install hint. (~138 tok)
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T04:23:42.346Z
+> Files: 678 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/
+
+- `ubg-commit-1.txt` (~137 tok)
+- `ubg-commit-2.txt` (~242 tok)
+- `ubg-commit-3.txt` (~178 tok)
+- `ubg-context.sh` — Lists what the repo-root Docker build context contains under .dockerignore. (~282 tok)
+- `ubg-steps.sh` — Usage: ubg-steps.sh <logname> — prints each BuildKit step header with its DONE/CACHED status. (~129 tok)
+- `ubg-timed-smoke.sh` — Usage: ubg-timed-smoke.sh <logname> [smoke args...] (~206 tok)
 
 ## ./
 
 - `.DS_Store` (~2186 tok)
+- `.dockerignore` — Allow-list build context for scripts/smoke-homebrew-docker.sh: `*`, then one `!` line per COPY source (guarded by tests/homebrew-smoke-docker.test.ts); keeps node_modules, .git and dotenv files off the daemon. (~120 tok)
 - `.gitignore` — Git ignore rules (~65 tok)
 - `.nvmrc` (~3 tok)
 - `.releaserc.json` (~363 tok)
@@ -117,6 +129,31 @@
 - `cli-contract.live.ts` — Live Claude Code CLI contract check (quick 261118-v58). Runs in the nightly `live-cli` job (~1834 tok)
 - `live-daemon.ts` — Shared harness for the nightly live contract tests (phase 10 D-01 to D-03, quick 261118-v58). (~3196 tok)
 - `sdk-contract.live.ts` — Live SDK contract check (phase 10, D-01 to D-03). (~771 tok)
+## .claude/worktrees/agent-acc1b575e55c47c56/
+
+- `.dockerignore` — Scopes the Docker build context of scripts/smoke-homebrew-docker.sh, the only Docker build (~136 tok)
+- `package.json` — Node.js package manifest (~566 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/
+
+- `release.yaml` — CI: Release (~2482 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/
+
+- `261118-ubg-SUMMARY.md` — Phase quick-261118-ubg Plan 01: Speed up and harden the release workflow Summary (~2003 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/.wolf/
+
+- `anatomy.md` — anatomy.md (~23294 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/scripts/
+
+- `docker-homebrew-smoke-runner.sh` (~911 tok)
+- `smoke-homebrew-docker.sh` — Declares p (~1521 tok)
+
+## .claude/worktrees/agent-acc1b575e55c47c56/tests/
+
+- `homebrew-smoke-docker.test.ts` — The Homebrew install smoke (scripts/smoke-homebrew-docker.sh) gates every release. Only the (~1571 tok)
 
 ## .github/workflows/
 
@@ -125,6 +162,8 @@
 - `homebrew.yml` — CI: Update Homebrew Tap (~1144 tok)
 - `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03; schedule + workflow_dispatch only, contents: read): `distro` on :latest images; `live` runs only tests/live/sdk-contract.live.ts; `live-cli` (quick 261118-v58) installs the latest @anthropic-ai/claude-code unpinned, prints `claude --version`, requires the secret and runs only tests/live/cli-contract.live.ts; both live jobs guarded to k-leumas/queque (~1100 tok)
 - `release.yaml` — CI: Release (~2090 tok)
+- `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03). Provider or distro drift shows up within a day (~570 tok)
+- `release.yaml` — CI: Release. `test` (lint/typecheck/test/build, apt deps from awalsh128/cache-apt-pkgs-action + check step) and `brew-smoke` (buildx + gha cache, key-free Homebrew smoke) run in parallel; tag-and-changelog needs both, then publish-npm and publish-homebrew. (~2400 tok)
 - `tap-clone-stats.yml` — Weekly snapshot of Homebrew tap clone traffic, with the clones made by our own publishing runs (~1865 tok)
 
 ## .gsd/
@@ -787,6 +826,9 @@
 ## .planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/
 
 - `261118-v58-PLAN.md` — Declares ContextEnvelope (~7345 tok)
+## .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/
+
+- `261118-ubg-PLAN.md` — Declares there (~8174 tok)
 
 ## .planning/research/
 
@@ -836,6 +878,11 @@
 
 - `run-1-partial.log` — Declares f (~4424 tok)
 - `run-from-6.raw.json` (~4090 tok)
+
+## scripts/
+
+- `docker-homebrew-smoke-runner.sh` — In-container half of the Homebrew smoke: writes the fake `claude` shim (exit 21 when the fixture is not mounted), `qq init zsh`, expect waits for `tldr z3` then the `QQSMOKE# tldr z3  # ` buffer redraw (exits 10-14, 20). (~1000 tok)
+- `smoke-homebrew-docker.sh` — Key-free Homebrew-shaped install smoke: heredoc Dockerfile on the .nvmrc Node major (version-stripped manifest stage, npm install before src/shell, runner copied last), formula-emulation RUN, fake claude mounted read-only at /opt/fake; `--no-cache`, QQ_SMOKE_DOCKER_CACHE=gha selects buildx + gha cache. (~1700 tok)
 
 ## src/
 
@@ -972,6 +1019,7 @@
 - `environment-shape.test.ts` — Enum mapping, zsh/node parsing, null on an out-of-bound node, no env value leaks (10-10). (~946 tok)
 - `error-kind.test.ts` — withErrorKind/errorKindOf units; claude-default CLI/SDK mapping via importOriginal-spread mocks of claude.js and claude-cli.js; daemon fetch-error errorKind and pin_invalid; fetch-client re-tagging; the in-process fallback (10-06). (~2776 tok)
 - `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
+- `homebrew-smoke-docker.test.ts` — Guards the Homebrew Docker smoke (no Anthropic key, fake claude wired, .dockerignore tracks every COPY source, buildx + gha cache gate, deps-first layer order) and release.yaml's job shape via jobBlock(): brew-smoke never skips, test has the apt cache, tag-and-changelog needs both. (~1400 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3424 tok)

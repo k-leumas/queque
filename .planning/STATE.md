@@ -197,6 +197,7 @@ None yet.
 | 43 | bump MODAL_VIEWPORT_LINES 18→19 for the update hint row | 2026-11-17 | 1b2aac4 | — |
 | 44 | homebrew docker smoke image node:22 → node:24 (engines floor) | 2026-11-17 | 42f226e | — |
 | 45 | update hint drops the version so the command fits 80 cols | 2026-11-17 | 45f352e | — |
+| 261118-ubg | Speed up and harden the release workflow: parallel brew-smoke job, Docker layer cache, apt cache, fake claude in the Homebrew smoke | 2026-11-18 | d63cebe | [261118-ubg-speed-up-and-harden-the-release-workflow](./quick/261118-ubg-speed-up-and-harden-the-release-workflow/) |
 | 261118-v58 | Nightly live-cli job: real Claude Code CLI provider contract test (cold + prewarmed turn) | 2026-11-18 | 5606f73 | [261118-v58-nightly-live-cli-job-real-claude-code-cl](./quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/) |
 
 Last activity: 2026-11-18 - Completed quick task 261118-v58: Nightly live-cli job (real Claude Code CLI contract test, cold + prewarmed turn)
