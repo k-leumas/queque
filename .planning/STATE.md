@@ -5,10 +5,10 @@ current_phase: 7
 current_phase_name: Context-Aware Learning and Ambient Suggestions
 status: planning
 stopped_at: Phase 11 complete, ready to plan Phase 7
-last_updated: "2026-11-19T04:25:06.761Z"
+last_updated: "2026-11-19T04:45:42.337Z"
 last_activity: 2026-11-15
 last_activity_desc: Phase 11 complete, transitioned to Phase 7
-state_head: d63cebe3c5f5f9078347b32d0ab4caf56946dcdd
+state_head: 5606f73ac376a30c1897c2cba1b7ad32c46a0b79
 progress:
   total_phases: 15
   completed_phases: 8
@@ -198,8 +198,9 @@ None yet.
 | 44 | homebrew docker smoke image node:22 → node:24 (engines floor) | 2026-11-17 | 42f226e | — |
 | 45 | update hint drops the version so the command fits 80 cols | 2026-11-17 | 45f352e | — |
 | 261118-ubg | Speed up and harden the release workflow: parallel brew-smoke job, Docker layer cache, apt cache, fake claude in the Homebrew smoke | 2026-11-18 | d63cebe | [261118-ubg-speed-up-and-harden-the-release-workflow](./quick/261118-ubg-speed-up-and-harden-the-release-workflow/) |
+| 261118-v58 | Nightly live-cli job: real Claude Code CLI provider contract test (cold + prewarmed turn) | 2026-11-18 | 5606f73 | [261118-v58-nightly-live-cli-job-real-claude-code-cl](./quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/) |
 
-Last activity: 2026-11-18 - Completed quick task 261118-ubg: Faster release workflow (parallel brew-smoke, Docker layer cache, apt cache, fake claude smoke)
+Last activity: 2026-11-18 - Completed quick task 261118-v58: Nightly live-cli job (real Claude Code CLI contract test, cold + prewarmed turn)
 
 ## Session Continuity
 

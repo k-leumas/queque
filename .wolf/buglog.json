@@ -9212,6 +9212,55 @@
     },
     {
       "id": "bug-558",
+      "timestamp": "2026-11-18T22:50:00.000Z",
+      "error_message": "biome check tests/live: Formatter would have printed the following content (cli-contract.live.ts expect(...).toBe(true) wrapped)",
+      "file": "tests/live/cli-contract.live.ts",
+      "root_cause": "Hand-wrapped a .toBe(true) call that fits within biome's 100-column line width",
+      "fix": "Ran biome format --write on the file before staging",
+      "tags": [
+        "biome",
+        "format",
+        "live-test",
+        "quick-261118-v58"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-18T22:50:00.000Z"
+    },
+    {
+      "id": "bug-559",
+      "timestamp": "2026-11-19T04:37:49.559Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-PLAN.md",
+      "root_cause": "Had \"$(pnpm exec vitest list --config vitest.live.conf",
+      "fix": "Changed to \"$(pnpm exec vitest list --config vitest.live.conf",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-19T04:37:49.559Z"
+    },
+    {
+      "id": "bug-560",
+      "timestamp": "2026-11-19T04:42:14.020Z",
+      "error_message": "Missing guard clause",
+      "file": ".claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/cli-contract.live.ts",
+      "root_cause": "No early return/throw for edge case: !daemon",
+      "fix": "Added guard clause: if (!daemon)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-19T04:42:14.020Z"
+    },
+    {
+      "id": "bug-561",
       "timestamp": "2026-11-18T21:15:00.000Z",
       "error_message": "Homebrew Docker smoke passed but took ~40 s longer: transcript shows `QQSMOKE# xxit` / `zsh: command not found: xit`, then expect eof waits out the timeout",
       "file": "scripts/docker-homebrew-smoke-runner.sh",
@@ -9230,7 +9279,7 @@
       "last_seen": "2026-11-18T21:15:00.000Z"
     },
     {
-      "id": "bug-559",
+      "id": "bug-562",
       "timestamp": "2026-11-19T04:12:59.721Z",
       "error_message": "Incorrect value in code",
       "file": ".claude/worktrees/agent-acc1b575e55c47c56/package.json",
@@ -9246,7 +9295,7 @@
       "last_seen": "2026-11-19T04:16:37.944Z"
     },
     {
-      "id": "bug-560",
+      "id": "bug-563",
       "timestamp": "2026-11-19T04:18:59.012Z",
       "error_message": "Missing guard clause",
       "file": ".claude/worktrees/agent-acc1b575e55c47c56/tests/homebrew-smoke-docker.test.ts",
@@ -9262,7 +9311,7 @@
       "last_seen": "2026-11-19T04:18:59.012Z"
     },
     {
-      "id": "bug-561",
+      "id": "bug-564",
       "timestamp": "2026-11-19T04:19:29.061Z",
       "error_message": "Significant refactor of ",
       "file": ".claude/worktrees/agent-acc1b575e55c47c56/.github/workflows/release.yaml",

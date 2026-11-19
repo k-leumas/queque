@@ -1167,6 +1167,23 @@
 | 21:00 | Edited src/cli/main.ts | 2→3 lines | ~18 |
 | 21:00 | Edited tests/bundle-startup.test.ts | modified for() | ~212 |
 | 21:09 | qq --version / -v via cac .version(__QUEQUE_VERSION__) + bundle-startup b7 | src/cli/main.ts, tests/bundle-startup.test.ts | plain 1876/1876; pty timing flakes under load avg 196 (ollama) | ~4k |
+| 22:41 | quick 261118-v58 T1: shared live harness + cold real-claude CLI live test + nightly live-cli job | tests/live/live-daemon.ts, tests/live/sdk-contract.live.ts, tests/live/cli-contract.live.ts, vitest.live.config.ts, .github/workflows/nightly.yml | typecheck/biome/actionlint green; key-missing and no-claude failures verified | ~12k |
+| 22:50 | quick 261118-v58 T2: prewarmed real-claude turn (prewarm hit, no prewarm retry cold) + anatomy/cerebrum/buglog | tests/live/cli-contract.live.ts, .wolf/anatomy.md, .wolf/cerebrum.md, .wolf/buglog.json | typecheck/biome green; no key exported, so the real run is left to the first nightly | ~6k |
+| 22:26 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 22:37 | Created .planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-PLAN.md | — | ~7814 |
+| 22:37 | Edited .planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-PLAN.md | "$(pnpm exec vitest list -" → "$(pnpm exec vitest list -" | ~54 |
+| 22:38 | planned quick 261118-v58 live-cli nightly job (no qq CLI pin exists; temp-HOME apiKeyHelper verified under --safe-mode) | .planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-PLAN.md | plan written, valid | ~60k |
+| 22:39 | Session end: 5 writes across 3 files (NodeTooOld.dc.html, canvas.json, 261118-v58-PLAN.md) | 0 reads | ~8542 tok |
+| 22:40 | Created .claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/live-daemon.ts | — | ~3196 |
+| 22:40 | Created .claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/sdk-contract.live.ts | — | ~771 |
+| 22:40 | Created .claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/cli-contract.live.ts | — | ~1468 |
+| 22:40 | Edited .claude/worktrees/agent-a6dd9a29f1cc04dd6/vitest.live.config.ts | modified only() | ~95 |
+| 22:41 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/v58-noclaude.sh | — | ~138 |
+| 22:41 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261118-v58-commit1.txt | — | ~193 |
+| 22:42 | Edited .claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/cli-contract.live.ts | added 1 condition(s) | ~379 |
+| 22:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/v58-full-suite.sh | — | ~63 |
+| 22:43 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/261118-v58-commit2.txt | — | ~153 |
+| 22:44 | Created .claude/worktrees/agent-a6dd9a29f1cc04dd6/.planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-SUMMARY.md | — | ~1931 |
 | 22:10 | Homebrew smoke on the fake claude, no key, stricter expect (tldr z3 + buffer redraw) | scripts/smoke-homebrew-docker.sh, scripts/docker-homebrew-smoke-runner.sh | key-free smoke passed 96s; old layout src change 73s, npm+tsup DONE 55.9s | ~6k |
 | 22:20 | Cached homebrew smoke image: version-stripped manifest stage, deps-first, runner last, --no-cache, QQ_SMOKE_DOCKER_CACHE=gha buildx branch, allow-list .dockerignore, guard test; teardown waits for the post-^C prompt (bug-558) | scripts/smoke-homebrew-docker.sh, scripts/docker-homebrew-smoke-runner.sh, .dockerignore, tests/homebrew-smoke-docker.test.ts | cold 81s, warm 4s, src 12s, version 21s (npm CACHED in src+version) | ~12k |
 | 22:30 | release.yaml: parallel test + brew-smoke jobs, apt cache + check step, buildx/gha runtime wiring, no secret or skip on the smoke; guard describe block | .github/workflows/release.yaml, tests/homebrew-smoke-docker.test.ts | actionlint clean, guards 21/21 | ~6k |

@@ -1,5 +1,14 @@
 # anatomy.md
 
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T04:44:56.384Z
+> Files: 673 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/
+
+- `261118-v58-commit1.txt` (~181 tok)
+- `261118-v58-commit2.txt` (~144 tok)
+- `v58-full-suite.sh` — Full default suite with MacPorts bash 5.3 available (memory: run full suite). (~63 tok)
+- `v58-noclaude.sh` — Runs the CLI live file with a dummy key and no `claude` on PATH; expects the install hint. (~138 tok)
 > Auto-maintained by OpenWolf. Last scanned: 2026-11-19T04:23:42.346Z
 > Files: 678 tracked | Anatomy hits: 0 | Misses: 0
 
@@ -33,7 +42,7 @@
 - `tsconfig.json` — TypeScript configuration (~187 tok)
 - `tsup.config.ts` — Declares version (~904 tok)
 - `vitest.config.ts` — Vitest test configuration (~299 tok)
-- `vitest.live.config.ts` — /*.test.ts`) never (~260 tok)
+- `vitest.live.config.ts` — Fresh vitest config for the nightly live jobs only: include `tests/live/**/*.live.ts` (never the default suite, never live-daemon.ts), testTimeout 60 s, hookTimeout 30 s, QQ_NO_UPDATE_CHECK; `live` and `live-cli` each pass one file to `pnpm test:live <file>` (no `--`) (~330 tok)
 
 ## .claude/
 
@@ -107,6 +116,19 @@
 - `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1541 tok)
 - `README.md` — Project documentation (~820 tok)
 
+## .claude/worktrees/agent-a6dd9a29f1cc04dd6/
+
+- `vitest.live.config.ts` — /*.test.ts`) never (~328 tok)
+
+## .claude/worktrees/agent-a6dd9a29f1cc04dd6/.planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/
+
+- `261118-v58-SUMMARY.md` — Quick 261118-v58: Nightly live-cli job against the real Claude Code CLI Summary (~1810 tok)
+
+## .claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/
+
+- `cli-contract.live.ts` — Live Claude Code CLI contract check (quick 261118-v58). Runs in the nightly `live-cli` job (~1834 tok)
+- `live-daemon.ts` — Shared harness for the nightly live contract tests (phase 10 D-01 to D-03, quick 261118-v58). (~3196 tok)
+- `sdk-contract.live.ts` — Live SDK contract check (phase 10, D-01 to D-03). (~771 tok)
 ## .claude/worktrees/agent-acc1b575e55c47c56/
 
 - `.dockerignore` — Scopes the Docker build context of scripts/smoke-homebrew-docker.sh, the only Docker build (~136 tok)
@@ -138,6 +160,8 @@
 - `ci.yml` — Push and PR CI (D-14). Runs on every branch push, every pull_request and on demand. (~1850 tok)
 - `distro.yml` — Reusable distro matrices (D-14, D-16). Called by ci.yml with the PR image pins and by (~626 tok)
 - `homebrew.yml` — CI: Update Homebrew Tap (~1144 tok)
+- `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03; schedule + workflow_dispatch only, contents: read): `distro` on :latest images; `live` runs only tests/live/sdk-contract.live.ts; `live-cli` (quick 261118-v58) installs the latest @anthropic-ai/claude-code unpinned, prints `claude --version`, requires the secret and runs only tests/live/cli-contract.live.ts; both live jobs guarded to k-leumas/queque (~1100 tok)
+- `release.yaml` — CI: Release (~2090 tok)
 - `nightly.yml` — Nightly safety net (phase 10, D-01 to D-03). Provider or distro drift shows up within a day (~570 tok)
 - `release.yaml` — CI: Release. `test` (lint/typecheck/test/build, apt deps from awalsh128/cache-apt-pkgs-action + check step) and `brew-smoke` (buildx + gha cache, key-free Homebrew smoke) run in parallel; tag-and-changelog needs both, then publish-npm and publish-homebrew. (~2400 tok)
 - `tap-clone-stats.yml` — Weekly snapshot of Homebrew tap clone traffic, with the clones made by our own publishing runs (~1865 tok)
@@ -799,6 +823,9 @@
 - `261117-jpp-PLAN.md` (~13982 tok)
 - `261117-jpp-SUMMARY.md` — Phase quick-261117-jpp Plan 01: Update Notifier Summary (~3509 tok)
 
+## .planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/
+
+- `261118-v58-PLAN.md` — Declares ContextEnvelope (~7345 tok)
 ## .planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/
 
 - `261118-ubg-PLAN.md` — Declares there (~8174 tok)
@@ -1047,7 +1074,9 @@
 
 ## tests/live/
 
-- `sdk-contract.live.ts` — Nightly live SDK contract test, the only test that calls a real model: spawns the built daemon on `/tmp/qq-live-PID.sock` with a temp HOME and sends one streamed fetch-candidates; asserts schemas, LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08). (~2722 tok)
+- `cli-contract.live.ts` — Nightly `live-cli` contract test against the real `claude` (quick 261118-v58): socket `/tmp/qq-live-cli-PID.sock`; beforeAll throws (never skips) without ANTHROPIC_API_KEY, without `claude --version` on PATH (hint `npm i -g @anthropic-ai/claude-code`) or without dist; daemon env drops ANTHROPIC_API_KEY / ANTHROPIC_AUTH_TOKEN / CLAUDE_CODE_OAUTH_TOKEN so qq takes `claude -p`, and claude authenticates through a temp-HOME `.claude/settings.json` apiKeyHelper `printenv LIVE_CLAUDE_CLI_API_KEY` (key never on disk); cold turn (`cli result`, no `sdk path`) then prewarmed turn (`prewarm hit`); CLI_FAILURE_LINES include `claude-cli path`, `cli timed out`, `cli init timed out`, `prewarm retry cold`, `prewarm spawn failed`, `prewarm error`, `response truncated` (~1500 tok)
+- `live-daemon.ts` — Shared live harness (not collected by either config): startLiveDaemon({ socketPath, env overrides where undefined deletes, prepareHome }) under a temp HOME with cleanup on failure, stopLiveDaemon, fetchLive, buildEnvelope, readDebugLog, settledDebugLog(file, marker, fromOffset), expectLiveContract (schemas + ceilings), LIVE_FIRST_CANDIDATE_MS 15000 / LIVE_FINAL_MS 25000, mainJs (~2700 tok)
+- `sdk-contract.live.ts` — Nightly live SDK contract test, built on live-daemon.ts; the `live` job runs only this file: built daemon on `/tmp/qq-live-PID.sock` with a temp HOME, one streamed fetch-candidates; expectLiveContract, then `sdk path` and no `request failed`/`response truncated`; fails in beforeAll without the key (10-08, quick 261118-v58). (~700 tok)
 
 ## tests/pty/
 
