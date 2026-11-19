@@ -92,6 +92,10 @@ expect {
 }
 
 send "\003"
+# Wait for the empty prompt zsh draws after the interrupt (prompt, then clear-to-end-of-line).
+# zsh flushes typeahead on SIGINT, so an `exit` sent sooner can lose its first letters and
+# leave the shell open until `expect eof` times out.
+expect -re {QQSMOKE[%#] \x1b\[K}
 send "exit\r"
 expect eof
 EXPECT

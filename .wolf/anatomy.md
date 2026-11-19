@@ -6,6 +6,7 @@
 ## ./
 
 - `.DS_Store` (~2186 tok)
+- `.dockerignore` — Allow-list build context for scripts/smoke-homebrew-docker.sh: `*`, then one `!` line per COPY source (guarded by tests/homebrew-smoke-docker.test.ts); keeps node_modules, .git and dotenv files off the daemon. (~120 tok)
 - `.gitignore` — Git ignore rules (~65 tok)
 - `.nvmrc` (~3 tok)
 - `.releaserc.json` (~363 tok)
@@ -815,7 +816,7 @@
 ## scripts/
 
 - `docker-homebrew-smoke-runner.sh` — In-container half of the Homebrew smoke: writes the fake `claude` shim (exit 21 when the fixture is not mounted), `qq init zsh`, expect waits for `tldr z3` then the `QQSMOKE# tldr z3  # ` buffer redraw (exits 10-14, 20). (~1000 tok)
-- `smoke-homebrew-docker.sh` — Key-free Homebrew-shaped install smoke: heredoc Dockerfile on the .nvmrc Node major, formula-emulation RUN, fake claude mounted read-only at /opt/fake. (~1300 tok)
+- `smoke-homebrew-docker.sh` — Key-free Homebrew-shaped install smoke: heredoc Dockerfile on the .nvmrc Node major (version-stripped manifest stage, npm install before src/shell, runner copied last), formula-emulation RUN, fake claude mounted read-only at /opt/fake; `--no-cache`, QQ_SMOKE_DOCKER_CACHE=gha selects buildx + gha cache. (~1700 tok)
 
 ## src/
 
@@ -952,6 +953,7 @@
 - `environment-shape.test.ts` — Enum mapping, zsh/node parsing, null on an out-of-bound node, no env value leaks (10-10). (~946 tok)
 - `error-kind.test.ts` — withErrorKind/errorKindOf units; claude-default CLI/SDK mapping via importOriginal-spread mocks of claude.js and claude-cli.js; daemon fetch-error errorKind and pin_invalid; fetch-client re-tagging; the in-process fallback (10-06). (~2776 tok)
 - `git-env-isolation.test.ts` — Phase 10 (10-12 drill): git exports GIT_DIR (and friends) into hook processes run from a (~730 tok)
+- `homebrew-smoke-docker.test.ts` — Guards the Homebrew Docker smoke: no Anthropic key, fake claude wired, .dockerignore tracks every COPY source, buildx + gha cache gate, deps-first layer order. (~900 tok)
 - `init-command.test.ts` — Declares stub (~350 tok)
 - `init-provider.test.ts` — 38 picker tests; restartDaemon/openUrl mocked, /dev/tty open throws, D-03/D-05 source guards. (~4600 tok)
 - `instant-frame-parity.test.ts` — Cross-shell byte parity for the instant frame (Phase 11 D-04, quick 261011-jbh LD-1). (~3424 tok)
