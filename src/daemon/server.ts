@@ -30,9 +30,9 @@ import type { TelemetryBuffer } from './telemetry-buffer.js';
  *   {kind: 'telemetry-show'}    → {kind: 'telemetry-buffer', pending, lastSent} (D-12); both
  *                                   null when no buffer was given
  *   {kind: 'telemetry-reset'}   → the buffer is cleared, then the same `telemetry-buffer` reply
- *   {kind: 'update-hint'}       → {kind: 'update-hint', hint} (quick 261117-jpp): the update
- *                                   checker's once-a-day line, or null (no checker, nothing to
- *                                   show, or the checker failed). The hint text is never logged
+ *   {kind: 'update-hint'}       → {kind: 'update-hint', hint: null} at once (quick 261117-jpp);
+ *                                   the checker then refreshes in the background and stores the
+ *                                   line the NEXT `??` paints from its first frame
  *
  * The server is intentionally free of Ink, React, and /dev/tty assumptions —
  * it runs fully in the background without a TTY. LLM fetch lives here so the
@@ -47,8 +47,8 @@ export interface DaemonServerOptions {
   onShutdown?: () => void;
   /** The daemon's telemetry buffer (phase 10, D-07). */
   telemetry?: TelemetryBuffer;
-  /** The update checker that answers `update-hint` (quick 261117-jpp). */
-  updates?: { hint(): Promise<string | null> };
+  /** The update checker that `update-hint` wakes (quick 261117-jpp). */
+  updates?: { prepare(): Promise<void> };
 }
 
 export function startDaemonServer(
@@ -144,15 +144,12 @@ export function startDaemonServer(
               break;
             }
             case 'update-hint': {
-              // Inside a Promise chain, so a throwing or rejecting checker becomes a null hint
-              // and never an unhandled rejection. Logs whether a hint was shown, never its text.
+              // Reply at once; the line is for the next `??`, which reads it from the cache.
+              // Inside a Promise chain, so a throwing checker never becomes an unhandled rejection.
+              writeJson({ kind: 'update-hint', hint: null });
               void Promise.resolve()
-                .then(() => options.updates?.hint() ?? null)
-                .catch(() => null)
-                .then((hint) => {
-                  writeJson({ kind: 'update-hint', hint });
-                  void appendDebugLog('daemon', 'replied update-hint', { shown: hint !== null });
-                });
+                .then(() => options.updates?.prepare())
+                .catch(() => undefined);
               break;
             }
             case 'shutdown': {

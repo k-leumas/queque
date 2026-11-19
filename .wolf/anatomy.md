@@ -1,16 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-18T03:21:56.886Z
-> Files: 528 tracked | Anatomy hits: 0 | Misses: 0
-
-## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/
-
-- `Before.dc.html` — Picker without an update hint (~983 tok)
-- `canvas.json` (~432 tok)
-- `Distro.dc.html` — Update hint: distro package (~1060 tok)
-- `Main.dc.html` — Update hint: Homebrew (~1056 tok)
-- `NodeTooOld.dc.html` — Update hint: Node too old (~1058 tok)
-- `Npm.dc.html` — Update hint: npm via nvm (~1068 tok)
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T00:00:01.583Z
+> Files: 521 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -27,7 +18,7 @@
 - `package.json` — Node.js package manifest (~566 tok)
 - `pnpm-lock.yaml` — pnpm lock file (~43535 tok)
 - `pnpm-workspace.yaml` (~14 tok)
-- `README.md` — Project documentation (~1207 tok)
+- `README.md` — Project documentation (~1217 tok)
 - `renovate.json` (~31 tok)
 - `tsconfig.json` — TypeScript configuration (~187 tok)
 - `tsup.config.ts` — Declares version (~904 tok)
@@ -241,7 +232,7 @@
 - `REQUIREMENTS.md` — Requirements: QueQue (~1781 tok)
 - `ROADMAP.md` — Roadmap: QueQue (~7986 tok)
 - `state.json` (~451 tok)
-- `STATE.md` — Project State (~5040 tok)
+- `STATE.md` — Project State (~5111 tok)
 
 ## .planning/debug/
 
@@ -820,7 +811,3 @@
 
 - `run-1-partial.log` — Declares f (~4424 tok)
 - `run-from-6.raw.json` (~4090 tok)
-
-## src/shared/
-
-- `instant-frame-spec.ts` — The instant first frame, as one TypeScript reference (Phase 11 D-04; quick 261011-jbh, LD-1). (~1808 tok)

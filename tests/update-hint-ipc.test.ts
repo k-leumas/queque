@@ -34,16 +34,24 @@ describe('update-hint IPC kind', () => {
     fs.rmSync(socketPath, { force: true });
   });
 
-  it('replies with the checker hint', async () => {
-    server = await startDaemonServer(socketPath, { updates: { hint: async () => HINT } });
+  it('replies null at once and then wakes the checker', async () => {
+    const prepare = vi.fn(async () => undefined);
+    server = await startDaemonServer(socketPath, { updates: { prepare } });
     await expect(requestDaemonOnce(socketPath, { kind: 'update-hint' }, 2000)).resolves.toEqual({
       kind: 'update-hint',
-      hint: HINT,
+      hint: null,
     });
-    // The debug log records whether a hint was shown, never its text.
-    const logged = JSON.stringify(appendDebugLogMock.mock.calls);
-    expect(logged).toContain('replied update-hint');
-    expect(logged).not.toContain('brew upgrade');
+    await vi.waitFor(() => expect(prepare).toHaveBeenCalledTimes(1));
+  });
+
+  it('does not wait for a slow checker before replying', async () => {
+    server = await startDaemonServer(socketPath, {
+      updates: { prepare: () => new Promise<void>(() => undefined) },
+    });
+    await expect(requestDaemonOnce(socketPath, { kind: 'update-hint' }, 2000)).resolves.toEqual({
+      kind: 'update-hint',
+      hint: null,
+    });
   });
 
   it('replies null without an update checker', async () => {
@@ -54,35 +62,26 @@ describe('update-hint IPC kind', () => {
     });
   });
 
-  it('replies null when the checker rejects and keeps serving', async () => {
-    server = await startDaemonServer(socketPath, {
-      updates: {
-        hint: async () => {
-          throw new Error('boom');
-        },
+  it('keeps serving when the checker rejects or throws synchronously', async () => {
+    for (const prepare of [
+      async () => {
+        throw new Error('boom');
       },
-    });
-    await expect(requestDaemonOnce(socketPath, { kind: 'update-hint' }, 2000)).resolves.toEqual({
-      kind: 'update-hint',
-      hint: null,
-    });
-    await expect(requestDaemonOnce(socketPath, { kind: 'ping' }, 2000)).resolves.toMatchObject({
-      kind: 'pong',
-    });
-  });
-
-  it('replies null when the checker throws synchronously', async () => {
-    server = await startDaemonServer(socketPath, {
-      updates: {
-        hint: () => {
-          throw new Error('sync boom');
-        },
+      () => {
+        throw new Error('sync boom');
       },
-    });
-    await expect(requestDaemonOnce(socketPath, { kind: 'update-hint' }, 2000)).resolves.toEqual({
-      kind: 'update-hint',
-      hint: null,
-    });
+    ]) {
+      server?.close();
+      fs.rmSync(socketPath, { force: true });
+      server = await startDaemonServer(socketPath, { updates: { prepare } });
+      await expect(requestDaemonOnce(socketPath, { kind: 'update-hint' }, 2000)).resolves.toEqual({
+        kind: 'update-hint',
+        hint: null,
+      });
+      await expect(requestDaemonOnce(socketPath, { kind: 'ping' }, 2000)).resolves.toMatchObject({
+        kind: 'pong',
+      });
+    }
   });
 });
 

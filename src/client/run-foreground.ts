@@ -1,4 +1,5 @@
 import * as fsp from 'node:fs/promises';
+import { homedir } from 'node:os';
 import * as path from 'node:path';
 import * as tty from 'node:tty';
 import { render } from 'ink';
@@ -28,7 +29,13 @@ import {
 } from '../shared/telemetry-config.js';
 import { annotateCandidates, isInstalled, type ToolInventory } from '../shared/tool-awareness.js';
 import { installedCatalogTools } from '../shared/tool-catalog.js';
-import { UPDATE_HINT_REQUEST_TIMEOUT_MS, updateCheckBlockedBy } from '../shared/update-check.js';
+import {
+  readUpdateHint,
+  UPDATE_CACHE_FILE_NAME,
+  UPDATE_HINT_REQUEST_TIMEOUT_MS,
+  updateCacheDir,
+  updateCheckBlockedBy,
+} from '../shared/update-check.js';
 import { CandidateSelect } from '../ui/CandidateSelect.js';
 import { type CandidateListState, MODAL_VIEWPORT_LINES } from '../ui/modal-layout.js';
 import {
@@ -211,15 +218,42 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
         rbufferLength: request.rbuffer.length,
       });
     } else if (resultMode === 'llm') {
-      // The once-a-day update hint (quick 261117-jpp), asked right after ensureDaemon and NEVER
-      // awaited on the way to the first frame or the result write: `??` never waits on it. The
-      // env + TTY gate runs here, so a non-terminal or opted-out run sends nothing.
-      const updateHintRead: Promise<string | null> =
-        updateCheckBlockedBy(process.env, process.stdout.isTTY === true) === null
-          ? requestDaemonOnce(socketPath, { kind: 'update-hint' }, UPDATE_HINT_REQUEST_TIMEOUT_MS)
-              .then((reply) => (reply?.kind === 'update-hint' ? reply.hint : null))
-              .catch(() => null)
-          : Promise.resolve(null);
+      // The update line (quick 261117-jpp), shown on every `??` until the user upgrades. It is
+      // the line the daemon prepared during an EARLIER `??`, read synchronously from the local
+      // cache so it is in the very first frame and the picker never grows while open. Then the daemon is woken,
+      // fire-and-forget, to refresh and prepare the line for the next `??`. Neither step
+      // touches the network here, and nothing on the way to the first frame waits on the
+      // daemon. The env + TTY gate runs in both, so a non-terminal or opted-out run does nothing.
+      const updateGateOpen =
+        updateCheckBlockedBy(process.env, process.stdout.isTTY === true) === null;
+      const updateHint: string | undefined =
+        (updateGateOpen
+          ? readUpdateHint({
+              env: process.env,
+              isTTY: true,
+              cacheFile: path.join(
+                updateCacheDir({
+                  env: process.env,
+                  platform: process.platform,
+                  homeDir: homedir(),
+                }),
+                UPDATE_CACHE_FILE_NAME,
+              ),
+              currentVersion: __QUEQUE_VERSION__,
+            })
+          : null) ?? undefined;
+      // Raced against its own unref'd timer too, so even a request that never settles cannot
+      // hold the exit for longer than UPDATE_HINT_REQUEST_TIMEOUT_MS.
+      const updatePrepare: Promise<unknown> = updateGateOpen
+        ? Promise.race([
+            requestDaemonOnce(
+              socketPath,
+              { kind: 'update-hint' },
+              UPDATE_HINT_REQUEST_TIMEOUT_MS,
+            ).catch(() => null),
+            new Promise((resolve) => setTimeout(resolve, UPDATE_HINT_REQUEST_TIMEOUT_MS).unref()),
+          ])
+        : Promise.resolve();
       // Declared here so the catch block can also write errors to the TTY.
       let ttyReadStream: tty.ReadStream | undefined;
       let ttyWriteStream: tty.WriteStream | undefined;
@@ -333,23 +367,13 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             // Rows streamed so far (09.1 D-05), in the order the provider reported them.
             const streamed: CommandCandidate[] = [];
 
-            // The update line, once the daemon answered, and the arguments of the last
-            // render, so the hint's arrival re-renders exactly the current view.
-            let updateHint: string | undefined;
-            let lastView: [
-              Parameters<typeof CandidateSelect>[0]['candidates'],
-              boolean | undefined,
-              CandidateListState,
-            ] = [null, undefined, 'complete'];
-
             // Build initial element with null candidates (D-06 loading state)
             const buildCandidateElement = (
               candidates: Parameters<typeof CandidateSelect>[0]['candidates'],
               errorState?: boolean,
               listState: CandidateListState = 'complete',
-            ) => {
-              lastView = [candidates, errorState, listState];
-              return React.createElement(CandidateSelect, {
+            ) =>
+              React.createElement(CandidateSelect, {
                 candidates,
                 initialQuery: request.lbuffer,
                 error: errorState,
@@ -379,7 +403,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
                 },
                 onLayoutLinesChange: inZellij ? syncZellijFloatingPaneHeight : undefined,
               });
-            };
 
             // Force interactive:true so Ink uses cursor-repositioning mode regardless of
             // CI env vars (is-in-ci checks process.env.CI which many devtools set) and
@@ -391,13 +414,6 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
                 : { interactive: true };
 
             const app = render(buildCandidateElement(null), renderOptions);
-
-            // The hint joins the live modal whenever it arrives; after Enter or Esc it is dropped.
-            void updateHintRead.then((hint) => {
-              if (hint === null || resolved) return;
-              updateHint = hint;
-              app.rerender(buildCandidateElement(...lastView));
-            });
 
             // Restore cursor to the saved position (top of reserved area) then clear
             // to end of screen. This works regardless of where Ink left the cursor.
@@ -550,6 +566,10 @@ export async function runForegroundClient(args: ForegroundClientArgs): Promise<v
             }
           }
         }
+        // The update wake-up was sent at launch; the daemon replies at once, so this rarely
+        // waits. Awaited (capped at UPDATE_HINT_REQUEST_TIMEOUT_MS) so a fast Esc cannot exit
+        // before the request reaches the daemon. Never rejects.
+        await updatePrepare;
         // Gated on the client's own env and config, capped at 250 ms, never throws.
         await reportClientTelemetry({
           socketPath,

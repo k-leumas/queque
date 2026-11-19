@@ -6,6 +6,8 @@
 
 ## User Preferences
 
+- 2026-11-17: The update line is read from the cache before the first frame (never pops in mid-picker) and stays on EVERY `??` until the user upgrades (no once-a-day limit).
+- 2026-11-17: The qq TUI update line does ONE thing: `qq update available · <how to install>`. Environment problems (Windows Node under WSL, Node too old) and qualifiers (package lag, npm prefix, nvm scope) never go in the picker; boot/run failures belong on the command line (`qq doctor`), not in the TUI.
 - 2026-11-17: In short UI hints (e.g. the update notifier row) the user cares that the message says what to do with the exact command, not about details like the version number. Cut detail before the actionable part, and make sure the command fits the 80-col picker row.
 - [2026-11-17] README: the pronunciation lives in the H1 (`# QueQue *(kew-kew)*[^name]`) and the name origin in a GFM footnote at the end; no name paragraph in the intro (user: it was wordy and mixed in info that is not useful). GitHub repo About: "Natural language in, shell command out. You press Enter." (no shell names, not tied to English).
 

@@ -17,10 +17,10 @@
 | 14:37 | revised Phase 1 plans after checker feedback, validated schemas/structure, logged planning bug | .planning/phases/01-shell-bridge-and-result-contract/01-01-PLAN.md; .planning/phases/01-shell-bridge-and-result-contract/01-03-PLAN.md; .wolf/cerebrum.md; .wolf/buglog.json | complete | ~5000 |
 
 ## Session: 2026-05-01 16:04
-> Consolidated session (34 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-01 16:49
-> Consolidated session (19 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 21:21
 > Consolidated session (0 actions)
@@ -32,61 +32,61 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-02 21:25
-> Consolidated session (3 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 22:00
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 07:20
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 08:07
-> Consolidated session (2 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-02 08:28
-> Consolidated session (33 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-13 15:37
-> Consolidated session (9 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 17:30
-> Consolidated session (3 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 18:10
-> Consolidated session (16 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 04:05
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 08:24
-> Consolidated session (39 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 10:30
-> Consolidated session (30 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 12:02
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-14 14:39
-> Consolidated session (28 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 18:32
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 21:22
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 04:30
-> Consolidated session (46 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-15 11:53
-> Consolidated session (17 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-16 19:41
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-21 05:19
-> Consolidated session (29 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-21 11:22
 > Consolidated session (0 actions)
@@ -95,46 +95,46 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-21 12:18
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 18:16
-> Consolidated session (4 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 21:27
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 21:34
-> Consolidated session (24 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 12:20
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-22 12:32
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 13:30
-> Consolidated session (18 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-22 15:07
-> Consolidated session (18 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-23 19:32
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-23 21:27
-> Consolidated session (4 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-23 21:55
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-23 22:15
-> Consolidated session (17 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-23 11:50
-> Consolidated session (26 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-28 00:24
-> Consolidated session (12 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-28 01:00
 > Consolidated session (0 actions)
@@ -143,97 +143,97 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-05-28 15:44
-> Consolidated session (44 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-29 16:43
-> Consolidated session (21 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 17:25
-> Consolidated session (14 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 18:17
-> Consolidated session (10 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 10:41
-> Consolidated session (37 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-05-30 13:12
-> Consolidated session (42 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-04 16:21
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-04 16:27
-> Consolidated session (21 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-05 17:08
-> Consolidated session (26 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-05 18:19
-> Consolidated session (11 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-07 18:08
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-07 19:45
-> Consolidated session (1 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 18:23
-> Consolidated session (13 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 19:07
-> Consolidated session (8 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 21:38
-> Consolidated session (37 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-09 12:23
-> Consolidated session (31 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-13 11:24
-> Consolidated session (92 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 15:30
-> Consolidated session (26 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:05
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:10
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:11
-> Consolidated session (50 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-18 16:48
-> Consolidated session (109 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-19 17:44
-> Consolidated session (32 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-06-19 10:31
 > Consolidated session (0 actions)
 
 ## Session: 2026-06-19 10:58
-> Consolidated session (16 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-30 10:19
 > Consolidated session (0 actions)
 
 ## Session: 2026-07-30 11:36
-> Consolidated session (3 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-30 11:46
 > Consolidated session (0 actions)
 
 ## Session: 2026-07-30 11:49
-> Consolidated session (29 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-31 14:28
 > Consolidated session (0 actions)
 
 ## Session: 2026-07-31 16:36
-> Consolidated session (12 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-07-31 16:46
 > Consolidated session (0 actions)
@@ -257,16 +257,16 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-08-26 18:37
-> Consolidated session (25 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-08-26 19:40
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-08-26 20:45
-> Consolidated session (52 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-08-26 21:05
-> Consolidated session (116 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-09-03 17:18
 > Consolidated session (0 actions)
@@ -296,19 +296,19 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-08 19:56
-> Consolidated session (6 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 20:29
-> Consolidated session (38 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 23:42
-> Consolidated session (27 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 00:49
-> Consolidated session (18 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 02:01
-> Consolidated session (43 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-08 10:08
 > Consolidated session (0 actions)
@@ -317,76 +317,76 @@
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-10 12:36
-> Consolidated session (41 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-11 20:31
-> Consolidated session (33 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-11 03:54
-> Consolidated session (88 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 20:59
-> Consolidated session (30 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 22:46
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-12 22:46
-> Consolidated session (82 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 23:48
-> Consolidated session (290 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-12 13:10
-> Consolidated session (119 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-13 23:42
-> Consolidated session (1 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-13 12:14
-> Consolidated session (8 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-17 03:16
-> Consolidated session (31 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-17 11:28
-> Consolidated session (147 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-19 00:03
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-19 01:18
-> Consolidated session (98 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-22 20:45
-> Consolidated session (14 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-27 14:31
-> Consolidated session (1 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-29 18:43
-> Consolidated session (7 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-29 19:23
-> Consolidated session (43 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-29 12:22
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-29 13:29
-> Consolidated session (310 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-30 19:38
-> Consolidated session (8 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-30 01:00
-> Consolidated session (36 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-10-30 09:57
 > Consolidated session (0 actions)
 
 ## Session: 2026-10-30 09:57
-> Consolidated session (83 actions)
+> Consolidated session (0 actions)
 
 ## Session: 2026-11-13 08:51
 
@@ -1138,3 +1138,29 @@
 | 21:21 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~62 |
 | 21:22 | Session end: 58 writes across 39 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 9 reads | ~77818 tok |
 | 21:37 | update hint drops the version number (qq update available · <cmd>); distro wording shortened; test pins the command inside an 80-col row | src/shared/update-check.ts, tests/update-check.test.ts | full suite: only bash-widget b22 timing flake (passes alone) | ~6k |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Main.dc.html | inline fix | ~13 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Npm.dc.html | inline fix | ~25 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Npm.dc.html | inline fix | ~36 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | inline fix | ~14 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | inline fix | ~33 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Distro.dc.html | inline fix | ~22 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/Distro.dc.html | inline fix | ~29 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~64 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~16 |
+| 21:41 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~18 |
+| 21:42 | Session end: 68 writes across 39 files (261117-jpp-PLAN.md, update-check.test.ts, update-hint-ipc.test.ts, modal-layout.test.ts, install-detect.ts) | 10 reads | ~78097 tok |
+| 22:15 | Update hint: TUI shows only install how-to; env problems left to qq doctor | src/shared/update-check.ts, tests/update-check.test.ts | 90 update tests pass | ~3000 |
+
+## Session: 2026-11-18 22:36
+
+| Time | Action | File(s) | Outcome | ~Tokens |
+|------|--------|---------|---------|--------|
+| 23:05 | Update line: painted from cache in first frame, shown every ?? until upgrade | update-check.ts, run-foreground.ts, server.ts, ipc.ts, tests, README, PRIVACY | update tests pass | ~8000 |
+| 11:23 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | removed 1 lines | ~2 |
+| 11:23 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/NodeTooOld.dc.html | inline fix | ~82 |
+| 11:23 | Edited ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/notifier-canvas/project/canvas.json | inline fix | ~22 |
+| 11:24 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 12:18 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 20:25 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 20:35 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |
+| 21:08 | Session end: 3 writes across 2 files (NodeTooOld.dc.html, canvas.json) | 0 reads | ~112 tok |

@@ -77,7 +77,7 @@ interface Props {
   /** Where the candidate list stands (09.1 D-05); defaults to `'complete'`. */
   listState?: CandidateListState;
   /**
-   * The once-a-day dim update line (quick 261117-jpp), one truncated row under the controls.
+   * The dim update line, shown until the user upgrades (quick 261117-jpp), one truncated row under the controls.
    * Selection-independent: it never changes with the highlighted row.
    */
   updateHint?: string;

@@ -160,7 +160,7 @@ export interface CandidateSelectLayoutInput {
   installToggled?: ReadonlySet<string>;
   /** Where the candidate list stands; absent means `'complete'`. */
   listState?: CandidateListState;
-  /** The once-a-day update line under the controls (quick 261117-jpp); one truncated row. */
+  /** The update line under the controls (quick 261117-jpp); one truncated row. */
   updateHint?: string;
 }
 

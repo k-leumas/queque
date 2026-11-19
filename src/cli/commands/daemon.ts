@@ -159,7 +159,7 @@ export async function daemonCommand(options: DaemonCommandOptions): Promise<void
   const telemetry = createTelemetryBuffer();
   telemetry.start();
   // Update notifier (quick 261117-jpp): nothing is fetched here. The checker asks the registry
-  // only when a gated terminal client sends `update-hint`, at most once per 24 h.
+  // only when a gated terminal client sends `update-hint`, and fetches at most once per 24 h.
   const updates = createUpdateChecker({
     env: process.env,
     cacheFile: join(

@@ -18,8 +18,8 @@ import {
   nodeFloor,
   RELEASES_URL,
   readUpdateCache,
+  readUpdateHint,
   UPDATE_CHECK_INTERVAL_MS,
-  UPDATE_HINT_INTERVAL_MS,
   UPDATE_REGISTRY_URL,
   type UpdateCache,
   type UpdateStatus,
@@ -182,11 +182,11 @@ describe('update cache', () => {
   let tmp: string;
   let cacheFile: string;
   const sample: UpdateCache = {
-    version: 1,
+    version: 2,
     checkedAt: NOW,
     latest: '0.11.0',
     enginesNode: '>=24',
-    shownAt: null,
+    hint: null,
   };
 
   beforeEach(() => {
@@ -284,41 +284,65 @@ describe('createUpdateChecker', () => {
   function seed(cache: Partial<UpdateCache>): void {
     expect(
       writeUpdateCache(cacheFile, {
-        version: 1,
+        version: 2,
         checkedAt: now,
         latest: '0.11.0',
         enginesNode: null,
-        shownAt: null,
+        hint: null,
         ...cache,
       }),
     ).toBe(true);
   }
 
-  it('starts exactly one fetch without a cache and returns no hint yet', async () => {
+  const LINE = 'qq update available · brew upgrade queque';
+
+  function take(env: NodeJS.ProcessEnv = {}, isTTY = true, currentVersion = '0.10.5') {
+    return readUpdateHint({ env, isTTY, cacheFile, currentVersion });
+  }
+
+  it('prepare() fetches once without a cache and stores the line for the next ??', async () => {
     const { checker, fetchImpl } = makeChecker();
-    const [a, b] = await Promise.all([checker.hint(), checker.hint()]);
-    expect(a).toBeNull();
-    expect(b).toBeNull();
-    await vi.waitFor(() => expect(readUpdateCache(cacheFile)).not.toBeNull());
+    await Promise.all([checker.prepare(), checker.prepare()]);
     expect(fetchImpl).toHaveBeenCalledTimes(1);
     expect(readUpdateCache(cacheFile)).toMatchObject({
       checkedAt: NOW,
       latest: '0.11.0',
       enginesNode: '>=24',
-      shownAt: null,
+      hint: LINE,
     });
+  });
+
+  it('the line waits for the next ??: nothing before prepare(), then on it', async () => {
+    expect(take()).toBeNull();
+    await makeChecker().checker.prepare();
+    expect(take()).toBe(LINE);
+  });
+
+  it('shows the line on every ?? until the user upgrades, and reading changes nothing', async () => {
+    await makeChecker().checker.prepare();
+    const before = fs.readFileSync(cacheFile, 'utf8');
+    for (let i = 0; i < 5; i++) {
+      expect(take()).toBe(LINE);
+    }
+    expect(fs.readFileSync(cacheFile, 'utf8')).toBe(before);
+  });
+
+  it('never shows a stale line once this qq is at the cached latest (just upgraded)', async () => {
+    await makeChecker().checker.prepare();
+    expect(take({}, true, '0.11.0')).toBeNull();
+    expect(take({}, true, '0.12.0')).toBeNull();
   });
 
   it('does not fetch with a fresh cache and fetches once with a 24 h old one', async () => {
     seed({ checkedAt: now - HOUR, latest: '0.10.5' });
     const fresh = makeChecker();
-    await fresh.checker.hint();
+    await fresh.checker.prepare();
     expect(fresh.fetchImpl).not.toHaveBeenCalled();
 
     seed({ checkedAt: now - UPDATE_CHECK_INTERVAL_MS, latest: '0.10.5' });
     const stale = makeChecker();
-    await stale.checker.hint();
-    await vi.waitFor(() => expect(readUpdateCache(cacheFile)?.checkedAt).toBe(NOW));
+    await stale.checker.prepare();
+    expect(readUpdateCache(cacheFile)?.checkedAt).toBe(NOW);
     expect(stale.fetchImpl).toHaveBeenCalledTimes(1);
   });
 
@@ -328,54 +352,61 @@ describe('createUpdateChecker', () => {
       throw new TypeError('fetch failed');
     });
     const { checker } = makeChecker({ fetchImpl });
-    await expect(checker.hint()).resolves.toBeNull();
-    await vi.waitFor(() => expect(readUpdateCache(cacheFile)?.checkedAt).toBe(NOW));
-    expect(readUpdateCache(cacheFile)).toMatchObject({ latest: '0.10.5', enginesNode: '>=24' });
-    await checker.hint();
+    await expect(checker.prepare()).resolves.toBeUndefined();
+    expect(readUpdateCache(cacheFile)).toMatchObject({
+      checkedAt: NOW,
+      latest: '0.10.5',
+      enginesNode: '>=24',
+      hint: null,
+    });
+    await checker.prepare();
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
   it.each([
     { QQ_NO_UPDATE_CHECK: '1' },
     { CI: '1' },
-  ])('returns null and never fetches with %j', async (env) => {
-    seed({ checkedAt: now - 25 * HOUR });
+  ])('never fetches or shows with %j', async (env) => {
+    seed({ checkedAt: now - 25 * HOUR, hint: LINE });
     const { checker, fetchImpl } = makeChecker({ env });
-    await expect(checker.hint()).resolves.toBeNull();
+    await checker.prepare();
     expect(fetchImpl).not.toHaveBeenCalled();
+    expect(take(env)).toBeNull();
   });
 
-  it('shows the hint at most once per 24 h', async () => {
-    seed({});
-    const { checker } = makeChecker();
-    await expect(checker.hint()).resolves.toBe('qq update available · brew upgrade queque');
-    expect(readUpdateCache(cacheFile)?.shownAt).toBe(NOW);
-    await expect(checker.hint()).resolves.toBeNull();
-    now += UPDATE_HINT_INTERVAL_MS;
-    await expect(checker.hint()).resolves.toBe('qq update available · brew upgrade queque');
+  it('never shows outside a terminal', async () => {
+    seed({ hint: LINE });
+    expect(take({}, false)).toBeNull();
   });
 
   it('runs detectInstall once for the checker lifetime', async () => {
     seed({});
     const { checker, detect } = makeChecker();
-    await checker.hint();
-    await checker.hint();
+    await checker.prepare();
+    await checker.prepare();
     expect(detect).toHaveBeenCalledTimes(1);
   });
 
-  it('returns null when the latest equals the running version', async () => {
+  it('stores no line when the latest equals the running version', async () => {
     seed({ latest: '0.10.5' });
-    const { checker } = makeChecker();
-    await expect(checker.hint()).resolves.toBeNull();
+    await makeChecker().checker.prepare();
+    expect(readUpdateCache(cacheFile)?.hint).toBeNull();
   });
 
-  it('names the Node floor when the latest release needs a newer Node', async () => {
+  it('stores no line when the latest release needs a newer Node (qq doctor says so)', async () => {
     seed({ enginesNode: '>=26' });
-    const { checker } = makeChecker();
-    await expect(checker.hint()).resolves.toBe('qq update needs Node 26+; you have 24.14.1');
+    await makeChecker().checker.prepare();
+    expect(readUpdateCache(cacheFile)?.hint).toBeNull();
   });
 
-  it('status() reports blocked, unknown, current and available without touching shownAt', async () => {
+  it('rejects a cached line with terminal control characters', () => {
+    seed({});
+    const raw = JSON.parse(fs.readFileSync(cacheFile, 'utf8'));
+    fs.writeFileSync(cacheFile, JSON.stringify({ ...raw, hint: 'x\u001b[2J' }));
+    expect(readUpdateCache(cacheFile)).toBeNull();
+  });
+
+  it('status() reports blocked, unknown, current and available', async () => {
     const blocked = makeChecker({ env: { QQ_NO_UPDATE_CHECK: '1' } });
     await expect(blocked.checker.status({ isTTY: true, refresh: true })).resolves.toEqual({
       state: 'blocked',
@@ -402,7 +433,6 @@ describe('createUpdateChecker', () => {
       nodeTooOld: null,
       install: BREW,
     });
-    expect(readUpdateCache(cacheFile)?.shownAt).toBeNull();
 
     seed({ latest: '0.10.5' });
     await expect(makeChecker().checker.status({ isTTY: true, refresh: true })).resolves.toEqual({
@@ -444,19 +474,19 @@ describe('formatUpdateHint (Task 1 rows)', () => {
           packaged: true,
         }),
       ),
-    ).toBe('qq update (your package may lag) · paru -S queque');
+    ).toBe('qq update available · paru -S queque');
   });
 });
 
 describe('formatUpdateHint: one line per install method', () => {
   const NPM = 'npm i -g @k-leumas/queque-cli@latest';
-  const UPSTREAM = 'qq update (your package may lag)';
+  const UPSTREAM = 'qq update available';
   const rows: Array<[string, InstallInfo, string | null]> = [
     ['brew', BREW, 'qq update available · brew upgrade queque'],
     [
       'nvm',
       { method: 'nvm', upgradeCommand: NPM, note: 'this Node version only', packaged: false },
-      `qq update available · ${NPM} (this Node version only)`,
+      `qq update available · ${NPM}`,
     ],
     [
       'system npm, non-writable',
@@ -466,7 +496,7 @@ describe('formatUpdateHint: one line per install method', () => {
         note: 'set a user npm prefix first, not sudo',
         packaged: false,
       },
-      `qq update available · ${NPM} (set a user npm prefix first, not sudo)`,
+      `qq update available · ${NPM}`,
     ],
     ['nix', { method: 'nix', upgradeCommand: null, packaged: false }, null],
     [
@@ -484,11 +514,7 @@ describe('formatUpdateHint: one line per install method', () => {
       { method: 'rpm', upgradeCommand: null, packaged: true },
       `${UPSTREAM} · update it with your package manager`,
     ],
-    [
-      'windows-node',
-      { method: 'windows-node', upgradeCommand: null, packaged: false },
-      'qq update available · this qq uses a Windows Node; install Node inside WSL',
-    ],
+    ['windows-node', { method: 'windows-node', upgradeCommand: null, packaged: false }, null],
     ['unknown', UNKNOWN, `qq update available · ${RELEASES_URL}`],
   ];
 

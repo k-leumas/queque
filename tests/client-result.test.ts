@@ -81,9 +81,16 @@ vi.mock('../src/shared/telemetry-config.js', async (importOriginal) => ({
   telemetryStateWritable: consentMock.telemetryStateWritable,
 }));
 
-// The update-hint ask (quick 261117-jpp): the real env + TTY gate runs; only the one-shot
-// daemon request is faked, because these tests run no daemon. Default reply: no hint.
+// The update-hint wake-up (quick 261117-jpp): the real env + TTY gate runs; only the one-shot
+// daemon request is faked, because these tests run no daemon.
 const requestDaemonOnceMock = vi.hoisted(() => vi.fn().mockResolvedValue(null));
+// node:fs is mocked below, so the cache read is faked here; update-check.test.ts covers it.
+const readUpdateHintMock = vi.hoisted(() => vi.fn().mockReturnValue(null));
+
+vi.mock('../src/shared/update-check.js', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../src/shared/update-check.js')>()),
+  readUpdateHint: readUpdateHintMock,
+}));
 
 vi.mock('../src/cli/commands/telemetry.js', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../src/cli/commands/telemetry.js')>()),
@@ -1800,6 +1807,8 @@ describe('runForegroundClient: update hint (quick 261117-jpp)', () => {
     fetchCandidatesMock.mockReset();
     requestDaemonOnceMock.mockReset();
     requestDaemonOnceMock.mockResolvedValue(null);
+    readUpdateHintMock.mockReset();
+    readUpdateHintMock.mockReturnValue(null);
     ttyDescriptor = Object.getOwnPropertyDescriptor(process.stdout, 'isTTY');
   });
 
@@ -1832,51 +1841,86 @@ describe('runForegroundClient: update hint (quick 261117-jpp)', () => {
     expect(requestDaemonOnceMock).not.toHaveBeenCalled();
   });
 
-  it('asks the daemon and adds the hint to the current view without changing it', async () => {
+  function seedPreparedLine(hint: string): void {
+    readUpdateHintMock.mockReturnValue(hint);
+  }
+
+  function openGate(): void {
     vi.stubEnv('QQ_NO_UPDATE_CHECK', '');
     vi.stubEnv('CI', '');
     setStdoutTTY(true);
-    inkMock.autoSelect = false;
-    requestDaemonOnceMock.mockResolvedValue({ kind: 'update-hint', hint: HINT });
-    fetchCandidatesMock.mockImplementation(
-      (_envelope: ContextEnvelope, options?: { signal?: AbortSignal }) =>
-        new Promise((_resolve, reject) => {
-          options?.signal?.addEventListener('abort', () => reject(abortError()), { once: true });
-        }),
-    );
+  }
+
+  async function firstFrame(): Promise<{ first: HintElement; rerenders: HintElement[] }> {
     const { render } = await import('ink');
     const renderMock = vi.mocked(render);
     const renderCallIndex = renderMock.mock.calls.length;
-
+    fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: 'status' }]);
     const { runForegroundClient } = await import('../src/client/run-foreground.js');
-    const run = runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
-    await vi.waitFor(() => expect(fetchCandidatesMock).toHaveBeenCalledTimes(1));
+    await runForegroundClient({ requestFile, resultFile, resultMode: 'llm' });
+    const first = renderMock.mock.calls[renderCallIndex]?.[0] as unknown as HintElement;
     const app = renderMock.mock.results[renderCallIndex]?.value as {
       rerender: ReturnType<typeof vi.fn>;
     };
-    await vi.waitFor(() => expect(app.rerender).toHaveBeenCalledTimes(1));
+    const rerenders = app.rerender.mock.calls.map((call) => call[0] as HintElement);
+    return { first, rerenders };
+  }
 
+  it('paints the line an earlier ?? prepared in the very first frame and wakes the daemon', async () => {
+    openGate();
+    seedPreparedLine(HINT);
+    const { first, rerenders } = await firstFrame();
+    expect(first.props.candidates).toBeNull();
+    expect(first.props.updateHint).toBe(HINT);
+    // Same line in every later frame: the picker never grows or shrinks while open.
+    for (const element of rerenders) {
+      expect(element.props.updateHint).toBe(HINT);
+    }
     expect(requestDaemonOnceMock).toHaveBeenCalledWith(
       '/tmp/qq-test-999.sock',
-      {
-        kind: 'update-hint',
-      },
+      { kind: 'update-hint' },
       500,
     );
-    const withHint = app.rerender.mock.calls[0]?.[0] as HintElement;
-    // Still the loading view: the hint changes nothing but its own row.
-    expect(withHint.props.candidates).toBeNull();
-    expect(withHint.props.updateHint).toBe(HINT);
-
-    await withHint.props.onCancel();
-    await run;
-    expect(JSON.parse(fs.readFileSync(resultFile, 'utf-8').trim())).toEqual({ kind: 'cancel' });
   });
 
-  it('never waits on the hint: a daemon that never answers does not hold the result', async () => {
-    vi.stubEnv('QQ_NO_UPDATE_CHECK', '');
-    vi.stubEnv('CI', '');
+  it('shows nothing this ?? when no line was prepared, even if an old daemon replies one', async () => {
+    openGate();
+    requestDaemonOnceMock.mockResolvedValue({ kind: 'update-hint', hint: HINT });
+    const { first, rerenders } = await firstFrame();
+    expect(first.props.updateHint).toBeUndefined();
+    for (const element of rerenders) {
+      expect(element.props.updateHint).toBeUndefined();
+    }
+    expect(requestDaemonOnceMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the line on every ?? while an update is pending', async () => {
+    openGate();
+    seedPreparedLine(HINT);
+    expect((await firstFrame()).first.props.updateHint).toBe(HINT);
+    expect((await firstFrame()).first.props.updateHint).toBe(HINT);
+  });
+
+  it('reads the prepared line with the gate, this version and the shared cache file', async () => {
+    openGate();
+    await firstFrame();
+    expect(readUpdateHintMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        isTTY: true,
+        currentVersion: '0.0.0-test',
+        cacheFile: expect.stringMatching(/\/queque\/update-check\.json$/),
+      }),
+    );
+  });
+
+  it('does not read the cache when the gate is closed', async () => {
     setStdoutTTY(true);
+    await firstFrame();
+    expect(readUpdateHintMock).not.toHaveBeenCalled();
+  });
+
+  it('never waits on the daemon: one that never answers does not hold the result', async () => {
+    openGate();
     requestDaemonOnceMock.mockImplementation(() => new Promise(() => undefined));
     fetchCandidatesMock.mockResolvedValue([{ command: 'git status', explanation: 'status' }]);
     const { runForegroundClient } = await import('../src/client/run-foreground.js');

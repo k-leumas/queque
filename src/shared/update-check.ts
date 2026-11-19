@@ -8,9 +8,11 @@ import { flagSet } from './telemetry-config.js';
  * The update notifier (quick 261117-jpp).
  *
  * The daemon asks the npm registry for the latest qq at most once per 24 h, in the background,
- * and only after a client that passed the env + TTY gate asked for a hint. `??` never waits on
- * the network. The result and the last time a hint was shown live in one private cache file,
- * so all terminals share the once-a-day display and a daemon restart does not reset it.
+ * and only after a client that passed the env + TTY gate sent `update-hint`. It then writes the
+ * finished picker line into the cache. Every later `??` reads that line synchronously at
+ * launch (readUpdateHint) and paints it in its first frame, so the picker never grows while it
+ * is open and `??` never waits on the daemon or the network. The line stays on every `??` until
+ * this qq is at (or past) the cached latest version, i.e. until the user upgrades.
  *
  * No top-level side effects.
  */
@@ -18,10 +20,8 @@ import { flagSet } from './telemetry-config.js';
 export const UPDATE_REGISTRY_URL = `https://registry.npmjs.org/${NPM_PACKAGE}/latest`;
 /** How often the registry is asked. */
 export const UPDATE_CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
-/** How often a hint is shown, across all terminals. */
-export const UPDATE_HINT_INTERVAL_MS = 24 * 60 * 60 * 1000;
 export const UPDATE_FETCH_TIMEOUT_MS = 1500;
-/** How long the client waits for the daemon's `update-hint` reply. */
+/** How long the client keeps the fire-and-forget `update-hint` request open. */
 export const UPDATE_HINT_REQUEST_TIMEOUT_MS = 500;
 /** Longest hint line; the IPC schema in contracts/ipc.ts repeats this literal. */
 export const UPDATE_HINT_MAX = 200;
@@ -216,12 +216,21 @@ export async function fetchLatestRelease(
   }
 }
 
+/** No C0/C1 controls or DEL: the hint is written straight to the terminal. */
+function hasNoControls(value: string): boolean {
+  return [...value].every((ch) => {
+    const code = ch.charCodeAt(0);
+    return code > 0x1f && (code < 0x7f || code > 0x9f);
+  });
+}
+
 export const updateCacheSchema = z.strictObject({
-  version: z.literal(1),
+  version: z.literal(2),
   checkedAt: z.number(),
   latest: z.string().max(VERSION_MAX).regex(SEMVER_RE).nullable(),
   enginesNode: z.string().max(VERSION_MAX).regex(PRINTABLE_RE).nullable(),
-  shownAt: z.number().nullable(),
+  /** The picker line the daemon prepared for the next `??`, or null for none. */
+  hint: z.string().min(1).max(UPDATE_HINT_MAX).refine(hasNoControls).nullable(),
 });
 
 export type UpdateCache = z.infer<typeof updateCacheSchema>;
@@ -320,38 +329,26 @@ function truncateHint(line: string): string {
 }
 
 /**
- * The one-line hint for a status, or null when there is nothing to say. Built from fixed copy
- * plus validated values only, and at most UPDATE_HINT_MAX chars.
+ * The picker's update line, or null. It does one thing: say a new qq exists and how to install
+ * it. Anything that is a problem with this environment (a Windows Node under WSL, a Node too
+ * old for the new release) or a qualifier (package lag, npm prefix, nvm scope) is NOT shown
+ * here: `qq doctor` reports it on the command line. Built from fixed copy plus validated values
+ * only, and at most UPDATE_HINT_MAX chars.
  */
 export function formatUpdateHint(status: UpdateStatus): string | null {
   if (status.state !== 'available') {
     return null;
   }
-  // No version number: the picker row is 80 columns at worst, and the command is what matters.
   const { install, nodeTooOld } = status;
-  // Nix upgrades go through the user's nix config: no hint at all.
-  if (install.method === 'nix') {
+  // No actionable install step in the picker for these; `qq doctor` explains each one.
+  if (install.method === 'nix' || install.method === 'windows-node' || nodeTooOld !== null) {
     return null;
   }
-  // Any command would upgrade the Windows install, not the one WSL runs (discretion 12).
-  if (install.method === 'windows-node') {
-    return truncateHint(
-      'qq update available · this qq uses a Windows Node; install Node inside WSL',
-    );
-  }
-  if (nodeTooOld !== null) {
-    return truncateHint(`qq update needs Node ${nodeTooOld.floor}+; you have ${nodeTooOld.have}`);
-  }
-  if (install.packaged) {
-    // A distro package may lag upstream. Without a sure command, say how instead.
-    const how = install.upgradeCommand ?? install.note ?? 'update it with your package manager';
-    return truncateHint(`qq update (your package may lag) · ${how}`);
-  }
-  if (install.upgradeCommand !== null) {
-    const note = install.note === undefined ? '' : ` (${install.note})`;
-    return truncateHint(`qq update available · ${install.upgradeCommand}${note}`);
-  }
-  return truncateHint(`qq update available · ${RELEASES_URL}`);
+  // No version number: the picker row is 80 columns at worst, and the command is what matters.
+  const how =
+    install.upgradeCommand ??
+    (install.packaged ? (install.note ?? 'update it with your package manager') : RELEASES_URL);
+  return truncateHint(`qq update available · ${how}`);
 }
 
 export interface UpdateCheckerDeps {
@@ -366,9 +363,12 @@ export interface UpdateCheckerDeps {
 }
 
 export interface UpdateChecker {
-  /** The hint to show now, or null; marks it shown. Starts a background refresh when stale. */
-  hint(): Promise<string | null>;
-  /** The current status for `qq doctor`; never touches shownAt. */
+  /**
+   * Refreshes a stale cache and stores the picker line for later `??` runs. Never shows
+   * anything. Never rejects.
+   */
+  prepare(): Promise<void>;
+  /** The current status for `qq doctor`. */
   status(options: { isTTY: boolean; refresh: boolean }): Promise<UpdateStatus>;
 }
 
@@ -404,15 +404,15 @@ export function createUpdateChecker(deps: UpdateCheckerDeps): UpdateChecker {
           deps.fetchImpl,
           deps.fetchTimeoutMs ?? UPDATE_FETCH_TIMEOUT_MS,
         );
-        // Re-read just before writing, so a shownAt written meanwhile survives. A failed
-        // fetch keeps the previous latest and still sets checkedAt: retry in the next window.
+        // A failed fetch keeps the previous latest and still sets checkedAt: retry in the next
+        // window.
         const prev = readUpdateCache(deps.cacheFile);
         writeUpdateCache(deps.cacheFile, {
-          version: 1,
+          version: 2,
           checkedAt: deps.now(),
           latest: result?.latest ?? prev?.latest ?? null,
           enginesNode: result ? result.enginesNode : (prev?.enginesNode ?? null),
-          shownAt: prev?.shownAt ?? null,
+          hint: prev?.hint ?? null,
         });
       } catch {
         // Never an unhandled rejection in the daemon.
@@ -445,37 +445,27 @@ export function createUpdateChecker(deps: UpdateCheckerDeps): UpdateChecker {
   };
 
   return {
-    async hint() {
+    async prepare() {
       try {
         // The client already passed the TTY half of the gate; the env half is re-checked here.
         if (updateCheckBlockedBy(deps.env, true) !== null) {
-          return null;
+          return;
         }
-        const initial = readUpdateCache(deps.cacheFile);
-        if (stale(initial)) {
-          void refresh();
-        }
-        if (initial === null) {
-          // Nothing known yet: the first `??` only starts the check (discretion 2). Warm the
-          // install detection so a later hint does not wait on it.
-          void installInfo();
-          return null;
+        if (stale(readUpdateCache(deps.cacheFile))) {
+          await refresh();
         }
         const info = await installInfo();
-        // From here on synchronous: two hint() calls cannot interleave read, decide and write.
+        // Re-read after the refresh, then decide and write synchronously.
         const cache = readUpdateCache(deps.cacheFile);
-        const line = formatUpdateHint(computeStatus(cache, info));
-        if (line === null || cache === null) {
-          return null;
+        if (cache === null) {
+          return;
         }
-        const now = deps.now();
-        if (!elapsed(now, cache.shownAt, UPDATE_HINT_INTERVAL_MS)) {
-          return null;
+        const hint = formatUpdateHint(computeStatus(cache, info));
+        if (hint !== cache.hint) {
+          writeUpdateCache(deps.cacheFile, { ...cache, hint });
         }
-        // A hint that cannot be marked shown would show on every `??`: stay quiet instead.
-        return writeUpdateCache(deps.cacheFile, { ...cache, shownAt: now }) ? line : null;
       } catch {
-        return null;
+        // Never an unhandled rejection in the daemon.
       }
     },
 
@@ -491,4 +481,32 @@ export function createUpdateChecker(deps: UpdateCheckerDeps): UpdateChecker {
       return computeStatus(readUpdateCache(deps.cacheFile), info);
     },
   };
+}
+
+export interface ReadUpdateHintDeps {
+  env: NodeJS.ProcessEnv;
+  isTTY: boolean;
+  cacheFile: string;
+  currentVersion: string;
+}
+
+/**
+ * The client side, run synchronously before the first frame: the line the daemon prepared
+ * during an earlier `??`, or null. Shown on every `??` until this qq is at (or past) the cached
+ * latest, so it disappears on its own right after an upgrade even before the daemon refreshes.
+ * Read-only: one small local file, no network, no daemon. Never throws.
+ */
+export function readUpdateHint(deps: ReadUpdateHintDeps): string | null {
+  try {
+    if (updateCheckBlockedBy(deps.env, deps.isTTY) !== null) {
+      return null;
+    }
+    const cache = readUpdateCache(deps.cacheFile);
+    if (cache === null || cache.hint === null || cache.latest === null) {
+      return null;
+    }
+    return isNewerVersion(cache.latest, deps.currentVersion) ? cache.hint : null;
+  } catch {
+    return null;
+  }
 }

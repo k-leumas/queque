@@ -47,9 +47,8 @@ export const ipcRequestSchema = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('telemetry-reset'),
   }),
-  // The once-a-day update hint (quick 261117-jpp). The client sends it only after its env +
-  // TTY gate. Old daemons drop the unknown kind and the client times out to no hint. Replied
-  // with `update-hint`.
+  // Wakes the update checker (quick 261117-jpp), fire-and-forget. The client sends it only
+  // after its env + TTY gate. Old daemons drop the unknown kind. Replied with `update-hint`.
   z.object({
     kind: z.literal('update-hint'),
   }),
@@ -122,7 +121,8 @@ export const ipcResponseSchema = z.discriminatedUnion('kind', [
     pending: z.string().nullable(),
     lastSent: z.string().nullable(),
   }),
-  // Reply to `update-hint`: the line to show under the controls, or null. 200 is
+  // Reply to `update-hint`. Current daemons always send null (the line is read from the cache
+  // on the next `??`); the field stays for older daemons, whose reply is ignored. 200 is
   // UPDATE_HINT_MAX (src/shared/update-check.ts), repeated here because contracts import
   // nothing from shared. A non-string or longer hint becomes null instead of a rejected reply.
   z.object({
