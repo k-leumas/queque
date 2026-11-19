@@ -1,3 +1,19 @@
+# [0.11.0](https://github.com/k-leumas/queque/compare/v0.10.7...v0.11.0) (2026-11-19)
+
+### Features
+
+- QueQue now checks for new releases and shows an upgrade hint right in the suggestion UI when one is available.
+- That hint is install-aware, so it tells you the exact upgrade command for how you installed QueQue, whether that was Homebrew or another method.
+- The `queque doctor` command now reports more detailed information about your installation to help you confirm everything is set up correctly.
+- The privacy documentation was updated to clearly explain what the new update check looks at and sends.
+
+<details>
+<summary>Detailed changes</summary>
+
+* update notifier with install-aware upgrade hint (#38) ([1f33c18](https://github.com/k-leumas/queque/commit/1f33c183a9bf3c8492ce7af4b29b4ee1c57fc7b8))
+
+</details>
+
 ## [0.10.7](https://github.com/k-leumas/queque/compare/v0.10.6...v0.10.7) (2026-11-19)
 
 ### Bug Fixes
