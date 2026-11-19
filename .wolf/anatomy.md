@@ -1,7 +1,14 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T00:00:01.583Z
-> Files: 521 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-11-19T04:44:56.384Z
+> Files: 673 tracked | Anatomy hits: 0 | Misses: 0
+
+## ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/
+
+- `261118-v58-commit1.txt` (~181 tok)
+- `261118-v58-commit2.txt` (~144 tok)
+- `v58-full-suite.sh` — Full default suite with MacPorts bash 5.3 available (memory: run full suite). (~63 tok)
+- `v58-noclaude.sh` — Runs the CLI live file with a dummy key and no `claude` on PATH; expects the install hint. (~138 tok)
 
 ## ./
 
@@ -96,6 +103,20 @@
 - `drive.sh` — drive.sh <fish-binary> <scenario> — runs a scenario in a private tmux server and prints screen (~639 tok)
 - `queque.fish` — Spike 007: full fish adapter — ports qq-question-widget (shell/zsh/queque.zsh:334). fish ≥4. (~1541 tok)
 - `README.md` — Project documentation (~820 tok)
+
+## .claude/worktrees/agent-a6dd9a29f1cc04dd6/
+
+- `vitest.live.config.ts` — /*.test.ts`) never (~328 tok)
+
+## .claude/worktrees/agent-a6dd9a29f1cc04dd6/.planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/
+
+- `261118-v58-SUMMARY.md` — Quick 261118-v58: Nightly live-cli job against the real Claude Code CLI Summary (~1810 tok)
+
+## .claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/
+
+- `cli-contract.live.ts` — Live Claude Code CLI contract check (quick 261118-v58). Runs in the nightly `live-cli` job (~1834 tok)
+- `live-daemon.ts` — Shared harness for the nightly live contract tests (phase 10 D-01 to D-03, quick 261118-v58). (~3196 tok)
+- `sdk-contract.live.ts` — Live SDK contract check (phase 10, D-01 to D-03). (~771 tok)
 
 ## .github/workflows/
 
@@ -763,6 +784,10 @@
 - `261117-jpp-PLAN.md` (~13982 tok)
 - `261117-jpp-SUMMARY.md` — Phase quick-261117-jpp Plan 01: Update Notifier Summary (~3509 tok)
 
+## .planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/
+
+- `261118-v58-PLAN.md` — Declares ContextEnvelope (~7345 tok)
+
 ## .planning/research/
 
 - `ARCHITECTURE.md` — Architecture Research: QueQue (~667 tok)
@@ -811,6 +836,7 @@
 
 - `run-1-partial.log` — Declares f (~4424 tok)
 - `run-from-6.raw.json` (~4090 tok)
+
 ## src/
 
 - `env.d.ts` — Declares the build defines __QUEQUE_COMMIT__, __QUEQUE_VERSION__, __QUEQUE_TELEMETRY_KEY__ and __QUEQUE_TELEMETRY_HOST__ (10-04), plus __QUEQUE_BUILD_ID__ (quick 261030-tq3). (~55 tok)

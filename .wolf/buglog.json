@@ -9226,6 +9226,38 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-18T22:50:00.000Z"
+    },
+    {
+      "id": "bug-559",
+      "timestamp": "2026-11-19T04:37:49.559Z",
+      "error_message": "Incorrect value in code",
+      "file": ".planning/quick/261118-v58-nightly-live-cli-job-real-claude-code-cl/261118-v58-PLAN.md",
+      "root_cause": "Had \"$(pnpm exec vitest list --config vitest.live.conf",
+      "fix": "Changed to \"$(pnpm exec vitest list --config vitest.live.conf",
+      "tags": [
+        "auto-detected",
+        "wrong-value",
+        "md"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-19T04:37:49.559Z"
+    },
+    {
+      "id": "bug-560",
+      "timestamp": "2026-11-19T04:42:14.020Z",
+      "error_message": "Missing guard clause",
+      "file": ".claude/worktrees/agent-a6dd9a29f1cc04dd6/tests/live/cli-contract.live.ts",
+      "root_cause": "No early return/throw for edge case: !daemon",
+      "fix": "Added guard clause: if (!daemon)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "ts"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-11-19T04:42:14.020Z"
     }
   ]
 }
