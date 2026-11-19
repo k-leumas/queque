@@ -1,0 +1,13 @@
+# Scopes the Docker build context of scripts/smoke-homebrew-docker.sh, the only Docker build
+# that uses this repo root as its context. Allow list: ignore everything, then re-include each
+# COPY source of that script's Dockerfile. Every COPY source must be listed here (guarded by
+# tests/homebrew-smoke-docker.test.ts). This keeps node_modules, .git and dotenv files off the
+# Docker daemon.
+*
+!package.json
+!pnpm-lock.yaml
+!tsconfig.json
+!tsup.config.ts
+!src
+!shell
+!scripts/docker-homebrew-smoke-runner.sh
