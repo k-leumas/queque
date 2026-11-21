@@ -1547,15 +1547,15 @@ describe('runForegroundClient: telemetry outcome', () => {
     expect(fetchCandidatesMock).not.toHaveBeenCalled();
   });
 
-  it.each([
-    'cancel',
-    'replace-buffer-fixture',
-  ] as const)('the %s result mode never reports', async (resultMode) => {
-    const { runForegroundClient } = await import('../src/client/run-foreground.js');
-    await runForegroundClient({ requestFile, resultFile, resultMode });
-    expect(fs.existsSync(resultFile)).toBe(true);
-    expect(reportClientTelemetryMock).not.toHaveBeenCalled();
-  });
+  it.each(['cancel', 'replace-buffer-fixture'] as const)(
+    'the %s result mode never reports',
+    async (resultMode) => {
+      const { runForegroundClient } = await import('../src/client/run-foreground.js');
+      await runForegroundClient({ requestFile, resultFile, resultMode });
+      expect(fs.existsSync(resultFile)).toBe(true);
+      expect(reportClientTelemetryMock).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('runForegroundClient: telemetry consent (D-09)', () => {
@@ -1759,14 +1759,14 @@ describe('runForegroundClient: telemetry consent (D-09)', () => {
     });
   });
 
-  it.each([
-    'cancel',
-    'replace-buffer-fixture',
-  ] as const)('the %s result mode never asks', async (resultMode) => {
-    const { runForegroundClient } = await import('../src/client/run-foreground.js');
-    await runForegroundClient({ requestFile, resultFile, resultMode });
-    expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
-  });
+  it.each(['cancel', 'replace-buffer-fixture'] as const)(
+    'the %s result mode never asks',
+    async (resultMode) => {
+      const { runForegroundClient } = await import('../src/client/run-foreground.js');
+      await runForegroundClient({ requestFile, resultFile, resultMode });
+      expect(consentMock.askTelemetryConsent).not.toHaveBeenCalled();
+    },
+  );
 });
 
 describe('runForegroundClient: update hint (quick 261117-jpp)', () => {

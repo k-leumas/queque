@@ -53,7 +53,7 @@ Every provider gets 25 seconds per `??`. If an OpenAI or Ollama answer is cut of
 `provider.json` is plain JSON you can edit by hand, and QueQue reads it again on every `??`:
 
 ```json
-{"version":1,"provider":"ollama","model":"gemma4"}
+{ "version": 1, "provider": "ollama", "model": "gemma4" }
 ```
 
 Add `"model"` to an OpenAI pin to change the model, or `"baseUrl"` to an Ollama pin to use a server other than `http://localhost:11434`. Keys are not allowed in this file: an extra field such as `"apiKey"` makes it invalid, and `??` then tells you to fix the file or run `qq init provider`. Set `QQ_PROVIDER_FILE` to an absolute path to keep the file somewhere else; a relative path makes the pin invalid.

@@ -296,14 +296,17 @@ describe('Ollama request shape and privacy', () => {
     ['http://h/ollama#f', 'http://h/ollama/api/chat'],
     ['http://h/ollama/?x=1#f', 'http://h/ollama/api/chat'],
     ['http://h', 'http://h/api/chat'],
-  ])('keeps the path prefix of baseUrl %s with a query or fragment (IN-11)', async (baseUrl, expected) => {
-    pinOllama({ baseUrl });
-    fetchStub.mockResolvedValue(chatResponse(CANDIDATE_JSON));
+  ])(
+    'keeps the path prefix of baseUrl %s with a query or fragment (IN-11)',
+    async (baseUrl, expected) => {
+      pinOllama({ baseUrl });
+      fetchStub.mockResolvedValue(chatResponse(CANDIDATE_JSON));
 
-    await ollamaAdapter.fetchCandidates(buildEnvelope());
+      await ollamaAdapter.fetchCandidates(buildEnvelope());
 
-    expect(String(fetchStub.mock.calls[0]?.[0])).toBe(expected);
-  });
+      expect(String(fetchStub.mock.calls[0]?.[0])).toBe(expected);
+    },
+  );
 
   it('builds the tags URL the same way (IN-11)', () => {
     expect(String(ollamaApiUrl('https://gpu.lan/ollama?x=1', 'api/tags'))).toBe(

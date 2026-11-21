@@ -135,6 +135,7 @@ pnpm ci:check
 ```
 
 This runs:
+
 - `pnpm lint`
 - `pnpm typecheck`
 - `pnpm test:run`
@@ -180,6 +181,7 @@ Push to main
 **Check:** GitHub Actions tab → click failed workflow → view logs
 
 **Common issues:**
+
 - Tests failing: Run `pnpm test:run` locally
 - Lint errors: Run `pnpm lint:fix` locally
 - Build errors: Run `pnpm build` locally
@@ -189,7 +191,8 @@ Push to main
 
 **Cause:** Commits don't follow Conventional Commits format, or CI checks failed.
 
-**Fix:** 
+**Fix:**
+
 1. Check workflow logs for CI failures
 2. Ensure commit messages start with `feat:`, `fix:`, etc.
 3. Run `pnpm ci:check` locally first

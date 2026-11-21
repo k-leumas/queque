@@ -9,7 +9,7 @@ name: CI
 
 on:
   push:
-    branches: ['**']
+    branches: ["**"]
   pull_request:
   workflow_dispatch:
 
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
-      LEFTHOOK: '0'
+      LEFTHOOK: "0"
     steps:
       - uses: actions/checkout@v7
 
@@ -103,11 +103,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - tag: '3.2'
+          - tag: "3.2"
             expect: refuse
-          - tag: '4.4'
+          - tag: "4.4"
             expect: refuse
-          - tag: '5.0'
+          - tag: "5.0"
             expect: accept
     name: bash-versions (bash ${{ matrix.tag }} ${{ matrix.expect }}s)
     steps:

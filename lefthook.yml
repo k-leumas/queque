@@ -3,7 +3,7 @@ pre-commit:
     - name: typecheck
       run: output=$(pnpm exec tsc --noEmit 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
     - name: lint
-      glob: '**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml}'
+      glob: "**/*.{js,cjs,mjs,ts,tsx,json,yml,yaml}"
       run: output=$(pnpm exec biome check --write --no-errors-on-unmatched {staged_files} 2>&1); rc=$?; [ $rc -ne 0 ] && printf '%s\n' "$output"; exit $rc
       stage_fixed: true
 

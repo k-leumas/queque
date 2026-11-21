@@ -63,13 +63,13 @@ Then reload your shell (`source ~/.zshrc`) and trigger `??` — rebuilds from `p
 
 ### Privacy and config env vars
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `QQ_ALLOW_FILE_READ` | off | Gate for any future file-content context (no reads in v1) |
-| `QQ_DEBUG_VERBOSE` | off | Log full buffer text in debug logs |
-| `QQ_CONFIG_FILE` | `~/.config/qq/config.json` | Privacy/safety config path. A relative path is resolved against your home directory; an empty value counts as unset |
-| `QQ_PANE_WIDTH` | `80` | Zellij floating pane width |
-| `QQ_PANE_HEIGHT` | `24` | Zellij floating pane height |
+| Variable             | Default                    | Purpose                                                                                                             |
+| -------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `QQ_ALLOW_FILE_READ` | off                        | Gate for any future file-content context (no reads in v1)                                                           |
+| `QQ_DEBUG_VERBOSE`   | off                        | Log full buffer text in debug logs                                                                                  |
+| `QQ_CONFIG_FILE`     | `~/.config/qq/config.json` | Privacy/safety config path. A relative path is resolved against your home directory; an empty value counts as unset |
+| `QQ_PANE_WIDTH`      | `80`                       | Zellij floating pane width                                                                                          |
+| `QQ_PANE_HEIGHT`     | `24`                       | Zellij floating pane height                                                                                         |
 
 Copy [docs/config.example.json](docs/config.example.json) to `~/.config/qq/config.json` for extra sensitive path patterns and destructive-command warnings. See [docs/SYSTEM_DESIGN.md](docs/SYSTEM_DESIGN.md) and [docs/EXTENSIONS.md](docs/EXTENSIONS.md) for architecture and expansion path.
 
@@ -119,11 +119,11 @@ The interactive shell hook also prewarms the daemon once per shell session, so t
 
 They need zsh 5.0+, bash 5.0+, `jq` and `tmux`. macOS ships `/bin/bash` 3.2, so install a newer bash for the bash legs with `brew install bash` (or `sudo port install bash` with MacPorts). You do not need to change your login shell. A missing prerequisite skips those tests locally with a warning, and fails the run when `CI` is set, so CI can never pass by skipping.
 
-| Variable | Description |
-|---|---|
+| Variable              | Description                                                                                                                                                                                                                                                                                                          |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `QQ_TEST_RESULT_MODE` | Dev and test only. Makes `qq client` behave as if `--result-mode` were passed: `cancel` or `replace-buffer-fixture` (writes the typed text back, or `echo hello` for an empty line). Any other value, empty included, is ignored (the real `llm` path). The `--result-mode` flag wins. Never set it in a real shell. |
-| `QQ_TEST_BASH` | Absolute path of the bash the tests use (otherwise the first bash 5.0+ on `PATH`, then in the Homebrew, MacPorts and system directories). |
-| `QQ_TEST_ZSH` | Absolute path of the zsh the tests use, found the same way. |
+| `QQ_TEST_BASH`        | Absolute path of the bash the tests use (otherwise the first bash 5.0+ on `PATH`, then in the Homebrew, MacPorts and system directories).                                                                                                                                                                            |
+| `QQ_TEST_ZSH`         | Absolute path of the zsh the tests use, found the same way.                                                                                                                                                                                                                                                          |
 
 The harness starts every shell without `ZELLIJ*` and `TMUX`, so it never opens a pane in your own Zellij or tmux session, and with `QQ_DAEMON_PREWARMED=1` and a throwaway `HOME`. Fixture mode still ensures the daemon, so a local run replaces your running dev daemon once; the next real `??` replaces it back.
 
@@ -133,11 +133,11 @@ The foreground client asks Claude for a strict JSON command suggestion.
 
 QueQue reaches Claude through the Anthropic SDK when `ANTHROPIC_API_KEY` is set, and through `claude -p` on your Claude Code `/login` when it is not (see [Authentication](docs/PROVIDERS.md#claude-default)). Set these variables in the environment, or in `~/.env.local`: both the daemon and the client's in-process fallback search for `.env.local` upward from your home directory, never from the shell's cwd, so a repo-level `.env.local` is not read. The daemon reads them once at start, so restart it after a change ([restart steps](docs/PROVIDERS.md#after-changing-your-key-or-settings)).
 
-| Variable | Default | Description |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | — | Optional. A non-empty key always selects the Anthropic SDK. Without one, QueQue runs `claude -p` on your Claude Code login. Neither route falls back to the other. |
-| `QQ_MODEL` | `claude-sonnet-5` | Overrides the model on the API-key route only. `claude -p` gets no model flag and uses Claude Code's default model. |
-| `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Where the client and daemon append redacted diagnostics. The zsh widget adds its own lines only when this is set. |
+| Variable            | Default                   | Description                                                                                                                                                        |
+| ------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ANTHROPIC_API_KEY` | —                         | Optional. A non-empty key always selects the Anthropic SDK. Without one, QueQue runs `claude -p` on your Claude Code login. Neither route falls back to the other. |
+| `QQ_MODEL`          | `claude-sonnet-5`         | Overrides the model on the API-key route only. `claude -p` gets no model flag and uses Claude Code's default model.                                                |
+| `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Where the client and daemon append redacted diagnostics. The zsh widget adds its own lines only when this is set.                                                  |
 
 When the current directory is inside a git repository, the prompt includes the repo root, branch, and dirty state as extra context.
 

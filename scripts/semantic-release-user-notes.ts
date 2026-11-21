@@ -330,7 +330,7 @@ async function defaultComplete(
     messages: [{ role: 'user', content: prompt }],
   });
   const block = message.content.find((part) => part.type === 'text');
-  if (!block || block.type !== 'text') {
+  if (block?.type !== 'text') {
     throw new Error('Changelog model returned no text');
   }
   return block.text;

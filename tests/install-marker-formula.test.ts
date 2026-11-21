@@ -20,15 +20,15 @@ function formulaMarkers(relPath: string): string[] {
 }
 
 describe('Homebrew install marker', () => {
-  it.each([
-    '.github/workflows/release.yaml',
-    '.github/workflows/homebrew.yml',
-  ])('%s writes exactly one valid homebrew marker', (relPath) => {
-    const markers = formulaMarkers(relPath);
-    expect(markers).toHaveLength(1);
-    const json = JSON.parse(markers[0] ?? '');
-    expect(installMarkerSchema.parse(json)).toEqual(EXPECTED);
-  });
+  it.each(['.github/workflows/release.yaml', '.github/workflows/homebrew.yml'])(
+    '%s writes exactly one valid homebrew marker',
+    (relPath) => {
+      const markers = formulaMarkers(relPath);
+      expect(markers).toHaveLength(1);
+      const json = JSON.parse(markers[0] ?? '');
+      expect(installMarkerSchema.parse(json)).toEqual(EXPECTED);
+    },
+  );
 
   it('both formula install blocks write byte-identical JSON', () => {
     expect(formulaMarkers('.github/workflows/release.yaml')).toEqual(

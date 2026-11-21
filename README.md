@@ -1,4 +1,4 @@
-# QueQue *(kew-kew)*[^name]
+# QueQue _(kew-kew)_[^name]
 
 **Type what you want. Hit `??`. Pick a command.**
 Nothing runs until you press Enter.
@@ -66,4 +66,4 @@ See [Usage](https://github.com/k-leumas/queque/blob/main/docs/USAGE.md) for filt
 - [System design](https://github.com/k-leumas/queque/blob/main/docs/SYSTEM_DESIGN.md) and [Extensions](https://github.com/k-leumas/queque/blob/main/docs/EXTENSIONS.md): architecture and extension seams.
 - [Contributing](https://github.com/k-leumas/queque/blob/main/CONTRIBUTING.md): development setup and developer-only settings.
 
-[^name]: Short for *question question*: the `??` you type to call it, and the `qq` you run to set it up.
+[^name]: Short for _question question_: the `??` you type to call it, and the `qq` you run to set it up.

@@ -254,7 +254,7 @@ describe('daemon fetch-candidates IPC', () => {
     const received = fetchMock.mock.calls[0]?.[0] as ContextEnvelope;
     const chunk = received.extras.find((c) => c.kind === 'installed-tools');
     expect(chunk).toBeDefined();
-    expect((chunk?.payload as { tools: string[] }).tools).toEqual(['fd']);
+    expect((chunk?.payload as { tools: string[] } | undefined)?.tools).toEqual(['fd']);
   });
 
   it('ignores a structurally malformed installed-tools chunk', async () => {

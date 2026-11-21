@@ -8,7 +8,7 @@ QueQue is **insertion-only**: it writes commands into your shell buffer — you 
 
 - Your query text and current working directory
 - Your OS platform name (for example `darwin` or `linux`) and shell name (`zsh` or `bash`)
-- Git metadata (repository root path, branch, dirty flag, changed file *names* — not file contents)
+- Git metadata (repository root path, branch, dirty flag, changed file _names_ — not file contents)
 - Parsed filename hints from your query (no disk reads)
 - The names of installed tools that appear in QueQue's public catalog of 196 well-known tools (see [Installed-tool awareness](USAGE.md#installed-tool-awareness)). The rest of your `PATH`, your function names and your alias names stay on your machine. `QQ_TOOL_AWARENESS=0` stops even the catalog names.
 

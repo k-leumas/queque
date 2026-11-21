@@ -738,30 +738,33 @@ describe('OpenAI structured output, effort fallback and cut-off retry', () => {
   it.each([
     ['response_format', 'response_format'],
     ['a field under response_format', 'response_format.json_schema.schema'],
-  ])('resends without response_format after a 400 for %s, and remembers (WR-14)', async (_name, param) => {
-    pinOpenAi({ model: 'gpt-4-turbo' });
-    fetchStub
-      .mockResolvedValueOnce(schemaRejected(param))
-      .mockImplementation(async () => contentResponse(CANDIDATE_JSON));
+  ])(
+    'resends without response_format after a 400 for %s, and remembers (WR-14)',
+    async (_name, param) => {
+      pinOpenAi({ model: 'gpt-4-turbo' });
+      fetchStub
+        .mockResolvedValueOnce(schemaRejected(param))
+        .mockImplementation(async () => contentResponse(CANDIDATE_JSON));
 
-    const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
+      const candidates = await openaiAdapter.fetchCandidates(buildEnvelope());
 
-    expect(candidates).toEqual(LS);
-    expect(fetchStub).toHaveBeenCalledTimes(2);
-    expect(sentBody(0)).toHaveProperty('response_format');
-    expect(sentBody(1)).not.toHaveProperty('response_format');
-    expect(sentBody(1).reasoning_effort).toBe('low');
-    expect(fetchStub.mock.calls[1]?.[1]?.signal).toBe(fetchStub.mock.calls[0]?.[1]?.signal);
-    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('sk-proj-SECRET');
-    expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('Invalid schema');
-    expectNoFallback();
+      expect(candidates).toEqual(LS);
+      expect(fetchStub).toHaveBeenCalledTimes(2);
+      expect(sentBody(0)).toHaveProperty('response_format');
+      expect(sentBody(1)).not.toHaveProperty('response_format');
+      expect(sentBody(1).reasoning_effort).toBe('low');
+      expect(fetchStub.mock.calls[1]?.[1]?.signal).toBe(fetchStub.mock.calls[0]?.[1]?.signal);
+      expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('sk-proj-SECRET');
+      expect(JSON.stringify(appendDebugLogMock.mock.calls)).not.toContain('Invalid schema');
+      expectNoFallback();
 
-    fetchStub.mockClear();
-    await openaiAdapter.fetchCandidates(buildEnvelope());
+      fetchStub.mockClear();
+      await openaiAdapter.fetchCandidates(buildEnvelope());
 
-    expect(fetchStub).toHaveBeenCalledTimes(1);
-    expect(sentBody(0)).not.toHaveProperty('response_format');
-  });
+      expect(fetchStub).toHaveBeenCalledTimes(1);
+      expect(sentBody(0)).not.toHaveProperty('response_format');
+    },
+  );
 
   it('resends without response_format, then without reasoning_effort, when both are rejected', async () => {
     fetchStub
@@ -847,14 +850,17 @@ describe('OpenAI structured output, effort fallback and cut-off retry', () => {
   it.each([
     ['with partial text', contentResponse(WRAPPED, 'content_filter')],
     ['with null content', chatResponse({ content: null, refusal: null }, 'content_filter')],
-  ])('maps a content_filter finish %s to declined, with no retry (IN-17)', async (_name, response) => {
-    fetchStub.mockResolvedValueOnce(response);
+  ])(
+    'maps a content_filter finish %s to declined, with no retry (IN-17)',
+    async (_name, response) => {
+      fetchStub.mockResolvedValueOnce(response);
 
-    const error = await failure();
+      const error = await failure();
 
-    expect(error.message).toMatch(/declined this query/);
-    expect(fetchStub).toHaveBeenCalledTimes(1);
-  });
+      expect(error.message).toMatch(/declined this query/);
+      expect(fetchStub).toHaveBeenCalledTimes(1);
+    },
+  );
 
   it('shows cut off, not a timeout, when the retry runs out of the budget (IN-17)', async () => {
     fetchStub.mockResolvedValueOnce(contentResponse(FRAGMENT, 'length')).mockImplementationOnce(

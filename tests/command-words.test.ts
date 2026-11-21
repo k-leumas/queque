@@ -122,18 +122,16 @@ describe('robustness (D-03)', () => {
     expect(extractCommandWords('x'.repeat(8193), builtins)).toEqual([]);
   });
 
-  it.each([
-    'constructor',
-    'toString',
-    '__proto__',
-    'hasOwnProperty',
-  ])('classifies prototype key %s as external without throwing', (word) => {
-    expect(extractCommandWords(word, builtins)).toEqual([{ word, kind: 'external' }]);
-    expect(extractCommandWords(`${word} --x | ${word}`, builtins)).toEqual([
-      { word, kind: 'external' },
-      { word, kind: 'external' },
-    ]);
-  });
+  it.each(['constructor', 'toString', '__proto__', 'hasOwnProperty'])(
+    'classifies prototype key %s as external without throwing',
+    (word) => {
+      expect(extractCommandWords(word, builtins)).toEqual([{ word, kind: 'external' }]);
+      expect(extractCommandWords(`${word} --x | ${word}`, builtins)).toEqual([
+        { word, kind: 'external' },
+        { word, kind: 'external' },
+      ]);
+    },
+  );
 
   it.each([
     ['"rg\\', ['rg']],

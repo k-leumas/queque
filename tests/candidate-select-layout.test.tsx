@@ -551,30 +551,29 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
       // An lbuffer that matches a command still leaves FILTER empty (G-09.1-5).
       query: '',
     },
-  ])('(e) $name: the Zellij pane keeps the header row (PTY rows fit the whole Ink frame)', async ({
-    build,
-    initialQuery,
-    query,
-  }) => {
-    process.env.ZELLIJ = '0';
-    process.env.ZELLIJ_PANE_ID = '7';
-    process.env.QQ_PANE_HEIGHT = '24';
+  ])(
+    '(e) $name: the Zellij pane keeps the header row (PTY rows fit the whole Ink frame)',
+    async ({ build, initialQuery, query }) => {
+      process.env.ZELLIJ = '0';
+      process.env.ZELLIJ_PANE_ID = '7';
+      process.env.QQ_PANE_HEIGHT = '24';
 
-    const reports: number[] = [];
-    const writes = await runArrival(build(), initialQuery, (lines) => {
-      reports.push(lines);
-      syncZellijFloatingPaneHeight(lines);
-    });
+      const reports: number[] = [];
+      const writes = await runArrival(build(), initialQuery, (lines) => {
+        reports.push(lines);
+        syncZellijFloatingPaneHeight(lines);
+      });
 
-    expect(reports.length).toBeGreaterThan(0);
-    const occupied = lastFrameRows(writes);
-    // Ink draws exactly the estimated lines of the drawn state plus its trailing cursor row.
-    // Changed on purpose in quick-261011-f9o: compared to the drawn-state estimate, not the
-    // last report, because the report is now the held pane height, not the drawn height.
-    expect(occupied).toBe(estimate(build(), initialQuery, query) + 1);
-    const paneRows = lastSpawnedHeight() - ZELLIJ_PANE_CHROME_ROWS;
-    expect(paneRows).toBeGreaterThanOrEqual(occupied);
-  });
+      expect(reports.length).toBeGreaterThan(0);
+      const occupied = lastFrameRows(writes);
+      // Ink draws exactly the estimated lines of the drawn state plus its trailing cursor row.
+      // Changed on purpose in quick-261011-f9o: compared to the drawn-state estimate, not the
+      // last report, because the report is now the held pane height, not the drawn height.
+      expect(occupied).toBe(estimate(build(), initialQuery, query) + 1);
+      const paneRows = lastSpawnedHeight() - ZELLIJ_PANE_CHROME_ROWS;
+      expect(paneRows).toBeGreaterThanOrEqual(occupied);
+    },
+  );
 
   it.each([
     { name: 'plain', build: (): readonly DisplayCandidate[] => RAW_CANDIDATES },
@@ -583,60 +582,61 @@ describe('CandidateSelect layout reports on candidate arrival (real hooks, G-09-
       build: (): readonly DisplayCandidate[] =>
         annotateCandidates(RAW_CANDIDATES, INVENTORY, 'darwin'),
     },
-  ])('(f) $name: typing smt then backspacing keeps the pane at the arrival height', async ({
-    build,
-  }) => {
-    process.env.ZELLIJ = '0';
-    process.env.ZELLIJ_PANE_ID = '7';
-    process.env.QQ_PANE_HEIGHT = '24';
-    const list = build();
-    const arrivalEstimate = estimate(list, LBUFFER, '');
+  ])(
+    '(f) $name: typing smt then backspacing keeps the pane at the arrival height',
+    async ({ build }) => {
+      process.env.ZELLIJ = '0';
+      process.env.ZELLIJ_PANE_ID = '7';
+      process.env.QQ_PANE_HEIGHT = '24';
+      const list = build();
+      const arrivalEstimate = estimate(list, LBUFFER, '');
 
-    const reports: number[] = [];
-    const mounted = await mountArrival(list, LBUFFER, (lines) => {
-      reports.push(lines);
-      syncZellijFloatingPaneHeight(lines);
-    });
-    try {
-      await settle();
-      const arrivalHeight = lastSpawnedHeight();
-      expect(arrivalHeight).toBe(resolveZellijPaneHeight(arrivalEstimate, 24));
-      const screenRows = arrivalHeight - ZELLIJ_PANE_CHROME_ROWS;
+      const reports: number[] = [];
+      const mounted = await mountArrival(list, LBUFFER, (lines) => {
+        reports.push(lines);
+        syncZellijFloatingPaneHeight(lines);
+      });
+      try {
+        await settle();
+        const arrivalHeight = lastSpawnedHeight();
+        expect(arrivalHeight).toBe(resolveZellijPaneHeight(arrivalEstimate, 24));
+        const screenRows = arrivalHeight - ZELLIJ_PANE_CHROME_ROWS;
 
-      for (const key of ['s', 'm', 't']) {
-        await mounted.press(key);
+        for (const key of ['s', 'm', 't']) {
+          await mounted.press(key);
+        }
+        await settle();
+
+        // Scalar first, so a RED failure is a one-line message (pre-fix plain: '18,11').
+        expect(spawnedHeights().join(',')).toBe(String(arrivalHeight));
+        expect(Math.min(...reports)).toBe(arrivalEstimate);
+
+        // The shorter filtered frame erases every row of the taller one: header on row 0,
+        // no stale full-list rows, no scroll.
+        const filtered = replayScreen(mounted.stdout.writes, screenRows, SCREEN_COLUMNS);
+        expect(filtered.scrolled).toBe(0);
+        expect(filtered.lines[0]?.trimStart().startsWith(HEADER_MARKER)).toBe(true);
+        expect(filtered.lines.some((line) => line.includes('FILTER: smt'))).toBe(true);
+        expect(filtered.lines.some((line) => line.includes('z3 -smt2 problem.smt2'))).toBe(true);
+        expect(filtered.lines.some((line) => line.includes('python3'))).toBe(false);
+        expect(filtered.lines.some((line) => line.includes('z3 -in'))).toBe(false);
+
+        for (let count = 0; count < 3; count += 1) {
+          await mounted.press('\u007F');
+        }
+        await settle();
+
+        expect(spawnedHeights().join(',')).toBe(String(arrivalHeight));
+        const restored = replayScreen(mounted.close(), screenRows, SCREEN_COLUMNS);
+        expect(restored.scrolled).toBe(0);
+        expect(restored.lines[0]?.trimStart().startsWith(HEADER_MARKER)).toBe(true);
+        expect(restored.lines.some((line) => line.includes('python3 -c'))).toBe(true);
+        expect(restored.lines.some((line) => line.includes('type to filter'))).toBe(true);
+      } finally {
+        mounted.close();
       }
-      await settle();
-
-      // Scalar first, so a RED failure is a one-line message (pre-fix plain: '18,11').
-      expect(spawnedHeights().join(',')).toBe(String(arrivalHeight));
-      expect(Math.min(...reports)).toBe(arrivalEstimate);
-
-      // The shorter filtered frame erases every row of the taller one: header on row 0,
-      // no stale full-list rows, no scroll.
-      const filtered = replayScreen(mounted.stdout.writes, screenRows, SCREEN_COLUMNS);
-      expect(filtered.scrolled).toBe(0);
-      expect(filtered.lines[0]?.trimStart().startsWith(HEADER_MARKER)).toBe(true);
-      expect(filtered.lines.some((line) => line.includes('FILTER: smt'))).toBe(true);
-      expect(filtered.lines.some((line) => line.includes('z3 -smt2 problem.smt2'))).toBe(true);
-      expect(filtered.lines.some((line) => line.includes('python3'))).toBe(false);
-      expect(filtered.lines.some((line) => line.includes('z3 -in'))).toBe(false);
-
-      for (let count = 0; count < 3; count += 1) {
-        await mounted.press('\u007F');
-      }
-      await settle();
-
-      expect(spawnedHeights().join(',')).toBe(String(arrivalHeight));
-      const restored = replayScreen(mounted.close(), screenRows, SCREEN_COLUMNS);
-      expect(restored.scrolled).toBe(0);
-      expect(restored.lines[0]?.trimStart().startsWith(HEADER_MARKER)).toBe(true);
-      expect(restored.lines.some((line) => line.includes('python3 -c'))).toBe(true);
-      expect(restored.lines.some((line) => line.includes('type to filter'))).toBe(true);
-    } finally {
-      mounted.close();
-    }
-  });
+    },
+  );
 
   it('(g) a new candidates array resets the hold and sizes the pane for the new list', async () => {
     process.env.ZELLIJ = '0';
@@ -1035,30 +1035,33 @@ describe('CandidateSelect streamed rows (real hooks, 09.1-07)', () => {
   it.each([
     ['down', '\u001B[B'],
     ['up', '\u001B[A'],
-  ])('WR-06: %s on an empty filtered list still highlights the next matching row', async (_name, arrow) => {
-    const rgFoo: CommandCandidate = { command: 'rg foo', explanation: 'search with ripgrep' };
-    const grepFoo: CommandCandidate = { command: 'grep -r foo .', explanation: 'search tree' };
-    const mounted = await mountStream('gr');
-    try {
-      for (const key of ['g', 'r', 'e', 'p']) {
-        await mounted.press(key);
+  ])(
+    'WR-06: %s on an empty filtered list still highlights the next matching row',
+    async (_name, arrow) => {
+      const rgFoo: CommandCandidate = { command: 'rg foo', explanation: 'search with ripgrep' };
+      const grepFoo: CommandCandidate = { command: 'grep -r foo .', explanation: 'search tree' };
+      const mounted = await mountStream('gr');
+      try {
+        for (const key of ['g', 'r', 'e', 'p']) {
+          await mounted.press(key);
+        }
+        await mounted.arrive([rgFoo], 'arriving');
+        // Nothing matches `grep` yet: the arrow key must not corrupt the index (NaN or -1).
+        await mounted.press(arrow);
+        await mounted.press(arrow);
+
+        await mounted.arrive([rgFoo, grepFoo], 'arriving');
+        expect(highlightedLine(mounted.stdout.writes)).toContain(grepFoo.command);
+        await mounted.press('\u001B[B');
+        expect(highlightedLine(mounted.stdout.writes)).toContain(grepFoo.command);
+
+        await mounted.press('\r');
+        expect(mounted.selections).toEqual([grepFoo.command]);
+      } finally {
+        mounted.close();
       }
-      await mounted.arrive([rgFoo], 'arriving');
-      // Nothing matches `grep` yet: the arrow key must not corrupt the index (NaN or -1).
-      await mounted.press(arrow);
-      await mounted.press(arrow);
-
-      await mounted.arrive([rgFoo, grepFoo], 'arriving');
-      expect(highlightedLine(mounted.stdout.writes)).toContain(grepFoo.command);
-      await mounted.press('\u001B[B');
-      expect(highlightedLine(mounted.stdout.writes)).toContain(grepFoo.command);
-
-      await mounted.press('\r');
-      expect(mounted.selections).toEqual([grepFoo.command]);
-    } finally {
-      mounted.close();
-    }
-  });
+    },
+  );
 
   it('D-10/D-17: in Zellij no resize while rows arrive, one at completion, none when filtering after', async () => {
     process.env.ZELLIJ = '0';
@@ -1453,34 +1456,30 @@ describe('CR-01: keys that share one stdin read (real hooks)', () => {
     },
   ];
 
-  it.each(
-    INVARIANCE_ROWS,
-  )('CR-01: $name inserts the same row one key per read and in one read', async ({
-    rows,
-    before,
-    keys,
-    expected,
-  }) => {
-    for (const mode of ['one key per read', 'one read'] as const) {
-      const mounted = await mountStream(STREAM_LBUFFER);
-      try {
-        await mounted.arrive(rows(), 'complete');
-        for (const key of before) {
-          await mounted.press(key);
-        }
-        if (mode === 'one read') {
-          await mounted.press(keys.join(''));
-        } else {
-          for (const key of keys) {
+  it.each(INVARIANCE_ROWS)(
+    'CR-01: $name inserts the same row one key per read and in one read',
+    async ({ rows, before, keys, expected }) => {
+      for (const mode of ['one key per read', 'one read'] as const) {
+        const mounted = await mountStream(STREAM_LBUFFER);
+        try {
+          await mounted.arrive(rows(), 'complete');
+          for (const key of before) {
             await mounted.press(key);
           }
+          if (mode === 'one read') {
+            await mounted.press(keys.join(''));
+          } else {
+            for (const key of keys) {
+              await mounted.press(key);
+            }
+          }
+          expect(`${mode}: ${mounted.selections.join('|')}`).toBe(`${mode}: ${expected}`);
+        } finally {
+          mounted.close();
         }
-        expect(`${mode}: ${mounted.selections.join('|')}`).toBe(`${mode}: ${expected}`);
-      } finally {
-        mounted.close();
       }
-    }
-  });
+    },
+  );
 });
 
 // ---------------------------------------------------------------------------
