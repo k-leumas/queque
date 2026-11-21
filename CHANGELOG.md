@@ -1,3 +1,16 @@
+## [0.11.4](https://github.com/k-leumas/queque/compare/v0.11.3...v0.11.4) (2026-11-21)
+
+### Bug Fixes
+
+- Updated internal dependencies to their latest stable versions, improving reliability when QueQue parses your request and suggests a command.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **deps:** update dependency zod to v4.6.7 (#12) ([1be8227](https://github.com/k-leumas/queque/commit/1be822708deccc69e6bce3649c71f34506af8dea))
+
+</details>
+
 ## [0.11.3](https://github.com/k-leumas/queque/compare/v0.11.2...v0.11.3) (2026-11-21)
 
 ### Bug Fixes
