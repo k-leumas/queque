@@ -9325,6 +9325,28 @@
       "related_bugs": [],
       "occurrences": 1,
       "last_seen": "2026-11-19T04:19:29.061Z"
+    },
+    {
+      "id": "bug-565",
+      "timestamp": "2026-11-21T13:36:00Z",
+      "error_message": "[vitest] No \"mkdtempSync\" export is defined on the \"node:fs\" mock (57/64 client-result tests fail on vitest 4.1.12, PR #8)",
+      "file": "tests/client-result.test.ts",
+      "root_cause": "vitest 4.1 applies a builtin vi.mock('node:fs', strictFactory) to the test file's own imports too; 4.0.4 only replaced it for the code under test, so the harness's real-fs calls (mkdtempSync, writeFileSync, readFileSync, rmSync) silently relied on that leak",
+      "fix": "harness takes the real module explicitly: const fs = await vi.importActual<typeof import('node:fs')>('node:fs') after the strict mock; code under test keeps the identical mock",
+      "tags": [
+        "vitest",
+        "vitest-4.1",
+        "vi.mock",
+        "builtin-mock",
+        "node:fs",
+        "importActual",
+        "renovate"
+      ],
+      "related_bugs": [
+        "bug-351"
+      ],
+      "occurrences": 1,
+      "last_seen": "2026-11-21T13:36:00Z"
     }
   ]
 }
