@@ -177,7 +177,7 @@ importers:
     dependencies:
       '@anthropic-ai/sdk':
         specifier: 0.137.0
-        version: 0.137.0(zod@4.1.5)
+        version: 0.137.0(zod@4.6.7)
       cac:
         specifier: 7.0.0
         version: 7.0.0
@@ -188,8 +188,8 @@ importers:
         specifier: 19.3.1
         version: 19.3.1
       zod:
-        specifier: 4.1.5
-        version: 4.1.5
+        specifier: 4.6.7
+        version: 4.6.7
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.2.4
@@ -1378,6 +1378,7 @@ packages:
   git-raw-commits@5.0.1:
     resolution: {integrity: sha512-Y+csSm2GD/PCSh6Isd/WiMjNAydu0VBiG9J7EdQsNA5P9uXvLayqjmTsNlK5Gs9IhblFZqOU0yid5Il5JPoLiQ==}
     engines: {node: '>=18'}
+    deprecated: Deprecated and no longer maintained. Use @conventional-changelog/git-client instead.
     hasBin: true
 
   global-directory@5.0.0:
@@ -2590,8 +2591,8 @@ packages:
   yoga-layout@3.2.1:
     resolution: {integrity: sha512-0LPOt3AxKqMdFBZA3HBAt/t/8vIKq7VaQYbuA8WxCgung+p9TVyKRYdpvCb80HcdTN2NkbIKbhNwKUfm3tQywQ==}
 
-  zod@4.1.5:
-    resolution: {integrity: sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg==}
+  zod@4.6.7:
+    resolution: {integrity: sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==}
 
 snapshots:
 
@@ -2616,13 +2617,13 @@ snapshots:
       ansi-styles: 6.2.3
       is-fullwidth-code-point: 5.1.0
 
-  '@anthropic-ai/sdk@0.137.0(zod@4.1.5)':
+  '@anthropic-ai/sdk@0.137.0(zod@4.6.7)':
     dependencies:
       '@opentelemetry/api': 1.10.0
       json-schema-to-ts: 3.1.1
       standardwebhooks: 1.3.0
     optionalDependencies:
-      zod: 4.1.5
+      zod: 4.6.7
 
   '@babel/code-frame@7.29.0':
     dependencies:
@@ -4751,4 +4752,4 @@ snapshots:
 
   yoga-layout@3.2.1: {}
 
-  zod@4.1.5: {}
+  zod@4.6.7: {}
