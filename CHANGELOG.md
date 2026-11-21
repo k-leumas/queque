@@ -1,3 +1,18 @@
+## [0.11.3](https://github.com/k-leumas/queque/compare/v0.11.2...v0.11.3) (2026-11-21)
+
+### Bug Fixes
+
+- Updated underlying libraries that power the suggestion engine, improving reliability and compatibility when QueQue talks to the AI backend.
+- Refreshed internal dependencies to keep QueQue running smoothly with the latest fixes from upstream projects.
+
+<details>
+<summary>Detailed changes</summary>
+
+* **deps:** update react monorepo (#13) ([91d20cf](https://github.com/k-leumas/queque/commit/91d20cfa46b3890e3674fe3d74ae23b2cac6665c))
+* **deps:** update dependency @anthropic-ai/sdk to v0.137.0 (#9) ([6fcdba6](https://github.com/k-leumas/queque/commit/6fcdba6c2976f7e648f58afecbff2e6e1e6361f6))
+
+</details>
+
 ## [0.11.2](https://github.com/k-leumas/queque/compare/v0.11.1...v0.11.2) (2026-11-19)
 
 ## [0.11.1](https://github.com/k-leumas/queque/compare/v0.11.0...v0.11.1) (2026-11-19)
