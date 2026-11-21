@@ -1218,3 +1218,4 @@
 | 22:22 | Created ../../../../private/tmp/claude-501/-Users-samuel-dev-tui-llm/75fe2513-e126-4e3f-9b57-d35ff605c71e/scratchpad/ubg-commit-3.txt | — | ~190 |
 | 22:23 | Created .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md | — | ~2125 |
 | 22:23 | Edited .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md | 2→2 lines | ~70 |
+| 13:38 | renovate.json: ignorePaths for spike code (.planning/spikes, skill sources); closed #44 | renovate.json | PR opened | ~300 |
