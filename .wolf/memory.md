@@ -1219,3 +1219,4 @@
 | 22:23 | Created .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md | — | ~2125 |
 | 22:23 | Edited .claude/worktrees/agent-acc1b575e55c47c56/.planning/quick/261118-ubg-speed-up-and-harden-the-release-workflow/261118-ubg-SUMMARY.md | 2→2 lines | ~70 |
 | 13:38 | renovate.json: ignorePaths for spike code (.planning/spikes, skill sources); closed #44 | renovate.json | PR opened | ~300 |
+| 13:37 | debug vitest-4-1-client-result-tests: harness takes real node:fs via vi.importActual (vitest 4.1 mocks builtins in the test file too); bug-565 | tests/client-result.test.ts, .wolf/buglog.json, .wolf/cerebrum.md | 64/64 on 4.1.12, revert reconfirms | ~600 |

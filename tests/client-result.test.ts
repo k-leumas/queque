@@ -1,5 +1,4 @@
 import { spawnSync } from 'node:child_process';
-import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { dirname } from 'node:path';
@@ -155,6 +154,11 @@ vi.mock('node:fs', () => ({
   writeFileSync: vi.fn(),
   realpathSync: (p: string) => p,
 }));
+
+// Since vitest 4.1 the mock above also replaces node:fs for this file's own imports (4.0 only
+// replaced it for the code under test). The harness needs the real filesystem for temp dirs,
+// request files and result reads, so it takes the actual module; the code under test keeps the mock.
+const fs = await vi.importActual<typeof import('node:fs')>('node:fs');
 
 // ---------------------------------------------------------------------------
 // Mock node:tty so fake TTY streams (fd=999) pass the raw-mode pre-check.
