@@ -363,16 +363,16 @@ describe('createUpdateChecker', () => {
     expect(fetchImpl).toHaveBeenCalledTimes(1);
   });
 
-  it.each([
-    { QQ_NO_UPDATE_CHECK: '1' },
-    { CI: '1' },
-  ])('never fetches or shows with %j', async (env) => {
-    seed({ checkedAt: now - 25 * HOUR, hint: LINE });
-    const { checker, fetchImpl } = makeChecker({ env });
-    await checker.prepare();
-    expect(fetchImpl).not.toHaveBeenCalled();
-    expect(take(env)).toBeNull();
-  });
+  it.each([{ QQ_NO_UPDATE_CHECK: '1' }, { CI: '1' }])(
+    'never fetches or shows with %j',
+    async (env) => {
+      seed({ checkedAt: now - 25 * HOUR, hint: LINE });
+      const { checker, fetchImpl } = makeChecker({ env });
+      await checker.prepare();
+      expect(fetchImpl).not.toHaveBeenCalled();
+      expect(take(env)).toBeNull();
+    },
+  );
 
   it('never shows outside a terminal', async () => {
     seed({ hint: LINE });
@@ -530,14 +530,15 @@ describe('formatUpdateHint: one line per install method', () => {
 
   // The picker row is MODAL_MAX_COLUMNS wide minus the modal's 2 padding columns, and Ink cuts
   // the rest with an ellipsis: the command must end inside that, only a trailing note may go.
-  it.each(
-    rows.filter(([, install]) => install.upgradeCommand !== null),
-  )('%s: the command fits an 80-column picker row', (_label, install) => {
-    const line = formatUpdateHint(available(install)) ?? '';
-    const commandEnd =
-      line.indexOf(install.upgradeCommand ?? '') + (install.upgradeCommand ?? '').length;
-    expect(commandEnd).toBeLessThan(MODAL_MAX_COLUMNS - 2);
-  });
+  it.each(rows.filter(([, install]) => install.upgradeCommand !== null))(
+    '%s: the command fits an 80-column picker row',
+    (_label, install) => {
+      const line = formatUpdateHint(available(install)) ?? '';
+      const commandEnd =
+        line.indexOf(install.upgradeCommand ?? '') + (install.upgradeCommand ?? '').length;
+      expect(commandEnd).toBeLessThan(MODAL_MAX_COLUMNS - 2);
+    },
+  );
 
   it('truncates an over-long line to 200 chars', () => {
     const line = formatUpdateHint(

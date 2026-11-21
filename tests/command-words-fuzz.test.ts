@@ -101,10 +101,14 @@ describe('command-words fuzz (child process, hard timeouts)', () => {
     expectCleanRun(r, 'fuzz ok 5000');
   }, 15_000);
 
-  it.each(CRAFTED_MALFORMED)('crafted malformed input %j finishes within 1 s', (input) => {
-    const r = runChild(['one', input], { timeout: 1_000 });
-    expectCleanRun(r, 'one ok');
-  }, 5_000);
+  it.each(CRAFTED_MALFORMED)(
+    'crafted malformed input %j finishes within 1 s',
+    (input) => {
+      const r = runChild(['one', input], { timeout: 1_000 });
+      expectCleanRun(r, 'one ok');
+    },
+    5_000,
+  );
 
   it('deep nesting stays fast (2,000 nested substitutions under 100 ms)', () => {
     // WR-03: the in-child time is wall clock, so parallel workers can stall one run. Up to 3

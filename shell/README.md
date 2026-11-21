@@ -2,11 +2,11 @@
 
 QueQue's shell layer is one adapter script per shell. The adapter owns everything the shell does differently: the key binding, reading and writing the line, the prompt redraw and the result read. Everything after the trigger, from the picker to the provider, is the unchanged `qq client`, and shared code never names a shell.
 
-| Shell | Adapter | Status |
-|---|---|---|
-| zsh | [`zsh/queque.zsh`](zsh/queque.zsh) (ZLE widget) | shipped, the reference adapter |
-| bash | [`bash/queque.bash`](bash/queque.bash) (readline `bind -x`, bash 5.0+) | shipped |
-| fish | `fish/queque.fish` | planned (Phase 12) |
+| Shell | Adapter                                                                | Status                         |
+| ----- | ---------------------------------------------------------------------- | ------------------------------ |
+| zsh   | [`zsh/queque.zsh`](zsh/queque.zsh) (ZLE widget)                        | shipped, the reference adapter |
+| bash  | [`bash/queque.bash`](bash/queque.bash) (readline `bind -x`, bash 5.0+) | shipped                        |
+| fish  | `fish/queque.fish`                                                     | planned (Phase 12)             |
 
 This page is the contract a new adapter follows. When in doubt, read the zsh adapter, then the bash one: each section comment there says where and why it differs.
 
@@ -35,15 +35,15 @@ Every trigger gets a private dir from `mktemp -d /tmp/qq-sess.XXXXXX`, then `chm
 
 Written into the session dir with a JSON tool (`jq -n --arg …`, or `jq -Rs .` per value), never by string concatenation. The schema is `shellRequestSchema` in [`src/contracts/shell.ts`](../src/contracts/shell.ts):
 
-| Field | Value |
-|---|---|
-| `version` | `1` |
-| `ttyPath` | the terminal, usually `/dev/tty`; the client opens it itself |
-| `cwd` | the shell's working directory (absolute) |
-| `shellPid` | the shell's pid (a number: `--argjson`) |
-| `lbuffer` | the line before the cursor, without the trigger `?` |
-| `rbuffer` | the line after the cursor |
-| `shell` | the shell's name from `SHELL_NAMES`; it defaults to `zsh`, so always send it |
+| Field          | Value                                                                                                                              |
+| -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `version`      | `1`                                                                                                                                |
+| `ttyPath`      | the terminal, usually `/dev/tty`; the client opens it itself                                                                       |
+| `cwd`          | the shell's working directory (absolute)                                                                                           |
+| `shellPid`     | the shell's pid (a number: `--argjson`)                                                                                            |
+| `lbuffer`      | the line before the cursor, without the trigger `?`                                                                                |
+| `rbuffer`      | the line after the cursor                                                                                                          |
+| `shell`        | the shell's name from `SHELL_NAMES`; it defaults to `zsh`, so always send it                                                       |
 | `shellVersion` | the raw version string (`$BASH_VERSION`, `$ZSH_VERSION`, fish `$version`), at most 40 characters; telemetry keeps only major.minor |
 
 The line travels as two strings, never as a buffer plus a cursor index: Node counts UTF-16 units and shells count characters.
@@ -54,11 +54,11 @@ Then run `qq client --request-file <dir>/request.json --result-file <file>`, and
 
 The client writes one JSON object, `shellResultSchema` in the same file:
 
-| `kind` | Adapter does |
-|---|---|
-| `cancel` | restore the original line and cursor |
+| `kind`           | Adapter does                                                                                                                             |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `cancel`         | restore the original line and cursor                                                                                                     |
 | `replace-buffer` | print the query (dim, `queque › …`) and the command above the prompt, set the line to `lbuffer` + `rbuffer` with the cursor between them |
-| `error` | print `message`, restore the line and cursor |
+| `error`          | print `message`, restore the line and cursor                                                                                             |
 
 Anything else (no file, unparsable JSON, an unknown kind, an empty `lbuffer`) restores the line and cursor. Print user text through a `%s` argument, never as a format string.
 
@@ -79,10 +79,10 @@ Anything else (no file, unparsable JSON, an unknown kind, an empty `lbuffer`) re
 
 Before the client starts, the adapter writes the names the shell can resolve into the session dir, next to request.json (`TOOL_HANDOFF_FILES` in [`src/client/tool-handoff.ts`](../src/client/tool-handoff.ts)):
 
-| File | Contents |
-|---|---|
-| `commands.txt` | every command name the shell resolves, `PATH` included |
-| `builtins.txt` | builtins (never flagged as missing) |
+| File            | Contents                                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------- |
+| `commands.txt`  | every command name the shell resolves, `PATH` included                                            |
+| `builtins.txt`  | builtins (never flagged as missing)                                                               |
 | `functions.txt` | functions without a leading `_`, plus alias names; fish abbreviations (`abbr --list`) go here too |
 
 One name per line, unordered. Rescan `PATH` on every trigger so a tool installed a moment ago counts. An empty `commands.txt` means "no handoff": remove all three files. `QQ_TOOL_AWARENESS=0` skips the scan.

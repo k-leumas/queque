@@ -1016,17 +1016,17 @@ describe('claude -p effort and streamed candidates', () => {
     expect(truncatedLog?.[2]).toMatchObject({ stopReason: 'refusal' });
   });
 
-  it.each([
-    'refusal',
-    null,
-  ])('closes the prose fallback on a truncated %s turn (WR-01-r2)', async (stopReason) => {
-    runClaudeTurnMock.mockRejectedValue(truncatedFailure('git status --short', stopReason));
-    const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
+  it.each(['refusal', null])(
+    'closes the prose fallback on a truncated %s turn (WR-01-r2)',
+    async (stopReason) => {
+      runClaudeTurnMock.mockRejectedValue(truncatedFailure('git status --short', stopReason));
+      const { claudeDefaultAdapter } = await import('../src/providers/claude-default.js');
 
-    await expect(
-      claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate: vi.fn() }),
-    ).rejects.toThrow(TRUNCATED_RESPONSE_MESSAGE);
-  });
+      await expect(
+        claudeDefaultAdapter.fetchCandidates(buildEnvelope(), { onCandidate: vi.fn() }),
+      ).rejects.toThrow(TRUNCATED_RESPONSE_MESSAGE);
+    },
+  );
 
   it('keeps the rows that closed in a truncated result text (WR-01-r2)', async () => {
     const cut = `${STREAMED_ANSWER.slice(0, -1)},{"command":"git di`;

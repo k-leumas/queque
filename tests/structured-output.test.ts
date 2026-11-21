@@ -73,12 +73,15 @@ describe('candidatesWithCutOffRetry', () => {
   it.each([
     ['a bare array', LIST_JSON],
     ['a candidates object', JSON.stringify({ candidates: [LS] })],
-  ])('(b) returns a complete list in a non-stop turn (%s) without retrying', async (_name, text) => {
-    const retry = vi.fn<() => Promise<ModelTurn>>();
+  ])(
+    '(b) returns a complete list in a non-stop turn (%s) without retrying',
+    async (_name, text) => {
+      const retry = vi.fn<() => Promise<ModelTurn>>();
 
-    await expect(candidatesWithCutOffRetry(turn(text, false), retry)).resolves.toEqual([LS]);
-    expect(retry).not.toHaveBeenCalled();
-  });
+      await expect(candidatesWithCutOffRetry(turn(text, false), retry)).resolves.toEqual([LS]);
+      expect(retry).not.toHaveBeenCalled();
+    },
+  );
 
   it('(c) retries a cut-off turn exactly once and returns the retry list', async () => {
     const retry = vi

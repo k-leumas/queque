@@ -1221,3 +1221,4 @@
 | 13:38 | renovate.json: ignorePaths for spike code (.planning/spikes, skill sources); closed #44 | renovate.json | PR opened | ~300 |
 | 13:37 | debug vitest-4-1-client-result-tests: harness takes real node:fs via vi.importActual (vitest 4.1 mocks builtins in the test file too); bug-565 | tests/client-result.test.ts, .wolf/buglog.json, .wolf/cerebrum.md | 64/64 on 4.1.12, revert reconfirms | ~600 |
 | 14:05 | archived debug session vitest-4-1-client-result-tests; created debug knowledge-base.md | .planning/debug/* | PR | ~400 |
+| 14:44 | PR #4 biome 2.6.8: biome migrate, exclude CHANGELOG.md, format md/yaml/tests, fix noUnsafeOptionalChaining + useOptionalChain | biome.json, 25 files | pushed to PR | ~2000 |

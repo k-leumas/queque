@@ -105,13 +105,13 @@ Responsibilities of each adapter:
 
 Environment variables:
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `QQ_PANE_WIDTH` | `80` | Zellij floating pane width |
-| `QQ_PANE_HEIGHT` | `24` | Zellij floating pane height |
-| `QQ_DEV_ROOT` | — | Local checkout path for dev widget sourcing |
-| `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Debug log path |
-| `QQ_RESULT_FILE` | — | Set by widget for uncaughtException handlers |
+| Variable            | Default                   | Purpose                                      |
+| ------------------- | ------------------------- | -------------------------------------------- |
+| `QQ_PANE_WIDTH`     | `80`                      | Zellij floating pane width                   |
+| `QQ_PANE_HEIGHT`    | `24`                      | Zellij floating pane height                  |
+| `QQ_DEV_ROOT`       | —                         | Local checkout path for dev widget sourcing  |
+| `QQ_DEBUG_LOG_FILE` | `/tmp/qq-<uid>-debug.log` | Debug log path                               |
+| `QQ_RESULT_FILE`    | —                         | Set by widget for uncaughtException handlers |
 
 Design reasons:
 
@@ -142,12 +142,12 @@ The client opens `/dev/tty` for keyboard input. In Zellij panes, `/dev/tty` refe
 
 Built-ins register in `src/registry/bootstrap.ts`:
 
-| Registry | Built-in | Resolve API |
-|----------|----------|-------------|
+| Registry          | Built-in                            | Resolve API              |
+| ----------------- | ----------------------------------- | ------------------------ |
 | Context providers | `git-context`, `filesystem-context` | `listContextProviders()` |
-| Provider backends | `claude` (Anthropic SDK) | `getProviderAdapter()` |
-| Shell adapters | `zsh`, `bash` | `listShellAdapters()` |
-| Storage hooks | `noop` | `listStorageHooks()` |
+| Provider backends | `claude` (Anthropic SDK)            | `getProviderAdapter()`   |
+| Shell adapters    | `zsh`, `bash`                       | `listShellAdapters()`    |
+| Storage hooks     | `noop`                              | `listStorageHooks()`     |
 
 Provider resolution:
 
@@ -184,11 +184,11 @@ flowchart TD
     W5 --> W6
 ```
 
-| | Inline (no Zellij) | Zellij |
-|---|---|---|
-| Rendering | Inline in current terminal | Floating pane |
-| Result channel | Temp file (atomic write) | Named pipe (direct write) |
-| Pane size | Terminal viewport | `QQ_PANE_WIDTH` × `QQ_PANE_HEIGHT` |
+|                | Inline (no Zellij)         | Zellij                             |
+| -------------- | -------------------------- | ---------------------------------- |
+| Rendering      | Inline in current terminal | Floating pane                      |
+| Result channel | Temp file (atomic write)   | Named pipe (direct write)          |
+| Pane size      | Terminal viewport          | `QQ_PANE_WIDTH` × `QQ_PANE_HEIGHT` |
 
 ## Daemon
 
@@ -211,22 +211,22 @@ The daemon listens on `/tmp/qq-<uid>.sock`. IPC: `ping`, `ensure-session`, `run-
 
 ## Runtime Paths
 
-| Path | Purpose |
-|------|---------|
-| `/tmp/qq-<uid>.sock` | Daemon Unix socket |
-| `/tmp/qq-sess.XXXXXX/` | Per-trigger session dir (request JSON + FIFO or result file) |
-| `~/.config/qq/config.json` | Privacy/safety config (override with `QQ_CONFIG_FILE`) |
+| Path                       | Purpose                                                      |
+| -------------------------- | ------------------------------------------------------------ |
+| `/tmp/qq-<uid>.sock`       | Daemon Unix socket                                           |
+| `/tmp/qq-sess.XXXXXX/`     | Per-trigger session dir (request JSON + FIFO or result file) |
+| `~/.config/qq/config.json` | Privacy/safety config (override with `QQ_CONFIG_FILE`)       |
 
 ## Implemented vs Roadmap
 
-| Area | Implemented (Phase 6) | Roadmap |
-|---|---|---|
-| Shell trigger | `??` in zsh and bash, Zellij + inline paths, `qq init` detects the shell | fish adapter (Phase 12) |
-| Foreground client | Ink TUI, registry provider resolution, privacy filter | Phase 5 clarification chat (deferred) |
-| Provider | Anthropic SDK via `resolveAdapter` | Phase 8: Claude CLI, Ollama, OpenAI subprocess adapters |
-| Privacy | Sensitive path stripping, log redaction, config merge | Future file-read context (gated by `QQ_ALLOW_FILE_READ`) |
-| Storage | `noop` hook | Phase 7: SQLite pattern index, accepted-command log |
-| Daemon | Socket server, bootstrap | Phase 7: session management, cache hits |
+| Area              | Implemented (Phase 6)                                                    | Roadmap                                                  |
+| ----------------- | ------------------------------------------------------------------------ | -------------------------------------------------------- |
+| Shell trigger     | `??` in zsh and bash, Zellij + inline paths, `qq init` detects the shell | fish adapter (Phase 12)                                  |
+| Foreground client | Ink TUI, registry provider resolution, privacy filter                    | Phase 5 clarification chat (deferred)                    |
+| Provider          | Anthropic SDK via `resolveAdapter`                                       | Phase 8: Claude CLI, Ollama, OpenAI subprocess adapters  |
+| Privacy           | Sensitive path stripping, log redaction, config merge                    | Future file-read context (gated by `QQ_ALLOW_FILE_READ`) |
+| Storage           | `noop` hook                                                              | Phase 7: SQLite pattern index, accepted-command log      |
+| Daemon            | Socket server, bootstrap                                                 | Phase 7: session management, cache hits                  |
 
 ## Key Design Decisions
 

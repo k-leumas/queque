@@ -569,19 +569,16 @@ describe('SDK streaming request, abort and streamed candidates (D-05, D-13)', ()
     expect(truncatedLog?.[2]).toMatchObject({ stopReason: 'refusal' });
   });
 
-  it.each([
-    'refusal',
-    'pause_turn',
-    'tool_use',
-    'model_context_window_exceeded',
-    null,
-  ])('closes the prose fallback on stop reason %s (WR-01-r2)', async (stopReason) => {
-    scriptStream({ pieces: ['not ', 'json'], stopReason });
+  it.each(['refusal', 'pause_turn', 'tool_use', 'model_context_window_exceeded', null])(
+    'closes the prose fallback on stop reason %s (WR-01-r2)',
+    async (stopReason) => {
+      scriptStream({ pieces: ['not ', 'json'], stopReason });
 
-    await expect(claudeAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
-      TRUNCATED_RESPONSE_MESSAGE,
-    );
-  });
+      await expect(claudeAdapter.fetchCandidates(buildEnvelope())).rejects.toThrow(
+        TRUNCATED_RESPONSE_MESSAGE,
+      );
+    },
+  );
 
   it('keeps the rows that closed before a refusal when nothing streamed (WR-01-r2)', async () => {
     const truncated = `${TWO_CANDIDATES.slice(0, -1)},{"command":"git di`;
@@ -705,18 +702,18 @@ describe('SDK effort as output_config (D-03)', () => {
     expect(streamRequest().output_config).toEqual({ effort: 'high' });
   });
 
-  it.each([
-    'claude-haiku-4-5',
-    'claude-sonnet-4-5',
-  ])('omits output_config when QQ_MODEL=%s rejects effort', async (model) => {
-    process.env.QQ_MODEL = model;
+  it.each(['claude-haiku-4-5', 'claude-sonnet-4-5'])(
+    'omits output_config when QQ_MODEL=%s rejects effort',
+    async (model) => {
+      process.env.QQ_MODEL = model;
 
-    await claudeAdapter.fetchCandidates(buildEnvelope());
+      await claudeAdapter.fetchCandidates(buildEnvelope());
 
-    const request = streamRequest();
-    expect(request.model).toBe(model);
-    expect(request).not.toHaveProperty('output_config');
-  });
+      const request = streamRequest();
+      expect(request.model).toBe(model);
+      expect(request).not.toHaveProperty('output_config');
+    },
+  );
 
   it('keeps output_config when QQ_MODEL names a model with effort support', async () => {
     process.env.QQ_MODEL = 'claude-opus-5-5';

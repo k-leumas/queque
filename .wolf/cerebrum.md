@@ -41,6 +41,7 @@
 - **Tests:** run one file with `pnpm exec vitest run <file>` (`pnpm test:run -- f` runs everything). `-t` is a regex. Never import main.ts. Modules main.ts loads must read bootstrap bindings lazily. Give each test temp `QQ_CONFIG_FILE`/`QQ_PROVIDER_FILE` and inject `restartDaemon`. Timing tests flake under load (`uptime`; rerun alone or with `--maxWorkers=1`). Also verify on a pty, because pre-push runs with a tty. Run bash tests with `QQ_TEST_BASH=/opt/local/bin/bash`. tap-flat needs single-line, quote-free assertions. Tests that spawn git rely on scrub-git-env.ts.
 - **GSD plan checker:** R1 fails a `grep -c` line containing ` = N`, so use `grep -cE` or a separate criterion. R6 rejects `HEAD~N` and bare `git diff`. Cite earlier decisions as "Phase N decision M", never a bare `D-NN`. Keep the `tracer` task type. Fresh worktrees need `pnpm install --frozen-lockfile --offline`. The worktree Bash guard rejects compound git commands, so run them one by one.
 - **Docs:** write `qq init zsh && source ~/.zshrc`, never `>> ~/.zshrc`. Keep the README short and point it at docs/*.md with absolute GitHub URLs. Badges and the support table are guarded by tests/readme-badges.test.ts and follow the CI matrix and SHELL_SPECS. Lint workflows with actionlint, because Biome skips .yml.
+- biome >= 2.6 formats Markdown and YAML too; CHANGELOG.md is excluded in biome.json because semantic-release rewrites it with `*` bullets every release (biome wants `-`), which would fail `biome check .` after each release. (2026-11-21)
 
 ## Do-Not-Repeat
 
