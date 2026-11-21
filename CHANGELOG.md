@@ -1,3 +1,5 @@
+## [0.11.5](https://github.com/k-leumas/queque/compare/v0.11.4...v0.11.5) (2026-11-21)
+
 ## [0.11.4](https://github.com/k-leumas/queque/compare/v0.11.3...v0.11.4) (2026-11-21)
 
 ### Bug Fixes
