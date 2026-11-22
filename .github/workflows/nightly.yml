@@ -32,7 +32,7 @@ jobs:
   # assertions only (tests/live/sdk-contract.live.ts, D-02). The CLI path is `live-cli`.
   live:
     if: github.repository == 'k-leumas/queque'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     env:
       LEFTHOOK: '0'
@@ -71,7 +71,7 @@ jobs:
   # apiKeyHelper, not through qq's SDK path (the test hides it from the daemon).
   live-cli:
     if: github.repository == 'k-leumas/queque'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     env:
       LEFTHOOK: '0'

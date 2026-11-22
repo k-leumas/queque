@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   changes:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     outputs:
       code: ${{ steps.filter.outputs.code }}
@@ -50,7 +50,7 @@ jobs:
     # `!= 'false'` rather than `== 'true'`: an empty output (the filter wrote nothing)
     # runs everything, the same fail-open rule as the script itself.
     if: needs.changes.outputs.code != 'false'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     env:
       LEFTHOOK: '0'
@@ -97,7 +97,7 @@ jobs:
   bash-versions:
     needs: changes
     if: needs.changes.outputs.code != 'false'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
@@ -126,7 +126,7 @@ jobs:
   ci-ok:
     if: always()
     needs: [changes, checks, distro, bash-versions]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
       - name: All required jobs succeeded or were skipped
@@ -145,7 +145,7 @@ jobs:
   auto-revert:
     needs: [changes, distro]
     if: always() && github.event_name == 'push' && needs.distro.result == 'failure' && !startsWith(github.ref_name, 'auto-revert/')
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 10
     # D-21: the workflow's own token, least privilege; the workflow default stays read-only.
     permissions:
