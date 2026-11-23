@@ -166,5 +166,61 @@
     "release_clones": 0,
     "adjusted_count": 1,
     "adjusted_uniques": 1
+  },
+  "2026-11-15": {
+    "count": 2,
+    "uniques": 2,
+    "release_clones": 2,
+    "adjusted_count": 0,
+    "adjusted_uniques": 0
+  },
+  "2026-11-16": {
+    "count": 0,
+    "uniques": 0,
+    "release_clones": 0,
+    "adjusted_count": 0,
+    "adjusted_uniques": 0
+  },
+  "2026-11-17": {
+    "count": 30,
+    "uniques": 11,
+    "release_clones": 5,
+    "adjusted_count": 25,
+    "adjusted_uniques": 6
+  },
+  "2026-11-18": {
+    "count": 21,
+    "uniques": 12,
+    "release_clones": 0,
+    "adjusted_count": 21,
+    "adjusted_uniques": 12
+  },
+  "2026-11-19": {
+    "count": 37,
+    "uniques": 17,
+    "release_clones": 5,
+    "adjusted_count": 32,
+    "adjusted_uniques": 12
+  },
+  "2026-11-20": {
+    "count": 2,
+    "uniques": 2,
+    "release_clones": 0,
+    "adjusted_count": 2,
+    "adjusted_uniques": 2
+  },
+  "2026-11-21": {
+    "count": 50,
+    "uniques": 22,
+    "release_clones": 6,
+    "adjusted_count": 44,
+    "adjusted_uniques": 16
+  },
+  "2026-11-22": {
+    "count": 9,
+    "uniques": 3,
+    "release_clones": 0,
+    "adjusted_count": 9,
+    "adjusted_uniques": 3
   }
 }
