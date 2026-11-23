@@ -1,5 +1,5 @@
 # Rebuild the README demo SVGs from asciinema-style .cast recordings:
-#   python3 -I scripts/readme-demos/faint.py demo.cast demo-faint.cast
+#   python3 -I scripts/readme-demos/faint.py demo.cast demo-faint.cast --comments
 #   npx svg-term-cli --in demo-faint.cast --out demo.svg --window --no-cursor --padding 18 --height 21
 #   python3 -I scripts/readme-demos/keycast.py demo.svg assets/demo-run.svg run
 # faint.py turns the terminal's dim style (which svg-term ignores) into a faint colour.

@@ -5,7 +5,11 @@ FAINT is the 50% blend of svg-term's default fg (#b9c0cb) and bg (#282d35).
 Only dim on the default foreground needs rewriting (QueQue never dims a
 coloured span); dim on an explicit colour is left as that colour.
 
-Usage: python3 -I faint.py <in.cast> <out.cast>   (asciicast v2, one event per line)
+With --comments, the `  # explanation` comment QueQue appends to an inserted
+command is drawn faint too, the way zsh-syntax-highlighting shows comments.
+(QueQue itself inserts it as plain buffer text.)
+
+Usage: python3 -I faint.py <in.cast> <out.cast> [--comments]   (asciicast v2, one event per line)
 """
 import json
 import re
@@ -13,6 +17,7 @@ import sys
 
 FAINT = '38;2;112;118;128'
 SGR = re.compile(r'\x1b\[([0-9;]*)m')
+COMMENT = re.compile(r'  # [^\r\n\x1b]*')
 
 
 class State:
@@ -60,15 +65,20 @@ def rewrite_sgr(params, st):
     return f'\x1b[{";".join(out)}m' if out else ''
 
 
-def convert(text, st):
-    return SGR.sub(lambda m: rewrite_sgr(m.group(1), st), text)
+def convert(text, st, comments=False):
+    text = SGR.sub(lambda m: rewrite_sgr(m.group(1), st), text)
+    if comments and not st.fg and not st.dim:
+        text = COMMENT.sub(lambda m: f'\x1b[{FAINT}m{m.group(0)}\x1b[39m', text)
+    return text
 
 
 if __name__ == '__main__':
     src, dst = sys.argv[1:3]
+    comments = '--comments' in sys.argv[3:]
     st = State()
     with open(src) as f, open(dst, 'w') as g:
         g.write(f.readline())
         for line in f:
             t, kind, data = json.loads(line)
-            g.write(json.dumps([t, kind, convert(data, st) if kind == 'o' else data]) + '\n')
+            out = convert(data, st, comments) if kind == 'o' else data
+            g.write(json.dumps([t, kind, out]) + '\n')
