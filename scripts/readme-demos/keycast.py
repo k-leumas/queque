@@ -1,6 +1,8 @@
 # Rebuild the README demo SVGs from asciinema-style .cast recordings:
-#   npx svg-term-cli --in demo.cast --out demo.svg --window --no-cursor --padding 18 --height 21
+#   python3 -I scripts/readme-demos/faint.py demo.cast demo-faint.cast
+#   npx svg-term-cli --in demo-faint.cast --out demo.svg --window --no-cursor --padding 18 --height 21
 #   python3 -I scripts/readme-demos/keycast.py demo.svg assets/demo-run.svg run
+# faint.py turns the terminal's dim style (which svg-term ignores) into a faint colour.
 # Key timings in SPECS come from the recording: a key the terminal never echoes
 # (the second ?, arrows, Enter, Esc) shows up as the frame change it causes.
 """Add keycap overlays (the keys a recording can't show) to an svg-term SVG.
