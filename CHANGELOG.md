@@ -1,5 +1,3 @@
-## [0.11.9](https://github.com/k-leumas/queque/compare/v0.11.8...v0.11.9) (2026-11-23)
-
 ## [0.11.8](https://github.com/k-leumas/queque/compare/v0.11.7...v0.11.8) (2026-11-21)
 
 ## [0.11.7](https://github.com/k-leumas/queque/compare/v0.11.6...v0.11.7) (2026-11-21)
