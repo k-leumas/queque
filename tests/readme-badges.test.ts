@@ -12,15 +12,15 @@ const REPO = 'k-leumas/queque';
 const CI_RUNS = `https://github.com/${REPO}/actions/workflows/ci.yml`;
 const REPO_BLOB = `https://github.com/${REPO}/blob/main/`;
 const INSTALL_DOC = `${REPO_BLOB}docs/INSTALL.md`;
-const TESTED_ON_LINE = /^Tested on:\\$/m;
+const CI_LINE = /^Tested in \[CI\]\([^)]+\) on (.+)$/m;
 
-// Docker image name (the part before `:`) -> simple-icons logo slug.
-const LOGO_SLUGS = new Map<string, string>([
-  ['ubuntu', 'ubuntu'],
-  ['debian', 'debian'],
-  ['fedora', 'fedora'],
-  ['archlinux', 'archlinux'],
-  ['alpine', 'alpinelinux'],
+// Docker image name (the part before `:`) -> the name the README's CI line uses.
+const DISTRO_NAMES = new Map<string, string>([
+  ['ubuntu', 'Ubuntu'],
+  ['debian', 'Debian'],
+  ['fedora', 'Fedora'],
+  ['archlinux', 'Arch Linux'],
+  ['alpine', 'Alpine'],
 ]);
 
 type Badge = { alt: string; img: string; href: string };
@@ -79,92 +79,57 @@ function staticBadgeParts(badge: Badge): string[] {
   return segment.split('-').map((part) => decodeURIComponent(part));
 }
 
-// The "Tested on:" row is the static shields badges that link the CI runs page. The
-// shell and macOS badges link docs/INSTALL.md, so the href filter isolates the distro row.
-function distroBadges(): Badge[] {
-  return readmeBadges().filter((b) => isStaticShieldsBadge(b) && b.href === CI_RUNS);
-}
-
-function badgeMarkdown(badge: Badge): string {
-  return `[![${badge.alt}](${badge.img})](${badge.href})`;
+function ciLine(): { text: string; href: string } {
+  const text = readmeText();
+  const m = CI_LINE.exec(text);
+  expect(m, 'README.md must have one line starting `Tested in [CI](...) on`').not.toBeNull();
+  const href = /^Tested in \[CI\]\(([^)]+)\)/.exec(m?.[0] ?? '')?.[1] ?? '';
+  return { text: m?.[1] ?? '', href };
 }
 
 describe('README badges', () => {
-  it('distro badges equal the CI matrix', () => {
+  it('the CI line names every distro in the CI matrix and links the CI runs', () => {
     const images = ciImages();
     expect(images.length, 'ci.yml images array must not be empty').toBeGreaterThan(0);
+    const { text, href } = ciLine();
+    expect(href, 'the CI line must link the CI runs page').toBe(CI_RUNS);
     for (const image of images) {
       expect(image, `ci.yml image "${image}" must look like name:tag`).toMatch(/^[^:\s]+:[^:\s]+$/);
-    }
-    const refs = distroBadges().map((b) => b.alt);
-    expect(
-      refs,
-      'README distro badges must equal ci.yml images; update the "Tested on:" badges in README.md',
-    ).toEqual(images);
-  });
-
-  it('distro badges show only the distro name, logo and CI link', () => {
-    const badges = distroBadges();
-    expect(badges.length, 'README must have "Tested on:" distro badges').toBeGreaterThan(0);
-    for (const badge of badges) {
-      const ref = badge.alt;
-      const [name = '', tag = ''] = ref.split(':');
-      const url = new URL(badge.img);
-      expect(url.protocol, `${ref} badge must use https`).toBe('https:');
-      expect(url.host, `${ref} badge must be served by img.shields.io`).toBe('img.shields.io');
-      expect(url.pathname.startsWith('/badge/'), `${ref} badge must be a static /badge/ URL`).toBe(
-        true,
-      );
-      const parts = staticBadgeParts(badge);
+      const [name = '', tag = ''] = image.split(':');
+      const display = DISTRO_NAMES.get(name);
       expect(
-        parts,
-        `${ref} badge must have only a message and a colour (no label segment)`,
-      ).toHaveLength(2);
-      const [message = ''] = parts;
-      expect(message, `${ref} badge message must contain the image tag "${tag}"`).toContain(tag);
-      const slug = LOGO_SLUGS.get(name);
-      expect(
-        slug,
-        `no simple-icons logo slug for image "${name}"; add it to LOGO_SLUGS in tests/readme-badges.test.ts`,
+        display,
+        `no display name for image "${name}"; add it to DISTRO_NAMES in tests/readme-badges.test.ts`,
       ).toBeDefined();
-      expect(url.searchParams.get('logo'), `${ref} badge logo must be "${slug}"`).toBe(slug);
-      expect(badge.href, `${ref} badge must link to the CI runs page`).toBe(CI_RUNS);
+      expect(text, `README CI line must name ${display} (from ci.yml "${image}")`).toContain(
+        display as string,
+      );
+      if (tag !== 'latest') {
+        expect(
+          text,
+          `README CI line must show ${display} ${tag} (from ci.yml "${image}")`,
+        ).toContain(tag);
+      }
     }
   });
 
-  it('the distro row sits under a Tested on: line', () => {
-    const text = readmeText();
-    const label = TESTED_ON_LINE.exec(text);
-    expect(
-      label,
-      'README.md must have a line that is exactly `Tested on:\\` above the distro badges',
-    ).not.toBeNull();
-    const first = distroBadges()[0];
-    expect(first, 'README must have "Tested on:" distro badges').toBeDefined();
-    const firstIndex = text.indexOf(badgeMarkdown(first as Badge));
-    expect(
-      label?.index ?? -1,
-      'the `Tested on:\\` line must come before the first distro badge in README.md',
-    ).toBeLessThan(firstIndex);
-  });
-
-  it('the macOS badge links to the install guide, not CI, while no workflow runs on macOS', () => {
+  it('the CI line says macOS is tested by hand while no workflow runs on macOS', () => {
     const macRunner = runsOnValues().some((v) => /macos/i.test(v));
-    const macBadges = readmeBadges().filter((b) => /macos/i.test(b.alt) || /macos/i.test(b.img));
-    expect(
-      macBadges.length,
-      'README must have exactly one macOS badge at the end of the "Tested on:" row',
-    ).toBe(1);
+    const { text } = ciLine();
     if (!macRunner) {
-      expect(
-        (macBadges[0] as Badge).href,
-        'macOS is tested by hand, so its README badge must link docs/INSTALL.md, not CI',
-      ).toBe(INSTALL_DOC);
-      expect(
-        (macBadges[0] as Badge).alt,
-        'macOS has no CI runner, so its README badge alt text must say "tested by hand"',
-      ).toContain('tested by hand');
+      expect(text, 'macOS has no CI runner, so the CI line must say "macOS (by hand)"').toContain(
+        'macOS (by hand)',
+      );
     }
+  });
+
+  it('README has no distro badge row', () => {
+    const distroBadges = readmeBadges().filter(
+      (b) => isStaticShieldsBadge(b) && b.href === CI_RUNS,
+    );
+    expect(distroBadges, 'distros are listed in the one-line CI sentence, not as badges').toEqual(
+      [],
+    );
   });
 
   it('shell badges match the shell registry', () => {
@@ -175,50 +140,48 @@ describe('README badges', () => {
         const parts = staticBadgeParts(b);
         return parts.length === 3 && parts[0] === name;
       });
+      if (!spec.shipped) {
+        expect(
+          matching.length,
+          `README must not show a "${name}" badge while ${name} is not shipped`,
+        ).toBe(0);
+        continue;
+      }
       expect(
         matching.length,
-        `README must have exactly one "${name}" shell badge in the shell row under the H1`,
+        `README must have exactly one "${name}" shell badge in the shell row`,
       ).toBe(1);
       const badge = matching[0] as Badge;
       const [, message = ''] = staticBadgeParts(badge);
-      if (spec.shipped) {
-        const version = `${spec.failBelow}+`;
-        expect(badge.alt, `README ${name} badge alt text must be "${name} ${version}"`).toBe(
-          `${name} ${version}`,
-        );
-        expect(message, `README ${name} badge must show "${version}" (SHELL_SPECS failBelow)`).toBe(
-          version,
-        );
-        expect(
-          badge.href.startsWith(`${INSTALL_DOC}#`),
-          `README ${name} badge must link a docs/INSTALL.md section`,
-        ).toBe(true);
-      } else {
-        expect(
-          message.startsWith('coming soon'),
-          `README ${name} badge must say "coming soon" while ${name} is not shipped`,
-        ).toBe(true);
-        expect(
-          badge.alt.startsWith(`${name} coming soon`),
-          `README ${name} badge alt text must start with "${name} coming soon"`,
-        ).toBe(true);
-      }
+      const version = `${spec.failBelow}+`;
+      expect(badge.alt, `README ${name} badge alt text must be "${name} ${version}"`).toBe(
+        `${name} ${version}`,
+      );
+      expect(message, `README ${name} badge must show "${version}" (SHELL_SPECS failBelow)`).toBe(
+        version,
+      );
+      expect(
+        badge.href.startsWith(`${INSTALL_DOC}#`),
+        `README ${name} badge must link a docs/INSTALL.md section`,
+      ).toBe(true);
     }
   });
 
-  it('README has no workflow-status badges and no Supported platforms table', () => {
+  it('README shows only the CI status badge and no Supported platforms table', () => {
     const text = readmeText();
     expect(
       /img\.shields\.io\/github\/actions\/workflow\/status\//.test(text),
-      'README.md must not show CI/Nightly/Release workflow-status badges; they were removed as noise',
+      'README.md must not show shields workflow-status badges; use the one native CI badge',
     ).toBe(false);
-    expect(
-      /\/actions\/workflows\/[^/\s)]+\.ya?ml\/badge/.test(text),
-      'README.md must not show GitHub-native workflow badges (.../actions/workflows/<file>/badge.svg)',
-    ).toBe(false);
+    const native = [...text.matchAll(/\/actions\/workflows\/([^/\s)"]+)\/badge\.svg/g)].map(
+      (m) => m[1],
+    );
+    expect(native, 'README.md must show exactly one workflow badge, for ci.yml').toEqual([
+      'ci.yml',
+    ]);
     expect(
       /^### Supported platforms$/m.test(text),
-      'README.md must not bring back the Supported platforms table; the badge rows carry it',
+      'README.md must not bring back the Supported platforms table; the CI line carries it',
     ).toBe(false);
   });
 });

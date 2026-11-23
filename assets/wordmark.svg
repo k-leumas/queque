@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="112" viewBox="0 0 440 112" role="img" aria-labelledby="t">
+  <title id="t">QueQue: type ?? for a shell command</title>
+  <style>
+    .key { fill: #1f2329; stroke: #d75f00; }
+    .q { fill: #ff8a3d; }
+    .name { fill: #1f2329; }
+    .sub { fill: #6b7280; }
+    @media (prefers-color-scheme: dark) {
+      .key { fill: #2b2f36; }
+      .name { fill: #f3f4f6; }
+      .sub { fill: #9ca3af; }
+    }
+    text { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+  </style>
+  <rect class="key" x="6" y="10" width="92" height="92" rx="18" stroke-width="3"/>
+  <text class="q" x="52" y="74" font-size="46" font-weight="700" text-anchor="middle">??</text>
+  <text class="name" x="122" y="62" font-size="46" font-weight="700" letter-spacing="-1">QueQue</text>
+  <text class="sub" x="124" y="90" font-size="16">kew-kew · question question</text>
+</svg>
