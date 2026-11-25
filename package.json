@@ -59,7 +59,7 @@
     "@vitest/coverage-v8": "4.1.12",
     "lefthook": "^1.13.6",
     "semantic-release": "^25.0.2",
-    "tsup": "8.5.1",
+    "tsup": "9.0.0",
     "typescript": "6.0.3",
     "vitest": "4.1.12"
   },
