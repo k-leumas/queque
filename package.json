@@ -57,7 +57,7 @@
     "@types/node": "24.19.2",
     "@types/react": "^19.2.2",
     "@vitest/coverage-v8": "4.1.12",
-    "lefthook": "^1.13.6",
+    "lefthook": "^2.0.0",
     "semantic-release": "^25.0.2",
     "tsup": "8.5.1",
     "typescript": "6.0.3",
